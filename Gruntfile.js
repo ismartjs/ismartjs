@@ -4,7 +4,10 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         uglify: {
             options: {
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> <%= pkg.website %> <%= pkg.email %> <%= pkg.qq %>*/\n'
+                banner: '/*! <%= pkg.name %> version:<%=pkg.version%> <%= grunt.template.today("yyyy-mm-dd") %> ' +
+                    '<%= pkg.website %> Email:<%= pkg.email %> QQ: <%= pkg.QQ %>*/\n',
+                sourceMapRoot: './dest/js/',
+                sourceMap:function(path) { return path.replace('.js',".map")}
             },
             "ismart": {
                 files: {
