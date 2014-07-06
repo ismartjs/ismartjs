@@ -1,6 +1,13 @@
-<p class="lead">
-    定义控件的时候通过配置元素 s 属性，如： <code>s="控件名1,控件名2,控件名3"</code>，多个控件名直接用逗号隔开。渲染控件的时候按照定义的顺序进行渲染。
-</p>
+<h3>控件的声明</h3>
+<p class="lead">通过定义元素的 <code>s</code> 属性值来定义元素的控件，如： <code>s="resource,loop"</code>，多个声明用逗号隔开</p>
+<h3>控件参数的声明</h3>
+<p class="lead">为了保证控件的参数属性唯一，参数对应的属性配置都有一个namespace，这个namespace由控件的id和参数名构成，
+    如：<code>resource</code> 控件的 <code>data-res</code> 参数对应的属性名为 <code>s-resource-data-res</code></p>
+<h4>示例：</h4>
+<pre>
+ &lt;table <code>s="resource,loop"</code> <code>s-resource-data-res="json/users.json"</code> <code>s-loop-type="tree"</code>&gt;</table>
+</pre>
+<hr />
 <h3 id="base" s-window-role="a" title="基本控件">1. 基本控件</h3>
 <table class="table table-bordered table-striped table-hover">
     <thead>
