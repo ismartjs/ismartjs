@@ -60,6 +60,18 @@ $(function () {
 }
 </pre>
     <p class="lead">刷新页面，点击菜单按钮，可以看到已经有一个菜单加载进来</p>
+    <h4><code>Menu</code>的格式说明</h4>
+<pre>
+{
+    "id": "menuId",
+    "title": "menuTitle",
+    "icon": "menuIcon",
+    "url": "menuUrl",//menu对应的url，如果当前menu存在children的话，则url配置无效
+    "open": "true|false",//是否默认打开，默认false
+    "closeable": "true|false",//是否允许关闭，默认true，该配置仅仅对一级菜单有效。
+    "children": []//子菜单，目前仅仅支持两级子菜单
+}
+</pre>
     <h3>2. 新建hello.html页面，如下：</h3>
 <pre>
 &lt;meta title="Hello iSmart" /&gt;
