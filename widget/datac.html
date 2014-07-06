@@ -1,0 +1,34 @@
+<meta title="datac控件" description="子元素赋值控件"/>
+<div>
+    <h2 class="page-header">datac
+        <small>子元素赋值控件</small>
+    </h2>
+    <p class="lead">为子元素赋值控件，通常与 <code>resource</code> 控件（但不仅限于resource控件）配合使用。</p>
+
+    <p class="lead">该控件调用 <code>data(arg)</code> 方法的时候，将会对该控件下的所有子控件使用相同的参数赋值。</p>
+    <hr/>
+    <h3>配置参数（为子控件配置）</h3>
+    <ol>
+        <li><code>s</code>：datac</li>
+        <li><code>ig</code>：配置 <code>s-datac-ig="true"</code> 的子控件，将会被忽略赋值。</li>
+    </ol>
+    <hr/>
+    <h3>示例</h3>
+
+    <p>加载json/resource.json资源</p>
+
+    <div s="datac,resource" s-resource-data-res="json/resource.json"
+         style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
+        <span s s-smart-key="name" class="text-info"></span><br/>
+        <span s s-smart-key="feel" class="text-info"></span><br/>
+        <span s s-smart-key="like" s-datac-ig="true" class="text-info"></span>
+    </div>
+    <h5>控件源码</h5>
+<pre>
+&lt;div <span class="text-info">s="resource,datac" s-resource-data-res="json/resource.json"</span> &gt;
+    &lt;span <span class="text-info">s s-smart-key="name"</span> class="text-info"&gt;&lt;/span&gt;,
+    &lt;span <span class="text-info">s s-smart-key="feel"</span> class="text-info"&gt;&lt;/span&gt;
+    &lt;span <span class="text-info">s s-smart-key="like" s-datac-ig="true"</span> class="text-info"&gt;&lt;/span&gt;
+&lt;/div&gt;
+</pre>
+</div>

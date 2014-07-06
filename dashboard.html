@@ -1,0 +1,219 @@
+<div>
+    <h2 class="page-header">iSmart JS Framework <small>简洁、舒适、一体化的RIA开发框架。</small></h2>
+    <p class="lead">iSmart JS 是实际项目的开发过程中架构出的一个简洁、舒适、可扩展的，适用于管理系统的前端RIA开发框架，致力于解决简洁化管理系统的前端开发过程，学习曲线低，开发快速，通过控件与插件扩展机制，
+       可以轻松自定义控件和插件，轻松愉快地解决开发过程中前端的一系列问题，提高开发效率。</p>
+    <h3>快速入门</h3>
+    <p >我们通过 iSmart UI 来进行快速入门，
+        iSmart UI是根据 iSmart JS 框架开发的一个整洁的UI框架，通过该UI框架可以迅速搭建起管理系统的界面，当前页面就是使用iSmart UI构建起来的。</p>
+    <h3>依赖</h3>
+    <p>iSmart JS依赖与 <code>jQuery</code>，iSmart UI依赖与 <code>bootstrap</code>，所以在使用之前需要将这2个js的相关文件导入。</p>
+    <h3>目录结构</h3>
+<pre>
+smart-ria/
+    |-- bootstraps3/  该目录下是bootstrap的依赖文
+    |-- css/  css的目录文件
+    |-- js/   该目录下放置所有依赖的js文
+    |-- index.html  启动文件
+    |-- main.html   主界面文件
+    |-- topbar-left.html 顶部导航左边加载的页面，可以在该页面放入logo信息
+    |-- topbar-right.html 顶部导航右边加载的页面，可以在该页面放入登陆信息
+</pre>
+    <p>下面我们通过使用 iSmart UI 来构建一个后台管理页面。</p>
+    <p class="lead">iSmart JS 是一个ajax开发框架，对于用chrome调试的同学来说，必须要在web服务器中访问，否则直接资源访问会出错。</p>
+    <h4>一、新建文件夹，复制下载文档中的 <code>index.html</code></h4>
+    <p>或者从下载文档中直接 copy index.html页面到你的目录下。</p>
+<pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head lang="en"&gt;
+        &lt;meta charset="UTF-8"&gt;
+        <em>&lt;!--css导入，这里导入jquery-ui的css、bootstrap的css和smart ui的css--&gt;</em>
+        &lt;link href="css/ui-lightness/jquery-ui-1.10.4.custom.css" type="text/css" rel="stylesheet" /&gt;
+        &lt;link href="css/bootstrap.css" type="text/css" rel="stylesheet" /&gt;
+        &lt;link href="css/ria.css" type="text/css" rel="stylesheet" /&gt;
+        &lt;title&gt;iSmart JS, So Easy, So Powerful.&lt;/title&gt;
+        <em>&lt;!--导入依赖的js库--&gt;</em>
+        &lt;script type="text/javascript" src="js/jquery-2.1.1.min.js"&gt;&lt;/script&gt;
+        &lt;script type="text/javascript" src="js/jquery-ui-1.10.4.custom.js"&gt;&lt;/script&gt;
+        &lt;script type="text/javascript" src="js/bootstrap.js"&gt;&lt;/script&gt;
+        &lt;script type="text/javascript" src="js/smart.template.js"&gt;&lt;/script&gt;
+        <em>&lt;!--iSmart JS     的核心库--&gt;</em>
+        &lt;script type="text/javascript" src="js/smart.core.js"&gt;&lt;/script&gt;
+        &lt;script type="text/javascript" src="js/smart.ui.js"&gt;&lt;/script&gt;
+        <em>&lt;!--引用smart 控件--&gt;</em>
+        &lt;script type="text/javascript" src="js/widgets/window.js"&gt;&lt;/script&gt;
+        &lt;script type="text/javascript" src="js/widgets/common.js"&gt;&lt;/script&gt;
+        &lt;script type="text/javascript" &gt;
+            $(function(){
+                //定义smart ui加载菜单定义文件的路径
+                Smart.ui.menuUrl = "json/menu.json";
+                //启动smart ui
+                Smart.of($("body")).onBuild(function(e){
+                    console.info("--------------------");
+                    console.info(e.target);
+                }).on("ajaxStart", function(e, tip){
+                    console.info(tip);
+                }).build();
+
+            });
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body &gt;
+        <em>&lt;!--打开主页面--&gt;</em>
+        &lt;div s="window" url="main.html" &gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+    <p>iSmart JS 依赖于 <code>jQuery</code>，Smart UI则依赖于 <code>bootstrap</code>，
+        所以在 <code>index.html</code> 需要导入jQuery和bootstrap的相关js文件和css文件。
+        <code>smart.template.js</code>是一个js模板引擎，<code>smart.core.js</code> 和 <code>widgets/window.js</code>
+        都依赖与该模板引擎，所以也必须导入。
+    </p>
+    <h5>定义主页面widget(控件)</h5>
+    <p>
+        <code>index.html</code> body中的 <code>&lt;div s="window" url="main.html" &gt;&lt;/div&gt;</code>，
+        该段html通过<code><span class="tag"><span class="attribute">w</span>=<span class="value">"window"</span>&gt;</span></code>
+        定义了一个 <code>window控件</code>，该控件在渲染的时候，会读取 <code>main.html</code> 页面，
+        解析出其中的 <code>meta</code>、<code>script</code> 脚本、和 <code>html</code> 片段，通过渲染之后，将渲染后的html添加到该控件下面。
+        下面我们来看main.html的页面结构。
+    </p>
+    <hr />
+    <h4>二、新建 main.html <small>smart ui的主页面。定义了菜单栏，页面选项卡等</small></h4>
+    <p class="lead">由于 main.html 的文件内容较大，而且是 Smart UI 的主页面，可以直接copy main.html到你的工程目录下。</p>
+    <p><code>main.html</code> 是一个模块页面。它的格式完全遵循如下格式定义：</p>
+    <h5>模块页面的格式</h5>
+<pre>
+&lt;meta title="页面的标题" width="...px" height="...px" template="true|false" args="arg1,arg2,arg3" &gt;
+&lt;div&gt;
+    ...
+    &lt;input type="button" value="询问后关闭页面" id="closeConfirmButton" /&gt;
+
+    &lt;!--通过s-click-action声明点击该按钮的时候执行当前页面中定义的close()方法。w="click"声明click触发。--&gt;
+    &lt;input type="button" value="直接关闭页面" s="click" s-click-action="close()" /&gt;
+    ...
+&lt;/div&gt;
+&lt;script type="text/javascript" &gt;
+    ...
+
+    //确认之后关闭当前窗口
+    function closeConfirm(){
+        S.closeWithConfirm();
+    }
+
+    //获取当前页面当中的id为closeConfirmBtn的元素。
+    var closeConfirmBtn = S.N("#closeConfirmBtn");
+    closeConfirmBtn.click(closeConfirm);
+
+    //关闭当前窗口
+    function close(){
+        S.close();
+    }
+
+    //当前窗口关闭前触发的事件，接受一个 deferred 参数，如果deferred.reject()，则不会关闭该窗口。
+    //只会在S.closeWithConfirm()的时候触发。S.close()不会触发。
+    S.onBeforeClose(function(deferred){
+        setTimeout(function(){
+            if(confirm("确认关闭吗？")){
+                deferred.resolve();
+            } else {
+                deferred.reject();
+            }
+        });
+        return deferred.promise();
+    })
+    ...
+&lt;/script&gt;
+</pre>
+    <p>上述的模板描述了一个基本的模块页面应该具备的格式，主要包括：</p>
+    <dl class="dl-horizontal">
+        <dt><code>meta</code></dt>
+        <dd>
+             页面模块的元数据，主要属性有
+            <code>title</code>，<code>width</code>，<code>height</code>，<code>args</code>，<code>template</code> 等，
+            这些属性通常都是根据控件渲染的需要进行定义，并不是固定的，比如 <code>window</code> 控件渲染的时候就需要
+            <code>title</code>，<code>args</code>，<code>template</code> 这些属性定义。
+        </dd>
+        <dt><code>html</code></dt>
+        <dd>
+            html片段，是模块页面中除了 <code>meta</code>，<code>script</code> 标签之外的所有的html，构成了该模块页面的html主体元素。
+        </dd>
+        <dt><code>script</code></dt>
+        <dd>
+            <code>script</code> 标签定义了当前模块页面的控制脚本，该脚本在模块页面的整个生命周期中都在一个闭包中运行，多个模块页面的控制脚本不会形成互相干扰，
+            但是却有通用的接口使得多个模块页面可以互相通讯。该脚本中定义了一个预定义变量 <code>S</code>，它代表了当前
+            页面模块的 <code>Smart</code> 对象，通过 <code>S</code> 变量的一些方法可以操作当前模块页面，如：<code>S.close()</code> 关闭当前页面，
+            详细的API请查阅 <code>window</code> 控件的API定义。
+        </dd>
+    </dl>
+    <p>页面模块由 <code>window</code> 控件提供渲染，该控件是 iSmart JS 的核心控件。</p>
+    <p><code>main.html</code> 是 Smart UI 框架的主页面，定义了 <code>菜单</code>，<code>模块页面选项卡（Tab）</code>等。
+        功能强大，页面复杂，你现在访问的页面就是由 Smart UI 开发的，有兴趣的同学可以查看 <code>main.html</code> 的源代码。</p>
+    <hr />
+    <h4>三、新建Menu定义文件 <small>菜单是 Smart UI 的控制面板</small></h4>
+    <p>Smart UI 的菜单 运行的时候通过 <code>Smart.ui.menuUrl</code> 定义的文件路径通过ajax加载出来的。</p>
+    <p class="lead">新建一个 <code>menu.json</code> 文件，并且将 <code>index.html</code> 文件中的 <code>Smart.ui.menuUrl</code> 的值设置成该
+        文件的路径。框架在启动的时候会自动加载该文件读取Menu定义。
+    </p>
+    <p>打开 <code>menu.json</code> 的文件，输入以下内容：</p>
+<pre>
+[
+    {
+        "id": "welcome",
+        "title": "欢迎页",
+        "url": "welcome.html",
+        "icon": "icon-star",
+        "open": "true",
+        "closeable": false
+    },
+    {
+        "id": "hello-world",
+        "title": "Hello World",
+        "url": "hello-world.html"
+    }
+]
+</pre>
+    <p>menu的格式描述
+        <ol>
+            <li><code>id</code> ：id必须唯一</li>
+            <li><code>title</code> ：标题</li>
+            <li><code>icon</code> ：图标</li>
+            <li><code>url</code> ：模块页面的url</li>
+            <li><code>open</code> ：是否默认打开，只对一级Menu有效</li>
+            <li><code>closeable</code> ：打开后是否可以关闭，默认为true（可关闭），只对一级Menu有效</li>
+            <li><code>children</code> ：该Menu的子菜单，如果该Menu的 <code>url</code> 属性存在，且不为空，<code>children</code> 属性无效。
+                Menu最多两级，三级及以上Menu无效</li>
+        </ol>
+    </p>
+    <p>在工程的根目录下建立如下页面：</p>
+    <p>
+        <code>welcome.html</code> 页面：
+<pre>
+&lt;h1 id="welcome"&gt;欢迎使用 iSmart JS 构建你的后台管理页面。&lt;/h1&gt;
+&lt;script type="text/javascript"&gt;
+    var welcomeNode = S.N("#welcome");
+    welcomeNode.click(function(){
+          welcomeNode.slideUp(500, function(){
+                welcomeNode.slideDown(800);
+          });
+    });
+&lt;/script&gt;
+</pre>
+    </p>
+    <p>
+        <code>hello-world.html</code> 页面：
+<pre>
+&lt;h2 &gt;hello, world cup. 2014世界杯G组小组赛，葡萄牙对阵德国，当时葡萄牙中后卫大将佩佩对穆勒犯规，裁判跑过去，
+        对佩佩警告说：喂，你叫什么名字，下次再这样犯规给红牌了啊。佩佩回答道：“呸”，“呸”，于是裁判直接掏出红牌把佩佩罚下。&lt;/h2&gt;
+&lt;input type="button" value="好笑不？" s="click" s-click-action="haoXiaoBu()" /&gt;
+&lt;script type="text/javascript"&gt;
+    function haoXiaoBu(){
+        alert("好冷，-_-!!");
+    }
+&lt;/script&gt;
+</pre>
+    <p>至此，基本的入门已经完成呢，赶快到浏览器里面访问 <code>index.html</code> 看看效果吧。</p>
+    <h3>结束语</h3>
+    <p class="lead">至此看完后，你是不是觉得： 哎，just so so嘛，跟你描述的大相径庭啊，没看到有什么好用啊。那么，别着急，这才是刚开始。
+    iSmart JS 的强大之处在于其所提供的控件，iSmart JS的精妙核心可以使得你在使用控件开发的过程中得心应手，不必再为如何才能写出一个用户体验好的管理后台而费神。
+    </p>
+</div>

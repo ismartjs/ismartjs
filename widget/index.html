@@ -1,0 +1,344 @@
+<p class="lead">
+    定义控件的时候通过配置元素 s 属性，如： <code>s="控件名1,控件名2,控件名3"</code>，多个控件名直接用逗号隔开。渲染控件的时候按照定义的顺序进行渲染。
+</p>
+<h3 id="base" s-window-role="a" title="基本控件">1. 基本控件</h3>
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>控件名</th>
+            <th>描述</th>
+            <th>示例</th>
+            <th>其他</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <code>smart</code>
+            </td>
+            <td>基础控件，所有的控件都扩展自该控件，使用的时候不需要显式的声明，框架会自动做处理</td>
+            <td>
+                <code>&lt;div s="smart" s-smart-key="" &gt;&lt;/div&gt;</code>
+            </td>
+            <td><a href="javascript:;" s="click" s-click-action="S.open('url:smart.html')"><code>详细描述</code></a></td>
+        </tr>
+        <tr>
+            <td>
+                <code>window</code>
+            </td>
+            <td>
+                Smart RIA 的核心控件，用于加载一个模块页面。
+            </td>
+            <td>
+                <code>
+                    &lt;div s="window" s-window-href="xxx.html" &gt;&lt;/div&gt;
+                </code>
+            </td>
+            <td><a href="javascript:;" s="click" s-click-action="S.open('url:window.html')"><code>详细描述</code></a>
+                <a href="javascript:;" s="click" s-click-action="S.open('url:window.html#api')"><code>api</code></a></td>
+        </tr>
+        <tr>
+            <td>
+                <code>tpl</code>
+            </td>
+            <td>模板控件</td>
+            <td>
+                <code>
+                    &lt;div s="tpl" &gt;&lt;/div&gt;
+                </code>
+            </td>
+            <td><a href="javascript:;" s="click" s-click-action="S.open('url:tpl.html')"><code>详细描述</code></a>
+                <a href="javascript:;" s="click" s-click-action="S.open('url:tpl.html#api')"><code>api</code></a></td>
+        </tr>
+        <tr>
+            <td>
+                <code>resource</code>
+            </td>
+            <td>模板控件</td>
+            <td>
+                <code>
+                    &lt;div s="resource" s-resource-data-res="xxx.json" &gt;&lt;/div&gt;
+                </code>
+            </td>
+            <td><a href="javascript:;" s="click" s-click-action="S.open('url:resource.html')"><code>详细描述</code></a>
+                <a href="javascript:;" s="click" s-click-action="S.open('url:resource.html#api')"><code>api</code></a></td>
+        </tr>
+        <tr>
+            <td>
+                <code>datac</code>
+            </td>
+            <td>为子元素赋值控件</td>
+            <td>
+                <code>
+                    &lt;div s="datac" &gt;&lt;/div&gt;
+                </code>
+            </td>
+            <td><a href="javascript:;" s="click" s-click-action="S.open('url:datac.html')"><code>详细描述</code></a></td>
+        </tr>
+        <tr>
+            <td>
+                <code>nda</code>
+            </td>
+            <td>全称为<code>name data adapter</code>,将该控件的子元素中所有拥有<span class="text-info">name</span>属性的元素适配成的Smart控件。</td>
+            <td>
+<pre>
+&lt;div s="nda"  &gt;
+    &lt;input type="text" name="aaa" /&gt;
+    &lt;span name="bbb" &gt;&lt;/span&gt;
+&lt;/div&gt;
+</pre>
+            </td>
+            <td><a href="javascript:;" s="click" s-click-action="S.open('url:nameDataAdapter.html')"><code>详细描述</code></a></td>
+        </tr>
+        <tr>
+            <td>
+                <code>loop</code>
+            </td>
+            <td>循环控件，通过该控件可以构建 列表，表格（grid）</td>
+            <td>
+                <code>s='loop'</code>
+            </td>
+            <td><a href="javascript:;" s="click" s-click-action="S.open('url:loop.html')"><code>详细描述</code></a></td>
+        </tr>
+        <tr>
+            <td>
+                <code>check</code>
+            </td>
+            <td>选择控件，可以为列表、表格添加行选中功能</td>
+            <td>
+                <code>s='check'</code>
+            </td>
+            <td><a href="javascript:;" s="click" s-click-action="S.open('url:check.html')"><code>详细描述</code></a></td>
+        </tr>
+    </tbody>
+</table>
+<hr />
+<h3 id="ui" s-window-role="a" title="UI控件">2. UI控件</h3>
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+    <tr>
+        <th>控件名</th>
+        <th>描述</th>
+        <th>示例</th>
+        <th>其他</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <code>contextmenu</code>
+        </td>
+        <td>右键菜单控件</td>
+        <td>
+            <code>&lt;div s="contextmenu" s-contextmenu-target="S.N(..)" s-contextmenu-filter=".." &gt;&lt;/div&gt;</code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:contextmenu.html')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>pagination</code>
+        </td>
+        <td>分页控件</td>
+        <td>
+            <code>s='pagination'</code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:pagination.html')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>dropdown</code>
+        </td>
+        <td>下拉菜单控件，用于在Grid的表头中，提供自动条件筛选或者排序选择下拉列表</td>
+        <td>
+            <code>s='dropdown'</code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:dropdown.html')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>submit</code>
+        </td>
+        <td>表单提交，作用于submit按钮，将表单回车提交的动作作用于该按钮的click事件。</td>
+        <td>
+            <code>s='submit'</code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:submit.html')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>select</code>
+        </td>
+        <td>下拉列表控件，提供下拉列表选项构建，级联操作等</td>
+        <td>
+            <code>&lt;select s='select' &gt;&lt;/select&gt;</code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:select.html')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>valid</code>
+        </td>
+        <td>验证插件</td>
+        <td>
+            <code>&lt;form s='valid' &gt;&lt;/form&gt;</code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:valid.html')"><code>详细描述</code></a></td>
+    </tr>
+    </tbody>
+</table>
+<hr />
+<h3 id="event" s-window-role="a" title="事件控件">3. 事件控件</h3>
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+    <tr>
+        <th>控件名</th>
+        <th>描述</th>
+        <th>示例</th>
+        <th>其他</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <code>event</code>
+        </td>
+        <td>
+            浏览器鼠标响应事件控件，可以定义元素的鼠标响应事件。
+        </td>
+        <td>
+            <code>
+                &lt;div s="event" s-event-type="click|change|blur|focus|..." s-event-action="..." &gt;&lt;/div&gt;
+            </code>
+        </td>
+        <td>
+            <a href="javascript:;" s="click" s-click-action="S.open('url:event.html')"><code>详细描述</code></a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <code>click</code>
+        </td>
+        <td>
+            元素click事件控件
+        </td>
+        <td>
+            <code>
+                &lt;div s="click" s-click-action="..." &gt;&lt;/div&gt;
+            </code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:event.html#click')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>change</code>
+        </td>
+        <td>
+            表单元素change事件控件
+        </td>
+        <td>
+            <code>
+                &lt;div s="change" s-change-action="..." &gt;&lt;/div&gt;
+            </code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:event.html#change')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>blur</code>
+        </td>
+        <td>
+            表单元素blur事件控件
+        </td>
+        <td>
+            <code>
+                &lt;div s="blur" s-blur-action="..." &gt;&lt;/div&gt;
+            </code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:event.html#blur')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>focus</code>
+        </td>
+        <td>
+            表单元素focus事件控件
+        </td>
+        <td>
+            <code>
+                &lt;div s="focus" s-focus-action="..." &gt;&lt;/div&gt;
+            </code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:event.html#focus')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>dblclick</code>
+        </td>
+        <td>
+            元素dblclick事件控件
+        </td>
+        <td>
+            <code>
+                &lt;div s="dblclick" s-dblclick-action="..." &gt;&lt;/div&gt;
+            </code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:event.html#dblclick')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>mouseover</code>
+        </td>
+        <td>
+            元素mouseover事件控件
+        </td>
+        <td>
+            <code>
+                &lt;div s="mouseover" s-mouseover-action="..." &gt;&lt;/div&gt;
+            </code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:event.html#mouseover')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>mousemove</code>
+        </td>
+        <td>
+            元素mousemove事件控件
+        </td>
+        <td>
+            <code>
+                &lt;div s="mousemove" s-mousemove-action="..." &gt;&lt;/div&gt;
+            </code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:event.html#mousemove')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>mouseout</code>
+        </td>
+        <td>
+            元素mouseout事件控件
+        </td>
+        <td>
+            <code>
+                &lt;div s="mouseout" s-mouseout-action="..." &gt;&lt;/div&gt;
+            </code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:event.html#mouseout')"><code>详细描述</code></a></td>
+    </tr>
+    <tr>
+        <td>
+            <code>stopPropagation</code>
+        </td>
+        <td>
+            停止事件冒泡
+        </td>
+        <td>
+            <code>
+                &lt;div s="stopPropagation" s-stopPropagation-events="click,mouseover.." &gt;&lt;/div&gt;
+            </code>
+        </td>
+        <td><a href="javascript:;" s="click" s-click-action="S.open('url:event.html#stopPropagation')"><code>详细描述</code></a></td>
+    </tr>
+    </tbody>
+</table>

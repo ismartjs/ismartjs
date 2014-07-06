@@ -1,0 +1,66 @@
+<meta title="pagination分页控件" />
+<div>
+    <h2 class="page-header">分页控件</h2>
+    <p class="lead">分页控件主要用在列表或者表格（Grid）分页的地方，主要和 <code>resource</code> 控件进行配合，用于分页读取数据。</p>
+    <h3>1. 声明控件</h3>
+    <code>s='pagination'</code>
+    <h4>配置参数</h4>
+    <ol>
+        <li><code>pagekey</code>：当前页的属性名，默认是 <code>page</code></li>
+        <li><code>pskey</code>：pageSize的属性名，默认是 <code>pageSize</code></li>
+        <li><code>totalkey</code>：总数量的属性名，默认是 <code>total</code></li>
+        <li><code>showsize</code>：显示页数的size，默认是 <code>11</code></li>
+        <li><code>start-p</code>：当前第一页的前一页的按钮显示内容，默认是 <code>&laquo;</code></li>
+        <li><code>end-n</code>：当前最后一页的下一页的按钮的显示内容，默认是 <code>&raquo;</code></li>
+        <li><code>pre</code>：当前页的前一页的按钮的显示内容，默认是 <code>‹</code></li>
+        <li><code>next</code>：当前页的下一页的按钮的显示内容，默认是 <code>›</code></li>
+        <li><code>disabled-c</code>：按钮禁用的class，默认是 <code>disabled</code></li>
+        <li><code>active-c</code>：当前活动页的class，默认是 <code>active</code></li>
+        <li><code>event</code>：点击页所触发的事件，默认是 <code>request.data</code> 事件，
+            这里主要是与 <code>resource</code> 控件能够自动融合，所以使用 <code>resource</code> 的事件定义。</li>
+        <li><code>ed-pk</code>：<code>request.data</code> 事件参数对象的page的属性key。
+            默认为 <code>page</code>，即默认发送的事件参数为 {page: 页数}</li>
+    </ol>
+    <hr />
+    <h3>2. 事件</h3>
+    <p class="lead">当页被点击的时候会触发 <code>s.trigger('request.data', {<abbr class="text-warning" title="该值是配置参数中的event-pk的值">event-pk</abbr>:page})</code> 事件，通过监听该事件从而处理分页。</p>
+    <hr />
+    <h3>3. 示例</h3>
+    <p>
+        <ul id="pagination" s="pagination" s-smart-data="ctx:pageResult()" class="pagination pagination-sm"></ul>
+        <script type="text/javascript">
+            var currentPage = 1;
+            var pageResult = function(){
+                return {
+                    page: currentPage,
+                    pageSize: 10,
+                    total:1342
+                }
+            };
+            var pagination = S.S("#pagination");
+            pagination.on("request.data", function(e, data){
+                currentPage = data.page;
+                pagination.data(pageResult());
+            });
+        </script>
+    </p>
+    <h4>源码</h4>
+<pre>
+&lt;ul id="pagination" s="pagination" s-smart-data="ctx:pageResult()" class="pagination pagination-sm"&gt;&lt;/ul&gt;
+&lt;script type="text/javascript"&gt;
+    var currentPage = 1;
+    var pageResult = function(){
+        return {
+            page: currentPage,
+            pageSize: 10,
+            total:1342
+        }
+    };
+    var pagination = S.S("#pagination");
+    <abbr class="text-warning" title="监听分页控件的request.data事件">pagination.on("request.data", function(e, data)</abbr>{
+        currentPage = data.page;
+        pagination.data(pageResult());
+    });
+&lt;/script&gt;
+</pre>
+</div>

@@ -1,0 +1,16 @@
+<h3 class="page-header">调用 <code>S.closeWithConfirm()</code> 方法关闭当前窗口。</h3>
+<input type="button" value="关闭当前窗口" s="click" s-click-action="S.closeWithConfirm()" />
+<script type="text/javascript">
+    S.onBeforeClose(function(){
+        //这里使用setTimeout是为了证明该方式是异步方法。
+        var deferred = $.Deferred();
+        setTimeout(function(){
+            if(confirm("确认关闭当前页面吗？")){
+                deferred.resolve();
+            } else {
+                deferred.reject();
+            }
+        }, 1);
+        return deferred.promise();
+    });
+</script>

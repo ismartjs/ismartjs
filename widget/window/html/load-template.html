@@ -1,0 +1,7 @@
+<meta args="arg1" template="true" />
+<h4 class="page-header">模板页面示例，当load页面时传递的参数为1，则显示绿色方块，传递参数为2，则显示红色方面</h4>
+{% if(arg1 == 1){ %}
+<p class="lead" style="width: 100px; height: 100px; background: #0f0; color: #fff;">传递的参数为1</p>
+{% } else if(arg1 == 2){ %}
+<p class="lead" style="width: 100px; height: 100px; background: #da4f49; color: #fff;">传递的参数为2</p>
+{% } %}

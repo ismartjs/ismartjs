@@ -1,0 +1,53 @@
+<meta title="alert警告框控件" />
+<div>
+    <h2 >alert警告框控件</h2>
+    <p class="lead">该控件是 <code>Smart</code> 原型(prototype)扩展控件，直接通过 <code>S.alert(msg, sign, title)</code> 进行调用。</p>
+    <h3 id="call"  title="调用方法">调用方法</h3>
+    <p><code>S.alert(msg[, sign[, title|option]])</code> 返回值：<code>$.Deferred</code> ，当警告框关闭的时候，会调用 <code>deferred.resolve()</code> 通知，可以通过 <code>deferred.done(fn)</code> 来监听警告框关闭。</p>
+    <h4 >参数说明</h4>
+    <ol>
+        <li><code>msg</code>：提示的文字</li>
+        <li><code>sign</code>：标识，值为：<code>info</code>、<code>warning</code>、<code>success</code>、<code>danger</code>，分为不同的级别。</li>
+        <li><code>title|option</code>：警告框的标题或者option对象</li>
+    </ol>
+    <p><code>option</code> 的格式为 <code>{title:'...', btnName:'...'}</code>， <code>btnName</code>是关闭按钮的名称，
+        默认为<span class="text-info">确定</span></p>
+    <hr />
+    <h3 id="example"  title="示例 </">示例 </h3>
+    <p>
+        <select class="form-control" id="alertSign" style="width: 300px;">
+            <option value="info">info</option>
+            <option value="warning">warning</option>
+            <option value="success">success</option>
+            <option value="danger">danger</option>
+        </select>
+        <br />
+        <input s="click" s-click-action="sAlert()" type="button" class="btn btn-primary btn-small" value="点击弹出警告框" />
+        <script type="text/javascript">
+            var alertSignSelect = S.N("#alertSign");
+            function sAlert(){
+                S.alert("你点击的是警告框，点击下面关闭按钮关闭。", alertSignSelect.val(), "警告").done(function(){
+                    S.alert("你关闭了上一个警告框。");
+                });
+            }
+        </script>
+    </p>
+    <h4>源码</h4>
+<pre>
+&lt;select class="form-control" id="alertSign" style="width: 300px;"&gt;
+    &lt;option value="info"&gt;info&lt;/option&gt;
+    &lt;option value="warning"&gt;warning&lt;/option&gt;
+    &lt;option value="success"&gt;success&lt;/option&gt;
+    &lt;option value="danger"&gt;danger&lt;/option&gt;
+&lt;/select&gt;
+&lt;input s="click" s-click-action="sAlert()" type="button" class="btn btn-primary btn-small" value="点击弹出警告框" /&gt;
+&lt;script type="text/javascript"&gt;
+    var alertSignSelect = S.N("#alertSign");
+    function sAlert(){
+        S.alert("你点击的是警告框，点击下面关闭按钮关闭。", alertSignSelect.val(), "警告").done(function(){
+            S.alert("你关闭了上一个警告框。");
+        });
+    }
+&lt;/script&gt;
+</pre>
+</div>

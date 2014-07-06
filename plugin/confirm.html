@@ -1,0 +1,46 @@
+<meta title="confirm确认框控件" />
+<div>
+    <h2 class="page-header">确认框控件</h2>
+    <h3>调用方法</h3>
+<pre>
+S.confirm(msg, sign|option).done(function(){
+
+   //这里是点击确认按钮的时候调用的
+
+}).fail(function(){
+    //这里是点击取消按钮调用的
+    });
+</pre>
+    <h3>参数</h3>
+    <ol>
+        <li><code>msg</code> 要显示的信息</li>
+        <li><code>sign|option</code>：标识或者option对象，sign的值为：<code class="text-info">info</code>、
+            <code class="text-warning">warning</code>、<code class="text-success">success</code>、
+            <code class="text-danger">danger</code>，分为不同的级别，默认为 <code class="text-warning">warning</code></li>
+    </ol>
+    <p><code>option</code> 的格式为： <code>{title : "提示", sureBtnName: "确定", cancelBtnName:"取消", sign: "info"}</code></p>
+    <h3>示例</h3>
+    <p><input s="click" s-click-action="confirmDialog()" type="button" class="btn btn-primary" value="点击弹出确认框"  /> </p>
+    <script type="text/javascript">
+        function confirmDialog(){
+            S.confirm("你确认删除所选吗？", "warning").done(function(){
+                S.alert("你点了确认按钮");
+            }).fail(function(){
+                S.alert("你点了取消按钮");
+            });
+        }
+    </script>
+    <h4>源码</h4>
+<pre>
+&lt;p&gt;&lt;input s="click" s-click-action="confirmDialog()" type="button" class="btn btn-primary" value="点击弹出确认框"  /&gt; &lt;/p&gt;
+&lt;script type="text/javascript"&gt;
+    function confirmDialog(){
+         S.confirm("你确认删除所选吗？", "warning").done(function(){
+                S.alert("你点了确认按钮");
+            }).fail(function(){
+                S.alert("你点了取消按钮");
+            });
+    }
+&lt;/script&gt;    
+</pre>
+</div>
