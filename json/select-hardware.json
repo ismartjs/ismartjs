@@ -1,0 +1,4 @@
+[
+    {"title": "手机", "id": "select-phone"},
+    {"name": "PC", "id": "select-pc"}
+]

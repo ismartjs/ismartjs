@@ -1,0 +1,64 @@
+<!-- dialog 模板 -->
+<div s-ui-role="dialog" class="modal fade">
+    <div class="modal-dialog" s-ui-dialog-role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" s-ui-dialog-role="close">&times;</button>
+                <h4 class="modal-title" s-ui-dialog-role="title">Modal title</h4>
+            </div>
+            <div class="modal-body" s-ui-dialog-role="body">
+
+            </div>
+            <div class="modal-footer" s-ui-dialog-role="footer">
+
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- alert 模板 -->
+<div s-ui-role="alert" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" s-ui-alert-role="close">&times;</button>
+                <h4 class="modal-title" s-ui-alert-role="title"></h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="col-sm-1 text-center">
+                    <span class="text-size-32" s-ui-alert-role="sign"></span>
+                </div>
+                <div class="col-sm-11" s-ui-alert-role="message"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" s-ui-alert-role="btn">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- confirm 模板 -->
+<div s-ui-role="confirm" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" s-ui-confirm-role="close">&times;</button>
+                <h4 class="modal-title" s-ui-confirm-role="title"></h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="col-sm-1 text-center">
+                    <span class="text-size-32" s-ui-confirm-role="sign"></span>
+                </div>
+                <div class="col-sm-11" s-ui-confirm-role="message"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" s-ui-confirm-role="sureBtn">确定</button>
+                <button type="button" class="btn btn-default" s-ui-confirm-role="cancelBtn">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--backdrop 模板-->
+<div class="modal-backdrop fade" s-ui-role="backdrop"></div>
+<!--progressbar 模板-->
+<div class="progress" s-ui-role="progress">
+    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+</div>

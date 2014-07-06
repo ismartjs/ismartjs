@@ -1,0 +1,223 @@
+<meta title="contextmenu控件" />
+<div>
+    <h2 class="page-header">右键菜单控件 <small>为其他控件添加右键菜单</small></h2>
+    <h3 id="define" s-window-role="a" title="定义控件">1. 定义控件</h3>
+    <h4>a. 配置参数</h4>
+    <ol>
+        <li><code>w</code>：contextmenu</li>
+        <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>target</code>：右键菜单的右击对象，该参数是闭包参数，返回值必须是 <code>jQuery</code> 对象。</li>
+        <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>filter</code>：
+            菜单过滤器，定义方法 <code>function(menuId){ return false|true;}</code>，当该方法返回 <code>false</code> 的时候，就会禁用菜单项。</li>
+    </ol>
+    <h4>b. 获取当前的右击对象</h4>
+    <p>
+        <code>Smart.UI.contextmenu.target</code> 当前触发右键菜单的右击对象，该对象是一个 <code>Smart</code> 对象，是一个全局变量，可以在任何地方使用。
+    </p>
+    <hr />
+    <h4>c. 声明右键菜单（示例）</h4>
+    <p class="lead">菜单的格式如下： 菜单项可以定义 <code>menuId</code> 的属性，该属性可用于过滤菜单和禁用启用菜单。</p>
+    <br />
+<pre>
+&lt;ul <abbr class="text-warning">s="contextmenu"</abbr> <abbr class="text-warning" title="定义菜单的右击对象">s-contextmenu-target="S.N('#testDiv span')"</abbr> <abbr class="text-warning" title="菜单项过滤器，用于过滤菜单">s-contextmenu-filter="filterMenu"</abbr> <abbr class="text-warning" >class="s-ui-contextmenu"</abbr> &gt;
+    &lt;li&gt;
+        &lt;span&gt;新建&lt;/span&gt;
+        <abbr class="text-warning" title="子菜单箭头">&lt;div class="caret-r"&gt;&lt;/div&gt;</abbr>
+        &lt;--子菜单--&gt;
+        <abbr class="text-warning" title="子菜单">&lt;ul&gt;
+            &lt;li menuId="folder" s="click" s-click-action="folder()"&gt;&lt;i class="glyphicon glyphicon-folder-close"&gt;&lt;/i&gt;&lt;span&gt;文件夹&lt;/span&gt;&lt;/li&gt;
+            &lt;li menuId="file" s="click" s-click-action="file()"&gt;&lt;span&gt;文本文件&lt;/span&gt;&lt;/li&gt;
+        &lt;/ul&gt;</abbr>
+    &lt;/li&gt;
+    <abbr class="text-warning">&lt;li class="s-ui-contextmenu-line"&gt;&lt;/li&gt;</abbr> &lt;--菜单项分割线--&gt;
+    &lt;li <abbr class="text-warning" title="菜单项的id">menuId="modifyName"</abbr> s="click" s-click-action="modifyName()"&gt;
+        <abbr class="text-warning" title="菜单项的图标">&lt;i class="glyphicon glyphicon-pencil"&gt;&lt;/i&gt;</abbr>
+        &lt;span&gt;修改名称&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li menuId="modifyFeel" <abbr class="text-warning" title="定义菜单动作">s="click" s-click-action="modifyFeel()"</abbr>&gt;
+        &lt;i class="glyphicon glyphicon-pencil"&gt;&lt;/i&gt;
+        &lt;span&gt;修改内容&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li class="s-ui-contextmenu-line"&gt;&lt;/li&gt;
+    &lt;li menuId="prop" s="click" s-click-action="prop()"&gt;
+        &lt;i class="glyphicon glyphicon-cog"&gt;&lt;/i&gt;
+        &lt;span&gt;属性&lt;/span&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;
+</pre>
+    <h3 id="example" s-window-role="a" title="示例">2. 示例</h3>
+    <p>加载json/resource.json资源，右击下面行以修改其内容</p>
+    <div s="resource,datac" id="testDiv" s-resource-data-res="json/resource.json" style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
+        <span s s-smart-key="name" class="text-info"></span><br />
+        <span s s-smart-key="feel" class="text-info"></span>
+    </div>
+    <ul s="contextmenu" s-contextmenu-target="S.N('#testDiv span')" s-contextmenu-filter="filterMenu" class="s-ui-contextmenu" >
+        <li>
+            <span>新建</span>
+            <div class="caret-r"></div>
+            <ul>
+                <li menuId="folder" s="click" s-click-action="folder()"><i class="glyphicon glyphicon-folder-close"></i><span>文件夹</span></li>
+                <li menuId="file" s="click" s-click-action="file()"><span>文本文件</span></li>
+            </ul>
+        </li>
+        <li class="s-ui-contextmenu-line"></li>
+        <li menuId="modifyName" s="click" s-click-action="modifyName()">
+            <i class="glyphicon glyphicon-pencil"></i>
+            <span>修改名称</span>
+        </li>
+        <li menuId="modifyFeel" s="click" s-click-action="modifyFeel()">
+            <i class="glyphicon glyphicon-pencil"></i>
+            <span>修改内容</span>
+        </li>
+        <li class="s-ui-contextmenu-line"></li>
+        <li menuId="prop" s="click" s-click-action="prop()">
+            <i class="glyphicon glyphicon-cog"></i>
+            <span>属性</span>
+        </li>
+    </ul>
+    <script type="text/javascript">
+        function prop(){
+            S.alert("你点击的属性菜单");
+        }
+        function folder(){
+            S.alert("您点击的是新建文件夹菜单");
+        }
+        function file(){
+            S.alert("您点击的是文本文件菜单");
+        }
+        function modifyName(){
+            var smart = Smart.UI.contextmenu.target;
+            var txt = window.prompt("请输入", smart.node.html());
+            txt != undefined && smart.node.html(txt);
+        }
+        function modifyFeel(){
+            var smart = Smart.UI.contextmenu.target;
+            var txt = window.prompt("请输入", smart.node.html());
+            txt != undefined && smart.node.html(txt);
+        }
+        function filterMenu(id, node){
+            var target = Smart.UI.contextmenu.target;
+            if(target.node.is("*[s-smart-key='name']")){
+                if(id == "modifyFeel"){
+                    return false;
+                }
+            }
+            if(target.node.is("*[s-smart-key='feel']")){
+                if(id == "modifyName"){
+                    return false;
+                }
+            }
+        }
+    </script>
+    <h4>源码</h4>
+<pre>
+&lt;div s="resource,datac" <span class="text-info">id="testDiv"</span> s-resource-data-res="json/resource.json" style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;"&gt;
+    &lt;span s s-smart-key="name" class="text-info"&gt;&lt;/span&gt;&lt;br /&gt;
+    &lt;span s s-smart-key="feel" class="text-info"&gt;&lt;/span&gt;
+&lt;/div&gt;
+&lt;!--右击菜单--&gt;
+&lt;ul <span class="text-warning">s="contextmenu" s-contextmenu-target="S.N('#testDiv span')" s-contextmenu-filter="filterMenu"</span> class="s-ui-contextmenu" &gt;
+    &lt;li&gt;
+        &lt;span&gt;新建&lt;/span&gt;
+        &lt;div class="caret-r"&gt;&lt;/div&gt;
+        &lt;ul&gt;
+            &lt;li menuId="folder" s="click" s-click-action="folder()"&gt;&lt;i class="glyphicon glyphicon-folder-close"&gt;&lt;/i&gt;&lt;span&gt;文件夹&lt;/span&gt;&lt;/li&gt;
+            &lt;li menuId="file" s="click" s-click-action="file()"&gt;&lt;span&gt;文本文件&lt;/span&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li class="s-ui-contextmenu-line"&gt;&lt;/li&gt;
+    &lt;li menuId="modifyName" s="click" s-click-action="modifyName()"&gt;
+        &lt;i class="glyphicon glyphicon-pencil"&gt;&lt;/i&gt;
+        &lt;span&gt;修改名称&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li menuId="modifyFeel" s="click" s-click-action="modifyFeel()"&gt;
+        &lt;i class="glyphicon glyphicon-pencil"&gt;&lt;/i&gt;
+        &lt;span&gt;修改内容&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li class="s-ui-contextmenu-line"&gt;&lt;/li&gt;
+    &lt;li menuId="prop" s="click" s-click-action="prop()"&gt;
+        &lt;i class="glyphicon glyphicon-cog"&gt;&lt;/i&gt;
+        &lt;span&gt;属性&lt;/span&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;
+    &lt;script type="text/javascript"&gt;
+        function prop(){
+            S.alert("你点击的属性菜单");
+        }
+        function folder(){
+            S.alert("您点击的是新建文件夹菜单");
+        }
+        function file(){
+            S.alert("您点击的是文本文件菜单");
+        }
+        function modifyName(){
+            var smart = Smart.UI.contextmenu.target;
+            var txt = window.prompt("请输入", smart.node.html());
+            txt != undefined && smart.node.html(txt);
+        }
+        function modifyFeel(){
+            var smart = Smart.UI.contextmenu.target;
+            var txt = window.prompt("请输入", smart.node.html());
+            txt != undefined && smart.node.html(txt);
+        }
+        //菜单filter
+        <span class="text-warning">function filterMenu(id){
+            var target = Smart.UI.contextmenu.target;
+            if(target.node.is("*[s-smart-key='name']")){
+                if(id == "modifyFeel"){
+                    return false;
+                }
+            }
+            if(target.node.is("*[s-smart-key='feel']")){
+                if(id == "modifyName"){
+                    return false;
+                }
+            }
+        }
+        </span>
+&lt;/script&gt;
+</pre>
+    <hr />
+    <h3 id="api" s-window-role="a" title="API">3. 定义控件</h3>
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+        <tr>
+            <th>API名称</th>
+            <th>返回值</th>
+            <th>描述</th>
+            <th>其他</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <code>disableMenuById(menuId)</code>
+            </td>
+            <td>
+                无
+            </td>
+            <td>禁用掉menuId的菜单项</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <code>enableMenuById(menuId)</code>
+            </td>
+            <td>
+                无
+            </td>
+            <td>使菜单项可用</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <code>bind(node)</code>
+            </td>
+            <td>
+                无
+            </td>
+            <td>为元素绑定上右键菜单，该参数是jQuery对象。</td>
+            <td>&nbsp;</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

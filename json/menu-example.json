@@ -1,0 +1,10 @@
+[
+    {
+        "id": "dashboard",
+        "title": "首页",
+        "url": "home.html",
+        "icon": "glyphicon glyphicon-home",
+        "open": "true",
+        "closeable": false
+    }
+]

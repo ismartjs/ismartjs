@@ -1,0 +1,75 @@
+<meta title="关闭模块窗口(API)" description="关闭当前页面的api" />
+<div>
+    <h2 class="page-header">关闭页面相关的API</h2>
+    <h3 s-window-role="a" title="close" id="close" >1. close(arg1[,arg2[,arg3[,...]]) <small>关闭当前的窗口页面</small></h3>
+    <p class="lead">关闭当前的页面窗口，不会触发onBeforeClose事件。调用该方法后，会将窗口控件的元素从页面删除。该方法是同步方法。</p>
+    <p><input type="button" class="btn btn-primary btn-small" s="click" s-click-action="S.S('#loadWindow1').close()"  value="关闭下面的窗口"  /> <code>S.close()</code> </p>
+    <div s="window" s-window-href="widget/window/html/close.html" id="loadWindow1" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 500px; height: 200px;">
+    </div>
+    <br />
+    <p>源码如下</p>
+<pre>
+&lt;div s="window" id="loadWindow1" s-window-href="widget/window/html/close.html" &gt;&lt;/div&gt;
+&lt;input type="button" <span class="text-info">w="click" s-click-action="S.S('#loadWindow1').close()"</span> class="btn btn-primary btn-small"   value="关闭下面的窗口" /&gt;
+</pre>
+    <p><code>close.html</code> 页面源码如下</p>
+<pre>
+&lt;h3 class="page-header"&gt;调用 &lt;code>S.close()&lt;/code&gt; 方法则会关闭当前窗口。&lt;/h3&gt;
+&lt;input type="button" value="关闭当前窗口" <span class="text-info">w="click" s-click-action="S.close()"</span> /&gt;
+</pre>
+    <p class="lead">调用该方法会触发 <code>close</code> 事件，可以通过 <code>s.on('close', function(arg1,arg2,arg3){...})</code>
+        来监听到窗口的close事件。监听器的参数值即调用 close 方法时传递进去的参数。相同的 <code>closeWithConfirm()</code> 方法也一样。</p>
+    <hr />
+    <h3 id="closeWithConfirm" title="closeWithConfirm" s-window-role="a" class="page-header">2. closeWithConfirm(arg1[,arg2[,arg3[,...]]) <small>确认关闭当前的窗口页面</small></h3>
+    <p class="lead">关闭当前的页面窗口，触发onBeforeClose事件。调用该方法后，会将窗口控件的元素从页面删除。该方法是同步方法。</p>
+    <p><input type="button" class="btn btn-primary btn-small" s="click" s-click-action="S.S('#loadConfirmWindow').closeWithConfirm()"  value="关闭下面的窗口(确认后关闭)"  /> <code>S.closeWithConfirm()</code> </p>
+    <div s="window" s-window-href="widget/window/html/close-confirm.html" id="loadConfirmWindow" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 500px; height: 200px;">
+    </div>
+    <br />
+    <p>源码如下</p>
+<pre>
+&lt;div s="window" id="loadConfirmWindow" s-window-href="widget/window/html/close-confirm.html" &gt;&lt;/div&gt;
+&lt;input type="button" <span class="text-info">w="click" s-click-action="S.S('#loadConfirmWindow').closeWithConfirm()"</span> class="btn btn-primary btn-small"   value="关闭下面的窗口(确认后关闭)" /&gt;
+</pre>
+    <p><code>close-confirm.html</code> 页面源码如下</p>
+<pre>
+&lt;h3 class="page-header"&gt;调用 &lt;code&gt;S.closeWithConfirm()&lt;/code&gt; 方法关闭当前窗口。&lt;/h3&gt;
+&lt;input type="button" value="关闭当前窗口" s="click" s-click-action="<span class="text-info">S.closeWithConfirm()</span>" /&gt;
+&lt;script type="text/javascript"&gt;
+     S.onBeforeClose(function(<span class="text-info">deferred</span>){
+          //这里使用setTimeout是为了证明该方式是异步方法。
+          setTimeout(function(){
+               if(confirm("确认关闭当前页面吗？")){
+                    <span class="text-info">deferred.resolve();</span>
+               } else {
+                    <span class="text-info">deferred.reject();</span>
+               }
+          }, 1);
+          <span class="text-info">return deferred.promise();</span>
+     });
+&lt;/script&gt;
+</pre>
+    <hr />
+    <h3 id="onBeforeClose" title="onBeforeClose" s-window-role="a" class="page-header">3. onBeforeClose(fn) <small>注册窗口关闭监听事件</small></h3>
+    <p class="lead">注册监听器后，当窗口通过 <code>s.closeWithConfirm()</code> 关闭的时候，则会调用注册的监听器已确定是否允许关闭。</p>
+    <p>样例请参考上述 <code>closeWithConfirm()</code> 方法</p>
+    <h4>注册监听器如下：</h4>
+<pre>
+&lt;script type="text/javascript"&gt;
+     S.onBeforeClose(function(<span class="text-info">deferred</span>){
+          //这里使用setTimeout是为了证明该方式是异步方法。
+          setTimeout(function(){
+               if(confirm("确认关闭当前页面吗？")){
+                    <span class="text-info">deferred.resolve();</span>
+               } else {
+                    <span class="text-info">deferred.reject();</span>
+               }
+          }, 1);
+          <span class="text-info">return deferred.promise();</span>
+     });
+&lt;/script&gt;
+</pre>
+    <p>注册的方法 fn 接受一个 deferred 的参数，该参数是jQuery的$.Deferred的实例，fn必须返回 <code>return deferred.promise()</code>，
+    当允许关闭的时候使用 <code>deferred.resolve()</code> 来通知，当不允许关闭的时候用 <code>deferred.reject()</code> 来通知。
+    </p>
+</div>

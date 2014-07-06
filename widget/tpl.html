@@ -1,0 +1,147 @@
+<meta title="tpl模板控件" />
+<div>
+    <h2 class="page-header">模板控件 <small>模板控件是用来通过定义的js模板来生成最终的html</small></h2>
+    <h3 id="define" s-window-role="a" title="定义模板控件">1. 定义模板控件</h3>
+    <p><code>&lt;div s="tpl" &gt;&lt;/div&gt;</code></p>
+    <hr />
+    <h3 s-window-role="a" title="模板语法" id="yufa">2. 语法</h3>
+    <p class="lead">模板的语法与 <code>php</code>，<code>jsp</code> 的语法相差不多，只不过开始结束符号不一致。说明如下:</p>
+    <h4>a. 脚本段定义</h4>
+    <p><code>{% ... %}</code> 使用 <code>{%</code> 和 <code>%}</code> 来定义脚本段，是为了避开其他服务器端语言的脚本定义。</p>
+    <h4>b. 输出</h4>
+    <p><code>{%=xxx%}</code> 用来输出内容，或者使用预定义变量 <code>out</code> 来输出内容</p>
+    <h5>out变量api</h5>
+    <ol>
+        <li><code>print(arg)</code>： 输出内容</li>
+        <li><code>println(arg)</code>： 输出内容\n</li>
+    </ol>
+    <h4>c. 预定义符号</h4>
+    <ol>
+        <li><code>lt</code>： 是 <code>&lt;</code> 符号的转义</li>
+        <li><code>gt</code>： 是 <code>&gt;</code> 符号的转义</li>
+    </ol>
+    <p>在脚本中如果需要用到 <code>&lt;</code>，<code>&gt;</code> 符号，则需要使用转义字符。如 <code>if(a lt 1)</code> </p>
+    <hr />
+    <h4>示例：</h4>
+    <p>
+        <input s="click" s-click-action="dataTplTest()" type="button" class="btn btn-primary btn-small" value="输出模板(data())" />
+        <input s="click" s-click-action="appendTplTest()" type="button" class="btn btn-primary btn-small" value="appendData()" />
+        <input s="click" s-click-action="prependTplTest()" type="button" class="btn btn-primary btn-small" value="prependData()" />
+    </p>
+    <div id="tplTest1" s="tpl" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+        {%for(var i=0; i lt this.length; i++){%}
+            <span class="text-info">{%=this[i]%}</span>
+        {%}%}
+    </div>
+    <script type="text/javascript">
+        function dataTplTest(){
+            var data = ["hello","Smart RIA","So powerful","<br />"];
+            S.S("#tplTest1").data(data);
+        }
+        function appendTplTest(){
+            var data = ["hello","Smart RIA","So easy","<br />"];
+            S.S("#tplTest1").appendData(data);
+        }
+        function prependTplTest(){
+            var data = ["hello","Smart RIA","So pretty","<br />"];
+            S.S("#tplTest1").prependData(data);
+        }
+    </script>
+    <br />
+    <p>源码如下：</p>
+<pre>
+&lt;input s="click" s-click-action="dataTplTest()" type="button" class="btn btn-primary btn-small" value="输出模板(data())" /&gt;
+&lt;input s="click" s-click-action="appendTplTest()" type="button" class="btn btn-primary btn-small" value="appendData()" /&gt;
+&lt;input s="click" s-click-action="prependTplTest()" type="button" class="btn btn-primary btn-small" value="prependData()" /&gt;
+&lt;div <span class="text-info">id="tplTest1" s="tpl"</span> ...&gt;
+    <span class="text-info">{%for(var i=0; i lt this.length; i++){%}
+        &lt;span class="text-info"&gt;{%=this[i]%}&lt;/span&gt;
+    {%}%}</span>
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
+    function dataTplTest(){
+            var data = ["hello","Smart RIA","So powerful","&lt;br /&gt;"];
+            S.S("#tplTest1").data(data);
+        }
+        function appendTplTest(){
+            var data = ["hello","Smart RIA","So easy","&lt;br /&gt;"];
+            S.S("#tplTest1").appendData(data);
+        }
+        function prependTplTest(){
+            var data = ["hello","Smart RIA","So pretty","&lt;br /&gt;"];
+            S.S("#tplTest1").prependData(data);
+        }
+&lt;/script&gt;
+</pre>
+    <p class="lead">
+        上述脚本中的 <code>{%for(var i=0; i lt this.length; i++){%}</code> 改行中 <code>.. i lt this.length</code>，
+        <code>lt</code> 作为 <code>&lt;</code> 的转义，同理 <code>gt</code> 作为 <code>&gt;</code> 的转义，
+        <code>lt</code>、<code>gt</code> 是模板控件中预定义的符号。
+    </p>
+    <h4>模板嵌套</h4>
+    <p>有的时候会出现模板控件中嵌套另一个模板控件或者要输出与模板语法一样的内容，怎么办呢？看下面</p>
+    <p>
+        <input s="click" s-click-action="S.S('#tplTest2').data([])" type="button" class="btn btn-primary btn-small" value="忽略模板测试" />
+    </p>
+    <div id="tplTest2" s="tpl" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+        {# {%for(var i=0; i lt this.length; i++){%}
+            {%=this[i]%}
+        {% }%} #}
+    </div>
+    <p>源码如下</p>
+<pre>
+&lt;div id="tplTest2" s="tpl" style="width: 400px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"&gt;
+    <span class="text-warning">{#</span> {%for(var i=0; i lt this.length; i++){%}
+        {%=this[i]%}
+    {% }%} <span class="text-warning">#}</span>
+&lt;/div>
+</pre>
+    <br />
+    <p>由上述可见，如果想忽略脚本输出，则使用 <code>{#</code> 和 <code>#}</code> 把脚本包裹起来即可。这样的方法可以实现脚本嵌套，
+    如果页面的meta定义为 <code>&lt;meta template='true' ...&gt;</code> 的时候，整个页面在加载的时候将会做一个模板输出，
+        如果页面中有定义的模板控件，那么模板控件的模板代码就需要用 <code>{#</code> 和 <code>#}</code> 包裹起来才会正常输出。</p>
+    <hr />
+    <h3 id="api" s-window-role="a" title="API">3. API</h3>
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+        <tr>
+            <th>API名称</th>
+            <th>返回值</th>
+            <th>描述</th>
+            <th>其他</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <code>data(arg)</code>
+            </td>
+            <td>
+                无
+            </td>
+            <td>赋值给控件，将最终生成的html设为控件元素的子元素。</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <code>appendData(arg)</code>
+            </td>
+            <td>
+                无
+            </td>
+            <td>赋值给控件，将最终生成的html <span class="text-info">append</span> 到当前元素下面。</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <code>prependData(arg)</code>
+            </td>
+            <td>
+                无
+            </td>
+            <td>赋值给控件，将最终生成的html <span class="text-info">prepend</span> 到当前元素下面。</td>
+            <td>&nbsp;</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

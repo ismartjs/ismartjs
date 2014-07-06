@@ -1,0 +1,36 @@
+<div>
+<h2 class="page-header">iSmart JS Framework <small>简洁、舒适、一体化的RIA开发框架。</small></h2>
+<p class="lead">iSmart JS 是实际项目的开发过程中架构出的一个简洁、舒适、可扩展的，适用于管理系统的前端RIA开发框架，致力于解决简洁化管理系统的前端开发过程，学习曲线低，开发快速，通过控件与插件扩展机制，
+    可以轻松自定义控件和插件，轻松愉快地解决开发过程中前端的一系列问题，提高开发效率。</p>
+<h2>依赖</h2>
+<p class="lead"><code>iSmart JS</code> 依赖与 <code>jQuery</code>，<code>iSmart UI</code> 依赖于 <code>bootstrap3</code></p>
+    <h2>浏览器支持</h2>
+    <ol>
+        <li>IE10+</li>
+        <li>chrome完美支持</li>
+        <li>firefox支持</li>
+    </ol>
+    <p class="lead">适用于可以指定浏览器的后端管理系统</p>
+<hr />
+<h2>支持与反馈</h2>
+<ol>
+    <li><code>QQ群</code>：51729123</li>
+    <li><code>论坛</code>：<a href="http://bbs.ismartjs.com">http://bbs.ismartjs.com</a></li>
+    <li><code>邮件反馈</code>：daigua1028@gmail.com</li>
+</ol>
+<hr />
+<h2>核心概念</h2>
+<p class="lead">iSmart JS提供了2个核心概念，控件与插件。</p>
+<ol>
+    <li><code>控件</code>：控件主要用来负责渲染页面上的某个html元素，当我们获取到该元素的
+        <code>Smart</code> 对象的时候，就可以拥有这些控件提供的API来操作该元素，控件扩展的API仅限于当前元素的 <code>Smart</code> 对象。</li>
+    <li><code>插件</code>：插件扩展 <code>Smart</code> 对象本身，使得所有元素的Smart对象都可以拥有该插件提供的API，
+        如 <code>alert</code>、<code>confirm</code> 插件等</li>
+</ol>
+    <p class="lead">在 iSmart JS 中，页面元素的所有增强均来自于控件的扩展，
+        一个元素可以声明多个控件，最终形成的页面表现和API是这些多个控件的组合，这样的概念类似于多重继承的概念，虽然在设计上很容易出现混淆，
+        但是我们通过划分控件的职责，规避这样的问题，比如 <code>resource</code>、<code>loop</code>、<code>check</code>、
+        <code>pagination</code>、<code>loopCheckCombine</code> 这样控件的组合就能构建出自动填充表格，自动分页，自动选择行的TreeGrid控件。</p>
+    <div s="window" s-window-href="ui.html"></div>
+    <p class="lead">可以通过查看 <a href="javascript:;" s="click" s-click-action="S.open('menu:widget')"><code>控件/插件</code></a>了解更多</p>
+</div>

@@ -1,0 +1,158 @@
+<meta title="event事件控件" />
+<div>
+    <h2 class="page-header">浏览器事件控件</h2>
+    <p class="lead">该类控件用于封装浏览器的鼠标响应事件，以使得事件主体可以在当前页面窗口的闭包中运行。</p>
+    <h3 s-window-role="a" title="event" id="event">1. event</h3>
+    <h4>参数配置</h4>
+    <ol>
+        <li><code>s</code>：event</li>
+        <li><code>type</code>：指定监听的是浏览器的什么事件，如：click,change,focus等等所有浏览器的原生事件。</li>
+        <li><code>action</code>：事件执行的主体代码。</li>
+    </ol>
+    <h3>示例：注册按钮的点击事件</h3>
+    <p><input type="button" s="event" s-event-type="click" s-event-action="eventOfClick()" value="点击我！" class="btn btn-primary btn-small" /></p>
+    <script type="text/javascript">
+        function eventOfClick(){
+            alert("你点击我干嘛！！！！");
+        }
+    </script>
+    <p>源码</p>
+<pre>
+&lt;input type="button" <span class="text-info">s="event" s-event-type="click" s-event-action="eventOfClick()"</span> value="点击我！" /&gt;
+&lt;script type="text/javascript"&gt;
+    function eventOfClick(){
+        alert("你点击我干嘛！！！！");
+    }
+&lt;/script&gt;
+</pre>
+    <h4>禁用操作按钮</h4>
+    <p>通常在提交表单的时候，需要在提交动作的开始时禁用按钮，在提交成功之后再使按钮可用，这样可以确保重复提交的问题。
+        <code>event</code> 控件提供了简易的方法实现这样的功能。示例如下：</p>
+    <p>
+        <input s="click" s-click-action="return waitOperate()" type="button" value="点击我，3秒之后解除禁用状态" class="btn btn-primary"/>
+        <script type="text/javascript">
+            function waitOperate(){
+                var deferred = $.Deferred();
+                setTimeout(function(){
+                    deferred.resolve();
+                }, 3000);
+                return deferred;
+            }
+        </script>
+    </p>
+<pre>
+&lt;input s="click" s-click-action="<abbr class="text-warning" title="这里需要返回deferred才能自动设置按钮状态">return waitOperate()</abbr>" type="button" value="点击我，3秒之后解除禁用状态" class="btn btn-primary"/&gt;
+&lt;script type="text/javascript"&gt;
+    function waitOperate(){
+        var deferred = $.Deferred();
+        setTimeout(function(){
+            <abbr class="text-warning" title="3秒后通知完成，同样适用 deferred.reject()">deferred.resolve();</abbr><span class="text-warning">//3秒后通知完成，同样适用 deferred.reject()</span>
+        }, 3000);
+        <abbr class="text-warning" title="这里需要返回deferred才能自动设置按钮状态">return deferred;</abbr><span class="text-warning">//这里需要返回deferred才能自动设置按钮状态，同样在 <code>s-click-action</code> 的配置中也需要返回。</span>
+        //如果是ajax的操作，直接返回ajax操作的返回值，在ajax执行完成后会自动解除按钮禁用状态
+        <span class="text-warning">//return S.post(...);</span>
+    }
+&lt;/script&gt;
+</pre>
+    <hr />
+    <h3 id="click" s-window-role="a" title="click">2. click</h3>
+    <h4>参数配置</h4>
+    <ol>
+        <li><code>s</code>：click</li>
+        <li><code>action</code>：事件执行的主体代码。</li>
+    </ol>
+    <p>源码</p>
+<pre>
+&lt;input type="button" <span class="text-info">s="click" s-click-action="..."</span> value="点击我！" /&gt;
+</pre>
+    <hr />
+    <h3 id="change">3. change</h3>
+    <h4>参数配置</h4>
+    <ol>
+        <li><code>s</code>：change</li>
+        <li><code>action</code>：事件执行的主体代码。</li>
+    </ol>
+    <p>源码</p>
+<pre>
+&lt;input type="text" <span class="text-info">s="change" s-change-action="..."</span> /&gt;
+</pre>
+    <hr />
+    <h3 id="blur" s-window-role="a" title="blur">4. blur</h3>
+    <h4>参数配置</h4>
+    <ol>
+        <li><code>s</code>：blur</li>
+        <li><code>action</code>：事件执行的主体代码。</li>
+    </ol>
+    <p>源码</p>
+<pre>
+&lt;input type="text" <span class="text-info">s="blur" s-blur-action="..."</span> /&gt;
+</pre>
+    <hr />
+    <h3 id="focus" s-window-role="a" title="focus">5. focus</h3>
+    <h4>参数配置</h4>
+    <ol>
+        <li><code>s</code>：blur</li>
+        <li><code>action</code>：事件执行的主体代码。</li>
+    </ol>
+    <p>源码</p>
+<pre>
+&lt;input type="text" <span class="text-info">s="focus" s-focus-action="..."</span> /&gt;
+</pre>
+    <hr />
+    <h3 id="dblclick" s-window-role="a" title="dblclick">6. dblclick</h3>
+    <h4>参数配置</h4>
+    <ol>
+        <li><code>s</code>：dblclick</li>
+        <li><code>action</code>：事件执行的主体代码。</li>
+    </ol>
+    <p>源码</p>
+<pre>
+&lt;input type="text" <span class="text-info">s="dblclick" s-dblclick-action="..."</span> /&gt;
+</pre>
+    <hr />
+    <h3 id="mouseover" s-window-role="a" title="mouseover">7. mouseover</h3>
+    <h4>参数配置</h4>
+    <ol>
+        <li><code>s</code>：mouseover</li>
+        <li><code>action</code>：事件执行的主体代码。</li>
+    </ol>
+    <p>源码</p>
+<pre>
+&lt;input type="text" <span class="text-info">s="mouseover" s-mouseover-action="..."</span> /&gt;
+</pre>
+    <hr />
+    <h3 id="mousemove" s-window-role="a" title="mousemove">8. mousemove</h3>
+    <h4>参数配置</h4>
+    <ol>
+        <li><code>s</code>：mousemove</li>
+        <li><code>action</code>：事件执行的主体代码。</li>
+    </ol>
+    <p>源码</p>
+<pre>
+&lt;input type="text" <span class="text-info">s="mousemove" s-mousemove-action="..."</span> /&gt;
+</pre>
+    <hr />
+    <h3 id="mouseout" s-window-role="a" title="mouseout">9. mouseout</h3>
+    <h4>参数配置</h4>
+    <ol>
+        <li><code>s</code>：mouseout</li>
+        <li><code>action</code>：事件执行的主体代码。</li>
+    </ol>
+    <p>源码</p>
+<pre>
+&lt;input type="text" <span class="text-info">s="mouseout" s-mouseout-action="..."</span> /&gt;
+</pre>
+    <hr />
+    <p class="lead">上述除了事件控件基本涵盖了开发过程中所需的基本事件，如果有其他需求，可以自行定义。</p>
+    <hr />
+    <h3 id="stopPropagation" s-window-role="a" title="stopPropagation">10. stopPropagation</h3>
+    <h4>参数配置</h4>
+    <ol>
+        <li><code>s</code>：stopPropagation</li>
+        <li><code>events</code>：停止冒泡的事件，多个事件用英文逗号隔开。</li>
+    </ol>
+    <p>源码</p>
+<pre>
+&lt;input type="text" <span class="text-info">s="stopPropagation" s-stopPropagation-events="..."</span> /&gt;
+</pre>
+</div>
