@@ -29,6 +29,11 @@ module.exports = function (grunt) {
                         ], dest: 'example'},
                     {src:"json/menu-example.json",dest:"example/json/menu.json"}
                 ]
+            },
+            dest: {
+                files: [
+                    {src:'ui-template.html',dest:"dest/"}
+                ]
             }
         },
         cssmin: {

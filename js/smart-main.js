@@ -23,7 +23,7 @@ $(function () {
             }
         }
     };
-    Smart.UI.loadTemplate("js/plugins/ui-template.html");
+    Smart.UI.loadTemplate("ui-template.html");
     Smart.of($("body")).make();
 
 });
