@@ -13,7 +13,7 @@
                     //则把它声明成为一个基本控件
                     nameNode.attr(Smart.defineKey, "");
                 }
-                var attrName = Smart.optionAttrName("data", "key");
+                var attrName = Smart.optionAttrName("smart", "key");
                 if(Smart.isEmpty(nameNode.attr(attrName))){
                     nameNode.attr(attrName, nameNode.attr("name"));
                 }
