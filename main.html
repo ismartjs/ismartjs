@@ -192,11 +192,11 @@
             var that = this;
             $.each(this.data.children, function(i, d){
                 var tabWindow = new TabWindow(d, that);
-                this.tabWindows.push(tabWindow);
+                that.tabWindows.push(tabWindow);
                 if(d == secondaryMenu){
                     that.currentTabWindow = tabWindow;
                 }
-                that.tabWindows.push(tabWindow);
+                that.bindTabWindowEvent(tabWindow);
                 that.secondaryTabData.children.push({
                     title: d.title,
                     tabWindowId: tabWindow.id
@@ -340,10 +340,7 @@
 
             var that = this;
             if(Smart.isEmpty(this.data.children)){
-                tabWindow.smart.on("close", function(){
-                    that.destroy();
-                    MainTab.activeTop();
-                }).on("meta", function(e, key, value){
+                tabWindow.smart.on("meta", function(e, key, value){
                     if($.type(key) == 'object'){
                         that.setMeta(key);
                     } else {
@@ -358,12 +355,16 @@
             });
         },
         bindTabWindowEvent: function(tabWindow){
-            tabWindow.smart.on("loading", function(){
-                this.node.addClass("loading");
+            var that = this;
+            tabWindow.smart.on("close", function(){
+                that.destroy();
+                MainTab.activeTop();
+            }).on("loading", function(){
+                that.node.addClass("loading");
             }).on("load", function(){
-                this.node.removeClass("loading");
+                that.node.removeClass("loading");
             });
-        }
+        },
         setMeta:function(meta){
             var that = this;
             $.each(meta, function(key, value){
