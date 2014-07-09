@@ -499,7 +499,7 @@
         var WIDGET_DEF_ID_MAP = {};
 
         var DEFAULT_LISTENER = {
-            onRun: Smart.noop,
+            onData: Smart.noop,
             onPrepare: Smart.noop,//控件准备
             onBuild: Smart.noop,//构造，该方式异步方法
             onDestroy: Smart.noop
@@ -533,7 +533,7 @@
             id: "smart",
             options: "key, data, null"
         }, {
-            onRun: function () {
+            onData: function () {
                 var that = this;
                 that.options.smart.data && that.data(that.options.smart.data);
                 that._preDataArgs && that.data.apply(that, that._preDataArgs);
@@ -742,9 +742,9 @@
 
             //子元素made成功后，开始运行控件
             $.each(widgetListeners, function (i, listener) {
-                if ("onRun" in listener) {
+                if ("onData" in listener) {
                     deferreds.push(function () {
-                        return listener.onRun.call(smart)
+                        return listener.onData.call(smart)
                     });
                 }
             });

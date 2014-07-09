@@ -137,7 +137,7 @@
         id: "window",
         options: "href"
     }, {
-        onRun: function () {
+        onData: function () {
             var deferred = $.Deferred();
             var options = this.options.window;
             if (options && options.href) {

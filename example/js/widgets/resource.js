@@ -39,8 +39,8 @@
         onBuild: function () {
             return this._onBuild();
         },
-        onRun: function () {
-            return this._onRun();
+        onData: function () {
+            return this._onData();
         }
     }, {
         _cascadeLoad: function (stage) {
@@ -106,7 +106,7 @@
             }
             return this._load(this.options.resource['build-res'], {}, STAGE.build.id);
         },
-        _onRun: function () {
+        _onData: function () {
             if (this.options.resource['data-cascade']) {
                 if (Smart.isWidgetNode(this.options.resource['data-cascade'])) {
                     var deferred = $.Deferred();
@@ -125,7 +125,7 @@
             return this._onBuild();
         },
         refresh: function () {
-            return this._onRun();
+            return this._onData();
         }
     });
 })();
