@@ -55,7 +55,7 @@ body {
 .topbar .logo .logo-text{
     display: block;
     float: left;
-    width: 97px;
+    padding: 0 7px;
     height: 36px;
     color: #FFF;
     vertical-align: middle;

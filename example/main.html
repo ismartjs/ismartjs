@@ -231,7 +231,7 @@
     };
     MainTab.activeTop = function(){
         var topTab = MainTab.TabStack.getTop();
-        topTab.active();
+        topTab && topTab.active();
     };
 
     MainTab.closeMainTabs = function(mainTabs){

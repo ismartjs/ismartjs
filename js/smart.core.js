@@ -203,6 +203,7 @@
                 var fn = fns[i];
                 if (!$.isFunction(fn)) {
                     callFn(i + 1);
+                    return;
                 }
                 var fnDefer = fn();
                 if (!fnDefer) {
