@@ -11,7 +11,8 @@ $(function () {
 
     Page.Main = {
         menuUrl: "json/menu.json",
-        defaultIcon: "glyphicon glyphicon-file",
+        defaultTabIcon: "glyphicon glyphicon-file",
+        defaultMenuIcon: "",
         topbarRightUrl: "topbar-right.html",
         topbarLeftUrl: "topbar-left.html",
         historyListener: {

@@ -41,6 +41,9 @@
         },
         onData: function () {
             return this._onData();
+        },
+        onRefresh: function (){
+            return this._onData();
         }
     }, {
         _cascadeLoad: function (stage) {
@@ -48,11 +51,11 @@
             var val = cascade.val();
             var resKey = stage + '-res';
             var originalRes = this.options.resource[STAGE[stage].resourceKey];
-            var cascadeKeyKey = stage + '-cascade-key';
+            var cascadeKey = stage + '-cascade-key';
             this.options.resource[resKey] = originalRes.replace("{val}", val);
-            if (this.options.resource[cascadeKeyKey]) {
+            if (this.options.resource[cascadeKey]) {
                 var param = {};
-                param[this.options.resource[cascadeKeyKey]] = val;
+                param[this.options.resource[cascadeKey]] = val;
                 this.dataTable("resource", "param", param);
             }
             return this._load(this.options.resource[resKey], param, stage);
@@ -123,9 +126,6 @@
         },
         buildRefresh: function () {
             return this._onBuild();
-        },
-        refresh: function () {
-            return this._onData();
         }
     });
 })();

@@ -22,13 +22,13 @@
         }
     };
     var DEFAULT_LEVEL = ALERT_LEVEL.warning;
-    var DEFAULT_OPTION = {title: "提示", sureBtnName: "确定", cancelBtnName: "取消", sign: "info"};
 
     Smart.fn.extend({
         confirm: function (msg, option) {
             var deferred = $.Deferred();
             var dialog = Smart.UI.template("confirm");
-            option = option || DEFAULT_OPTION;
+            var DEFAULT_OPTION = {title: "提示", sureBtnName: "确定", cancelBtnName: "取消", sign: "info"};
+            option = $.extend(DEFAULT_OPTION, option || {});
             if ($.type(option) == "string") {
                 option = $.extend($.extend({}, DEFAULT_OPTION), {sign: option});
             }

@@ -1,0 +1,100 @@
+<meta title="cds控件"/>
+<div>
+    <h2 class="page-header">cds选择数据提交 <small>check data submit</small></h2>
+    <p class="lead">该控件主要用于提交选择的数据到远程，可以实现自动删除列表数据等诸如此类的功能</p>
+    <hr />
+    <h3>1. 配置参数</h3>
+    <ol>
+        <li><abbr title="闭包参数">ctx:</abbr><code>cs</code>：提供所需提交的数据的控件，该控件必须 <code>check</code> 控件</li>
+        <li><code>ck</code>：根据此值去挑选出每一条数据的值</li>
+        <li><code>dk</code>：把该值作为 <code>getCheckedData</code> 返回值的 key，组成 submit 的data对象</li>
+        <li><code>c-msg</code>：确认框提示的信息</li>
+        <li><code>e-msg</code>：错误框提示的信息</li>
+        <li><code>r</code>：在数据提交成功后，是否刷新 <code>cs</code> 配置的Smart对象，默认为"true"</li>
+    </ol>
+    <hr />
+    <h3>2. 示例 </h3>
+    <input type="button" class="btn btn-danger" value="删除"
+           s="dataSubmit,cds"
+           s-datasubmit-url="json/districts.json"
+           s-datasubmit-type="remove"
+           s-cds-cs="S.S('#districtsGrid')"
+           s-cds-e-msg="请先选择需要删除的省份"
+           s-cds-dk="ids"
+           s-cds-c-msg="确认删除所选的省份吗？" /> <span class="lead">由于服务器不支持动态语言，这里删除动作仅仅做展示，请打开浏览器debug，查看network就能看到相关提交数据</span>
+    <div id="districtsGrid" s='resource,check,datac'
+         s-resource-data-res="json/districts.json"
+         s-resource-data-form="S.N('#districtsSearchForm')">
+        <table  class="table table-striped table-hover" style="width: 100%;">
+            <thead>
+            <tr>
+                <th><input type="checkbox" s-check-role="checkall-h"/> </th>
+                <th style="width: 10%;">ID</th>
+                <th style="width: 30%;">名称</th>
+                <th style="width: 30%;">排序</th>
+                <th style="width: 30%;">操作</th>
+            </tr>
+            </thead>
+            <tbody s="loop">
+            <tr s-loop-role="empty">
+                <td colspan="5">暂无省份</td>
+            </tr>
+            <tr s-loop-role="row" s="datac,row" s-check-role="i">
+                <td><input type="checkbox"  s-check-role="h"/></td>
+                <td s s-smart-key="id"></td>
+                <td s s-smart-key="name"></td>
+                <td s s-smart-key="idx"></td>
+                <td>
+                    <a href="#" class="btn btn-link">市区管理</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <script type="text/javascript">
+        var districtsGrid = S.S('#districtsGrid');
+    </script>
+    <h4>源码</h4>
+<pre>
+&lt;input type="button" class="btn btn-danger" value="删除"
+       <span class="text-warning">s="dataSubmit,cds"
+       s-datasubmit-url="json/districts.json"
+       s-datasubmit-type="remove"
+       s-cds-cs="S.S('#districtsGrid')"
+       s-cds-e-msg="请先选择需要删除的省份"
+       s-cds-dk="ids"
+       s-cds-c-msg="确认删除所选的省份吗？"</span> /&gt;
+&lt;div id="districtsGrid" <span class="text-warning">s='resource,check,datac'
+     s-resource-data-res="json/districts.json"
+     s-resource-data-form="S.N('#districtsSearchForm')"</span>&gt;
+    &lt;table  class="table table-striped table-hover" style="width: 100%;"&gt;
+        &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;&lt;input type="checkbox" s-check-role="checkall-h"/&gt; &lt;/th&gt;
+            &lt;th style="width: 10%;"&gt;ID&lt;/th&gt;
+            &lt;th style="width: 30%;"&gt;名称&lt;/th&gt;
+            &lt;th style="width: 30%;"&gt;排序&lt;/th&gt;
+            &lt;th style="width: 30%;"&gt;操作&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody s="loop"&gt;
+        &lt;tr s-loop-role="empty"&gt;
+            &lt;td colspan="5"&gt;暂无省份&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr s-loop-role="row" s="datac,row" s-check-role="i"&gt;
+            &lt;td&gt;&lt;input type="checkbox"  s-check-role="h"/&gt;&lt;/td&gt;
+            &lt;td s s-smart-key="id"&gt;&lt;/td&gt;
+            &lt;td s s-smart-key="name"&gt;&lt;/td&gt;
+            &lt;td s s-smart-key="idx"&gt;&lt;/td&gt;
+            &lt;td&gt;
+                &lt;a href="#" class="btn btn-link"&gt;市区管理&lt;/a&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
+    var districtsGrid = S.S('#districtsGrid');
+&lt;/script&gt;
+</pre>
+</div>

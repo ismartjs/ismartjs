@@ -625,7 +625,8 @@
             onData: Smart.noop,
             onPrepare: Smart.noop,//控件准备
             onBuild: Smart.noop,//构造，该方式异步方法
-            onDestroy: Smart.noop
+            onDestroy: Smart.noop,
+            onRefresh: Smart.noop
         }
 
         Smart.widgetExtend = function (def, listener, api) {
@@ -659,7 +660,6 @@
             onData: function () {
                 var that = this;
                 that.options.smart.data && that.data(that.options.smart.data);
-                that._preDataArgs && that.data.apply(that, that._preDataArgs);
             }
         }, {
             dataGetter: Smart.noop,
@@ -693,10 +693,6 @@
                 if (arguments.length == 0) {
                     return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
                 }
-//                if(this.lifeStage != LIFE_STAGE.made){
-//                    this._preDataArgs = SLICE.call(arguments);
-//                    return;
-//                }
                 var args = SLICE.call(arguments);
                 var dataKey = this.options.smart['key'];
                 var value = args;
@@ -706,11 +702,14 @@
                 }
                 value == null ? value = this.options.smart['null'] : value;
                 this.dataSetter.apply(this, value);
+            },
+            build: Smart.noop,
+            refresh: function(){
+                var that = this;
+                $.each(this._widgetListeners, function(i, listener){
+                    listener.onRefresh && listener.onRefresh.call(that);
+                });
             }
-        });
-
-        Smart.extend(Smart.prototype, {
-            build: Smart.noop
         });
 
         var processOptions = function (smart, def) {
@@ -802,7 +801,7 @@
             }
 
             //控件监听器
-            var widgetListeners = [];
+            smart._widgetListeners = [];
             //控件API
             var widgetApis = [];
             //控件定义
@@ -816,7 +815,7 @@
                     widgetDefs.push(WIDGET_DEF_ID_MAP[wId]);
                 }
                 if (wId in WIDGET_LISTENER_MAP) {
-                    widgetListeners.push(WIDGET_LISTENER_MAP[wId]);
+                    smart._widgetListeners.push(WIDGET_LISTENER_MAP[wId]);
                 }
             });
 
@@ -841,7 +840,7 @@
             });
 
             //准备控件
-            $.each(widgetListeners, function (i, listener) {
+            $.each(smart._widgetListeners, function (i, listener) {
                 if ("onPrepare" in listener) listener.onPrepare.call(smart);//每个api都需要prepare下。
             });
 
@@ -850,7 +849,7 @@
             var deferreds = [];
 
             //构建控件，该过程是异步过程。
-            $.each(widgetListeners, function (i, listener) {
+            $.each(smart._widgetListeners, function (i, listener) {
                 if ("onBuild" in listener) {
                     deferreds.push(function () {
                         return listener.onBuild.call(smart)
@@ -864,7 +863,7 @@
             });
 
             //子元素made成功后，开始运行控件
-            $.each(widgetListeners, function (i, listener) {
+            $.each(smart._widgetListeners, function (i, listener) {
                 if ("onData" in listener) {
                     deferreds.push(function () {
                         return listener.onData.call(smart)
@@ -1143,6 +1142,60 @@
         }
     })();
 })(jQuery);;/**
+ * Created by Administrator on 2014/7/11.
+ */
+(function () {
+    Smart.widgetExtend({
+        id: "cds",
+        /**
+         * s:check控件的smart对象，key:数据的key，c-msg:确认消息，e-msg:错误警告消息，r:是否刷新
+         * dk: 将使用该值作为 选取的数据 的 key
+         * */
+        options: "ctx:cs,ck,dk,c-msg,e-msg,r",//
+        defaultOptions: {
+            "c-msg": "确认进行此操作吗？",
+            "e-msg": "请选择你要操作的数据？",
+            r: "true",
+            ck: "id"//获取选择数据的key
+        }
+    }, {
+        onPrepare: function () {
+            var that = this;
+            this.on("submit-done", function(e){
+                if(that.options.cds['r'] == "true"){
+                    that.options.cds['cs'].refresh();
+                }
+            });
+        }
+    }, {
+        getSubmitData: function (deferred) {
+            if (this.options.cds.dk) {
+                var data = this.options.cds.cs.getCheckedData(this.options.cds.ck);
+                if (Smart.isEmpty(data)) {
+                    if (this.options.cds['e-msg']) {
+                        this.alert(this.options.cds['e-msg']);
+                    }
+                    return;
+                }
+                var that = this;
+                function resolve() {
+                    var obj = {};
+                    obj[that.options.cds.dk] = data;
+                    deferred.resolve(obj);
+                }
+                if(this.options.cds['c-msg']){
+                    this.confirm(this.options.cds['c-msg'], {sign:"warning"}).done(function(){
+                        resolve();
+                    });
+                }
+
+            } else {
+                this.alert("没有配置dk参数");
+                deferred.reject();
+            }
+        }
+    });
+})();;/**
  * Created by Administrator on 2014/6/27.
  */
 (function ($) {
@@ -1192,10 +1245,17 @@
             }
 
             this.node.delegate(CHECK_ITEM_SELECTOR, "unchecked", function (e) {
-                innerCheckallHandle.size() && that._uncheckHandles(innerCheckallHandle);
-                that.options.check['checkall-h'] && that._uncheckHandles(that.options.check['checkall-h']);
+                innerCheckallHandle.size() && that._uncheckHandle(innerCheckallHandle);
+                that.options.check['checkall-h'] && that._uncheckHandle(that.options.check['checkall-h']);
                 that.options.check['checkall-h'] && that.options.check['checkall-h'].prop("checked", false);
                 e.stopPropagation();
+            });
+        },
+        onRefresh: function(){
+            var checkallHandles = this.dataTable("check", "checkallHandles");
+            var that = this;
+            $.each(checkallHandles, function(){
+                that._uncheckHandle($(this));
             });
         }
     }, {
@@ -1236,7 +1296,7 @@
             var checkallHandles = this.dataTable("check", "checkallHandles");
             var that = this;
             $.each(checkallHandles, function () {
-                flag ? that._checkHandle($(this)) : that._uncheckHandles($(this));
+                flag ? that._checkHandle($(this)) : that._uncheckHandle($(this));
             });
         },
         _checkHandle: function (node) {
@@ -1245,7 +1305,7 @@
                 node.prop("checked", true);
             }
         },
-        _uncheckHandles: function (node) {
+        _uncheckHandle: function (node) {
             node.removeClass(this.options.check['h-checked-class']);
             if (node.is(":checkbox")) {
                 node.prop("checked", false);
@@ -1260,7 +1320,24 @@
                 return smarts;
             } else {
                 var node = $(CHECK_ITEM_SELECTOR + "." + this.options.check['i-checked-class'], this.node);
+                if(node.size() == 0) return null;
                 return Smart.of($(node[0]));
+            }
+        },
+        getCheckedData: function(field){
+            if (this.options.check['multiple'] == "true") {
+                var datas = [];
+                $.each(this.getChecked(), function(){
+                    if(field){
+                        datas.push(this.data()[field]);
+                    } else {
+                        datas.push(this.data());
+                    }
+                });
+                return datas;
+            } else {
+                var smart = this.getChecked();
+                return smart == null ? null : smart.data();
             }
         },
         _toggleCheck: function (node, e) {
@@ -1374,6 +1451,56 @@
         }
     });
 })(jQuery);;/**
+ * Created by Administrator on 2014/7/11.
+ */
+(function(){
+    /**
+     * grid数据删除控件
+     * */
+    Smart.widgetExtend({
+        id: "dataSubmit",
+        options: "ctx:data,url,type,listener",
+        defaultOptions: {
+            "type": "post"
+        }
+    },{
+        onPrepare: function(){
+            this.node.click($.proxy(this.submit, this));
+            var that = this;
+            this.on("submit-done", function(e){
+                e.stopPropagation();
+                that.options.listener && that.options.listener.done
+                && that.options.listener.done.apply(null, Smart.SLICE.call(arguments, 1));
+            });
+            this.on("submit-fail", function(e){
+                e.stopPropagation();
+                that.options.listener && that.options.listener.fail
+                && that.options.listener.fail.apply(null, Smart.SLICE.call(arguments, 1));
+            });
+        }
+    },{
+        getSubmitData: function(deferred){
+            var data = this.options.dataSubmit['data'];
+            if(!$.isFunction(data)){
+                deferred.resolve(data);
+            } else {
+                deferred.resolve(data());
+            }
+        },
+        submit: function(){
+            var that = this;
+            var deferred = $.Deferred();
+            this.getSubmitData(deferred);
+            deferred.done(function(data){
+                that[that.options.dataSubmit.type](that.options.dataSubmit.url, data).done(function(){
+                    that.trigger.apply(that, ["submit-done"].concat($.makeArray(arguments)))
+                }).fail(function(){
+                    that.trigger.apply(that, ["submit-fail"].concat($.makeArray(arguments)))
+                });
+            });
+        }
+    });
+})();;/**
  * Created by Administrator on 2014/6/21.
  */
 (function(){
@@ -1709,6 +1836,9 @@
         },
         onData: function () {
             return this._onData();
+        },
+        onRefresh: function (){
+            return this._onData();
         }
     }, {
         _cascadeLoad: function (stage) {
@@ -1716,11 +1846,11 @@
             var val = cascade.val();
             var resKey = stage + '-res';
             var originalRes = this.options.resource[STAGE[stage].resourceKey];
-            var cascadeKeyKey = stage + '-cascade-key';
+            var cascadeKey = stage + '-cascade-key';
             this.options.resource[resKey] = originalRes.replace("{val}", val);
-            if (this.options.resource[cascadeKeyKey]) {
+            if (this.options.resource[cascadeKey]) {
                 var param = {};
-                param[this.options.resource[cascadeKeyKey]] = val;
+                param[this.options.resource[cascadeKey]] = val;
                 this.dataTable("resource", "param", param);
             }
             return this._load(this.options.resource[resKey], param, stage);
@@ -1791,9 +1921,6 @@
         },
         buildRefresh: function () {
             return this._onBuild();
-        },
-        refresh: function () {
-            return this._onData();
         }
     });
 })();;/**
@@ -3352,13 +3479,13 @@
         }
     };
     var DEFAULT_LEVEL = ALERT_LEVEL.warning;
-    var DEFAULT_OPTION = {title: "提示", sureBtnName: "确定", cancelBtnName: "取消", sign: "info"};
 
     Smart.fn.extend({
         confirm: function (msg, option) {
             var deferred = $.Deferred();
             var dialog = Smart.UI.template("confirm");
-            option = option || DEFAULT_OPTION;
+            var DEFAULT_OPTION = {title: "提示", sureBtnName: "确定", cancelBtnName: "取消", sign: "info"};
+            option = $.extend(DEFAULT_OPTION, option || {});
             if ($.type(option) == "string") {
                 option = $.extend($.extend({}, DEFAULT_OPTION), {sign: option});
             }

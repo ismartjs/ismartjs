@@ -48,10 +48,17 @@
             }
 
             this.node.delegate(CHECK_ITEM_SELECTOR, "unchecked", function (e) {
-                innerCheckallHandle.size() && that._uncheckHandles(innerCheckallHandle);
-                that.options.check['checkall-h'] && that._uncheckHandles(that.options.check['checkall-h']);
+                innerCheckallHandle.size() && that._uncheckHandle(innerCheckallHandle);
+                that.options.check['checkall-h'] && that._uncheckHandle(that.options.check['checkall-h']);
                 that.options.check['checkall-h'] && that.options.check['checkall-h'].prop("checked", false);
                 e.stopPropagation();
+            });
+        },
+        onRefresh: function(){
+            var checkallHandles = this.dataTable("check", "checkallHandles");
+            var that = this;
+            $.each(checkallHandles, function(){
+                that._uncheckHandle($(this));
             });
         }
     }, {
@@ -92,7 +99,7 @@
             var checkallHandles = this.dataTable("check", "checkallHandles");
             var that = this;
             $.each(checkallHandles, function () {
-                flag ? that._checkHandle($(this)) : that._uncheckHandles($(this));
+                flag ? that._checkHandle($(this)) : that._uncheckHandle($(this));
             });
         },
         _checkHandle: function (node) {
@@ -101,7 +108,7 @@
                 node.prop("checked", true);
             }
         },
-        _uncheckHandles: function (node) {
+        _uncheckHandle: function (node) {
             node.removeClass(this.options.check['h-checked-class']);
             if (node.is(":checkbox")) {
                 node.prop("checked", false);
@@ -116,7 +123,24 @@
                 return smarts;
             } else {
                 var node = $(CHECK_ITEM_SELECTOR + "." + this.options.check['i-checked-class'], this.node);
+                if(node.size() == 0) return null;
                 return Smart.of($(node[0]));
+            }
+        },
+        getCheckedData: function(field){
+            if (this.options.check['multiple'] == "true") {
+                var datas = [];
+                $.each(this.getChecked(), function(){
+                    if(field){
+                        datas.push(this.data()[field]);
+                    } else {
+                        datas.push(this.data());
+                    }
+                });
+                return datas;
+            } else {
+                var smart = this.getChecked();
+                return smart == null ? null : smart.data();
             }
         },
         _toggleCheck: function (node, e) {

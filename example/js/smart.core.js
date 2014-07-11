@@ -503,7 +503,8 @@
             onData: Smart.noop,
             onPrepare: Smart.noop,//控件准备
             onBuild: Smart.noop,//构造，该方式异步方法
-            onDestroy: Smart.noop
+            onDestroy: Smart.noop,
+            onRefresh: Smart.noop
         }
 
         Smart.widgetExtend = function (def, listener, api) {
@@ -537,7 +538,6 @@
             onData: function () {
                 var that = this;
                 that.options.smart.data && that.data(that.options.smart.data);
-                that._preDataArgs && that.data.apply(that, that._preDataArgs);
             }
         }, {
             dataGetter: Smart.noop,
@@ -571,10 +571,6 @@
                 if (arguments.length == 0) {
                     return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
                 }
-//                if(this.lifeStage != LIFE_STAGE.made){
-//                    this._preDataArgs = SLICE.call(arguments);
-//                    return;
-//                }
                 var args = SLICE.call(arguments);
                 var dataKey = this.options.smart['key'];
                 var value = args;
@@ -584,11 +580,14 @@
                 }
                 value == null ? value = this.options.smart['null'] : value;
                 this.dataSetter.apply(this, value);
+            },
+            build: Smart.noop,
+            refresh: function(){
+                var that = this;
+                $.each(this._widgetListeners, function(i, listener){
+                    listener.onRefresh && listener.onRefresh.call(that);
+                });
             }
-        });
-
-        Smart.extend(Smart.prototype, {
-            build: Smart.noop
         });
 
         var processOptions = function (smart, def) {
@@ -680,7 +679,7 @@
             }
 
             //控件监听器
-            var widgetListeners = [];
+            smart._widgetListeners = [];
             //控件API
             var widgetApis = [];
             //控件定义
@@ -694,7 +693,7 @@
                     widgetDefs.push(WIDGET_DEF_ID_MAP[wId]);
                 }
                 if (wId in WIDGET_LISTENER_MAP) {
-                    widgetListeners.push(WIDGET_LISTENER_MAP[wId]);
+                    smart._widgetListeners.push(WIDGET_LISTENER_MAP[wId]);
                 }
             });
 
@@ -719,7 +718,7 @@
             });
 
             //准备控件
-            $.each(widgetListeners, function (i, listener) {
+            $.each(smart._widgetListeners, function (i, listener) {
                 if ("onPrepare" in listener) listener.onPrepare.call(smart);//每个api都需要prepare下。
             });
 
@@ -728,7 +727,7 @@
             var deferreds = [];
 
             //构建控件，该过程是异步过程。
-            $.each(widgetListeners, function (i, listener) {
+            $.each(smart._widgetListeners, function (i, listener) {
                 if ("onBuild" in listener) {
                     deferreds.push(function () {
                         return listener.onBuild.call(smart)
@@ -742,7 +741,7 @@
             });
 
             //子元素made成功后，开始运行控件
-            $.each(widgetListeners, function (i, listener) {
+            $.each(smart._widgetListeners, function (i, listener) {
                 if ("onData" in listener) {
                     deferreds.push(function () {
                         return listener.onData.call(smart)

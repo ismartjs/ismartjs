@@ -6,13 +6,29 @@
                 <em>菜单</em>
                 <span class="caret"></span>
             </a>
-            <div class="dropdown-menu" role="menu">
-                <ul s="tpl" id="menuPanel">
-                    {% $.each(this, function(i, menu){ %}
-                    <li menuId="{%=menu.id%}" s="click" s-click-action="openMenuById('{%=menu.id%}')">
-                        <a href="javascript:;">{%=menu.icon?'<i class="'+menu.icon+'"></i> ':''%}{%=menu.title%}</a></li>
+            <div class="dropdown-menu" role="menu" id="menuPanel" s="tpl">
+            {%if(this.topMenus.length){%}
+                <div>
+                    <ul>
+                        {% $.each(this.topMenus, function(i, menu){ %}
+                        <li menuId="{%=menu.id%}" s="click" s-click-action="openMenuById('{%=menu.id%}')">
+                            <a href="javascript:;"><i class="{%=menu.icon%}"></i> {%=menu.title%}</a></li>
+                        {% }) %}
+                    </ul>
+                </div>
+            {%}%}
+            {% $.each(this.levelMenus, function(i, menu){ %}
+                <div>
+                    <h5><i class="{%=menu.icon%}"></i> {%=menu.title%}</h5>
+                    <ul>
+                    {% $.each(this.children, function(i, c){ %}
+                        <li menuId="{%=c.id%}" s="click" s-click-action="openMenuById('{%=c.id%}')">
+                            <a href="javascript:;">{%=c.icon?'<i class="'+c.icon+'"></i> ':''%}{%=c.title%}</a></li>
                     {% }) %}
-                </ul>
+                    </ul>
+                </div>
+            {% }) %}
+
             </div>
         </div>
         <div class="topbar-nav-menu" >
@@ -110,27 +126,47 @@
             S.get(menuUrl).done(function(menus){
                 that.menus = menus;
                 var urlMapping = {};
-                var _menus = [];//不能关闭的menu不需要添加到menu面板中，而是直接打开
                 var needOpenMenus = [];
+                var topMenus = [];//顶级菜单，即一级菜单没有子菜单的菜单，默认级别最高
+                var levelMenus= [];//一级菜单拥有子菜单的菜单
                 $.each(menus, function(i, menu){
                     urlMapping[menu.url] = menu;
+                    menu.icon = menu.icon || Page.Main.defaultMenuIcon;
                     if((menu.closeable != undefined && menu.closeable == false)){
                         //如果menu不允许关闭
-                        needOpenMenus.push(menu);
                         return;
                     }
-                    _menus.push(menu);
-                    if(menu.open) needOpenMenus.push(menu);
                     that.menuMapping[menu.id] = menu;
+                    //顶级菜单如果没有子菜单，则允许其打开
+                    if(menu.open && !menu.children) needOpenMenus.push(menu);
+                    
                     if(!Smart.isEmpty(menu.children)){
+                        levelMenus.push(menu);
                         $.each(menu.children, function(i, c){
+                            if((c.closeable != undefined && c.closeable == false)){
+                                //如果menu不允许关闭
+                                needOpenMenus.push(c);
+                                return;
+                            }
+                            if(c.open) needOpenMenus.push(c);
+                            c.icon = c.icon || Page.Main.defaultMenuIcon;
                             that.menuMapping[c.id] = c;
                             urlMapping[c.url] = c;
                             c.parent = menu;
+                            if(!Smart.isEmpty(c.children)){
+                                $.each(c.children, function(i, cc){
+                                    that.menuMapping[cc.id] = cc;
+                                    urlMapping[cc.url] = cc;
+                                    cc.parent = c;
+                                    cc.icon = cc.icon || Page.Main.defaultMenuIcon;
+                                });
+                            }
                         });
+                    } else {
+                        topMenus.push(menu);
                     }
                 });
-                that.smart.data(_menus);
+                that.smart.data({topMenus: topMenus, levelMenus: levelMenus});
                 var openMainTab;
                 //如果根据hash要打开的页面的url和默认需要打开的有相同的，则不需要创建新的，直接将已经打开的置为active。
                 var openedUrlMap = {};
@@ -161,7 +197,20 @@
                         openedUrlMap[hash].active();
                     } else if(hash in urlMapping){
                         var menu = urlMapping[hash];
-                        new MainTab(menu.parent || menu, menu.parent ? menu : null).add().active();
+                        var topMenu, secondaryMenu;
+                        if(menu.parent){
+                            if(menu.parent.parent){
+                                //如果打开的是3级菜单，则需要打开2级主菜单
+                                topMenu = menu.parent;
+                                secondaryMenu = menu;
+                            } else {
+                                //如果不是，则直接打开菜单
+                                topMenu = menu;
+                            }
+                        } else {
+                            topMenu = menu;
+                        }
+                        new MainTab(topMenu, secondaryMenu).add().active();
                     } else {
                         openUrl(null, hash);
                     }
@@ -259,7 +308,7 @@
             }
             var data = this.data;
             this.titleNode = $("<span> " + data.title + "</span>");
-            this.iconNode = $("<i class='" + (data.icon ? data.icon : Page.Main.defaultIcon) + "'></i> ");
+            this.iconNode = $("<i class='" + (data.icon ? data.icon : Page.Main.defaultTabIcon) + "'></i> ");
             a.append(this.iconNode);
             a.append(this.titleNode);
             this.node.attr("title", data.title);
@@ -369,7 +418,7 @@
             var that = this;
             $.each(meta, function(key, value){
                 switch(key){
-                    case "title": that.titleNode.html(value); that.node.attr("title", value); break;
+                    case "title": that.titleNode.html(" " + value); that.node.attr("title", value); break;
                     case "icon" : that.iconNode.attr("class", "").addClass(value);break;
                     case "description": that.node.attr("title", value);break;
                 }
