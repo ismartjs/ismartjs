@@ -64,7 +64,7 @@
                 } else {
                     BACKDROP_ZINDEX_STACK.pop();
                     if(BACKDROP_ZINDEX_STACK.length){
-                        backdrop.css("zIndex", BACKDROP_ZINDEX_STACK[BACKDROP_ZINDEX_STACK.length]);
+                        backdrop.css("zIndex", BACKDROP_ZINDEX_STACK[BACKDROP_ZINDEX_STACK.length - 1]);
                         return deferred.resolve();
                     }
                     var callback = function(){

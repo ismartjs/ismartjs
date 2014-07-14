@@ -65,8 +65,14 @@
             var windowOpenArgsVar = "__WINDOW_OPEN_ARGS_VAR__";
             //传递进来的加载参数对象是第二个参数。
             $.each(meta.args, function (i, arg) {
-                var argStr = "var " + arg + " = arguments[0]['" + arg + "'];";
-                metaScripts.push("var " + arg + " = arguments[1]['"+arg+"'];");
+                var argSeg = arg.split(":");
+                var argStr = "var " + argSeg[0] + " = arguments[0]['" + argSeg[0] + "'];\n";
+                metaScripts.push("var " + argSeg[0] + " = arguments[1]['" + argSeg[0] + "'];");
+                if(argSeg.length == 2){
+                    var tmpStr =  argSeg[0] + " = " +argSeg[0] + " !==undefined ? " + argSeg[0] + " : " + argSeg[1] + ";";
+                    argStr += tmpStr + "\n";
+                    metaScripts.push(tmpStr);
+                }
                 argsScripts.push(argStr);
                 scripts.push(argStr);
             });
@@ -159,11 +165,11 @@
                 this.node.attr("id", this._WINDOW_ID);
             }
         }
-    },{
+    }, {
         refresh: function () {
             return this.load.apply(this, [this.currentHref()].concat(this.dataTable("window", "_loadArgs")));
         },
-        currentHref: function(){
+        currentHref: function () {
             return this.dataTable("window", "href");
         },
         load: function (href, loadArgs) {
@@ -172,9 +178,9 @@
             this.trigger("loading");
             var deferred = $.Deferred();
             var args = $.makeArray(arguments);
-            this.dataTable("window","_loadArgs", args);
+            this.dataTable("window", "_loadArgs", args);
             var that = this;
-            this.dataTable("window","href", href);
+            this.dataTable("window", "href", href);
             this.get(href, null, "text").done(function (html) {
                 var result = parseHtml(html);
                 var scriptSrcs = result.scriptSrcs;
@@ -188,7 +194,7 @@
                     that.trigger("load");
                     deferred.resolve(that);
                 });
-            }).fail(function(){
+            }).fail(function () {
                 that.trigger("load");
             });
             return deferred;
@@ -217,7 +223,7 @@
             return deferred;
         },
         scrollToAnchor: function (id) {
-            this.dataTable("window",STOP_ANCHOR_SCROLLIN_KEY, true);
+            this.dataTable("window", STOP_ANCHOR_SCROLLIN_KEY, true);
             var that = this;
             return this.scrollTo("#" + id).done(function () {
                 that.removeDataTable("window", STOP_ANCHOR_SCROLLIN_KEY);
@@ -242,7 +248,7 @@
                         }
                     }
                 };
-                this.on("clean", function(){
+                this.on("clean", function () {
                     that.node.unbind("scroll", anchorScrollListener);
                 });
                 this.node.scroll(anchorScrollListener).on("anchor.scrollin", function (e) {
@@ -251,10 +257,10 @@
             }
         },
         getAnchors: function () {
-            var anchors = this.dataTable("window","_anchors_");
+            var anchors = this.dataTable("window", "_anchors_");
             if (!anchors) {
                 anchors = [];
-                this.dataTable("window","_anchors_", anchors);
+                this.dataTable("window", "_anchors_", anchors);
                 this._getAnchorNodes().each(function () {
                     var n = $(this);
                     anchors.push({id: n.attr("_id_"), title: n.attr("title")});
@@ -264,7 +270,7 @@
         },
         _getAnchorNodes: function () {
             var attrName = Smart.optionAttrName("window", "role");
-            return this.node.find("*["+attrName+"='a']");
+            return this.node.find("*[" + attrName + "='a']");
         },
         _clean: function () {
             this.trigger("clean");
@@ -291,7 +297,7 @@
             return deferred.promise();
         },
 
-        open: function(){
+        open: function () {
             var deferred = $.Deferred();
             var e = $.Event("open", {deferred: deferred, smart: this});
             this.trigger(e, $.makeArray(arguments));
@@ -304,7 +310,7 @@
             var args = arguments;
             that.clearDataTable();
             var deferred = $.Deferred();
-            deferred.done(function(){
+            deferred.done(function () {
                 that.node.remove();
             });
             var event = $.Event("close", {deferred: deferred});
@@ -336,7 +342,7 @@
 //            return action;
             script_body.push("(function(){");
             script_body.push("      return function(){");
-            script_body.push("          "+script);
+            script_body.push("          " + script);
             script_body.push("      }")
             script_body.push("})()");
             return this.context(script_body.join("\n"));
@@ -357,13 +363,13 @@
         N: function (selector) {
             var _selector = [];
             selector = selector.split(",");
-            if(selector.length == 1){
+            if (selector.length == 1) {
                 selector = selector[0];
                 if (selector.charAt(0) == "#") {
                     selector = "#" + this.trueId(selector.substring(1));
                 }
             } else {
-                for(var i = 0; i < selector.length; i++){
+                for (var i = 0; i < selector.length; i++) {
                     var _sel = $.trim(selector[i]);
                     if (_sel.charAt(0) == "#") {
                         _sel = "#" + this.trueId(_sel.substring(1));
@@ -380,7 +386,7 @@
         },
         //这里修改on的方法，当页面渲染完成之后所有的on的事件都缓存起来，在refresh，和load新页面的时候要去除掉这些事件。
         on: function (events, selector, fn) {
-            if(this.dataTable("window", "loadState")){
+            if (this.dataTable("window", "loadState")) {
                 //如果已经加载了，on的事件将会被记录，在重新load的时候会移除掉这些事件。
                 this[EVENT_ON_CACHE].push([events, selector, fn]);
             }

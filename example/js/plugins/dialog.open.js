@@ -74,10 +74,13 @@
                 nodeSmart.meta.height && node.height(nodeSmart.meta.height);
                 nodeSmart.meta.width && node.width(nodeSmart.meta.width);
                 //这里主要处理内容的高度
-                dialogMain.css("position","absolute");
+                dialogMain.css({"position":"absolute", "width": "auto"});
+                bodyNode.css("padding", 0).css("position","relative");
+                node.css({"overflow-y":"auto", padding: "0"});
                 dialog.appendTo("body");
-                dialogMain.width(dialog.innerHeight()).css("position","relative");
-
+                dialog.show();
+                dialogMain.width(dialogMain.innerWidth()).css("position","relative");
+                footerNode.css("marginTop", "0");
                 showDialog(dialog);
             }).on("dialog.btn.disable", function(e, id){
                 getButtonById(id).prop("disabled", true);

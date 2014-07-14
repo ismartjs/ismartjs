@@ -8,6 +8,7 @@
     var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not('disabled'),*["+VALID_NODE_WARNING_ATTR+"]:not('disabled')";
     var VALID_NODE_ID_ATTR = Smart.optionAttrName("valid", 'id');
     var VALID_NODE_SHOW_ATTR = Smart.optionAttrName("valid",'show');
+    var VALID_NODE_RESET_SHOW_ATTR = Smart.optionAttrName("valid",'resetShow');
     var VALID_NODE_BLUR_IG_ATTR = Smart.optionAttrName("valid", "blur-ig");
 
     var ITEM_ROLE_SELECTOR = "*["+Smart.optionAttrName("valid", "role")+"='item']";
@@ -33,7 +34,7 @@
     //验证控件
     Smart.widgetExtend({
         id: "valid",
-        options: "ctx:msg,ctx:show,s-class,e-class,w-class,blur,ctx:validators",
+        options: "ctx:msg,ctx:show,ctx:resetShow,s-class,e-class,w-class,blur,ctx:validators",
         defaultOptions: {
             msg: DEFAULT_MSG,
             blur: true,
@@ -50,6 +51,11 @@
                 item.removeClass(this.options.valid['s-class']+" "+this.options.valid['e-class']+" "+this.options.valid['w-class']);
                 item.addClass(this.options.valid[level.style]);
                 $(MSG_ROLE_SELECTOR,item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+            },
+            'resetShow': function(node){
+                var item = node.closest(ITEM_ROLE_SELECTOR);
+                $(MSG_ROLE_SELECTOR,item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+                item.removeClass(this.options.valid['s-class']+" "+this.options.valid['e-class']+" "+this.options.valid['w-class']);
             }
         },
         addValidators: addValidators,//添加新的验证器
@@ -75,12 +81,22 @@
                 this.dataTable("valid", "validatorMap", map);
             }
             this.dataTable("valid", 'validateItemMap', {});
+            this.dataTable("valid", "validedNodes", []);//保存已经验证过的元素
+        },
+        onReset: function(){
+            var validedNodes = this.dataTable("valid", "validedNodes");
+            var that = this;
+            $.each(validedNodes, function(i, node){
+                that.resetValidateNode(node);
+            });
+            this.dataTable("valid", "validedNodes", []);
         }
     }, {
         validate: function () {
             var validNodes = this.node.find(VALID_NODE_SELECTOR);
             var deferreds = [];
             var that = this;
+            this.dataTable("valid", "validedNodes", []);
             validNodes.each(function(){
                 var node = $(this);
                 deferreds.push(function(){
@@ -89,8 +105,24 @@
             });
             return Smart.deferredQueue(deferreds);
         },
+        resetValidate: function(){
+            var validNodes = this.node.find(VALID_NODE_SELECTOR);
+            var that = this;
+            validNodes.each(function(){
+                var node = $(this);
+                that.resetValidateNode(node);
+            });
+        },
+        resetValidateNode: function(node){
+            var resetShow = node.attr(VALID_NODE_RESET_SHOW_ATTR);
+            if(resetShow){
+                resetShow = this.context(resetShow);//resetShow是一个context闭包参数。
+            }
+            (resetShow || this.options.valid.resetShow).call(this, node);
+        },
         validateNode: function (node) {
             var id = node.attr(VALID_NODE_ID_ATTR);
+            this.dataTable("valid", "validedNodes").push(node);
             var defMsg = this.options.valid.msg[id] || {};
             var errorExp = node.attr(VALID_NODE_ERROR_ATTR);
             var label = node.attr(VALID_NODE_LABEL_ATTR);

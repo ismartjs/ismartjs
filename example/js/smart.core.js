@@ -73,7 +73,7 @@
             node.click(function(e){
                 Smart.disableNode(node);
                 var rs = fn(e);
-                if(rs == null || (!'done' in rs)){
+                if(Smart.isDeferred(rs)){
                     Smart.disableNode(node, false);
                 } else {
                     rs.always(function(){
@@ -533,7 +533,8 @@
             onPrepare: Smart.noop,//控件准备
             onBuild: Smart.noop,//构造，该方式异步方法
             onDestroy: Smart.noop,
-            onRefresh: Smart.noop
+            onRefresh: Smart.noop,//刷新控件
+            onReset: Smart.noop//重置控件
         }
 
         Smart.widgetExtend = function (def, listener, api) {
@@ -598,8 +599,10 @@
             },
             data: function () {
                 if (arguments.length == 0) {
-                    return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
+                    return this._smart_data_;
+//                    return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
                 }
+                this._smart_data_ = arguments.length == 1 && arguments[0];
                 var args = SLICE.call(arguments);
                 var dataKey = this.options.smart['key'];
                 var value = args;
@@ -615,6 +618,13 @@
                 var that = this;
                 $.each(this._widgetListeners, function(i, listener){
                     listener.onRefresh && listener.onRefresh.call(that);
+                });
+            },
+            //重置控件
+            reset: function(){
+                var that = this;
+                $.each(this._widgetListeners, function(i, listener){
+                    listener.onReset && listener.onReset.call(that);
                 });
             }
         });
@@ -911,8 +921,9 @@
                 }
                 var _this = this;
                 //处理url
+                var thisData = this.data();
                 url = url.replace(URL_PLACEHOLDER_REGEX, function ($1, $2) {
-                    return _this.context($2);
+                    return (thisData && $2 in thisData) ?  thisData[$2] : _this.context($2);
                 });
                 var ajaxOptions = {
                     url: url,

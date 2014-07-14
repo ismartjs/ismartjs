@@ -69,7 +69,7 @@
                 var argStr = "var " + argSeg[0] + " = arguments[0]['" + argSeg[0] + "'];\n";
                 metaScripts.push("var " + argSeg[0] + " = arguments[1]['" + argSeg[0] + "'];");
                 if(argSeg.length == 2){
-                    var tmpStr =  argSeg[0] + " = " +argSeg[0] + " != null ? " + argSeg[0] + " : " + argSeg[1] + ";";
+                    var tmpStr =  argSeg[0] + " = " +argSeg[0] + " !==undefined ? " + argSeg[0] + " : " + argSeg[1] + ";";
                     argStr += tmpStr + "\n";
                     metaScripts.push(tmpStr);
                 }

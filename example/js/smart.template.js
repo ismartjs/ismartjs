@@ -61,6 +61,7 @@
                 if (body[i + 1] == "}" && skipFlag) {
                     writeLine("output");
                     i++;
+                    skipFlag = false;
                     continue;
                 }
             }

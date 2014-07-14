@@ -61,6 +61,7 @@
                 if (body[i + 1] == "}" && skipFlag) {
                     writeLine("output");
                     i++;
+                    skipFlag = false;
                     continue;
                 }
             }
@@ -195,7 +196,7 @@
             node.click(function(e){
                 Smart.disableNode(node);
                 var rs = fn(e);
-                if(rs == null || (!'done' in rs)){
+                if(Smart.isDeferred(rs)){
                     Smart.disableNode(node, false);
                 } else {
                     rs.always(function(){
@@ -655,7 +656,8 @@
             onPrepare: Smart.noop,//控件准备
             onBuild: Smart.noop,//构造，该方式异步方法
             onDestroy: Smart.noop,
-            onRefresh: Smart.noop
+            onRefresh: Smart.noop,//刷新控件
+            onReset: Smart.noop//重置控件
         }
 
         Smart.widgetExtend = function (def, listener, api) {
@@ -720,8 +722,10 @@
             },
             data: function () {
                 if (arguments.length == 0) {
-                    return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
+                    return this._smart_data_;
+//                    return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
                 }
+                this._smart_data_ = arguments.length == 1 && arguments[0];
                 var args = SLICE.call(arguments);
                 var dataKey = this.options.smart['key'];
                 var value = args;
@@ -737,6 +741,13 @@
                 var that = this;
                 $.each(this._widgetListeners, function(i, listener){
                     listener.onRefresh && listener.onRefresh.call(that);
+                });
+            },
+            //重置控件
+            reset: function(){
+                var that = this;
+                $.each(this._widgetListeners, function(i, listener){
+                    listener.onReset && listener.onReset.call(that);
                 });
             }
         });
@@ -1033,8 +1044,9 @@
                 }
                 var _this = this;
                 //处理url
+                var thisData = this.data();
                 url = url.replace(URL_PLACEHOLDER_REGEX, function ($1, $2) {
-                    return _this.context($2);
+                    return (thisData && $2 in thisData) ?  thisData[$2] : _this.context($2);
                 });
                 var ajaxOptions = {
                     url: url,
@@ -2059,8 +2071,14 @@
             var windowOpenArgsVar = "__WINDOW_OPEN_ARGS_VAR__";
             //传递进来的加载参数对象是第二个参数。
             $.each(meta.args, function (i, arg) {
-                var argStr = "var " + arg + " = arguments[0]['" + arg + "'];";
-                metaScripts.push("var " + arg + " = arguments[1]['"+arg+"'];");
+                var argSeg = arg.split(":");
+                var argStr = "var " + argSeg[0] + " = arguments[0]['" + argSeg[0] + "'];\n";
+                metaScripts.push("var " + argSeg[0] + " = arguments[1]['" + argSeg[0] + "'];");
+                if(argSeg.length == 2){
+                    var tmpStr =  argSeg[0] + " = " +argSeg[0] + " !==undefined ? " + argSeg[0] + " : " + argSeg[1] + ";";
+                    argStr += tmpStr + "\n";
+                    metaScripts.push(tmpStr);
+                }
                 argsScripts.push(argStr);
                 scripts.push(argStr);
             });
@@ -2153,11 +2171,11 @@
                 this.node.attr("id", this._WINDOW_ID);
             }
         }
-    },{
+    }, {
         refresh: function () {
             return this.load.apply(this, [this.currentHref()].concat(this.dataTable("window", "_loadArgs")));
         },
-        currentHref: function(){
+        currentHref: function () {
             return this.dataTable("window", "href");
         },
         load: function (href, loadArgs) {
@@ -2166,9 +2184,9 @@
             this.trigger("loading");
             var deferred = $.Deferred();
             var args = $.makeArray(arguments);
-            this.dataTable("window","_loadArgs", args);
+            this.dataTable("window", "_loadArgs", args);
             var that = this;
-            this.dataTable("window","href", href);
+            this.dataTable("window", "href", href);
             this.get(href, null, "text").done(function (html) {
                 var result = parseHtml(html);
                 var scriptSrcs = result.scriptSrcs;
@@ -2182,7 +2200,7 @@
                     that.trigger("load");
                     deferred.resolve(that);
                 });
-            }).fail(function(){
+            }).fail(function () {
                 that.trigger("load");
             });
             return deferred;
@@ -2211,7 +2229,7 @@
             return deferred;
         },
         scrollToAnchor: function (id) {
-            this.dataTable("window",STOP_ANCHOR_SCROLLIN_KEY, true);
+            this.dataTable("window", STOP_ANCHOR_SCROLLIN_KEY, true);
             var that = this;
             return this.scrollTo("#" + id).done(function () {
                 that.removeDataTable("window", STOP_ANCHOR_SCROLLIN_KEY);
@@ -2236,7 +2254,7 @@
                         }
                     }
                 };
-                this.on("clean", function(){
+                this.on("clean", function () {
                     that.node.unbind("scroll", anchorScrollListener);
                 });
                 this.node.scroll(anchorScrollListener).on("anchor.scrollin", function (e) {
@@ -2245,10 +2263,10 @@
             }
         },
         getAnchors: function () {
-            var anchors = this.dataTable("window","_anchors_");
+            var anchors = this.dataTable("window", "_anchors_");
             if (!anchors) {
                 anchors = [];
-                this.dataTable("window","_anchors_", anchors);
+                this.dataTable("window", "_anchors_", anchors);
                 this._getAnchorNodes().each(function () {
                     var n = $(this);
                     anchors.push({id: n.attr("_id_"), title: n.attr("title")});
@@ -2258,7 +2276,7 @@
         },
         _getAnchorNodes: function () {
             var attrName = Smart.optionAttrName("window", "role");
-            return this.node.find("*["+attrName+"='a']");
+            return this.node.find("*[" + attrName + "='a']");
         },
         _clean: function () {
             this.trigger("clean");
@@ -2285,7 +2303,7 @@
             return deferred.promise();
         },
 
-        open: function(){
+        open: function () {
             var deferred = $.Deferred();
             var e = $.Event("open", {deferred: deferred, smart: this});
             this.trigger(e, $.makeArray(arguments));
@@ -2298,7 +2316,7 @@
             var args = arguments;
             that.clearDataTable();
             var deferred = $.Deferred();
-            deferred.done(function(){
+            deferred.done(function () {
                 that.node.remove();
             });
             var event = $.Event("close", {deferred: deferred});
@@ -2330,7 +2348,7 @@
 //            return action;
             script_body.push("(function(){");
             script_body.push("      return function(){");
-            script_body.push("          "+script);
+            script_body.push("          " + script);
             script_body.push("      }")
             script_body.push("})()");
             return this.context(script_body.join("\n"));
@@ -2351,13 +2369,13 @@
         N: function (selector) {
             var _selector = [];
             selector = selector.split(",");
-            if(selector.length == 1){
+            if (selector.length == 1) {
                 selector = selector[0];
                 if (selector.charAt(0) == "#") {
                     selector = "#" + this.trueId(selector.substring(1));
                 }
             } else {
-                for(var i = 0; i < selector.length; i++){
+                for (var i = 0; i < selector.length; i++) {
                     var _sel = $.trim(selector[i]);
                     if (_sel.charAt(0) == "#") {
                         _sel = "#" + this.trueId(_sel.substring(1));
@@ -2374,7 +2392,7 @@
         },
         //这里修改on的方法，当页面渲染完成之后所有的on的事件都缓存起来，在refresh，和load新页面的时候要去除掉这些事件。
         on: function (events, selector, fn) {
-            if(this.dataTable("window", "loadState")){
+            if (this.dataTable("window", "loadState")) {
                 //如果已经加载了，on的事件将会被记录，在重新load的时候会移除掉这些事件。
                 this[EVENT_ON_CACHE].push([events, selector, fn]);
             }
@@ -2447,7 +2465,7 @@
                 } else {
                     BACKDROP_ZINDEX_STACK.pop();
                     if(BACKDROP_ZINDEX_STACK.length){
-                        backdrop.css("zIndex", BACKDROP_ZINDEX_STACK[BACKDROP_ZINDEX_STACK.length]);
+                        backdrop.css("zIndex", BACKDROP_ZINDEX_STACK[BACKDROP_ZINDEX_STACK.length - 1]);
                         return deferred.resolve();
                     }
                     var callback = function(){
@@ -2898,6 +2916,7 @@
     var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not('disabled'),*["+VALID_NODE_WARNING_ATTR+"]:not('disabled')";
     var VALID_NODE_ID_ATTR = Smart.optionAttrName("valid", 'id');
     var VALID_NODE_SHOW_ATTR = Smart.optionAttrName("valid",'show');
+    var VALID_NODE_RESET_SHOW_ATTR = Smart.optionAttrName("valid",'resetShow');
     var VALID_NODE_BLUR_IG_ATTR = Smart.optionAttrName("valid", "blur-ig");
 
     var ITEM_ROLE_SELECTOR = "*["+Smart.optionAttrName("valid", "role")+"='item']";
@@ -2923,7 +2942,7 @@
     //验证控件
     Smart.widgetExtend({
         id: "valid",
-        options: "ctx:msg,ctx:show,s-class,e-class,w-class,blur,ctx:validators",
+        options: "ctx:msg,ctx:show,ctx:resetShow,s-class,e-class,w-class,blur,ctx:validators",
         defaultOptions: {
             msg: DEFAULT_MSG,
             blur: true,
@@ -2940,6 +2959,11 @@
                 item.removeClass(this.options.valid['s-class']+" "+this.options.valid['e-class']+" "+this.options.valid['w-class']);
                 item.addClass(this.options.valid[level.style]);
                 $(MSG_ROLE_SELECTOR,item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+            },
+            'resetShow': function(node){
+                var item = node.closest(ITEM_ROLE_SELECTOR);
+                $(MSG_ROLE_SELECTOR,item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+                item.removeClass(this.options.valid['s-class']+" "+this.options.valid['e-class']+" "+this.options.valid['w-class']);
             }
         },
         addValidators: addValidators,//添加新的验证器
@@ -2965,12 +2989,22 @@
                 this.dataTable("valid", "validatorMap", map);
             }
             this.dataTable("valid", 'validateItemMap', {});
+            this.dataTable("valid", "validedNodes", []);//保存已经验证过的元素
+        },
+        onReset: function(){
+            var validedNodes = this.dataTable("valid", "validedNodes");
+            var that = this;
+            $.each(validedNodes, function(i, node){
+                that.resetValidateNode(node);
+            });
+            this.dataTable("valid", "validedNodes", []);
         }
     }, {
         validate: function () {
             var validNodes = this.node.find(VALID_NODE_SELECTOR);
             var deferreds = [];
             var that = this;
+            this.dataTable("valid", "validedNodes", []);
             validNodes.each(function(){
                 var node = $(this);
                 deferreds.push(function(){
@@ -2979,8 +3013,24 @@
             });
             return Smart.deferredQueue(deferreds);
         },
+        resetValidate: function(){
+            var validNodes = this.node.find(VALID_NODE_SELECTOR);
+            var that = this;
+            validNodes.each(function(){
+                var node = $(this);
+                that.resetValidateNode(node);
+            });
+        },
+        resetValidateNode: function(node){
+            var resetShow = node.attr(VALID_NODE_RESET_SHOW_ATTR);
+            if(resetShow){
+                resetShow = this.context(resetShow);//resetShow是一个context闭包参数。
+            }
+            (resetShow || this.options.valid.resetShow).call(this, node);
+        },
         validateNode: function (node) {
             var id = node.attr(VALID_NODE_ID_ATTR);
+            this.dataTable("valid", "validedNodes").push(node);
             var defMsg = this.options.valid.msg[id] || {};
             var errorExp = node.attr(VALID_NODE_ERROR_ATTR);
             var label = node.attr(VALID_NODE_LABEL_ATTR);
@@ -3700,10 +3750,13 @@
                 nodeSmart.meta.height && node.height(nodeSmart.meta.height);
                 nodeSmart.meta.width && node.width(nodeSmart.meta.width);
                 //这里主要处理内容的高度
-                dialogMain.css("position","absolute");
+                dialogMain.css({"position":"absolute", "width": "auto"});
+                bodyNode.css("padding", 0).css("position","relative");
+                node.css({"overflow-y":"auto", padding: "0"});
                 dialog.appendTo("body");
-                dialogMain.width(dialog.innerHeight()).css("position","relative");
-
+                dialog.show();
+                dialogMain.width(dialogMain.innerWidth()).css("position","relative");
+                footerNode.css("marginTop", "0");
                 showDialog(dialog);
             }).on("dialog.btn.disable", function(e, id){
                 getButtonById(id).prop("disabled", true);
