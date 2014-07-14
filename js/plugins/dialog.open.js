@@ -79,9 +79,9 @@
                 dialogMain.width(dialog.innerHeight()).css("position","relative");
 
                 showDialog(dialog);
-            }).on("button.disabled", function(e, id){
+            }).on("dialog.btn.disable", function(e, id){
                 getButtonById(id).prop("disabled", true);
-            }).on("button.enabled", function(e, id){
+            }).on("dialog.btn.enable", function(e, id){
                 getButtonById(id).prop("disabled", false);
             });
 

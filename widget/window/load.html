@@ -5,7 +5,8 @@
     <h3 s-window-role="a" title="参数说明" id="param">参数说明：</h3>
     <ol>
         <li><code>url</code>：需要加载的页面路径，<strong>该路径是相对于当前浏览器地址栏的路径的</strong>。</li>
-        <li><code>[arg1[,arg2[,...]]]</code>：传递给打开模块页面的参数，模块页面在 <code>meta</code> 中定义 <code>args='arg1[,arg2[,...]]'</code> 根据位置来接受参数。</li>
+        <li><code>loadArgsObj</code>：传递给打开模块页面的参数，模块页面在 <code>meta</code> 中定义 <code>args='arg1[,arg2[,...]]'</code>
+            每一个参数的值即在 <code>loadArgsObj</code> 对象中该参数key对应的值。</li>
     </ol>
     <hr />
     <h3 id="load" s-window-role="a" title="加载页面">1. 加载页面 <small>点击按钮加载示例1页面到下面的div框中</small></h3>
@@ -25,14 +26,14 @@
 </pre>
     <hr />
     <h3 id="loadWithArgs" s-window-role="a" title="使用参数加载页面">2. 使用参数加载页面 <small>加载页面的时候传递参数</small></h3>
-    <p>使用方法 <code>S.S("#loadWindow2").load('widget/window/html/load1.html', "Hello", 'Smart RIA');</code> 加载页面。</p>
+    <p>使用方法 <code>S.S("#loadWindow2").load('widget/window/html/load1.html', {arg1:"Hello", arg2: "iSmart JS"});</code> 加载页面。</p>
     <p><input type="button" class="btn btn-primary btn-small" value="使用参数加载页面" s="click" s-click-action="loadWindowWithArgs()" /></p>
     <div s="window" id="loadWindow2" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 500px; ">
 
     </div>
     <script type="text/javascript">
         function loadWindowWithArgs(){
-            S.S("#loadWindow2").load('widget/window/html/load1.html', "Hello", 'Smart RIA');
+            S.S("#loadWindow2").load('widget/window/html/load1.html', {arg1:"Hello", arg2: "iSmart JS"});
         }
     </script>
     <p>源码如下: </p>
@@ -41,7 +42,7 @@
 &lt;input type="button" s="click" s-click-action="loadWindowWithArgs()"  value="使用参数加载页面" class="btn btn-primary btn-small" /&gt;
 &lt;script type="text/javascript"&gt;
     function loadWindowWithArgs(){
-        <span class="text-info">S.S("#loadWindow2").load('widget/window/html/load1.html', "Hello", 'Smart RIA');</span>
+        <span class="text-info">S.S("#loadWindow2").load('widget/window/html/load1.html', {arg1:"Hello", arg2: "iSmart JS"});</span>
     }
 &lt;/script&gt;
 </pre>
@@ -56,12 +57,9 @@
     }</span>
 &lt;/script&gt;
 </pre>
-    <p>通过使用 <code>S.S("#loadWindow2").load('widget/window/html/load1.html', "Hello", 'Smart RIA');</code>
-        打开load1.html，并且传递2个参数进去，在load1.html里面被 <code>meta</code> 中的 <code>args="arg1,arg2"</code> 来按位置接收。
+    <p>通过使用 <code>S.S("#loadWindow2").load('widget/window/html/load1.html', {arg1:"Hello", arg2: "iSmart JS"});</code>
+        打开load1.html，并且传递2个参数进去，在load1.html里面被 <code>meta</code> 中的 <code>args="arg1,arg2"</code> 接收。
     </p>
-    <p class="text-info">定义 <code>args="arg1,arg2"</code> 后，在当前页面的闭包脚本中，则会有2个已经定义好的参数 <code>arg1</code> 和 <code>arg2</code>，
-        参数值则是调用 <code>load</code> 方法中传递进来的参数值（参数值与除了url参数之外的其他参数根据位置一一对应）。
-        上述调用中，<code>hello</code>，<code>Smart RIA</code> 的值分别赋值给了 <code>args="arg1,arg2"</code> 中的 <code>arg1</code> 和 <code>arg2</code></p>
     <hr />
     <h3 id="loadTemplate" s-window-role="a" title="定义模板页面">3. 页面中使用模板 <small>在加载的页面中使用模板，可以根据不同的参数显示不同的html</small></h3>
     <p>在 <code>meta</code> 中声明 <code>template="true"</code> 即定义了当前页面需要通过模板渲染得到最终的html。</p>
@@ -72,7 +70,7 @@
     </div>
     <script type="text/javascript">
         function loadTemplatePage(type){
-            S.S("#templateWindow").load('widget/window/html/load-template.html', type);
+            S.S("#templateWindow").load('widget/window/html/load-template.html', {arg1: type});
         }
     </script>
     <p>源码如下: </p>
@@ -82,7 +80,7 @@
 &lt;input s="click" s-click-action="<span class="text-info">loadTemplatePage(2)</span>" type="button" class="btn btn-primary btn-small" value="加载页面(传递参数2)" /&gt;
 &lt;script type="text/javascript"&gt;
     function <span class="text-info">loadTemplatePage(type)</span>{
-        <span class="text-info">S.S("#templateWindow").load('widget/window/html/load-template.html', type);</span>
+        <span class="text-info">S.S("#templateWindow").load('widget/window/html/load-template.html', {arg1: type});</span>
     }
 &lt;/script&gt;
 </pre>
@@ -105,7 +103,7 @@
     </div>
     <script type="text/javascript">
         function loadMetaWindow(){
-            S.S("#loadWindowMeta").load('widget/window/html/load-meta.html', "Hello", 'Smart RIA');
+            S.S("#loadWindowMeta").load('widget/window/html/load-meta.html', {arg1: "Hello", arg2:"iSmart JS"});
         }
     </script>
     <p>源码如下: </p>

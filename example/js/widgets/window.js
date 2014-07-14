@@ -49,10 +49,11 @@
         }
     };
 
-    var process = function (result, href) {
+    var process = function (result, href, loadArgs) {
         var html = result.html;
+        loadArgs = loadArgs || {};
         var scriptTexts = result.scriptTexts;
-        var applyArgs = Smart.SLICE.call(arguments, 2);
+//        var applyArgs = Smart.SLICE.call(arguments, 2);
         var scripts = [];
         //处理模板
         var meta = result.meta;
@@ -60,10 +61,12 @@
         var metaScripts = [];
         scripts.push("(function(){");
         scripts.push("    return function(){");
-        if (meta.args) { //则说明有参数传递进来，传递参数依次对应arguments的位置1开始一次往后
+        if (meta.args) { //如果有参数定义，那么参数的值是
+            var windowOpenArgsVar = "__WINDOW_OPEN_ARGS_VAR__";
+            //传递进来的加载参数对象是第二个参数。
             $.each(meta.args, function (i, arg) {
-                var argStr = "var " + arg + " = arguments[" + i + "];";
-                metaScripts.push("var " + arg + " = arguments[" + (i + 1) + "];");
+                var argStr = "var " + arg + " = arguments[0]['" + arg + "'];";
+                metaScripts.push("var " + arg + " = arguments[1]['"+arg+"'];");
                 argsScripts.push(argStr);
                 scripts.push(argStr);
             });
@@ -87,7 +90,7 @@
             compiledFnBody.push("   }");
             compiledFnBody.push("})();//@ sourceURL=" + href + "_template.js");
             var fn = eval(compiledFnBody.join("\n"));
-            html = fn.apply(this, applyArgs);
+            html = fn.call(this, loadArgs);
             html = html.replace(/\n{2,}/gm, "\n");
         }
         //替换掉id,为id加上当前窗口的窗口id TODO 正则表达式无法匹配，采用jQuery的方法替换
@@ -102,7 +105,6 @@
             $(this).attr("id", that.trueId(id)).attr("_id_", id);
         });
         this.meta = meta;
-        this.dataTable("window","meta", meta);
         var metaScript = metaScripts.join("\n");
         metaScript += "\n  try{\n return eval(arguments[0]);\n}catch(e){\nreturn null}";
         var metaScript = new Function(metaScript);
@@ -111,12 +113,12 @@
                 return;
             }
             meta[key] = val.replace(META_VALUE_RE, function ($0, $1) {
-                return metaScript.apply(this, [$1].concat(applyArgs));
+                return metaScript.apply(this, [$1, loadArgs]);
             });
         });
 
         var scriptFn = eval(scripts.join("\n"));
-        var context = scriptFn.apply(this, applyArgs);
+        var context = scriptFn.call(this, loadArgs);
         this.setContext(context);
         this.setNode(this._WNODE);
         //处理锚点滚动
@@ -164,7 +166,7 @@
         currentHref: function(){
             return this.dataTable("window", "href");
         },
-        load: function (href) {
+        load: function (href, loadArgs) {
             this._clean();
             this.dataTable("window", "loadState", true);//是否已经加载
             this.trigger("loading");

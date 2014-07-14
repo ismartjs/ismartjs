@@ -3,11 +3,11 @@
     <h2>dialogOpen <small>使用弹出框打开模块页面</small></h2>
     <p class="lead">通过弹出框的形式打开模块页面。</p>
     <h3 id="call" s-window-role="a" title="调用方法">1. 调用方法</h3>
-    <p><code>S.dialogOpen(url[,arg1[,arg2[,arg3]]])</code></p>
+    <p><code>S.dialogOpen(url[,openArgs])</code></p>
     <h4>a. 参数说明</h4>
     <ol>
         <li><code>url</code>：要打开的模块页面的url</li>
-        <li><code>[,arg1[,arg2[,arg3]]]</code>：要传递给打开的模块页面的参数。可以参考 <code>window</code> 控件。</li>
+        <li><code>[,openArgs]</code>：要传递给打开的模块页面的参数。可以参考 <code>window</code> 控件。</li>
     </ol>
     <h4>b. 对话框的基本信息都来自于打开页面的 <code>meta</code> 定义，这些信息包括：</h4>
     <ol>
@@ -83,7 +83,7 @@ this.meta.btns = [
     <p><input type="button" class="btn btn-primary btn-small" value="打开页面" s="click" s-click-action="dialogOpenWithArgAndCallback()"  /></p>
     <script type="text/javascript">
         function dialogOpenWithArgAndCallback(){
-            S.dialogOpen("plugin/dialog-open/example-arg-callback.html", "Hello", "Smart RIA").done(function(fell){
+            S.dialogOpen("plugin/dialog-open/example-arg-callback.html", {title:"Hello", who:"iSmart JS"}).done(function(fell){
                 S.alert(fell);//这里的fell是通过 example-arg-callback.html调用S.close(arg)关闭的时候传递进来的arg参数值。
             });
         }
@@ -93,7 +93,7 @@ this.meta.btns = [
 &lt;p&gt;&lt;input type="button" class="btn btn-primary btn-small" value="打开页面" s="click" s-click-action="dialogOpenWithArgAndCallback()"  /&gt;&lt;/p&gt;
 &lt;script type="text/javascript"&gt;
     function dialogOpenWithArgAndCallback(){
-        S.dialogOpen("plugin/dialog-open/example-arg-callback.html", <abbr class="text-warning" title="打开页面时传递的参数">"Hello", "Smart RIA"</abbr>).<abbr class="text-warning" title="注册页面关闭回调方法">done</abbr>(function(<abbr class="text-warning" title="回调的参数">fell</abbr>){
+        S.dialogOpen("plugin/dialog-open/example-arg-callback.html", <abbr class="text-warning" title="打开页面时传递的参数">{title:"Hello", who:"iSmart JS"}</abbr>).<abbr class="text-warning" title="注册页面关闭回调方法">done</abbr>(function(<abbr class="text-warning" title="回调的参数">fell</abbr>){
             S.alert(fell);//这里的fell是通过 example-arg-callback.html调用S.close(arg)关闭的时候传递进来的arg参数值。
         });
     }
@@ -121,8 +121,8 @@ this.meta.btns = [
     <h3 id="buttonDisabled" title="设置对话框按钮可用状态" s-window-role="a">3. 设置对话框按钮可用状态</h3>
     <p>通过发送相关事件，可以设置对话框按钮的可用状态，事件如下：</p>
     <ol>
-        <li><code>button.disabled</code> 事件，使按钮禁用，需要按钮id作为参数进行触发，如：<code>S.trigger('button.disabled', buttonId)</code></li>
-        <li><code>button.enabled</code> 事件，使按钮可用，需要按钮id作为参数进行触发，如：<code>S.trigger('button.enabled', buttonId)</code></li>
+        <li><code>dialog.btn.disable</code> 事件，使按钮禁用，需要按钮id作为参数进行触发，如：<code>S.trigger('dialog.btn.disable', buttonId)</code></li>
+        <li><code>dialog.btn.enable</code> 事件，使按钮可用，需要按钮id作为参数进行触发，如：<code>S.trigger('dialog.btn.enable', buttonId)</code></li>
     </ol>
     <p><input type="button" class="btn btn-primary" value="打开页面" s="click" s-click-action="dialogOpenButton()" /></p>
     <script type="text/javascript">
@@ -160,7 +160,7 @@ this.meta.btns = [
             }
         ];
         function disableBtn(flag){
-            <abbr class="text-warning" title="禁用/可用按钮">S.trigger("button." + (flag ? "disabled" : "enabled"), "sureBtn");</abbr>
+            <abbr class="text-warning" title="禁用/可用按钮">S.trigger("dialog.btn." + (flag ? "disable" : "enable"), "sureBtn");</abbr>
         }
     &lt;/script&gt;
 &lt;/div&gt;    

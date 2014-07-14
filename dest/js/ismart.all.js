@@ -150,6 +150,7 @@
         this.node.data(SMART_NODE_CACHE_KEY, this);
         this._dataTable = {};
         this.lifeStage = LIFE_STAGE.initial;
+        this.options = {};
         var that = this;
         $.each(STOP_PROPAGATION_EVENT, function (i, evt) {
             that.on(evt, function (e) {
@@ -179,6 +180,31 @@
     };
     var SLICE = Array.prototype.slice;
     var TO_STRING = Object.prototype.toString;
+
+    //ui-utils
+    Smart.extend({
+        disableNode: function(btnNode, flag){
+            if(flag == null) flag = true;
+            if(flag){
+                btnNode.attr("disabled", 'disabled').addClass("disabled");
+            } else {
+                btnNode.removeAttr("disabled").removeClass("disabled");
+            }
+        },
+        clickDeferred: function(node, fn){
+            node.click(function(e){
+                Smart.disableNode(node);
+                var rs = fn(e);
+                if(rs == null || (!'done' in rs)){
+                    Smart.disableNode(node, false);
+                } else {
+                    rs.always(function(){
+                        Smart.disableNode(node, false);
+                    });
+                }
+            });
+        }
+    });
     //utils
     Smart.extend({
         SLICE: SLICE,
@@ -231,6 +257,9 @@
         },
         isWidgetNode: function (node) {
             return node.attr(SMART_ATTR_KEY) !== undefined;
+        },
+        isDeferred: function(obj){
+            return obj && "done" in obj && $.isFunction(obj.done);
         },
         map: function (datas, key) {
             var _datas = [];
@@ -941,16 +970,8 @@
             this.node.off(events, selector, fn);
             return this;
         },
-        bind: function (type, data, fn) {
-            this.node.bind(type, data, fn);
-            return this;
-        },
         trigger: function (type, data) {
             this.node.trigger(type, data);
-            return this;
-        },
-        unbind: function (type, data) {
-            this.node.unbind(type, data);
             return this;
         }
     });
@@ -1175,7 +1196,7 @@
                     if (this.options.cds['e-msg']) {
                         this.alert(this.options.cds['e-msg']);
                     }
-                    return;
+                    return deferred.reject();
                 }
                 var that = this;
                 function resolve() {
@@ -1186,6 +1207,8 @@
                 if(this.options.cds['c-msg']){
                     this.confirm(this.options.cds['c-msg'], {sign:"warning"}).done(function(){
                         resolve();
+                    }).fail(function(){
+                        deferred.reject();
                     });
                 }
 
@@ -1465,8 +1488,8 @@
         }
     },{
         onPrepare: function(){
-            this.node.click($.proxy(this.submit, this));
             var that = this;
+            Smart.clickDeferred(this.node, $.proxy(this.submit, this));
             this.on("submit-done", function(e){
                 e.stopPropagation();
                 that.options.listener && that.options.listener.done
@@ -1491,13 +1514,19 @@
             var that = this;
             var deferred = $.Deferred();
             this.getSubmitData(deferred);
+            var submitDeferred = $.Deferred();
             deferred.done(function(data){
                 that[that.options.dataSubmit.type](that.options.dataSubmit.url, data).done(function(){
                     that.trigger.apply(that, ["submit-done"].concat($.makeArray(arguments)))
+                    submitDeferred.resolve();
                 }).fail(function(){
                     that.trigger.apply(that, ["submit-fail"].concat($.makeArray(arguments)))
+                    submitDeferred.reject();
                 });
+            }).fail(function(){
+                submitDeferred.reject();
             });
+            return submitDeferred;
         }
     });
 })();;/**
@@ -1565,11 +1594,11 @@
         smart.node[event](function (e) {
             var result = action.call(smart, e);
             if(result == null) return;
-            if(result.done && $.isFunction(result.done)){//说明这个是deferred对象
+            if(Smart.isDeferred(result)){//说明这个是deferred对象
                 var target = $(e.target);
-                target.attr("disabled", 'disabled').addClass("disabled");
+                Smart.disableNode(target);
                 result.always(function(){
-                    target.removeAttr("disabled").removeClass("disabled");
+                    Smart.disableNode(target, false);
                 });
             }
             return result;
@@ -2014,10 +2043,11 @@
         }
     };
 
-    var process = function (result, href) {
+    var process = function (result, href, loadArgs) {
         var html = result.html;
+        loadArgs = loadArgs || {};
         var scriptTexts = result.scriptTexts;
-        var applyArgs = Smart.SLICE.call(arguments, 2);
+//        var applyArgs = Smart.SLICE.call(arguments, 2);
         var scripts = [];
         //处理模板
         var meta = result.meta;
@@ -2025,10 +2055,12 @@
         var metaScripts = [];
         scripts.push("(function(){");
         scripts.push("    return function(){");
-        if (meta.args) { //则说明有参数传递进来，传递参数依次对应arguments的位置1开始一次往后
+        if (meta.args) { //如果有参数定义，那么参数的值是
+            var windowOpenArgsVar = "__WINDOW_OPEN_ARGS_VAR__";
+            //传递进来的加载参数对象是第二个参数。
             $.each(meta.args, function (i, arg) {
-                var argStr = "var " + arg + " = arguments[" + i + "];";
-                metaScripts.push("var " + arg + " = arguments[" + (i + 1) + "];");
+                var argStr = "var " + arg + " = arguments[0]['" + arg + "'];";
+                metaScripts.push("var " + arg + " = arguments[1]['"+arg+"'];");
                 argsScripts.push(argStr);
                 scripts.push(argStr);
             });
@@ -2052,7 +2084,7 @@
             compiledFnBody.push("   }");
             compiledFnBody.push("})();//@ sourceURL=" + href + "_template.js");
             var fn = eval(compiledFnBody.join("\n"));
-            html = fn.apply(this, applyArgs);
+            html = fn.call(this, loadArgs);
             html = html.replace(/\n{2,}/gm, "\n");
         }
         //替换掉id,为id加上当前窗口的窗口id TODO 正则表达式无法匹配，采用jQuery的方法替换
@@ -2067,7 +2099,6 @@
             $(this).attr("id", that.trueId(id)).attr("_id_", id);
         });
         this.meta = meta;
-        this.dataTable("window","meta", meta);
         var metaScript = metaScripts.join("\n");
         metaScript += "\n  try{\n return eval(arguments[0]);\n}catch(e){\nreturn null}";
         var metaScript = new Function(metaScript);
@@ -2076,12 +2107,12 @@
                 return;
             }
             meta[key] = val.replace(META_VALUE_RE, function ($0, $1) {
-                return metaScript.apply(this, [$1].concat(applyArgs));
+                return metaScript.apply(this, [$1, loadArgs]);
             });
         });
 
         var scriptFn = eval(scripts.join("\n"));
-        var context = scriptFn.apply(this, applyArgs);
+        var context = scriptFn.call(this, loadArgs);
         this.setContext(context);
         this.setNode(this._WNODE);
         //处理锚点滚动
@@ -2129,7 +2160,7 @@
         currentHref: function(){
             return this.dataTable("window", "href");
         },
-        load: function (href) {
+        load: function (href, loadArgs) {
             this._clean();
             this.dataTable("window", "loadState", true);//是否已经加载
             this.trigger("loading");
@@ -2771,16 +2802,89 @@
  */
 (function($){
     //表单提交插件，作用于submit按钮，可以实现表单回车提交
-    Smart.widgetExtend({id:"submit"}, {
+    Smart.widgetExtend({
+        id:"submit",
+        options: "ctx:action,ctx:done,ctx:fail,ctx:always,reset",
+        defaultOptions:{reset:"false"}
+    }, {
         onPrepare: function(){
-            var form = this.node.closest("form");
-            if(form.size() == 0){
-                return;
-            }
-            form[0].onsubmit = function(e){
+            var that = this;
+            this.dataTable("submit", "action", this.node.attr("action"));
+            this.dataTable("submit", "method", this.node.attr("method") || "post");
+            this.dataTable("submit", "enctype", this.node.attr("enctype") || "application/x-www-form-urlencoded");
+            var submtBtn = this.node.find(":submit")
+            this.node[0].onsubmit = function(e){
                 e.stopPropagation();
+                try{
+                    var deferred = $.Deferred();
+                    Smart.disableNode(submtBtn);
+                    deferred.done(function(){
+                        Smart.disableNode(submtBtn, false);
+                    });
+                    that.submit(deferred);
+                } catch(e){
+                    Smart.error(e);
+                }
                 return false;
             };
+        }
+    },{
+        submit: function(deferred){
+            if(!('action' in this.options.submit) && Smart.isEmpty(this.dataTable("submit", "action"))) {
+                return deferred.resolve();
+            }
+            var that = this;
+            if(this.options.submit.action){//如果定义了submit action，则直接执行该action
+                var actionSubmit = function(){
+                    var result = that.options.submit.action.call(that);
+                    if(Smart.isDeferred(result)){//说明是deferred对象
+                        result.always(function(){
+                            deferred.resolve();
+                        });
+                    } else {
+                        deferred.resolve();
+                    }
+                };
+                if("validate" in this){
+                    this.validate().done(actionSubmit);
+                } else {
+                    actionSubmit();
+                }
+
+                return;
+            }
+            var data;
+            switch(this.dataTable("submit", "enctype")){
+                case "multipart/form-data" : data = Smart.formData(this.node); break;
+                case "application/x-www-form-urlencoded" :
+                    data = Smart.serializeToObject(this.node); break;
+            }
+
+            var submit = function(){
+                that[that.dataTable("submit", "method")](that.dataTable("submit", "action"), data)
+                    .done(function(rs){
+                        that.options.submit.done && that.options.submit.done.call(that, rs);
+                        if(that.options.submit.reset == 'true'){
+                            that.node[0].reset();
+                        }
+                }).fail(function(){
+                    that.options.submit.done && that.options.submit.done.apply(that, $.makeArray(arguments));
+                }).always(function(){
+                    that.options.submit.always && that.options.submit.always.call(that);
+                    deferred.resolve();
+                });
+            };
+
+            //证明该form是需要验证的
+            if("validate" in this){
+                this.validate().done(function(){
+                    submit();
+                }).fail(function(){
+                    deferred.resolve();
+                });
+            } else {
+                submit();
+            }
 
         }
     });
@@ -3601,9 +3705,9 @@
                 dialogMain.width(dialog.innerHeight()).css("position","relative");
 
                 showDialog(dialog);
-            }).on("button.disabled", function(e, id){
+            }).on("dialog.btn.disable", function(e, id){
                 getButtonById(id).prop("disabled", true);
-            }).on("button.enabled", function(e, id){
+            }).on("dialog.btn.enable", function(e, id){
                 getButtonById(id).prop("disabled", false);
             });
 

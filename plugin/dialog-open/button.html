@@ -17,7 +17,7 @@
             }
         ];
         function disableBtn(flag){
-            S.trigger("button." + (flag ? "disabled" : "enabled"), "sureBtn");
+            S.trigger("dialog.btn." + (flag ? "disable" : "enable"), "sureBtn");
         }
     </script>
 </div>

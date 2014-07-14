@@ -43,11 +43,11 @@
         smart.node[event](function (e) {
             var result = action.call(smart, e);
             if(result == null) return;
-            if(result.done && $.isFunction(result.done)){//说明这个是deferred对象
+            if(Smart.isDeferred(result)){//说明这个是deferred对象
                 var target = $(e.target);
-                target.attr("disabled", 'disabled').addClass("disabled");
+                Smart.disableNode(target);
                 result.always(function(){
-                    target.removeAttr("disabled").removeClass("disabled");
+                    Smart.disableNode(target, false);
                 });
             }
             return result;

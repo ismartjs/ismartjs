@@ -28,6 +28,7 @@
         this.node.data(SMART_NODE_CACHE_KEY, this);
         this._dataTable = {};
         this.lifeStage = LIFE_STAGE.initial;
+        this.options = {};
         var that = this;
         $.each(STOP_PROPAGATION_EVENT, function (i, evt) {
             that.on(evt, function (e) {
@@ -57,6 +58,31 @@
     };
     var SLICE = Array.prototype.slice;
     var TO_STRING = Object.prototype.toString;
+
+    //ui-utils
+    Smart.extend({
+        disableNode: function(btnNode, flag){
+            if(flag == null) flag = true;
+            if(flag){
+                btnNode.attr("disabled", 'disabled').addClass("disabled");
+            } else {
+                btnNode.removeAttr("disabled").removeClass("disabled");
+            }
+        },
+        clickDeferred: function(node, fn){
+            node.click(function(e){
+                Smart.disableNode(node);
+                var rs = fn(e);
+                if(rs == null || (!'done' in rs)){
+                    Smart.disableNode(node, false);
+                } else {
+                    rs.always(function(){
+                        Smart.disableNode(node, false);
+                    });
+                }
+            });
+        }
+    });
     //utils
     Smart.extend({
         SLICE: SLICE,
@@ -109,6 +135,9 @@
         },
         isWidgetNode: function (node) {
             return node.attr(SMART_ATTR_KEY) !== undefined;
+        },
+        isDeferred: function(obj){
+            return obj && "done" in obj && $.isFunction(obj.done);
         },
         map: function (datas, key) {
             var _datas = [];
@@ -819,16 +848,8 @@
             this.node.off(events, selector, fn);
             return this;
         },
-        bind: function (type, data, fn) {
-            this.node.bind(type, data, fn);
-            return this;
-        },
         trigger: function (type, data) {
             this.node.trigger(type, data);
-            return this;
-        },
-        unbind: function (type, data) {
-            this.node.unbind(type, data);
             return this;
         }
     });

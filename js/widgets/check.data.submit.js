@@ -32,7 +32,7 @@
                     if (this.options.cds['e-msg']) {
                         this.alert(this.options.cds['e-msg']);
                     }
-                    return;
+                    return deferred.reject();
                 }
                 var that = this;
                 function resolve() {
@@ -43,6 +43,8 @@
                 if(this.options.cds['c-msg']){
                     this.confirm(this.options.cds['c-msg'], {sign:"warning"}).done(function(){
                         resolve();
+                    }).fail(function(){
+                        deferred.reject();
                     });
                 }
 

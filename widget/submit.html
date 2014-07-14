@@ -3,10 +3,29 @@
     <h2 class="page-header">submit按钮控件</h2>
     <p class="lead">监听表单的回车提交事件，并将此事件作用于该按钮的click事件。</p>
     <hr />
-    <h3>控件定义</h3>
-    <p><code>&lt;input type="submit" s="click" s-click-action="search()" value="查询" /&gt;</code></p>
-    <h3>示例</h3>
-    <form class="form-inline" >
+    <h3>参数配置</h3>
+    <ol>
+        <li><code>s</code>：submit</li>
+        <li><abbr title="context参数">ctx:</abbr><code>action</code>：提交表单要执行的方法，
+            该参数是控件元素属性<code>s-submit-action</code>的值</li>
+        <li><abbr title="context参数">ctx:</abbr><code>done</code>：提交成功时执行的方法，该方法接受一个参数，即提交结果的返回值。</li>
+        <li><abbr title="context参数">ctx:</abbr><code>fail</code>：提交失败时执行的方法</li>
+        <li><abbr title="context参数">ctx:</abbr><code>always</code>：提交完成时执行的方法，不管是执行成功还是失败了。</li>
+        <li><code>reset</code>：是否在提交成功时reset form，默认为false。</li>
+    </ol>
+    <h3>根据原始表单配置提交表单</h3>
+    <p class="lead">亦可以根据表单的原始配置参数：<code>action</code>,<code>method</code>,<code>enctype</code>去自动提交表单，该提交动作会先验证表单，再去提交，提交后会发出2个事件：</p>
+    <h4>事件</h4>
+    <ol>
+        <li><code>submit-done</code>：提交成功事件，事件参数为远程服务器的返回值</li>
+        <li><code>submit-fail</code>：提交失败，事件参数为xhr对象</li>
+    </ol>
+    <hr />
+    <h3>示例1 <small>根据表单原始属性去提交表单</small></h3>
+    <form class="form-inline" id="form1"
+          s="submit"
+          s-submit-done="submitDone"
+          action="json/submit.json" method="get">
         <div class="form-group">
             <label class="sr-only" >Name</label>
             <input type="text" name="name" class="form-control" placeholder="Enter name" />
@@ -15,16 +34,17 @@
             <label class="sr-only" >Phone</label>
             <input type="text" name="phone" class="form-control" placeholder="Phone" />
         </div>
-        <input s="submit,click" s-click-action="search()" type="submit" class="btn btn-primary " value="查询" />
+        <input s="click" type="submit" class="btn btn-primary " value="查询" />
     </form>
     <script type="text/javascript">
-        function search(){
-            S.alert("你提交了表单进行查询");
+        function submitDone(rs){
+            S.alert("提交成功，返回值为：" + JSON.stringify(rs));
         }
     </script>
     <h4>源码</h4>
 <pre>
-&lt;form class="form-inline" &gt;
+&lt;form class="form-inline" id="form1"
+      s="submit" s-submit-done="submitDone" action="json/submit.json" method="get"&gt;
     &lt;div class="form-group"&gt;
         &lt;label class="sr-only" &gt;Name&lt;/label&gt;
         &lt;input type="text" name="name" class="form-control" placeholder="Enter name" /&gt;
@@ -33,7 +53,44 @@
         &lt;label class="sr-only" &gt;Phone&lt;/label&gt;
         &lt;input type="text" name="phone" class="form-control" placeholder="Phone" /&gt;
     &lt;/div&gt;
-    &lt;input <abbr class="text-warning" title="这里定义上submit控件">s="submit,click" s-click-action="search()"</abbr> <abbr class="text-warning" title="这里必须是submit">type="submit"</abbr> class="btn btn-primary " value="查询" /&gt;
+    &lt;input s="click" type="submit" class="btn btn-primary " value="查询" /&gt;
+&lt;/form&gt;
+&lt;script type="text/javascript"&gt;
+    function submitDone(rs){
+        S.alert("提交成功，返回值为：" + JSON.stringify(rs));
+    }
+&lt;/script&gt;
+</pre>
+    <hr />
+    <h3>示例2 <small>根据s-submit-action进行提交表单</small></h3>
+    <form class="form-inline" s="submit" s-submit-action="search">
+        <div class="form-group">
+            <label class="sr-only" >Name</label>
+            <input type="text" name="name" class="form-control" placeholder="Enter name" />
+        </div>
+        <div class="form-group">
+            <label class="sr-only" >Phone</label>
+            <input type="text" name="phone" class="form-control" placeholder="Phone" />
+        </div>
+        <input s="click" type="submit" class="btn btn-primary " value="查询" />
+    </form>
+    <script type="text/javascript">
+        function search(){
+            S.alert("你提交了表单进行查询");
+        }
+    </script>
+    <h4>源码</h4>
+<pre>
+&lt;form class="form-inline" s="submit" s-submit-action="search"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label class="sr-only" &gt;Name&lt;/label&gt;
+        &lt;input type="text" name="name" class="form-control" placeholder="Enter name" /&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label class="sr-only" &gt;Phone&lt;/label&gt;
+        &lt;input type="text" name="phone" class="form-control" placeholder="Phone" /&gt;
+    &lt;/div&gt;
+    &lt;input s="click" type="submit" class="btn btn-primary " value="查询" /&gt;
 &lt;/form&gt;
 &lt;script type="text/javascript"&gt;
     function search(){
