@@ -1,6 +1,6 @@
 <meta title="load()[window控件API]" description="load()，window控件的api，用于加载页面" />
 <div>
-    <h2 class="page-header">load(url,[arg1[,arg2[,...]]]) <small>window控件加载页面的方法</small></h2>
+    <h2 class="page-header">load(url[,argObj]) <small>window控件加载页面的方法</small></h2>
     <p>window控件通过此方法加载相应的模块页面</p>
     <h3 s-window-role="a" title="参数说明" id="param">参数说明：</h3>
     <ol>
@@ -27,6 +27,8 @@
     <hr />
     <h3 id="loadWithArgs" s-window-role="a" title="使用参数加载页面">2. 使用参数加载页面 <small>加载页面的时候传递参数</small></h3>
     <p>使用方法 <code>S.S("#loadWindow2").load('widget/window/html/load1.html', {arg1:"Hello", arg2: "iSmart JS"});</code> 加载页面。</p>
+    <h4>模块页面参数的定义</h4>
+    <p class="lead">页面模块参数通过在 <code>meta</code> 的 <code>args</code> 来定义，格式为： <code>args="arg1:defaultValue1,arg2:defaultValue2"</code>，每个参数可以配置默认值。</p>
     <p><input type="button" class="btn btn-primary btn-small" value="使用参数加载页面" s="click" s-click-action="loadWindowWithArgs()" /></p>
     <div s="window" id="loadWindow2" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 500px; ">
 
@@ -112,7 +114,7 @@
 &lt;input type="button" class="btn btn-primary btn-small" value="加载页面" s="click" s-click-action="loadMetaWindow()"  /&gt;
 &lt;script type="text/javascript"&gt;
     function loadMetaWindow(){
-        <span class="text-info">S.S("#loadWindowMeta").load('widget/window/html/load-meta.html', "Hello", 'Smart RIA');</span>
+        <span class="text-info">S.S("#loadWindowMeta").load('widget/window/html/load-meta.html', {arg1: "Hello", arg2:"iSmart JS"});</span>
     }
 &lt;/script&gt;
 </pre>
