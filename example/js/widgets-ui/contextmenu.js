@@ -15,21 +15,21 @@
         options: "ctx:target,ctx:filter"
     },{
         onPrepare: function(){
-            var target = this.options.contextmenu['target'];
+            var target = this.options['target'];
             var that = this;
             if(target)
-                this.bindTarget(target);
-            this.node.delegate("li", "click", function(e){
+                this.S.bindTarget(target);
+            this.S.node.delegate("li", "click", function(e){
                 if($("ul", $(this)).size() > 0){
                     return;
                 }
-                that.hide();
+                that.S.hide();
                 e.stopPropagation();
             });
             $(document).click(function(e){
-                that.hide();
+                that.S.hide();
             });
-            this.node.find("li ul").each(function(e){
+            this.S.node.find("li ul").each(function(e){
                 var ul = $(this);
                 var parentLi = ul.parent();
                 parentLi.mouseover(function(){
@@ -63,7 +63,7 @@
             CURRENT_SHOWN_CONTEXTMENU = this;
             Smart.UI.contextmenu.target = Smart.of(el);
             //过滤菜单
-            if(this.options.contextmenu.filter){
+            if(this.widget.contextmenu.options.filter){
                 var menuNodes = this.node.find("li[menuId]");
                 var that = this;
                 if(menuNodes.size()){
@@ -71,7 +71,7 @@
                         //如果filter的返回值是false，则说明该菜单不可用。
                         var node = $(this);
                         var menuId = node.attr("menuId");
-                        if(that.options.contextmenu.filter(menuId, node) == false){
+                        if(that.widget.contextmenu.options.filter(menuId, node) == false){
                             that._disableMenu(node);
                         } else {
                             that._enableMenu(node);

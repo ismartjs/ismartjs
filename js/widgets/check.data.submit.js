@@ -18,30 +18,30 @@
     }, {
         onPrepare: function () {
             var that = this;
-            this.on("submit-done", function(e){
-                if(that.options.cds['r'] == "true"){
-                    that.options.cds['cs'].refresh();
+            this.S.on("submit-done", function(e){
+                if(that.options['r'] == "true"){
+                    that.options['cs'].refresh();
                 }
             });
         }
     }, {
         getSubmitData: function (deferred) {
-            if (this.options.cds.dk) {
-                var data = this.options.cds.cs.getCheckedData(this.options.cds.ck);
+            if (this.widget.cds.options.dk) {
+                var data = this.widget.cds.options.cs.getCheckedData(this.widget.cds.options.ck);
                 if (Smart.isEmpty(data)) {
-                    if (this.options.cds['e-msg']) {
-                        this.alert(this.options.cds['e-msg']);
+                    if (this.widget.cds.options['e-msg']) {
+                        this.alert(this.widget.cds.options['e-msg']);
                     }
                     return deferred.reject();
                 }
                 var that = this;
                 function resolve() {
                     var obj = {};
-                    obj[that.options.cds.dk] = data;
+                    obj[that.widget.cds.options.dk] = data;
                     deferred.resolve(obj);
                 }
-                if(this.options.cds['c-msg']){
-                    this.confirm(this.options.cds['c-msg'], {sign:"warning"}).done(function(){
+                if(this.widget.cds.options['c-msg']){
+                    this.confirm(this.widget.cds.options['c-msg'], {sign:"warning"}).done(function(){
                         resolve();
                     }).fail(function(){
                         deferred.reject();

@@ -10,19 +10,17 @@
     }, {
         onPrepare: function(){
             var that = this;
-            this.dataTable("submit", "action", this.node.attr("action"));
-            this.dataTable("submit", "method", this.node.attr("method") || "post");
-            this.dataTable("submit", "enctype", this.node.attr("enctype") || "application/x-www-form-urlencoded");
-            var submtBtn = this.node.find(":submit")
-            this.node[0].onsubmit = function(e){
+            this.cache.action = this.S.node.attr("action");
+            this.cache.method = this.S.node.attr("method") || "post";
+            this.cache.enctype = this.S.node.attr("enctype") || "application/x-www-form-urlencoded";
+            var submtBtn = this.S.node.find(":submit")
+            this.S.node[0].onsubmit = function(e){
                 e.stopPropagation();
                 try{
-                    var deferred = $.Deferred();
                     Smart.disableNode(submtBtn);
-                    deferred.done(function(){
+                    that.S.submit().always(function(){
                         Smart.disableNode(submtBtn, false);
                     });
-                    that.submit(deferred);
                 } catch(e){
                     Smart.error(e);
                 }
@@ -30,14 +28,15 @@
             };
         }
     },{
-        submit: function(deferred){
-            if(!('action' in this.options.submit) && Smart.isEmpty(this.dataTable("submit", "action"))) {
+        submit: function(){
+            var deferred = $.Deferred();
+            if(!('action' in this.widget.submit.options) && Smart.isEmpty(this.widget.submit.cache.action)) {
                 return deferred.resolve();
             }
             var that = this;
-            if(this.options.submit.action){//如果定义了submit action，则直接执行该action
+            if(this.widget.submit.options.action){//如果定义了submit action，则直接执行该action
                 var actionSubmit = function(){
-                    var result = that.options.submit.action.call(that);
+                    var result = that.widget.submit.options.action.call(that);
                     if(Smart.isDeferred(result)){//说明是deferred对象
                         result.always(function(){
                             deferred.resolve();
@@ -47,32 +46,35 @@
                     }
                 };
                 if("validate" in this){
-                    this.validate().done(actionSubmit);
+                    this.validate().done(actionSubmit).fail(function(){
+                        deferred.reject();
+                    });
                 } else {
                     actionSubmit();
                 }
 
-                return;
+                return deferred;
             }
             var data;
-            switch(this.dataTable("submit", "enctype")){
+            switch(this.widget.submit.cache.enctype){
                 case "multipart/form-data" : data = Smart.formData(this.node); break;
                 case "application/x-www-form-urlencoded" :
                     data = Smart.serializeToObject(this.node); break;
             }
 
             var submit = function(){
-                that[that.dataTable("submit", "method")](that.dataTable("submit", "action"), data)
+                that[that.widget.submit.cache.method](that.widget.submit.cache.action, data)
                     .done(function(rs){
-                        that.options.submit.done && that.options.submit.done.call(that, rs);
-                        if(that.options.submit.reset == 'true'){
+                        that.widget.submit.options.done && that.widget.submit.options.done.call(that, rs);
+                        if(that.widget.submit.options.reset == 'true'){
                             that.node[0].reset();
                         }
+                        deferred.resolve(rs);
                 }).fail(function(){
-                    that.options.submit.done && that.options.submit.done.apply(that, $.makeArray(arguments));
+                        deferred.reject.apply(deferred, $.makeArray(arguments));
+                    that.widget.submit.options.done && that.widget.submit.options.done.apply(that, $.makeArray(arguments));
                 }).always(function(){
-                    that.options.submit.always && that.options.submit.always.call(that);
-                    deferred.resolve();
+                    that.widget.submit.options.always && that.widget.submit.options.always.call(that);
                 });
             };
 
@@ -81,12 +83,12 @@
                 this.validate().done(function(){
                     submit();
                 }).fail(function(){
-                    deferred.resolve();
+                    deferred.reject();
                 });
             } else {
                 submit();
             }
-
+            return deferred;
         }
     });
 })(jQuery);

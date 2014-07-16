@@ -37,7 +37,7 @@
         options: "ctx:msg,ctx:show,ctx:resetShow,s-class,e-class,w-class,blur,ctx:validators",
         defaultOptions: {
             msg: DEFAULT_MSG,
-            blur: true,
+            blur: "true",
             's-class': "has-success",
             'e-class': "has-error",
             'w-class': "has-warning",
@@ -48,14 +48,14 @@
                 if(node.data(NODE_ORIGINAL_VALID_MSG_KEY) == undefined){
                     node.data(NODE_ORIGINAL_VALID_MSG_KEY, msgNode.html());
                 }
-                item.removeClass(this.options.valid['s-class']+" "+this.options.valid['e-class']+" "+this.options.valid['w-class']);
-                item.addClass(this.options.valid[level.style]);
+                item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
+                item.addClass(this.widget.valid.options[level.style]);
                 $(MSG_ROLE_SELECTOR,item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
             },
             'resetShow': function(node){
                 var item = node.closest(ITEM_ROLE_SELECTOR);
                 $(MSG_ROLE_SELECTOR,item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
-                item.removeClass(this.options.valid['s-class']+" "+this.options.valid['e-class']+" "+this.options.valid['w-class']);
+                item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
             }
         },
         addValidators: addValidators,//添加新的验证器
@@ -63,40 +63,40 @@
 
     }, {
         onPrepare: function () {
-            if(this.options.valid.blur){
+            if(this.options.blur === "true"){
                 var that = this;
-                this.node.delegate(VALID_NODE_SELECTOR, "blur", function(){
+                this.S.node.delegate(VALID_NODE_SELECTOR, "blur", function(){
                     if($(this).attr(VALID_NODE_BLUR_IG_ATTR) == "true"){
                         return;
                     }
-                    that.validateNode($(this));
+                    that.S.validateNode($(this));
                 });
             }
-            if(this.options.valid.validators){
+            if(this.options.validators){
                 var map = {};
-                for(var i = 0; i < this.options.valid.validators.length; i++){
-                    var v = this.options.valid.validators[i];
+                for(var i = 0; i < this.options.validators.length; i++){
+                    var v = this.options.validators[i];
                     map[v.id] = v;
                 }
-                this.dataTable("valid", "validatorMap", map);
+                this.cache.validatorMap = map;
             }
-            this.dataTable("valid", 'validateItemMap', {});
-            this.dataTable("valid", "validedNodes", []);//保存已经验证过的元素
+            this.cache.validateItemMap = {};
+            this.cache.validedNodes = [];
         },
         onReset: function(){
-            var validedNodes = this.dataTable("valid", "validedNodes");
+            var validedNodes = this.cache.validedNodes;
             var that = this;
             $.each(validedNodes, function(i, node){
-                that.resetValidateNode(node);
+                that.S.resetValidateNode(node);
             });
-            this.dataTable("valid", "validedNodes", []);
+            this.cache.validedNodes = [];
         }
     }, {
         validate: function () {
             var validNodes = this.node.find(VALID_NODE_SELECTOR);
             var deferreds = [];
             var that = this;
-            this.dataTable("valid", "validedNodes", []);
+            this.widget.valid.cache.validedNodes = [];
             validNodes.each(function(){
                 var node = $(this);
                 deferreds.push(function(){
@@ -118,12 +118,12 @@
             if(resetShow){
                 resetShow = this.context(resetShow);//resetShow是一个context闭包参数。
             }
-            (resetShow || this.options.valid.resetShow).call(this, node);
+            (resetShow || this.widget.valid.options.resetShow).call(this, node);
         },
         validateNode: function (node) {
             var id = node.attr(VALID_NODE_ID_ATTR);
-            this.dataTable("valid", "validedNodes").push(node);
-            var defMsg = this.options.valid.msg[id] || {};
+            this.widget.valid.cache.validedNodes.push(node);
+            var defMsg = this.widget.valid.options.msg[id] || {};
             var errorExp = node.attr(VALID_NODE_ERROR_ATTR);
             var label = node.attr(VALID_NODE_LABEL_ATTR);
             var deferreds = [];
@@ -138,7 +138,7 @@
                 node: node,
                 value: node.val()
             };
-            var validateItemMap = this.dataTable("valid", 'validateItemMap');
+            var validateItemMap = this.widget.valid.cache.validateItemMap;
             if(id != undefined){
                 validateItemMap[id] = validateItem;
             }
@@ -157,7 +157,7 @@
                             deferred.resolve();
                         }).fail(function(result, _level){
                             level = _level || LEVELS.error;
-                            (show || that.options.valid.show).call(that, node,  result || defMsg[level.key+"Msg"] || "", level);
+                            (show || that.widget.valid.options.show).call(that, node,  result || defMsg[level.key+"Msg"] || "", level);
                             deferred.reject();
                         });
                     return deferred;
@@ -184,7 +184,7 @@
                 });
             }
             deferreds.push(function(){
-                (show || that.options.valid.show).call(that, node, defMsg[level.key+"Msg"] || msg || "", level);
+                (show || that.widget.valid.options.show).call(that, node, defMsg[level.key+"Msg"] || msg || "", level);
             });
             return Smart.deferredQueue(deferreds);
         }
@@ -252,7 +252,7 @@
             validMsg = validation.processMsg(msg);
         }
 
-        var optionValidatorMap = smart.dataTable("valid", "validatorMap") || {};
+        var optionValidatorMap = smart.widget.valid.cache.validatorMap || {};
 
         var methodCount = {};
 

@@ -88,25 +88,6 @@ Smart.pick(nodes).each(function(i, node){
                 <td></td>
             </tr>
             <tr>
-                <td><code>dataTable(namespace, key, value)</code></td>
-                <td><code>this</code></td>
-                <td>添加缓存值到当前的Smart对象中，该方法主要用来缓存各个控件的生命周期中产生的数据，
-                    namespace应该为控件的id以保证多个控件作用于同一个元素的时候，各个控件之间的数据不会造成冲突。</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td><code>removeDataTable(namespace, key)</code></td>
-                <td><code>this</code></td>
-                <td>移除缓存</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td><code>cleanDataTable()</code></td>
-                <td><code>this</code></td>
-                <td>清空整个缓存</td>
-                <td></td>
-            </tr>
-            <tr>
                 <td><code>make()</code></td>
                 <td><code>$.Deferred</code></td>
                 <td>构建当前控件，该方法亦会构建当前控件的子控件，返回一个$.Deferred对象，该方法是异步方法</td>

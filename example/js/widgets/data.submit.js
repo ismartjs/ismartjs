@@ -14,13 +14,13 @@
     },{
         onPrepare: function(){
             var that = this;
-            Smart.clickDeferred(this.node, $.proxy(this.submit, this));
-            this.on("submit-done", function(e){
+            Smart.clickDeferred(this.S.node, $.proxy(this.S.submit, this.S));
+            this.S.on("submit-done", function(e){
                 e.stopPropagation();
                 that.options.listener && that.options.listener.done
                 && that.options.listener.done.apply(null, Smart.SLICE.call(arguments, 1));
             });
-            this.on("submit-fail", function(e){
+            this.S.on("submit-fail", function(e){
                 e.stopPropagation();
                 that.options.listener && that.options.listener.fail
                 && that.options.listener.fail.apply(null, Smart.SLICE.call(arguments, 1));
@@ -28,7 +28,7 @@
         }
     },{
         getSubmitData: function(deferred){
-            var data = this.options.dataSubmit['data'];
+            var data = this.widget.dataSubmit.options['data'];
             if(!$.isFunction(data)){
                 deferred.resolve(data);
             } else {
@@ -41,7 +41,7 @@
             this.getSubmitData(deferred);
             var submitDeferred = $.Deferred();
             deferred.done(function(data){
-                that[that.options.dataSubmit.type](that.options.dataSubmit.url, data).done(function(){
+                that[that.widget.dataSubmit.options.type](that.widget.dataSubmit.options.url, data).done(function(){
                     that.trigger.apply(that, ["submit-done"].concat($.makeArray(arguments)))
                     submitDeferred.resolve();
                 }).fail(function(){

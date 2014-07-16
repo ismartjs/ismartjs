@@ -8,7 +8,7 @@
     },null, {
         dataSetter: function(){
             var args = Smart.SLICE.call(arguments);
-            var igAttr = Smart.optionAttrName("datac", "ig");
+            var igAttr = this.widget.datac.optionName("ig");
             this.children().each(function(){
                 var ig = this.node.attr(igAttr);
                 if(ig == "true" || ig == ""){

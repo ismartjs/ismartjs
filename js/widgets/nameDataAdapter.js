@@ -6,7 +6,7 @@
     //name的值作为 data-key的值，data-accept设置为true
     Smart.widgetExtend("nda", {
         onPrepare: function(){
-            this.node.find("*[name]").each(function(){
+            this.S.node.find("*[name]").each(function(){
                 var nameNode = $(this);
                 if(!Smart.isWidgetNode(nameNode)){
                     //如果不是控件

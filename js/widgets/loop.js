@@ -19,11 +19,11 @@
         }
     }, {
         onPrepare: function(){
-            var emptyRow = getRoleNode("empty", this.node);
-            var loopRow = getRoleNode("row", this.node);
-            this.node.empty();
-            this.dataTable("loop", "emptyRow", emptyRow);
-            this.dataTable("loop", "loopRow", loopRow);
+            var emptyRow = getRoleNode("empty", this.S.node);
+            var loopRow = getRoleNode("row", this.S.node);
+            this.S.node.empty();
+            this.cache.emptyRow = emptyRow;
+            this.cache.loopRow = loopRow;
         }
     },{
         empty: function(){
@@ -33,14 +33,14 @@
             var row = this._getRow();
             if(indentNum){
                 var indentNode = row.find('*[s-loop-tree-role="indent"]');
-                if(this.options.loop['tree-indent-str']){
-                    var str = this.options.loop['tree-indent-str'];
+                if(this.widget.loop.options['tree-indent-str']){
+                    var str = this.widget.loop.options['tree-indent-str'];
                     for(var i = 1; i < indentNum; i++){
                         str += str;
                     }
                     indentNode.prepend(str);
                 } else if(indentNode.size() >= 0){
-                    indentNode.css("text-indent", this.options.loop.indent * indentNum + "px");
+                    indentNode.css("text-indent", this.widget.loop.options.indent * indentNum + "px");
                 }
 
             }
@@ -56,8 +56,8 @@
             for(var i = 0; i < datas.length; i++){
                 this.addRow(datas[i], indentNum, mode);
                 //如果是tree的方式
-                if(this.options.loop.type == "tree"){
-                    var children = datas[i][this.options.loop['tree-c']];
+                if(this.widget.loop.options.type == "tree"){
+                    var children = datas[i][this.widget.loop.options['tree-c']];
                     if(children && children.length){
                         this.addRows(children, indentNum + 1, mode);
                     }
@@ -65,11 +65,11 @@
             }
         },
         _getRow: function(){
-            var row = this.dataTable("loop", "loopRow").clone();
+            var row = this.widget.loop.cache.loopRow.clone();
             return row;
         },
         _addEmptyRow: function(){
-            var emptyRow = this.dataTable("loop", "emptyRow");
+            var emptyRow = this.widget.loop.cache.emptyRow;
             if(emptyRow){
                 this.node.append(emptyRow.clone());
             }
@@ -94,12 +94,12 @@
         options: "ctx:render"
     }, null, {
         dataSetter: function(data){
-            this.dataTable("row", "data", data);
+            this.widget.row.cache.data = data;
             this.inherited([data]);
-            this.options.row.render && this.options.row.render.call(this, this.node);
+            this.widget.row.options.render && this.widget.row.options.render.call(this, this.node);
         },
         dataGetter: function(){
-            return this.dataTable("row", "data");
+            return this.widget.row.cache.data;
         }
     });
 })(jQuery);

@@ -61,7 +61,7 @@
             "next": "›",
             "disabled-c": "disabled",
             "active-c": "active",
-            "event": "request.data",//页点击所触发的事件
+            "event": "request.params",//页点击所触发的事件
             "ed-pk": "page"//event.data的page key
         }
     }, {
@@ -70,23 +70,23 @@
         }
     }, {
         dataSetter: function (data) {
-            var pi = paging(data[this.options.pagination['pagekey']],
-                data[this.options.pagination['pskey']],
-                data[this.options.pagination['totalkey']],
-                data[this.options.pagination['showsize']]);
+            var pi = paging(data[this.widget.pagination.options['pagekey']],
+                data[this.widget.pagination.options['pskey']],
+                data[this.widget.pagination.options['totalkey']],
+                data[this.widget.pagination.options['showsize']]);
             this.node.empty();
-            var startPreLi = this._createLi(this.options.pagination['start-p']);
+            var startPreLi = this._createLi(this.widget.pagination.options['start-p']);
             if (pi.startPrePage <= 0) {
-                startPreLi.addClass(this.options.pagination['disabled-c']);
+                startPreLi.addClass(this.widget.pagination.options['disabled-c']);
             } else {
                 startPreLi.click(function () {
                     that._triggerPage(pi.startPrePage);
                 });
             }
             this.node.append(startPreLi);
-            var preLi = this._createLi(this.options.pagination.pre);
+            var preLi = this._createLi(this.widget.pagination.options.pre);
             if (pi.prePage <= 0) {
-                preLi.addClass(this.options.pagination['disabled-c']);
+                preLi.addClass(this.widget.pagination.options['disabled-c']);
             } else {
                 preLi.click(function () {
                     that._triggerPage(pi.prePage);
@@ -98,7 +98,7 @@
                 (function (i) {
                     var pageLi = that._createLi(i);
                     if (i == pi.page) {
-                        pageLi.addClass(that.options.pagination['active-c']);
+                        pageLi.addClass(that.widget.pagination.options['active-c']);
                     } else {
                         pageLi.click(function () {
                             that._triggerPage(i);
@@ -107,18 +107,18 @@
                     that.node.append(pageLi);
                 })(i);
             }
-            var nextLi = this._createLi(this.options.pagination.next);
+            var nextLi = this._createLi(this.widget.pagination.options.next);
             if (pi.nextPage <= 0) {
-                nextLi.addClass(this.options.pagination['disabled-c']);
+                nextLi.addClass(this.widget.pagination.options['disabled-c']);
             } else {
                 nextLi.click(function () {
                     that._triggerPage(pi.nextPage);
                 });
             }
             this.node.append(nextLi);
-            var endNextLi = this._createLi(this.options.pagination['end-n']);
+            var endNextLi = this._createLi(this.widget.pagination.options['end-n']);
             if (pi.endNextPage <= pi.endPage) {
-                endNextLi.addClass(this.options.pagination['disabled-c']);
+                endNextLi.addClass(this.widget.pagination.options['disabled-c']);
             } else {
                 endNextLi.click(function () {
                     that._triggerPage(pi.endNextPage);
@@ -128,8 +128,8 @@
         },
         _triggerPage: function(page){
             var arg = {};
-            arg[this.options.pagination['ed-pk']] = page;
-            this.trigger(this.options.pagination['event'], [arg]);
+            arg[this.widget.pagination.options['ed-pk']] = page;
+            this.trigger(this.widget.pagination.options['event'], [arg]);
         },
         _createLi: function (txt) {
             var li = $("<li />");

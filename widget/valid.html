@@ -30,7 +30,7 @@
     </ol>
     <hr />
     <h3 s-window-role="a" id="example" title="2. 示例">2. 示例</h3>
-    <form s="valid" s-valid-msg="form1ValidMsg" s-valid-validators="form1Validators" id="validForm1" role="form" style="width:500px;">
+    <form s="valid,submit" s-valid-msg="form1ValidMsg" s-valid-validators="form1Validators" id="validForm1" role="form" style="width:500px;">
         <div class="form-group has-feedback" s-valid-role="item">
             <label class="control-label" >用户名</label>
             <input s-valid-id="username"
@@ -82,7 +82,7 @@
             </label>
             <span s-valid-role="msg" class="help-block" >你需要详细阅读条款，并且同意此条款才能继续</span>
         </div>
-        <button type="submit" s="submit,click" s-click-action="submitValidForm1()" class="btn btn-primary">提交验证</button>
+        <button type="submit" s="click" s-click-action="submitValidForm1()" class="btn btn-primary">提交验证</button>
     </form>
     <script type="text/javascript">
         function submitValidForm1(){

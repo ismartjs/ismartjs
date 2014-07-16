@@ -10,10 +10,14 @@
         }
     }, {
         onPrepare: function () {
-            var originalOptions = this.node.children();
-            this.dataTable("select", "originalOptions", originalOptions);
-            this.options.select.form = this.options.select.form.split(":");
-            this.options.select.form[1] = this.options.select.form[1].split(",");
+            var originalOptions = this.S.node.children();
+            this.cache.originalOptions = originalOptions;
+            this.options.form = this.options.form.split(":");
+            this.options.form[1] = this.options.form[1].split(",");
+        },
+        onClean: function(){
+            this.S.node.empty();
+            this.S.node.append(this.cache.originalOptions);
         }
     }, {
         build: function (datas) {
@@ -21,18 +25,16 @@
                 Smart.error("构建select选项所需的数据必须是数组");
                 return;
             }
-            this.node.empty();
-            this.node.append(this.dataTable("select", "originalOptions"));
             for (var i in datas) {
                 this.node.append(this._createOption(datas[i]));
             }
         },
         _createOption: function (data) {
 
-            var value = data[this.options.select.form[0]];
-            var title = data[this.options.select.form[1][0]];
-            if (!title && this.options.select.form[1].length == 2) {
-                title = data[this.options.select.form[1][1]];
+            var value = data[this.widget.select.options.form[0]];
+            var title = data[this.widget.select.options.form[1][0]];
+            if (!title && this.widget.select.options.form[1].length == 2) {
+                title = data[this.widget.select.options.form[1][1]];
             }
             var option = $('<option value="' + value + '">' + title + '</option>');
             return option;

@@ -152,3 +152,29 @@ ul.s-ui-contextmenu li.disabled:hover > span{
     background: #fff;
     padding: 10px;
 }
+
+.s-ui-editable{
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    border-color: #ccc;
+}
+
+.s-ui-editable:hover{
+    border-width: 1px;
+    border-style: solid;
+}
+.s-ui-editable:focus,input[type='text'].s-ui-editable.focus{
+    border-width: 1px;
+    border-style: solid;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    background: #fff;
+}
+.has-error .s-ui-editable,
+.has-warning .s-ui-editable,
+.has-success .s-ui-editable{
+    border-width: 1px;
+    border-style: solid;
+    background: #fff;
+}

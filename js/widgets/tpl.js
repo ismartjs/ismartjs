@@ -7,8 +7,8 @@
     var TABLE_FN_KEY = "_TPL_FN_";
     Smart.widgetExtend("tpl", {
         onPrepare: function(){
-            var tplText = this.node.html();
-            this.node.empty();
+            var tplText = this.S.node.html();
+            this.S.node.empty();
             //处理脚本定义中的 lt,gt lt 处理成 <, gt处理成 >。
             //tplText = tplText.replace(/\slt\s/gi,"<").replace(/\sgt\s/gi, ">");
             var compiledText = $.template.compile(tplText);
@@ -20,12 +20,12 @@
             scripts.push("})();//@ sourceURL=" + (token++) + "_template.js");
             var script = scripts.join("\n");
             var fn = eval(script);
-            this.dataTable("tpl", TABLE_FN_KEY, fn);
+            this.cache[TABLE_FN_KEY] = fn;
+        },
+        onData: function(data){
+            this.S._insertData(data);
         }
     },{
-        dataSetter: function(data){
-            this._insertData(data);
-        },
         appendData: function(data){
             this._insertData(data, "appendNode");
         },
@@ -33,7 +33,7 @@
             this._insertData(data, "prependNode");
         },
         _insertData: function(data, mode){
-            var fn = this.dataTable("tpl", TABLE_FN_KEY);
+            var fn = this.widget.tpl.cache[TABLE_FN_KEY];
             var html = fn.call(data);
             this[mode || "setNode"](html);
         }

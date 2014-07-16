@@ -223,7 +223,11 @@
         getMenuById: function(id){
             return this.menuMapping[id];
         }
-    }.loadMenu();
+    };
+
+    S.on("window.document.ready", function(){
+        MenuPanel.loadMenu();
+    });
 
     //主选项
     function MainTab(data, secondaryMenu){

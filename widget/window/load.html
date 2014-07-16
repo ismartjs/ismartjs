@@ -123,7 +123,7 @@
 &lt;meta <span class="text-info">title="{%=arg1+','+arg2%}" args="arg1,arg2"</span> /&gt;
 &lt;p class="lead"&gt;meta 的title值为传递进来的参数 &lt;code&gt;arg1+','+arg2&lt;/code&gt; 的值。&lt;/p&gt;
 &lt;script type="text/javascript"&gt;
-    <span class="text-info">var meta = this.dataTable("meta");
+    <span class="text-info">var meta = this.meta;
     setTimeout(function(){
         alert("meta的title值为：" + meta.title);
     }, 1);</span>

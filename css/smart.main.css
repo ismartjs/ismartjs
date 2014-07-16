@@ -315,6 +315,7 @@
     left: 0;
     bottom: 0;
     padding: 10px;
+    padding-top: 25px;
     overflow: auto;
 }
 

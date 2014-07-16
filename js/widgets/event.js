@@ -55,57 +55,57 @@
     };
     Smart.widgetExtend({id:"event",options:"type,action"}, {
         onPrepare: function(){
-            var action = this.options.event['action'];
-            var event = this.options.event["type"];
-            bindEvent(this, event, action);
+            var action = this.options['action'];
+            var event = this.options["type"];
+            bindEvent(this.S, event, action);
         }
     });
     Smart.widgetExtend({id:"click",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.click['action'];
-            bindEvent(this, "click", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "click", action);
         }
     });
     Smart.widgetExtend({id:"change",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.change['action'];
-            bindEvent(this, "change", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "change", action);
         }
     });
     Smart.widgetExtend({id:"focus",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.focus['action'];
-            bindEvent(this, "focus", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "focus", action);
         }
     });
     Smart.widgetExtend({id:"blur",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.blur['action'];
-            bindEvent(this, "blur", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "blur", action);
         }
     });
     Smart.widgetExtend({id:"dblclick",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.dblclick['action'];
-            bindEvent(this, "dblclick", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "dblclick", action);
         }
     });
     Smart.widgetExtend({id:"mouseover",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.mouseover['action'];
-            bindEvent(this, "mouseover", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "mouseover", action);
         }
     });
     Smart.widgetExtend({id:"mousemove",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.mousemove['action'];
-            bindEvent(this, "mousemove", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "mousemove", action);
         }
     });
     Smart.widgetExtend({id:"mouseout",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.mouseout['action'];
-            bindEvent(this, "mouseout", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "mouseout", action);
         }
     });
 
@@ -118,7 +118,7 @@
         }
     },{
         onPrepare: function(){
-            this.node.on(this.options.stopPropagation.events, function(e){
+            this.S.node.on(this.options.events, function(e){
                 e.stopPropagation();
             });
         }

@@ -142,16 +142,16 @@
     };
 
     //控件生命周期的事件禁止冒泡
-    var STOP_PROPAGATION_EVENT = ["made", "load", "loading", "close"];
+    var STOP_PROPAGATION_EVENT = ["made", "load", "loading", "close", "refresh"];
 
     var NODE_ATTR_PREFIX = "s";
 
     var Smart = window.Smart = function (node) {
         this.node = node || $();
         this.node.data(SMART_NODE_CACHE_KEY, this);
-        this._dataTable = {};
         this.lifeStage = LIFE_STAGE.initial;
-        this.options = {};
+        this.widgets = [];
+        this.widget = {};
         var that = this;
         $.each(STOP_PROPAGATION_EVENT, function (i, evt) {
             that.on(evt, function (e) {
@@ -184,22 +184,22 @@
 
     //ui-utils
     Smart.extend({
-        disableNode: function(btnNode, flag){
-            if(flag == null) flag = true;
-            if(flag){
+        disableNode: function (btnNode, flag) {
+            if (flag == null) flag = true;
+            if (flag) {
                 btnNode.attr("disabled", 'disabled').addClass("disabled");
             } else {
                 btnNode.removeAttr("disabled").removeClass("disabled");
             }
         },
-        clickDeferred: function(node, fn){
-            node.click(function(e){
+        clickDeferred: function (node, fn) {
+            node.click(function (e) {
                 Smart.disableNode(node);
                 var rs = fn(e);
-                if(Smart.isDeferred(rs)){
+                if (!Smart.isDeferred(rs)) {
                     Smart.disableNode(node, false);
                 } else {
-                    rs.always(function(){
+                    rs.always(function () {
                         Smart.disableNode(node, false);
                     });
                 }
@@ -257,9 +257,9 @@
             return false;
         },
         isWidgetNode: function (node) {
-            return node.attr(SMART_ATTR_KEY) !== undefined;
+            return node && node.attr(SMART_ATTR_KEY) !== undefined;
         },
-        isDeferred: function(obj){
+        isDeferred: function (obj) {
             return obj && "done" in obj && $.isFunction(obj.done);
         },
         map: function (datas, key) {
@@ -593,8 +593,8 @@
                     return smart;
                 }
                 var parent = smart.parent();
-                if (parent == null) {
-                    return null;
+                if (parent.isWindow()) {
+                    return parent;
                 }
                 return getContextSmart(parent);
             };
@@ -612,75 +612,156 @@
                 return smart._context.apply(this, $.makeArray(arguments));
             };
         })(),
-        //用于保存控件生命周期过程中产生的数据。dataTable的简称，
-        dataTable: function (namespace, key, val) {
-
-            var fullKey = this._getDataTableKey(namespace, key);
-            if (val === undefined) {
-                return this._dataTable[fullKey];
-            }
-            this._dataTable[fullKey] = val;
-            return this;
-        },
-        removeDataTable: function (namespace, key) {
-            delete this._dataTable[this._getDataTableKey(namespace, key)];
-            return this;
-        },
-        _getDataTableKey: function (namespace, key) {
-            if (Smart.isEmpty(namespace)) {
-                Smart.error("dataTable必须有命名空间");
-                this.alert("dataTable必须有命名空间");
-                return;
-            }
-            if (Smart.isEmpty(key)) {
-                Smart.error("dataTable必须有key");
-                this.alert("dataTable必须有key");
-                return;
-            }
-            return namespace + "-" + key;
-        },
-        clearDataTable: function () {
-            this._dataTable = {};
-            return this;
-        }
     });
+
+    //class 继承
+    Smart.Class = function (constructor, superClass, prototype, staticMethod) {
+        var SUPER;
+        if (!$.isFunction(superClass)) {
+            staticMethod = prototype;
+            prototype = superClass;
+            superClass = constructor;
+            constructor = superClass;
+        } else {
+            SUPER = function () {
+                superClass.apply(this, Array.prototype.slice.call(arguments));
+            };
+        }
+
+        var obj = function () {
+            SUPER && (this.SUPER = SUPER);
+            constructor.apply(this, Array.prototype.slice.call(arguments));
+        };
+
+        var inheritedFnMap = {};
+
+        obj.prototype = {
+            inherited: function () {
+                var caller = arguments.callee.caller;
+                if (!caller in inheritedFnMap) {
+                    console.error("该方法没有super方法");
+                    throw "该方法没有super方法";
+                }
+                var superFn = inheritedFnMap[caller];
+                return superFn.apply(this, Array.prototype.slice.call(arguments));
+            }
+        };
+
+        //设置prototype
+        Smart.extend(obj.prototype, superClass.prototype);
+        for (var key in prototype) {
+            var fn = prototype[key];
+            if (key in obj.prototype) {
+                inheritedFnMap[fn] = obj.prototype[key];
+            }
+            obj.prototype[key] = fn;
+        }
+
+        //处理静态方法
+        Smart.extend(obj, superClass);
+        Smart.extend(obj, staticMethod);
+
+        return obj;
+
+    };
 
     //控件
     (function () {
-        var WIDGET_API_MAP = {};
-        var WIDGET_LISTENER_MAP = {};
-        var WIDGET_DEF_ID_MAP = {};
 
-        var DEFAULT_LISTENER = {
-            onData: Smart.noop,
-            onPrepare: Smart.noop,//控件准备
-            onBuild: Smart.noop,//构造，该方式异步方法
-            onDestroy: Smart.noop,
-            onRefresh: Smart.noop,//刷新控件
-            onReset: Smart.noop//重置控件
+        function SmartWidget(smart, meta) {
+            this.options = {};
+            this.S = smart;
+            this.meta = meta;
+            this.cache = {};//缓存的数据
         }
 
-        Smart.widgetExtend = function (def, listener, api) {
-            if (TO_STRING.call(def) == "[object String]") {
-                def = {id: def}
+        SmartWidget.prototype = {
+            onData: Smart.noop,//接受赋值
+            onPrepare: Smart.noop,//控件准备
+            onBuild: Smart.noop,//构造，该方式异步方法
+            onDestroy: Smart.noop,//刷新控件
+            onReady: Smart.noop,
+            onReset: Smart.noop,//重置控件
+            onClean: Smart.noop//清理控件,
+        };
+
+        Smart.extend(SmartWidget.prototype, {
+            optionName: function (key) {
+                return Smart.optionAttrName(this.meta.id, key);
+            },
+            optionValue: function (node, key) {
+                return node.attr(this.optionName(key));
+            },
+            processOptions: function () {
+                if (this.meta.options && this.meta.options.length) {
+                    //组装 widget定义时的options属性，根据options属性从node上读取属性值
+                    var options = this.meta.options;
+                    var optionsNames;
+                    var optionDefault = undefined;
+                    if (TO_STRING.call(options) === "[object Array]") {
+                        optionsNames = $.trim(options[0]).split(",");
+                        if (options.length > 1) {
+                            optionDefault = options[1];
+                        }
+                    } else {
+                        optionsNames = $.trim(options).split(",");
+                    }
+                    var optionValues = {};
+                    for (var i in optionsNames) {
+                        var key = $.trim(optionsNames[i]);
+                        //如果key是以ctx:开头的，则说明key的值是根据该属性值从context中去取
+                        var keyCtx = false;
+                        if (/^ctx:.*$/.test(key)) {
+                            key = key.substring(4);
+                            keyCtx = true;
+                        }
+                        var valueCtx = false;
+                        //根据option获取配置的属性，为 data-控件id-option
+                        var value = this.optionValue(this.S.node, key);
+                        if (/^ctx:.*$/.test(value)) {
+                            value = value.substring(4);
+                            valueCtx = true;
+                        }
+                        if (keyCtx || valueCtx) {
+                            optionValues[key] = this.S.context(value);
+                        } else {
+                            optionValues[key] = value;
+                        }
+
+                    }
+                    if (optionDefault && TO_STRING.call(optionDefault) === '[object Object]') {
+                        optionValues = $.extend(optionDefault, optionValues);
+                    }
+                    //mixin options与widget.defaultOptions
+                    var tmpOptions = {};
+                    if (this.meta.defaultOptions) {
+                        $.extend(tmpOptions, this.meta.defaultOptions); //复制widget.defaultOptions
+                    }
+                    $.extend(tmpOptions, optionValues);
+                    this.options = tmpOptions;
+                }
             }
-            var id = def.id;
-            WIDGET_DEF_ID_MAP[id] = def;
-            api && (WIDGET_API_MAP[id] = api);
-            listener && (WIDGET_LISTENER_MAP[id] = $.extend($.extend({}, DEFAULT_LISTENER), listener));
+        });
+
+        var SMART_WIDGET_MAPPING = {};
+
+        Smart.widgetExtend = function (meta, Widget, api) {
+            if (TO_STRING.call(meta) == "[object String]") {
+                meta = {id: meta}
+            }
+
+            var _Widget = Smart.Class(SmartWidget, Widget);
+            _Widget.meta = meta;
+            _Widget.api = api;
+            SMART_WIDGET_MAPPING[meta.id] = _Widget;
         };
 
         //扩展widget meta的defaultOptions
         Smart.widgetOptionsExtend = function (id, options) {
-            var widgetDef = WIDGET_DEF_ID_MAP[id];
-            if (widgetDef) {
-                widgetDef.defaultOptions = $.extend(widgetDef.defaultOptions || {}, options);
+            var Widget = SMART_WIDGET_MAPPING[id];
+            if (Widget) {
+                Widget.meta.defaultOptions = $.extend(Widget.meta.defaultOptions || {}, options);
             }
-        };
-
-        //根据id获取widget定义
-        Smart.getWidgetDef = function (id) {
-            return WIDGET_DEF_ID_MAP[id];
         };
 
         //最基本的控件。
@@ -688,27 +769,36 @@
             id: "smart",
             options: "key, data, null"
         }, {
+            onReady: function () {
+                (this.options.data != undefined || this.S._smart_data_ != undefined)
+                && this.S.data(this.S._smart_data_ || this.options.data);
+            },
             onData: function () {
-                var that = this;
-                that.options.smart.data && that.data(that.options.smart.data);
+                this.S.dataSetter.apply(this.S, $.makeArray(arguments));
             }
         }, {
-            dataGetter: Smart.noop,
+            //控件的获取dataGetter的方法，只有主要控件才需要实现该方法。
+            dataGetter: function () {
+                if ("_smart_data" in this) return this._smart_data_;
+                return this.widget.smart.options.data;
+            },
             dataSetter: function (data) {
                 var dataType = $.type(data);
                 if (dataType == "boolean" || dataType == "number" || dataType == "string") {
                     //如果没有子元素
                     if (this.node.is("input[type='text'],select,textarea,input[type='password'],input[type='email'],input[type='number']")) {
                         this.node.val(data);
+                        this.node.trigger("data.set");
                         return;
-                    }
-                    if (this.node.is("input[type='radio']")) {
+                    } else if (this.node.is("input[type='radio']")) {
                         if (data + "" == this.node.val()) {
                             this.node.prop("checked", true);
+                            this.node.trigger("data.set");
                         }
                         return;
                     }
                     this.node.html(data);
+                    this.node.trigger("data.set");
                     return;
                 }
                 if (dataType == "array") {
@@ -716,92 +806,61 @@
                         var val = this.node.val();
                         if ($.inArray(val, data) != -1) {
                             this.node.prop("checked", true);
+                            this.node.trigger("data.set");
                         }
                     }
                 }
             },
             data: function () {
                 if (arguments.length == 0) {
-                    return this._smart_data_;
-//                    return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
+                    return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
                 }
                 this._smart_data_ = arguments.length == 1 && arguments[0];
                 var args = SLICE.call(arguments);
-                var dataKey = this.options.smart['key'];
+                var dataKey = this.widget.smart.options['key'];
                 var value = args;
                 if (dataKey) {
                     var data = args[0];
                     value = [data == undefined ? null : data[dataKey]];
                 }
-                value == null ? value = this.options.smart['null'] : value;
-                this.dataSetter.apply(this, value);
+                value = (value == null ? [this.widget.smart.options['null']] : value);
+                $.each(this.widgets, function (i, widget) {
+                    widget.onData.apply(widget, value);
+                });
             },
             build: Smart.noop,
-            refresh: function(){
+            refresh: function () {
+                //refresh 表明是要先destory，然后rebuild。
+                var deferreds = [];
+                var readyDeferreds = [];
+                var args = $.makeArray(arguments);
+                $.each(this.widgets, function (i, widget) {
+                    widget.onClean.apply(widget, args);
+                    deferreds.push(function () {
+                        return widget.onBuild.apply(widget, args);
+                    });
+                    readyDeferreds.push(function () {
+                        return widget.onReady.apply(widget, args);
+                    });
+                });
                 var that = this;
-                $.each(this._widgetListeners, function(i, listener){
-                    listener.onRefresh && listener.onRefresh.call(that);
+                return Smart.deferredQueue(deferreds.concat(readyDeferreds)).done(function () {
+                    that.trigger("refresh", args);
+                });
+            },
+            destroy: function () {
+                //refresh 表明是要先destory，然后rebuild。
+                $.each(this.widgets, function (i, widget) {
+                    widget.onDestroy();
                 });
             },
             //重置控件
-            reset: function(){
-                var that = this;
-                $.each(this._widgetListeners, function(i, listener){
-                    listener.onReset && listener.onReset.call(that);
+            reset: function () {
+                $.each(this.widgets, function (i, widget) {
+                    widget.onReset();
                 });
             }
         });
-
-        var processOptions = function (smart, def) {
-            if (def.options && def.options.length) {
-                //组装 widget定义时的options属性，根据options属性从node上读取属性值
-                var options = def.options;
-                var optionsNames;
-                var optionDefault = undefined;
-                if (TO_STRING.call(options) === "[object Array]") {
-                    optionsNames = $.trim(options[0]).split(",");
-                    if (options.length > 1) {
-                        optionDefault = options[1];
-                    }
-                } else {
-                    optionsNames = $.trim(options).split(",");
-                }
-                var optionValues = {};
-                for (var i in optionsNames) {
-                    var key = $.trim(optionsNames[i]);
-                    //如果key是以ctx:开头的，则说明key的值是根据该属性值从context中去取
-                    var keyCtx = false;
-                    if (/^ctx:.*$/.test(key)) {
-                        key = key.substring(4);
-                        keyCtx = true;
-                    }
-                    var valueCtx = false;
-                    //根据option获取配置的属性，为 data-控件id-option
-                    var attrKey = Smart.optionAttrName(def.id, key);
-                    var value = smart.node.attr(attrKey);
-                    if (/^ctx:.*$/.test(value)) {
-                        value = value.substring(4);
-                        valueCtx = true;
-                    }
-                    if (keyCtx || valueCtx) {
-                        optionValues[key] = smart.context(value);
-                    } else {
-                        optionValues[key] = value;
-                    }
-
-                }
-                if (optionDefault && TO_STRING.call(optionDefault) === '[object Object]') {
-                    optionValues = $.extend(optionDefault, optionValues);
-                }
-                //mixin options与widget.defaultOptions
-                var tmpOptions = {};
-                if (def.defaultOptions) {
-                    $.extend(tmpOptions, def.defaultOptions); //复制widget.defaultOptions
-                }
-                $.extend(tmpOptions, optionValues);
-                smart.options[def.id] = tmpOptions;
-            }
-        };
 
         function processApis(smart, apis) {
             smart._inherited_api_map = {};
@@ -826,6 +885,8 @@
 
         var makeSmart = function (smart) {
 
+            var deferred = $.Deferred();
+
             var node = smart.node;
             var wIds = node.attr(SMART_ATTR_KEY);
             if (wIds == undefined) {
@@ -840,61 +901,26 @@
                 wIds.unshift("smart");
             }
 
-            //控件监听器
-            smart._widgetListeners = [];
-            //控件API
             var widgetApis = [];
-            //控件定义
-            var widgetDefs = [];
 
             $.each(wIds, function (i, wId) {
-                if (wId in WIDGET_API_MAP) {
-                    widgetApis.push(WIDGET_API_MAP[wId]);
-                }
-                if (wId in WIDGET_DEF_ID_MAP) {
-                    widgetDefs.push(WIDGET_DEF_ID_MAP[wId]);
-                }
-                if (wId in WIDGET_LISTENER_MAP) {
-                    smart._widgetListeners.push(WIDGET_LISTENER_MAP[wId]);
-                }
+                var Widget = SMART_WIDGET_MAPPING[wId];
+                if (!Widget) return;
+                widgetApis.push(Widget.api);
+                smart._addWidget(new Widget(smart, Widget.meta))
             });
 
             //merge api
             processApis(smart, widgetApis);
 
-            // 处理 控件option
-            smart.options = {};
-            $.each(widgetDefs, function (i, def) {
-                processOptions(smart, def);
-            });
-
-            /**
-             * 有些控件可能会自动设置某些控件的某个配置参数，所以提供这样的事件。
-             * */
-            smart.on("option", function (e, widgetId, key, value) {
-                if ($.inArray(widgetId, wIds) == -1) {
-                    return;
-                }
-                smart.options[widgetId][key] = value;
-                e.stopPropagation();
-            });
-
-            //准备控件
-            $.each(smart._widgetListeners, function (i, listener) {
-                if ("onPrepare" in listener) listener.onPrepare.call(smart);//每个api都需要prepare下。
-            });
-
-            smart.lifeStage = LIFE_STAGE.prepared;
-
             var deferreds = [];
 
-            //构建控件，该过程是异步过程。
-            $.each(smart._widgetListeners, function (i, listener) {
-                if ("onBuild" in listener) {
-                    deferreds.push(function () {
-                        return listener.onBuild.call(smart)
-                    });
-                }
+            $.each(smart.widgets, function (i, widget) {
+                deferreds.push(function () {
+                    widget.processOptions();
+                    widget.onPrepare();
+                    return widget.onBuild();
+                })
             });
 
             //构建完成后，开始make子元素
@@ -903,22 +929,19 @@
             });
 
             //子元素made成功后，开始运行控件
-            $.each(smart._widgetListeners, function (i, listener) {
-                if ("onData" in listener) {
-                    deferreds.push(function () {
-                        return listener.onData.call(smart)
-                    });
-                }
+            $.each(smart.widgets, function (i, widget) {
+                deferreds.push(function () {
+                    return widget.onReady();
+                });
             });
 
-            function resolve() {
+            Smart.deferredQueue(deferreds).always(function () {
                 smart.lifeStage = LIFE_STAGE.made;
                 smart.trigger("made");
-            }
-
-            return Smart.deferredQueue(deferreds).always(function () {
-                resolve();
+                deferred.resolve();
             });
+
+            return deferred.promise();
         };
         Smart.prototype.makeChildren = function () {
             var children = this.children();
@@ -934,6 +957,10 @@
             });
 
             return Smart.deferredQueue(deferredFns);
+        };
+        Smart.prototype._addWidget = function (widget) {
+            this.widgets.push(widget);
+            this.widget[widget.meta.id] = widget;
         };
         Smart.prototype.make = function () {
             try {
@@ -957,9 +984,8 @@
                 }
                 return makeSmart(Smart.of(this.node));
             } catch (e) {
-                Smart.error("make Smart error: " + e);
-            } finally {
-                return $.Deferred().resolve();
+                throw e;
+//                Smart.error("make Smart error: " + e);
             }
         }
     })();
@@ -1046,7 +1072,7 @@
                 //处理url
                 var thisData = this.data();
                 url = url.replace(URL_PLACEHOLDER_REGEX, function ($1, $2) {
-                    return (thisData && $2 in thisData) ?  thisData[$2] : _this.context($2);
+                    return (thisData && $2 in thisData) ? thisData[$2] : _this.context($2);
                 });
                 var ajaxOptions = {
                     url: url,
@@ -1194,30 +1220,30 @@
     }, {
         onPrepare: function () {
             var that = this;
-            this.on("submit-done", function(e){
-                if(that.options.cds['r'] == "true"){
-                    that.options.cds['cs'].refresh();
+            this.S.on("submit-done", function(e){
+                if(that.options['r'] == "true"){
+                    that.options['cs'].refresh();
                 }
             });
         }
     }, {
         getSubmitData: function (deferred) {
-            if (this.options.cds.dk) {
-                var data = this.options.cds.cs.getCheckedData(this.options.cds.ck);
+            if (this.widget.cds.options.dk) {
+                var data = this.widget.cds.options.cs.getCheckedData(this.widget.cds.options.ck);
                 if (Smart.isEmpty(data)) {
-                    if (this.options.cds['e-msg']) {
-                        this.alert(this.options.cds['e-msg']);
+                    if (this.widget.cds.options['e-msg']) {
+                        this.alert(this.widget.cds.options['e-msg']);
                     }
                     return deferred.reject();
                 }
                 var that = this;
                 function resolve() {
                     var obj = {};
-                    obj[that.options.cds.dk] = data;
+                    obj[that.widget.cds.options.dk] = data;
                     deferred.resolve(obj);
                 }
-                if(this.options.cds['c-msg']){
-                    this.confirm(this.options.cds['c-msg'], {sign:"warning"}).done(function(){
+                if(this.widget.cds.options['c-msg']){
+                    this.confirm(this.widget.cds.options['c-msg'], {sign:"warning"}).done(function(){
                         resolve();
                     }).fail(function(){
                         deferred.reject();
@@ -1241,61 +1267,60 @@
     //选中控件
     Smart.widgetExtend({
         id: "check",
-        options: "i-checked-class, turn, multiple, ctx:checkall-h, h-checked-class, check-path",
+        options: "i-checked-class, turn, multiple, ctx:checkall-h, h-checked-class, path",
         defaultOptions: {
             "turn": "on",
             "i-checked-class": "warning",
             multiple: "true",
             "h-checked-class": "s-ui-checked",
-            "check-path": "false"
+            "path": "false"
         }
     }, {
         onPrepare: function () {
             var that = this;
-            this.node.delegate(CHECK_ITEM_SELECTOR, "click", function (e) {
-                if (that.options.check.turn != "on") {
+            this.S.node.delegate(CHECK_ITEM_SELECTOR, "click", function (e) {
+                if (that.options.turn != "on") {
                     return;
                 }
-                that._toggleCheck($(this), e);
+                that.S._toggleCheck($(this), e);
             });
 
             var checkallHandles = [];
-            this.dataTable("check", "checkallHandles", checkallHandles);
-
+            this.cache.checkallHandles = checkallHandles;
             var innerCheckallHandle = $("*[s-check-role='checkall-h']", this.node);
 
             if (innerCheckallHandle.size() > 0) {
                 checkallHandles.push(innerCheckallHandle);
-                this.node.delegate("*[s-check-role='checkall-h']", "click", function (e) {
-                    that._toggleCheckAll($(this));
+                this.S.node.delegate("*[s-check-role='checkall-h']", "click", function (e) {
+                    that.S._toggleCheckAll($(this));
                     e.stopPropagation();
                 });
             }
-            if (this.options.check['checkall-h']) {
-                checkallHandles.push(this.options.check['checkall-h']);
-                this.options.check['checkall-h'].click(function (e) {
-                    that._toggleCheckAll($(this));
+            if (this.options['checkall-h']) {
+                checkallHandles.push(this.options['checkall-h']);
+                this.options['checkall-h'].click(function (e) {
+                    that.S._toggleCheckAll($(this));
                     e.stopPropagation();
                 });
             }
 
-            this.node.delegate(CHECK_ITEM_SELECTOR, "unchecked", function (e) {
-                innerCheckallHandle.size() && that._uncheckHandle(innerCheckallHandle);
-                that.options.check['checkall-h'] && that._uncheckHandle(that.options.check['checkall-h']);
-                that.options.check['checkall-h'] && that.options.check['checkall-h'].prop("checked", false);
+            this.S.node.delegate(CHECK_ITEM_SELECTOR, "unchecked", function (e) {
+                innerCheckallHandle.size() && that.S._uncheckHandle(innerCheckallHandle);
+                that.options['checkall-h'] && that.S._uncheckHandle(that.options['checkall-h']);
+                that.options['checkall-h'] && that.options['checkall-h'].prop("checked", false);
                 e.stopPropagation();
             });
         },
         onRefresh: function(){
-            var checkallHandles = this.dataTable("check", "checkallHandles");
+            var checkallHandles = this.cache.checkallHandles;
             var that = this;
             $.each(checkallHandles, function(){
-                that._uncheckHandle($(this));
+                that.S._uncheckHandle($(this));
             });
         }
     }, {
         turn: function (type) {
-            this.options.check.turn = type;
+            this.widget.check.options.turn = type;
             if(type != "on"){
                 $(CHECK_ITEM_HANDLER_SELECTOR, this.node).prop("disabled", true);
             } else {
@@ -1304,12 +1329,12 @@
         },
         _toggleCheckAll: function (node) {
             var flag;
-            if (node.hasClass(this.options.check['h-checked-class'])) {
+            if (node.hasClass(this.widget.check.options['h-checked-class'])) {
                 flag = false;
-                node.removeClass(this.options.check['h-checked-class']);
+                node.removeClass(this.widget.check.options['h-checked-class']);
             } else {
                 flag = true;
-                node.addClass(this.options.check['h-checked-class']);
+                node.addClass(this.widget.check.options['h-checked-class']);
             }
             flag ? this.checkAll() : this.uncheckAll();
         },
@@ -1328,39 +1353,39 @@
             });
         },
         _checkHandlesByFlag: function (flag) {
-            var checkallHandles = this.dataTable("check", "checkallHandles");
+            var checkallHandles = this.widget.check.cache.checkallHandles;
             var that = this;
             $.each(checkallHandles, function () {
                 flag ? that._checkHandle($(this)) : that._uncheckHandle($(this));
             });
         },
         _checkHandle: function (node) {
-            node.addClass(this.options.check['h-checked-class']);
+            node.addClass(this.widget.check.options['h-checked-class']);
             if (node.is(":checkbox")) {
                 node.prop("checked", true);
             }
         },
         _uncheckHandle: function (node) {
-            node.removeClass(this.options.check['h-checked-class']);
+            node.removeClass(this.widget.check.options['h-checked-class']);
             if (node.is(":checkbox")) {
                 node.prop("checked", false);
             }
         },
         getChecked: function () {
-            if (this.options.check['multiple'] == "true") {
+            if (this.widget.check.options['multiple'] == "true") {
                 var smarts = [];
-                $.each($(CHECK_ITEM_SELECTOR + "." + this.options.check['i-checked-class'], this.node), function () {
+                $.each($(CHECK_ITEM_SELECTOR + "." + this.widget.check.options['i-checked-class'], this.node), function () {
                     smarts.push(Smart.of($(this)));
                 });
                 return smarts;
             } else {
-                var node = $(CHECK_ITEM_SELECTOR + "." + this.options.check['i-checked-class'], this.node);
+                var node = $(CHECK_ITEM_SELECTOR + "." + this.widget.check.options['i-checked-class'], this.node);
                 if(node.size() == 0) return null;
                 return Smart.of($(node[0]));
             }
         },
         getCheckedData: function(field){
-            if (this.options.check['multiple'] == "true") {
+            if (this.widget.check.options['multiple'] == "true") {
                 var datas = [];
                 $.each(this.getChecked(), function(){
                     if(field){
@@ -1382,7 +1407,7 @@
                     return;
                 }
             }
-            var checkedClass = this.options.check['i-checked-class'];
+            var checkedClass = this.widget.check.options['i-checked-class'];
             if (node.hasClass(checkedClass)) {
                 this._uncheck(node);
             } else {
@@ -1390,19 +1415,19 @@
             }
         },
         _check: function (node) {
-            if (node.hasClass(this.options.check['i-checked-class'])) {
+            if (node.hasClass(this.widget.check.options['i-checked-class'])) {
                 return;
             }
             //如果是单选，则需要把其他的item取消选中
             var that = this;
-            if (this.options.check.multiple == "false") {
+            if (this.widget.check.options.multiple == "false") {
                 $(CHECK_ITEM_SELECTOR, this.node).not(node).each(function () {
                     that._uncheck($(this));
                 });
             }
 
             this._checkNode(node);
-            if (this.options.check['check-path'] == 'true') this._checkNextUntil(node);
+            if (this.widget.check.options['path'] == 'true') this._checkNextUntil(node);
         },
         _checkNextUntil: function (node) {
             var i = node.attr(CHECK_PATH_ATTR);
@@ -1414,11 +1439,11 @@
             });
         },
         _uncheck: function (node) {
-            if (!node.hasClass(this.options.check['i-checked-class'])) {
+            if (!node.hasClass(this.widget.check.options['i-checked-class'])) {
                 return;
             }
             this._uncheckNode(node);
-            if (this.options.check['check-path'] == 'true') {
+            if (this.widget.check.options['path'] == 'true') {
                 //取消选中下级的所有节点
                 this._uncheckPrevUntil(node);
                 //取消选中所有的上级节点
@@ -1456,14 +1481,14 @@
             }
         },
         _checkNode: function (node) {
-            if (node.hasClass(this.options.check['i-checked-class'])) {
+            if (node.hasClass(this.widget.check.options['i-checked-class'])) {
                 return;
             }
-            node.addClass(this.options.check['i-checked-class']).trigger("checked");
+            node.addClass(this.widget.check.options['i-checked-class']).trigger("checked");
 
             var handler = $(CHECK_ITEM_HANDLER_SELECTOR, node);
             if (handler.size() == 0) return;
-            handler.addClass(this.options.check['h-checked-class']);
+            handler.addClass(this.widget.check.options['h-checked-class']);
             if (handler.is(":checkbox")) {
                 setTimeout(function () {
                     if (!handler.prop("checked")) handler.prop("checked", true);
@@ -1471,13 +1496,13 @@
             }
         },
         _uncheckNode: function (node) {
-            if (!node.hasClass(this.options.check['i-checked-class'])) {
+            if (!node.hasClass(this.widget.check.options['i-checked-class'])) {
                 return;
             }
-            node.removeClass(this.options.check['i-checked-class']).trigger("unchecked");
+            node.removeClass(this.widget.check.options['i-checked-class']).trigger("unchecked");
             var handler = $(CHECK_ITEM_HANDLER_SELECTOR, node);
             if (handler.size() == 0) return;
-            handler.removeClass(this.options.check['h-checked-class']);
+            handler.removeClass(this.widget.check.options['h-checked-class']);
             if (handler.is(":checkbox")) {
                 setTimeout(function () {
                     if (handler.prop("checked")) handler.prop("checked", false);
@@ -1501,13 +1526,13 @@
     },{
         onPrepare: function(){
             var that = this;
-            Smart.clickDeferred(this.node, $.proxy(this.submit, this));
-            this.on("submit-done", function(e){
+            Smart.clickDeferred(this.S.node, $.proxy(this.S.submit, this.S));
+            this.S.on("submit-done", function(e){
                 e.stopPropagation();
                 that.options.listener && that.options.listener.done
                 && that.options.listener.done.apply(null, Smart.SLICE.call(arguments, 1));
             });
-            this.on("submit-fail", function(e){
+            this.S.on("submit-fail", function(e){
                 e.stopPropagation();
                 that.options.listener && that.options.listener.fail
                 && that.options.listener.fail.apply(null, Smart.SLICE.call(arguments, 1));
@@ -1515,7 +1540,7 @@
         }
     },{
         getSubmitData: function(deferred){
-            var data = this.options.dataSubmit['data'];
+            var data = this.widget.dataSubmit.options['data'];
             if(!$.isFunction(data)){
                 deferred.resolve(data);
             } else {
@@ -1528,7 +1553,7 @@
             this.getSubmitData(deferred);
             var submitDeferred = $.Deferred();
             deferred.done(function(data){
-                that[that.options.dataSubmit.type](that.options.dataSubmit.url, data).done(function(){
+                that[that.widget.dataSubmit.options.type](that.widget.dataSubmit.options.url, data).done(function(){
                     that.trigger.apply(that, ["submit-done"].concat($.makeArray(arguments)))
                     submitDeferred.resolve();
                 }).fail(function(){
@@ -1551,7 +1576,7 @@
     },null, {
         dataSetter: function(){
             var args = Smart.SLICE.call(arguments);
-            var igAttr = Smart.optionAttrName("datac", "ig");
+            var igAttr = this.widget.datac.optionName("ig");
             this.children().each(function(){
                 var ig = this.node.attr(igAttr);
                 if(ig == "true" || ig == ""){
@@ -1562,6 +1587,49 @@
         }
     });
 })();;/**
+ * Created by Administrator on 2014/7/14.
+ */
+(function(){
+    Smart.widgetExtend({
+        id: "editable",
+        options: "url,method",
+        defaultOptions:{
+            method: "put"
+        }
+    },{
+        onPrepare: function(){
+            var that = this;
+            this.S.node.on("change", function(e){
+                that.S._submit($(e.target));
+                e.stopPropagation();
+            });
+        }
+    },{
+        _submit:function(node){
+            var that = this;
+            node.addClass("focus");
+            function submit(){
+                var name = node.attr("name");
+                var val = node.val();
+                var data = {};
+                data[name] = val;
+                that[that.widget.editable.options.method](that.widget.editable.options.url, data).done(function(){
+                    that.reset();
+                    node.removeClass("focus");
+                });
+            }
+
+            if("validateNode" in this && $.isFunction(this.validateNode)){//说明该控件是验证控件
+                this.validateNode(node).done(function(){
+                    submit();
+                });
+            } else {
+                submit();
+            }
+
+        }
+    });
+})();/**
  * Created by Administrator on 2014/6/19.
  */
 (function(){
@@ -1618,57 +1686,57 @@
     };
     Smart.widgetExtend({id:"event",options:"type,action"}, {
         onPrepare: function(){
-            var action = this.options.event['action'];
-            var event = this.options.event["type"];
-            bindEvent(this, event, action);
+            var action = this.options['action'];
+            var event = this.options["type"];
+            bindEvent(this.S, event, action);
         }
     });
     Smart.widgetExtend({id:"click",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.click['action'];
-            bindEvent(this, "click", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "click", action);
         }
     });
     Smart.widgetExtend({id:"change",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.change['action'];
-            bindEvent(this, "change", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "change", action);
         }
     });
     Smart.widgetExtend({id:"focus",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.focus['action'];
-            bindEvent(this, "focus", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "focus", action);
         }
     });
     Smart.widgetExtend({id:"blur",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.blur['action'];
-            bindEvent(this, "blur", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "blur", action);
         }
     });
     Smart.widgetExtend({id:"dblclick",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.dblclick['action'];
-            bindEvent(this, "dblclick", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "dblclick", action);
         }
     });
     Smart.widgetExtend({id:"mouseover",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.mouseover['action'];
-            bindEvent(this, "mouseover", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "mouseover", action);
         }
     });
     Smart.widgetExtend({id:"mousemove",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.mousemove['action'];
-            bindEvent(this, "mousemove", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "mousemove", action);
         }
     });
     Smart.widgetExtend({id:"mouseout",options:"action"}, {
         onPrepare: function(){
-            var action = this.options.mouseout['action'];
-            bindEvent(this, "mouseout", action);
+            var action = this.options['action'];
+            bindEvent(this.S, "mouseout", action);
         }
     });
 
@@ -1681,7 +1749,7 @@
         }
     },{
         onPrepare: function(){
-            this.node.on(this.options.stopPropagation.events, function(e){
+            this.S.node.on(this.options.events, function(e){
                 e.stopPropagation();
             });
         }
@@ -1696,16 +1764,13 @@
     },{
         onPrepare: function(){
 
-            this.on("row-add", function(e, row, data, indentNum){
+            this.S.on("row-add", function(e, row, data, indentNum){
                 var path = [""];
                 for(var i = 0; i <= indentNum; i++){
                     path.push(i);
                 }
                 row.attr(checkPathAttr, path.join("/"));
             });
-
-            //设置check控件的 check-path 配置为true
-            this.trigger("option", ["check", 'check-path', 'true']);
         }
     });
 })();;/**
@@ -1729,11 +1794,11 @@
         }
     }, {
         onPrepare: function(){
-            var emptyRow = getRoleNode("empty", this.node);
-            var loopRow = getRoleNode("row", this.node);
-            this.node.empty();
-            this.dataTable("loop", "emptyRow", emptyRow);
-            this.dataTable("loop", "loopRow", loopRow);
+            var emptyRow = getRoleNode("empty", this.S.node);
+            var loopRow = getRoleNode("row", this.S.node);
+            this.S.node.empty();
+            this.cache.emptyRow = emptyRow;
+            this.cache.loopRow = loopRow;
         }
     },{
         empty: function(){
@@ -1743,14 +1808,14 @@
             var row = this._getRow();
             if(indentNum){
                 var indentNode = row.find('*[s-loop-tree-role="indent"]');
-                if(this.options.loop['tree-indent-str']){
-                    var str = this.options.loop['tree-indent-str'];
+                if(this.widget.loop.options['tree-indent-str']){
+                    var str = this.widget.loop.options['tree-indent-str'];
                     for(var i = 1; i < indentNum; i++){
                         str += str;
                     }
                     indentNode.prepend(str);
                 } else if(indentNode.size() >= 0){
-                    indentNode.css("text-indent", this.options.loop.indent * indentNum + "px");
+                    indentNode.css("text-indent", this.widget.loop.options.indent * indentNum + "px");
                 }
 
             }
@@ -1766,8 +1831,8 @@
             for(var i = 0; i < datas.length; i++){
                 this.addRow(datas[i], indentNum, mode);
                 //如果是tree的方式
-                if(this.options.loop.type == "tree"){
-                    var children = datas[i][this.options.loop['tree-c']];
+                if(this.widget.loop.options.type == "tree"){
+                    var children = datas[i][this.widget.loop.options['tree-c']];
                     if(children && children.length){
                         this.addRows(children, indentNum + 1, mode);
                     }
@@ -1775,11 +1840,11 @@
             }
         },
         _getRow: function(){
-            var row = this.dataTable("loop", "loopRow").clone();
+            var row = this.widget.loop.cache.loopRow.clone();
             return row;
         },
         _addEmptyRow: function(){
-            var emptyRow = this.dataTable("loop", "emptyRow");
+            var emptyRow = this.widget.loop.cache.emptyRow;
             if(emptyRow){
                 this.node.append(emptyRow.clone());
             }
@@ -1804,12 +1869,12 @@
         options: "ctx:render"
     }, null, {
         dataSetter: function(data){
-            this.dataTable("row", "data", data);
+            this.widget.row.cache.data = data;
             this.inherited([data]);
-            this.options.row.render && this.options.row.render.call(this, this.node);
+            this.widget.row.options.render && this.widget.row.options.render.call(this, this.node);
         },
         dataGetter: function(){
-            return this.dataTable("row", "data");
+            return this.widget.row.cache.data;
         }
     });
 })(jQuery);;/**
@@ -1820,7 +1885,7 @@
     //name的值作为 data-key的值，data-accept设置为true
     Smart.widgetExtend("nda", {
         onPrepare: function(){
-            this.node.find("*[name]").each(function(){
+            this.S.node.find("*[name]").each(function(){
                 var nameNode = $(this);
                 if(!Smart.isWidgetNode(nameNode)){
                     //如果不是控件
@@ -1853,50 +1918,66 @@
     Smart.widgetExtend({
         id: "resource",
         options: "data-res,ctx:data-form,ctx:data-adapter,ctx:data-cascade,data-cascade-key," +
-            "build-res,ctx:build-form,ctx:build-adapter,ctx:build-cascade,build-cascade-key"
+            "build-res,ctx:build-form,ctx:build-adapter,ctx:build-cascade,build-cascade-key,data-switch,ignore",
+        defaultOptions: {
+            'data-switch': "on"
+        }
     }, {
         onPrepare: function () {
             //级联
-            if (this.options.resource['data-cascade']) {
-                this.options.resource[STAGE.data.resourceKey] = this.options.resource['data-res'];
+            if (this.options['data-cascade']) {
+                this.options[STAGE.data.resourceKey] = this.options['data-res'];
                 var that = this;
-                this.options.resource['data-cascade'].change(function () {
-                    that._cascadeLoad(STAGE.data.id);
+                this.options['data-cascade'].on("change refresh data.set", function () {
+                    that.S.refresh();
                 });
             }
-            if (this.options.resource['build-cascade']) {
-                this.options.resource[STAGE.build.resourceKey] = this.options.resource['build-res'];
+            if (this.options['build-cascade']) {
+                this.options[STAGE.build.resourceKey] = this.options['build-res'];
                 var that = this;
-                this.options.resource['build-cascade'].change(function () {
-                    that._cascadeLoad(STAGE.build.id);
+                this.options['build-cascade'].on("change refresh data.set", function () {
+                    that.S.refresh();
                 });
+            }
+            var that = this;
+            this.S.on("request.params", function(e, params){
+                that.cache.params = params;
+                that.S.refresh(false);
+            });
+        },
+        onClean: function(flag){
+            if(flag == undefined || flag == true){
+                this.cache.params = {};
             }
         },
         onBuild: function () {
-            return this._onBuild();
+            return this._build();
         },
-        onData: function () {
-            return this._onData();
-        },
-        onRefresh: function (){
-            return this._onData();
-        }
-    }, {
-        _cascadeLoad: function (stage) {
-            var cascade = this.options.resource[stage + '-cascade'];
-            var val = cascade.val();
-            var resKey = stage + '-res';
-            var originalRes = this.options.resource[STAGE[stage].resourceKey];
-            var cascadeKey = stage + '-cascade-key';
-            this.options.resource[resKey] = originalRes.replace("{val}", val);
-            if (this.options.resource[cascadeKey]) {
-                var param = {};
-                param[this.options.resource[cascadeKey]] = val;
-                this.dataTable("resource", "param", param);
+        onReady: function () {
+            if(this.options['data-switch'] == "off"){
+                this.options['data-switch'] = "on";
+                return $.Deferred().resolve();
             }
-            return this._load(this.options.resource[resKey], param, stage);
+//            if (this.options['data-cascade']) return $.Deferred().resolve();
+            return this._ready();
         },
-        _load: function (resource, param, stage) {
+        _cascadeLoad: function (stage) {
+            var cascade = this.options[stage + '-cascade'];
+            var val = cascade.val();
+            if(val == this.options.ignore) {
+                return $.Deferred().resolve();
+            }
+            var resKey = stage + '-res';
+            var originalRes = this.options[STAGE[stage].resourceKey];
+            var cascadeKey = stage + '-cascade-key';
+            this.options[resKey] = originalRes.replace("{val}", val);
+            if (this.options[cascadeKey]) {
+                var params = {};
+                params[this.options[cascadeKey]] = val;
+            }
+            return this._load(this.options[resKey], params, stage);
+        },
+        _load: function (resource, params, stage) {
             var deferred = $.Deferred();
             if (resource == undefined) {
                 return deferred.resolve();
@@ -1908,21 +1989,23 @@
                 resource = resource.substring(idx + 1);
             }
             var that = this;
-            var form = this.options.resource[stage + "-form"];
-            var adapter = this.options.resource[stage + "-adapter"];
-            var param = this.dataTable("resource", "param") || {};
+            var form = this.options[stage + "-form"];
+            var adapter = this.options[stage + "-adapter"];
+            params = params || {};
             if (form) {
                 var formParam = Smart.serializeToObject(form);
-                $.extend(param, formParam);
+                $.extend(formParam, params);
+                params = formParam;
             }
-            this.get(resource, param, type).done(function (rs) {
+            $.extend(params, this.cache.params);
+            this.S.get(resource, params, type).done(function (rs) {
                 if ($.isFunction(adapter)) {
                     rs = adapter(rs);
                 }
                 if (stage == STAGE.build.id) {
-                    that.build(rs);
+                    that.S.build(rs);
                 } else if (stage == STAGE.data.id) {
-                    that.data(rs);
+                    that.S.data(rs);
                 }
                 deferred.resolve();
             }).fail(function () {
@@ -1930,27 +2013,18 @@
             });
             return deferred.promise();
         },
-        _onBuild: function () {
-            if (this.options.resource['build-cascade']) {
-                if (Smart.isWidgetNode(this.options.resource['build-cascade'])) {
-                    var deferred = $.Deferred();
-                    var that = this;
-                    Smart.of(this.options.resource['build-cascade']).onMade(function () {
-                        that._cascadeLoad(STAGE.build.id);
-                        deferred.resolve();
-                    });
-                    return deferred.promise();
-                }
+        _build: function () {
+            if (this.options['build-cascade']) {
                 return this._cascadeLoad(STAGE.build.id);
             }
-            return this._load(this.options.resource['build-res'], {}, STAGE.build.id);
+            return this._load(this.options['build-res'], {}, STAGE.build.id);
         },
-        _onData: function () {
-            if (this.options.resource['data-cascade']) {
-                if (Smart.isWidgetNode(this.options.resource['data-cascade'])) {
+        _ready: function () {
+            if (this.options['data-cascade']) {
+                if (Smart.isWidgetNode(this.options['data-cascade'])) {
                     var deferred = $.Deferred();
                     var that = this;
-                    Smart.of(this.options.resource['data-cascade']).onMade(function () {
+                    Smart.of(this.options['data-cascade']).onMade(function () {
                         that._cascadeLoad(STAGE.data.id);
                         deferred.resolve();
                     });
@@ -1958,11 +2032,10 @@
                 }
                 return this._cascadeLoad(STAGE.data.id);
             }
-            return this._load(this.options.resource['data-res'], {}, STAGE.data.id);
-        },
-        buildRefresh: function () {
-            return this._onBuild();
+            return this._load(this.options['data-res'], {}, STAGE.data.id);
         }
+    }, {
+
     });
 })();;/**
  * Created by Administrator on 2014/6/21.
@@ -1973,8 +2046,8 @@
     var TABLE_FN_KEY = "_TPL_FN_";
     Smart.widgetExtend("tpl", {
         onPrepare: function(){
-            var tplText = this.node.html();
-            this.node.empty();
+            var tplText = this.S.node.html();
+            this.S.node.empty();
             //处理脚本定义中的 lt,gt lt 处理成 <, gt处理成 >。
             //tplText = tplText.replace(/\slt\s/gi,"<").replace(/\sgt\s/gi, ">");
             var compiledText = $.template.compile(tplText);
@@ -1986,12 +2059,12 @@
             scripts.push("})();//@ sourceURL=" + (token++) + "_template.js");
             var script = scripts.join("\n");
             var fn = eval(script);
-            this.dataTable("tpl", TABLE_FN_KEY, fn);
+            this.cache[TABLE_FN_KEY] = fn;
+        },
+        onData: function(data){
+            this.S._insertData(data);
         }
     },{
-        dataSetter: function(data){
-            this._insertData(data);
-        },
         appendData: function(data){
             this._insertData(data, "appendNode");
         },
@@ -1999,7 +2072,7 @@
             this._insertData(data, "prependNode");
         },
         _insertData: function(data, mode){
-            var fn = this.dataTable("tpl", TABLE_FN_KEY);
+            var fn = this.widget.tpl.cache[TABLE_FN_KEY];
             var html = fn.call(data);
             this[mode || "setNode"](html);
         }
@@ -2129,10 +2202,17 @@
             });
         });
 
+        this.node.empty().append(this._WNODE);
         var scriptFn = eval(scripts.join("\n"));
         var context = scriptFn.call(this, loadArgs);
         this.setContext(context);
-        this.setNode(this._WNODE);
+
+        var that = this;
+        this.on("window.document.ready", function(e){e.stopPropagation()});
+        this.makeChildren().done(function(){
+            that.trigger("window.document.ready");
+        });
+
         //处理锚点滚动
         if (href.indexOf("#") != -1) {
             var anchor = href.substring(href.indexOf("#"));
@@ -2151,11 +2231,10 @@
         id: "window",
         options: "href"
     }, {
-        onData: function () {
+        onReady: function () {
             var deferred = $.Deferred();
-            var options = this.options.window;
-            if (options && options.href) {
-                this.load(options.href).always(function () {
+            if (this.cache.href) {
+                this.S.load.apply(this.S, [this.cache.href].concat(this.cache._loadArgs || [])).always(function () {
                     deferred.resolve()
                 });
                 return deferred.promise();
@@ -2164,29 +2243,38 @@
             }
         },
         onPrepare: function () {
-            this._WINDOW_ID = "_w_" + (CURRENT_WINDOW_ID++);
-            this[ON_BEFORE_CLOSE_FN_KEY] = [];
-            this[EVENT_ON_CACHE] = [];
-            if (!this.node.attr("id")) {
-                this.node.attr("id", this._WINDOW_ID);
+            this.S._WINDOW_ID = "_w_" + (CURRENT_WINDOW_ID++);
+            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+            this.cache[EVENT_ON_CACHE] = [];
+            this.cache.href = this.options.href;
+            if (!this.S.node.attr("id")) {
+                this.S.node.attr("id", this.S._WINDOW_ID);
             }
+        },
+        onClean: function(){
+            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+            this.S.node.html("正在刷新");
         }
     }, {
-        refresh: function () {
-            return this.load.apply(this, [this.currentHref()].concat(this.dataTable("window", "_loadArgs")));
-        },
         currentHref: function () {
-            return this.dataTable("window", "href");
+            return this.widget.window.cache['href'];
+        },
+        _offEvent: function(){
+            var that = this;
+            $.each(this.widget.window.cache[EVENT_ON_CACHE], function (i, paramAry) {
+                that.off.apply(that, paramAry);
+            });
+            this.widget.window.cache[EVENT_ON_CACHE] = [];
         },
         load: function (href, loadArgs) {
-            this._clean();
-            this.dataTable("window", "loadState", true);//是否已经加载
+            this.widget.window.cache["loadState"] = true;//是否已经加载
+            this._offEvent();
             this.trigger("loading");
             var deferred = $.Deferred();
             var args = $.makeArray(arguments);
-            this.dataTable("window", "_loadArgs", args);
+            this.widget.window.cache['_loadArgs'] = args;
             var that = this;
-            this.dataTable("window", "href", href);
+            this.widget.window.cache['href'] = href;
             this.get(href, null, "text").done(function (html) {
                 var result = parseHtml(html);
                 var scriptSrcs = result.scriptSrcs;
@@ -2229,10 +2317,10 @@
             return deferred;
         },
         scrollToAnchor: function (id) {
-            this.dataTable("window", STOP_ANCHOR_SCROLLIN_KEY, true);
+            this.widget.window.cache[STOP_ANCHOR_SCROLLIN_KEY] = true;
             var that = this;
             return this.scrollTo("#" + id).done(function () {
-                that.removeDataTable("window", STOP_ANCHOR_SCROLLIN_KEY);
+                delete that.widget.window.cache[STOP_ANCHOR_SCROLLIN_KEY];
             });
         },
         _listenAnchorPos: function () {
@@ -2241,7 +2329,7 @@
             if (nodesLength > 0) {
                 var that = this;
                 var anchorScrollListener = function () {
-                    if (that.dataTable("window", STOP_ANCHOR_SCROLLIN_KEY)) {
+                    if (that.widget.window.cache[STOP_ANCHOR_SCROLLIN_KEY]) {
                         return;
                     }
                     var height = $(this).innerHeight();
@@ -2263,10 +2351,10 @@
             }
         },
         getAnchors: function () {
-            var anchors = this.dataTable("window", "_anchors_");
+            var anchors = this.widget.window.cache['_anchors_'];
             if (!anchors) {
                 anchors = [];
-                this.dataTable("window", "_anchors_", anchors);
+                this.widget.window.cache['_anchors_'] = anchors;
                 this._getAnchorNodes().each(function () {
                     var n = $(this);
                     anchors.push({id: n.attr("_id_"), title: n.attr("title")});
@@ -2278,19 +2366,10 @@
             var attrName = Smart.optionAttrName("window", "role");
             return this.node.find("*[" + attrName + "='a']");
         },
-        _clean: function () {
-            this.trigger("clean");
-            this.clearDataTable();
-            this[ON_BEFORE_CLOSE_FN_KEY] = [];
-            var that = this;
-            $.each(this[EVENT_ON_CACHE], function (i, paramAry) {
-                that.off.apply(that, paramAry);
-            });
-        },
         //预关闭；
         preClose: function () {
             var deferred = $.Deferred();
-            var onBeforeCloseFns = this[ON_BEFORE_CLOSE_FN_KEY];
+            var onBeforeCloseFns = this.widget.window.cache[ON_BEFORE_CLOSE_FN_KEY];
             if (onBeforeCloseFns.length > 0) {
                 Smart.deferredQueue(onBeforeCloseFns.reverse()).then(function () {
                     deferred.resolve();
@@ -2314,7 +2393,7 @@
             //触发beforeClose监听事件。
             var that = this;
             var args = arguments;
-            that.clearDataTable();
+            that.widget.window.cache = {};
             var deferred = $.Deferred();
             deferred.done(function () {
                 that.node.remove();
@@ -2332,7 +2411,7 @@
         },
         //监听窗口关闭事件。
         onBeforeClose: function (fn) {
-            this[ON_BEFORE_CLOSE_FN_KEY].push(fn);
+            this.widget.window.cache[ON_BEFORE_CLOSE_FN_KEY].push(fn);
             return this;
         },
 
@@ -2392,9 +2471,9 @@
         },
         //这里修改on的方法，当页面渲染完成之后所有的on的事件都缓存起来，在refresh，和load新页面的时候要去除掉这些事件。
         on: function (events, selector, fn) {
-            if (this.dataTable("window", "loadState")) {
+            if (this.widget.window.cache.loadState) {
                 //如果已经加载了，on的事件将会被记录，在重新load的时候会移除掉这些事件。
-                this[EVENT_ON_CACHE].push([events, selector, fn]);
+                this.widget.window.cache[EVENT_ON_CACHE].push([events, selector, fn]);
             }
             return this.inherited([events, selector, fn]);
         }
@@ -2503,21 +2582,21 @@
         options: "ctx:target,ctx:filter"
     },{
         onPrepare: function(){
-            var target = this.options.contextmenu['target'];
+            var target = this.options['target'];
             var that = this;
             if(target)
-                this.bindTarget(target);
-            this.node.delegate("li", "click", function(e){
+                this.S.bindTarget(target);
+            this.S.node.delegate("li", "click", function(e){
                 if($("ul", $(this)).size() > 0){
                     return;
                 }
-                that.hide();
+                that.S.hide();
                 e.stopPropagation();
             });
             $(document).click(function(e){
-                that.hide();
+                that.S.hide();
             });
-            this.node.find("li ul").each(function(e){
+            this.S.node.find("li ul").each(function(e){
                 var ul = $(this);
                 var parentLi = ul.parent();
                 parentLi.mouseover(function(){
@@ -2551,7 +2630,7 @@
             CURRENT_SHOWN_CONTEXTMENU = this;
             Smart.UI.contextmenu.target = Smart.of(el);
             //过滤菜单
-            if(this.options.contextmenu.filter){
+            if(this.widget.contextmenu.options.filter){
                 var menuNodes = this.node.find("li[menuId]");
                 var that = this;
                 if(menuNodes.size()){
@@ -2559,7 +2638,7 @@
                         //如果filter的返回值是false，则说明该菜单不可用。
                         var node = $(this);
                         var menuId = node.attr("menuId");
-                        if(that.options.contextmenu.filter(menuId, node) == false){
+                        if(that.widget.contextmenu.options.filter(menuId, node) == false){
                             that._disableMenu(node);
                         } else {
                             that._enableMenu(node);
@@ -2613,20 +2692,20 @@
     },{
         onPrepare: function(){
             var that = this;
-            this.node.delegate("*["+dropdown_val_attr+"]", 'click', function(e){
+            this.S.node.delegate("*["+dropdown_val_attr+"]", 'click', function(e){
                 var val = $(this).attr(dropdown_val_attr);
                 //如果配置了target，则把该值赋值给target
-                if(that.options.dropdown.t){
-                    that.options.dropdown.t.val(val);
+                if(that.options.t){
+                    that.options.t.val(val);
                 }
-                if(that.options.dropdown.e){//如果配置了e，则发送该事件
+                if(that.options.e){//如果配置了e，则发送该事件
                     var data = {};
-                    if(that.options.dropdown['name'] == null){
+                    if(that.options['name'] == null){
                         data = val;
                     } else {
-                        data[that.options.dropdown['name']] = val;
+                        data[that.options['name']] = val;
                     }
-                    that.trigger(that.options.dropdown['e'], [data]);
+                    that.trigger(that.options['e'], [data]);
                 }
                 var title = $(this).attr(dropdown_title_attr) || $(this).text();
                 $(dropdown_title_selector, that.node).html(title);
@@ -2697,7 +2776,7 @@
             "next": "›",
             "disabled-c": "disabled",
             "active-c": "active",
-            "event": "request.data",//页点击所触发的事件
+            "event": "request.params",//页点击所触发的事件
             "ed-pk": "page"//event.data的page key
         }
     }, {
@@ -2706,23 +2785,23 @@
         }
     }, {
         dataSetter: function (data) {
-            var pi = paging(data[this.options.pagination['pagekey']],
-                data[this.options.pagination['pskey']],
-                data[this.options.pagination['totalkey']],
-                data[this.options.pagination['showsize']]);
+            var pi = paging(data[this.widget.pagination.options['pagekey']],
+                data[this.widget.pagination.options['pskey']],
+                data[this.widget.pagination.options['totalkey']],
+                data[this.widget.pagination.options['showsize']]);
             this.node.empty();
-            var startPreLi = this._createLi(this.options.pagination['start-p']);
+            var startPreLi = this._createLi(this.widget.pagination.options['start-p']);
             if (pi.startPrePage <= 0) {
-                startPreLi.addClass(this.options.pagination['disabled-c']);
+                startPreLi.addClass(this.widget.pagination.options['disabled-c']);
             } else {
                 startPreLi.click(function () {
                     that._triggerPage(pi.startPrePage);
                 });
             }
             this.node.append(startPreLi);
-            var preLi = this._createLi(this.options.pagination.pre);
+            var preLi = this._createLi(this.widget.pagination.options.pre);
             if (pi.prePage <= 0) {
-                preLi.addClass(this.options.pagination['disabled-c']);
+                preLi.addClass(this.widget.pagination.options['disabled-c']);
             } else {
                 preLi.click(function () {
                     that._triggerPage(pi.prePage);
@@ -2734,7 +2813,7 @@
                 (function (i) {
                     var pageLi = that._createLi(i);
                     if (i == pi.page) {
-                        pageLi.addClass(that.options.pagination['active-c']);
+                        pageLi.addClass(that.widget.pagination.options['active-c']);
                     } else {
                         pageLi.click(function () {
                             that._triggerPage(i);
@@ -2743,18 +2822,18 @@
                     that.node.append(pageLi);
                 })(i);
             }
-            var nextLi = this._createLi(this.options.pagination.next);
+            var nextLi = this._createLi(this.widget.pagination.options.next);
             if (pi.nextPage <= 0) {
-                nextLi.addClass(this.options.pagination['disabled-c']);
+                nextLi.addClass(this.widget.pagination.options['disabled-c']);
             } else {
                 nextLi.click(function () {
                     that._triggerPage(pi.nextPage);
                 });
             }
             this.node.append(nextLi);
-            var endNextLi = this._createLi(this.options.pagination['end-n']);
+            var endNextLi = this._createLi(this.widget.pagination.options['end-n']);
             if (pi.endNextPage <= pi.endPage) {
-                endNextLi.addClass(this.options.pagination['disabled-c']);
+                endNextLi.addClass(this.widget.pagination.options['disabled-c']);
             } else {
                 endNextLi.click(function () {
                     that._triggerPage(pi.endNextPage);
@@ -2764,8 +2843,8 @@
         },
         _triggerPage: function(page){
             var arg = {};
-            arg[this.options.pagination['ed-pk']] = page;
-            this.trigger(this.options.pagination['event'], [arg]);
+            arg[this.widget.pagination.options['ed-pk']] = page;
+            this.trigger(this.widget.pagination.options['event'], [arg]);
         },
         _createLi: function (txt) {
             var li = $("<li />");
@@ -2787,10 +2866,14 @@
         }
     }, {
         onPrepare: function () {
-            var originalOptions = this.node.children();
-            this.dataTable("select", "originalOptions", originalOptions);
-            this.options.select.form = this.options.select.form.split(":");
-            this.options.select.form[1] = this.options.select.form[1].split(",");
+            var originalOptions = this.S.node.children();
+            this.cache.originalOptions = originalOptions;
+            this.options.form = this.options.form.split(":");
+            this.options.form[1] = this.options.form[1].split(",");
+        },
+        onClean: function(){
+            this.S.node.empty();
+            this.S.node.append(this.cache.originalOptions);
         }
     }, {
         build: function (datas) {
@@ -2798,18 +2881,16 @@
                 Smart.error("构建select选项所需的数据必须是数组");
                 return;
             }
-            this.node.empty();
-            this.node.append(this.dataTable("select", "originalOptions"));
             for (var i in datas) {
                 this.node.append(this._createOption(datas[i]));
             }
         },
         _createOption: function (data) {
 
-            var value = data[this.options.select.form[0]];
-            var title = data[this.options.select.form[1][0]];
-            if (!title && this.options.select.form[1].length == 2) {
-                title = data[this.options.select.form[1][1]];
+            var value = data[this.widget.select.options.form[0]];
+            var title = data[this.widget.select.options.form[1][0]];
+            if (!title && this.widget.select.options.form[1].length == 2) {
+                title = data[this.widget.select.options.form[1][1]];
             }
             var option = $('<option value="' + value + '">' + title + '</option>');
             return option;
@@ -2827,19 +2908,17 @@
     }, {
         onPrepare: function(){
             var that = this;
-            this.dataTable("submit", "action", this.node.attr("action"));
-            this.dataTable("submit", "method", this.node.attr("method") || "post");
-            this.dataTable("submit", "enctype", this.node.attr("enctype") || "application/x-www-form-urlencoded");
-            var submtBtn = this.node.find(":submit")
-            this.node[0].onsubmit = function(e){
+            this.cache.action = this.S.node.attr("action");
+            this.cache.method = this.S.node.attr("method") || "post";
+            this.cache.enctype = this.S.node.attr("enctype") || "application/x-www-form-urlencoded";
+            var submtBtn = this.S.node.find(":submit")
+            this.S.node[0].onsubmit = function(e){
                 e.stopPropagation();
                 try{
-                    var deferred = $.Deferred();
                     Smart.disableNode(submtBtn);
-                    deferred.done(function(){
+                    that.S.submit().always(function(){
                         Smart.disableNode(submtBtn, false);
                     });
-                    that.submit(deferred);
                 } catch(e){
                     Smart.error(e);
                 }
@@ -2847,14 +2926,15 @@
             };
         }
     },{
-        submit: function(deferred){
-            if(!('action' in this.options.submit) && Smart.isEmpty(this.dataTable("submit", "action"))) {
+        submit: function(){
+            var deferred = $.Deferred();
+            if(!('action' in this.widget.submit.options) && Smart.isEmpty(this.widget.submit.cache.action)) {
                 return deferred.resolve();
             }
             var that = this;
-            if(this.options.submit.action){//如果定义了submit action，则直接执行该action
+            if(this.widget.submit.options.action){//如果定义了submit action，则直接执行该action
                 var actionSubmit = function(){
-                    var result = that.options.submit.action.call(that);
+                    var result = that.widget.submit.options.action.call(that);
                     if(Smart.isDeferred(result)){//说明是deferred对象
                         result.always(function(){
                             deferred.resolve();
@@ -2864,32 +2944,35 @@
                     }
                 };
                 if("validate" in this){
-                    this.validate().done(actionSubmit);
+                    this.validate().done(actionSubmit).fail(function(){
+                        deferred.reject();
+                    });
                 } else {
                     actionSubmit();
                 }
 
-                return;
+                return deferred;
             }
             var data;
-            switch(this.dataTable("submit", "enctype")){
+            switch(this.widget.submit.cache.enctype){
                 case "multipart/form-data" : data = Smart.formData(this.node); break;
                 case "application/x-www-form-urlencoded" :
                     data = Smart.serializeToObject(this.node); break;
             }
 
             var submit = function(){
-                that[that.dataTable("submit", "method")](that.dataTable("submit", "action"), data)
+                that[that.widget.submit.cache.method](that.widget.submit.cache.action, data)
                     .done(function(rs){
-                        that.options.submit.done && that.options.submit.done.call(that, rs);
-                        if(that.options.submit.reset == 'true'){
+                        that.widget.submit.options.done && that.widget.submit.options.done.call(that, rs);
+                        if(that.widget.submit.options.reset == 'true'){
                             that.node[0].reset();
                         }
+                        deferred.resolve(rs);
                 }).fail(function(){
-                    that.options.submit.done && that.options.submit.done.apply(that, $.makeArray(arguments));
+                        deferred.reject.apply(deferred, $.makeArray(arguments));
+                    that.widget.submit.options.done && that.widget.submit.options.done.apply(that, $.makeArray(arguments));
                 }).always(function(){
-                    that.options.submit.always && that.options.submit.always.call(that);
-                    deferred.resolve();
+                    that.widget.submit.options.always && that.widget.submit.options.always.call(that);
                 });
             };
 
@@ -2898,12 +2981,12 @@
                 this.validate().done(function(){
                     submit();
                 }).fail(function(){
-                    deferred.resolve();
+                    deferred.reject();
                 });
             } else {
                 submit();
             }
-
+            return deferred;
         }
     });
 })(jQuery);;(function ($) {
@@ -2945,7 +3028,7 @@
         options: "ctx:msg,ctx:show,ctx:resetShow,s-class,e-class,w-class,blur,ctx:validators",
         defaultOptions: {
             msg: DEFAULT_MSG,
-            blur: true,
+            blur: "true",
             's-class': "has-success",
             'e-class': "has-error",
             'w-class': "has-warning",
@@ -2956,14 +3039,14 @@
                 if(node.data(NODE_ORIGINAL_VALID_MSG_KEY) == undefined){
                     node.data(NODE_ORIGINAL_VALID_MSG_KEY, msgNode.html());
                 }
-                item.removeClass(this.options.valid['s-class']+" "+this.options.valid['e-class']+" "+this.options.valid['w-class']);
-                item.addClass(this.options.valid[level.style]);
+                item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
+                item.addClass(this.widget.valid.options[level.style]);
                 $(MSG_ROLE_SELECTOR,item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
             },
             'resetShow': function(node){
                 var item = node.closest(ITEM_ROLE_SELECTOR);
                 $(MSG_ROLE_SELECTOR,item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
-                item.removeClass(this.options.valid['s-class']+" "+this.options.valid['e-class']+" "+this.options.valid['w-class']);
+                item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
             }
         },
         addValidators: addValidators,//添加新的验证器
@@ -2971,40 +3054,40 @@
 
     }, {
         onPrepare: function () {
-            if(this.options.valid.blur){
+            if(this.options.blur === "true"){
                 var that = this;
-                this.node.delegate(VALID_NODE_SELECTOR, "blur", function(){
+                this.S.node.delegate(VALID_NODE_SELECTOR, "blur", function(){
                     if($(this).attr(VALID_NODE_BLUR_IG_ATTR) == "true"){
                         return;
                     }
-                    that.validateNode($(this));
+                    that.S.validateNode($(this));
                 });
             }
-            if(this.options.valid.validators){
+            if(this.options.validators){
                 var map = {};
-                for(var i = 0; i < this.options.valid.validators.length; i++){
-                    var v = this.options.valid.validators[i];
+                for(var i = 0; i < this.options.validators.length; i++){
+                    var v = this.options.validators[i];
                     map[v.id] = v;
                 }
-                this.dataTable("valid", "validatorMap", map);
+                this.cache.validatorMap = map;
             }
-            this.dataTable("valid", 'validateItemMap', {});
-            this.dataTable("valid", "validedNodes", []);//保存已经验证过的元素
+            this.cache.validateItemMap = {};
+            this.cache.validedNodes = [];
         },
         onReset: function(){
-            var validedNodes = this.dataTable("valid", "validedNodes");
+            var validedNodes = this.cache.validedNodes;
             var that = this;
             $.each(validedNodes, function(i, node){
-                that.resetValidateNode(node);
+                that.S.resetValidateNode(node);
             });
-            this.dataTable("valid", "validedNodes", []);
+            this.cache.validedNodes = [];
         }
     }, {
         validate: function () {
             var validNodes = this.node.find(VALID_NODE_SELECTOR);
             var deferreds = [];
             var that = this;
-            this.dataTable("valid", "validedNodes", []);
+            this.widget.valid.cache.validedNodes = [];
             validNodes.each(function(){
                 var node = $(this);
                 deferreds.push(function(){
@@ -3026,12 +3109,12 @@
             if(resetShow){
                 resetShow = this.context(resetShow);//resetShow是一个context闭包参数。
             }
-            (resetShow || this.options.valid.resetShow).call(this, node);
+            (resetShow || this.widget.valid.options.resetShow).call(this, node);
         },
         validateNode: function (node) {
             var id = node.attr(VALID_NODE_ID_ATTR);
-            this.dataTable("valid", "validedNodes").push(node);
-            var defMsg = this.options.valid.msg[id] || {};
+            this.widget.valid.cache.validedNodes.push(node);
+            var defMsg = this.widget.valid.options.msg[id] || {};
             var errorExp = node.attr(VALID_NODE_ERROR_ATTR);
             var label = node.attr(VALID_NODE_LABEL_ATTR);
             var deferreds = [];
@@ -3046,7 +3129,7 @@
                 node: node,
                 value: node.val()
             };
-            var validateItemMap = this.dataTable("valid", 'validateItemMap');
+            var validateItemMap = this.widget.valid.cache.validateItemMap;
             if(id != undefined){
                 validateItemMap[id] = validateItem;
             }
@@ -3065,7 +3148,7 @@
                             deferred.resolve();
                         }).fail(function(result, _level){
                             level = _level || LEVELS.error;
-                            (show || that.options.valid.show).call(that, node,  result || defMsg[level.key+"Msg"] || "", level);
+                            (show || that.widget.valid.options.show).call(that, node,  result || defMsg[level.key+"Msg"] || "", level);
                             deferred.reject();
                         });
                     return deferred;
@@ -3092,7 +3175,7 @@
                 });
             }
             deferreds.push(function(){
-                (show || that.options.valid.show).call(that, node, defMsg[level.key+"Msg"] || msg || "", level);
+                (show || that.widget.valid.options.show).call(that, node, defMsg[level.key+"Msg"] || msg || "", level);
             });
             return Smart.deferredQueue(deferreds);
         }
@@ -3160,7 +3243,7 @@
             validMsg = validation.processMsg(msg);
         }
 
-        var optionValidatorMap = smart.dataTable("valid", "validatorMap") || {};
+        var optionValidatorMap = smart.widget.valid.cache.validatorMap || {};
 
         var methodCount = {};
 

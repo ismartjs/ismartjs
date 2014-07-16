@@ -123,10 +123,17 @@
             });
         });
 
+        this.node.empty().append(this._WNODE);
         var scriptFn = eval(scripts.join("\n"));
         var context = scriptFn.call(this, loadArgs);
         this.setContext(context);
-        this.setNode(this._WNODE);
+
+        var that = this;
+        this.on("window.document.ready", function(e){e.stopPropagation()});
+        this.makeChildren().done(function(){
+            that.trigger("window.document.ready");
+        });
+
         //处理锚点滚动
         if (href.indexOf("#") != -1) {
             var anchor = href.substring(href.indexOf("#"));
@@ -145,11 +152,10 @@
         id: "window",
         options: "href"
     }, {
-        onData: function () {
+        onReady: function () {
             var deferred = $.Deferred();
-            var options = this.options.window;
-            if (options && options.href) {
-                this.load(options.href).always(function () {
+            if (this.cache.href) {
+                this.S.load.apply(this.S, [this.cache.href].concat(this.cache._loadArgs || [])).always(function () {
                     deferred.resolve()
                 });
                 return deferred.promise();
@@ -158,29 +164,38 @@
             }
         },
         onPrepare: function () {
-            this._WINDOW_ID = "_w_" + (CURRENT_WINDOW_ID++);
-            this[ON_BEFORE_CLOSE_FN_KEY] = [];
-            this[EVENT_ON_CACHE] = [];
-            if (!this.node.attr("id")) {
-                this.node.attr("id", this._WINDOW_ID);
+            this.S._WINDOW_ID = "_w_" + (CURRENT_WINDOW_ID++);
+            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+            this.cache[EVENT_ON_CACHE] = [];
+            this.cache.href = this.options.href;
+            if (!this.S.node.attr("id")) {
+                this.S.node.attr("id", this.S._WINDOW_ID);
             }
+        },
+        onClean: function(){
+            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+            this.S.node.html("正在刷新");
         }
     }, {
-        refresh: function () {
-            return this.load.apply(this, [this.currentHref()].concat(this.dataTable("window", "_loadArgs")));
-        },
         currentHref: function () {
-            return this.dataTable("window", "href");
+            return this.widget.window.cache['href'];
+        },
+        _offEvent: function(){
+            var that = this;
+            $.each(this.widget.window.cache[EVENT_ON_CACHE], function (i, paramAry) {
+                that.off.apply(that, paramAry);
+            });
+            this.widget.window.cache[EVENT_ON_CACHE] = [];
         },
         load: function (href, loadArgs) {
-            this._clean();
-            this.dataTable("window", "loadState", true);//是否已经加载
+            this.widget.window.cache["loadState"] = true;//是否已经加载
+            this._offEvent();
             this.trigger("loading");
             var deferred = $.Deferred();
             var args = $.makeArray(arguments);
-            this.dataTable("window", "_loadArgs", args);
+            this.widget.window.cache['_loadArgs'] = args;
             var that = this;
-            this.dataTable("window", "href", href);
+            this.widget.window.cache['href'] = href;
             this.get(href, null, "text").done(function (html) {
                 var result = parseHtml(html);
                 var scriptSrcs = result.scriptSrcs;
@@ -223,10 +238,10 @@
             return deferred;
         },
         scrollToAnchor: function (id) {
-            this.dataTable("window", STOP_ANCHOR_SCROLLIN_KEY, true);
+            this.widget.window.cache[STOP_ANCHOR_SCROLLIN_KEY] = true;
             var that = this;
             return this.scrollTo("#" + id).done(function () {
-                that.removeDataTable("window", STOP_ANCHOR_SCROLLIN_KEY);
+                delete that.widget.window.cache[STOP_ANCHOR_SCROLLIN_KEY];
             });
         },
         _listenAnchorPos: function () {
@@ -235,7 +250,7 @@
             if (nodesLength > 0) {
                 var that = this;
                 var anchorScrollListener = function () {
-                    if (that.dataTable("window", STOP_ANCHOR_SCROLLIN_KEY)) {
+                    if (that.widget.window.cache[STOP_ANCHOR_SCROLLIN_KEY]) {
                         return;
                     }
                     var height = $(this).innerHeight();
@@ -257,10 +272,10 @@
             }
         },
         getAnchors: function () {
-            var anchors = this.dataTable("window", "_anchors_");
+            var anchors = this.widget.window.cache['_anchors_'];
             if (!anchors) {
                 anchors = [];
-                this.dataTable("window", "_anchors_", anchors);
+                this.widget.window.cache['_anchors_'] = anchors;
                 this._getAnchorNodes().each(function () {
                     var n = $(this);
                     anchors.push({id: n.attr("_id_"), title: n.attr("title")});
@@ -272,19 +287,10 @@
             var attrName = Smart.optionAttrName("window", "role");
             return this.node.find("*[" + attrName + "='a']");
         },
-        _clean: function () {
-            this.trigger("clean");
-            this.clearDataTable();
-            this[ON_BEFORE_CLOSE_FN_KEY] = [];
-            var that = this;
-            $.each(this[EVENT_ON_CACHE], function (i, paramAry) {
-                that.off.apply(that, paramAry);
-            });
-        },
         //预关闭；
         preClose: function () {
             var deferred = $.Deferred();
-            var onBeforeCloseFns = this[ON_BEFORE_CLOSE_FN_KEY];
+            var onBeforeCloseFns = this.widget.window.cache[ON_BEFORE_CLOSE_FN_KEY];
             if (onBeforeCloseFns.length > 0) {
                 Smart.deferredQueue(onBeforeCloseFns.reverse()).then(function () {
                     deferred.resolve();
@@ -308,7 +314,7 @@
             //触发beforeClose监听事件。
             var that = this;
             var args = arguments;
-            that.clearDataTable();
+            that.widget.window.cache = {};
             var deferred = $.Deferred();
             deferred.done(function () {
                 that.node.remove();
@@ -326,7 +332,7 @@
         },
         //监听窗口关闭事件。
         onBeforeClose: function (fn) {
-            this[ON_BEFORE_CLOSE_FN_KEY].push(fn);
+            this.widget.window.cache[ON_BEFORE_CLOSE_FN_KEY].push(fn);
             return this;
         },
 
@@ -386,9 +392,9 @@
         },
         //这里修改on的方法，当页面渲染完成之后所有的on的事件都缓存起来，在refresh，和load新页面的时候要去除掉这些事件。
         on: function (events, selector, fn) {
-            if (this.dataTable("window", "loadState")) {
+            if (this.widget.window.cache.loadState) {
                 //如果已经加载了，on的事件将会被记录，在重新load的时候会移除掉这些事件。
-                this[EVENT_ON_CACHE].push([events, selector, fn]);
+                this.widget.window.cache[EVENT_ON_CACHE].push([events, selector, fn]);
             }
             return this.inherited([events, selector, fn]);
         }

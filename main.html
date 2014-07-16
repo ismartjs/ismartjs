@@ -48,7 +48,7 @@
 
 </div>
 <!--ajax操作提示-->
-<div class="alert alert-warning ajax-active-tip fade" role="alert" id="ajaxActiveTip"></div>
+<div class="alert alert-warning ajax-active-tip " role="alert" id="ajaxActiveTip"></div>
 
 <div class="main-window" id="mainWindow">
     <div class="navbar" id="secondaryTabPanel" s="tpl" >
@@ -223,7 +223,11 @@
         getMenuById: function(id){
             return this.menuMapping[id];
         }
-    }.loadMenu();
+    };
+
+    S.on("window.document.ready", function(){
+        MenuPanel.loadMenu();
+    });
 
     //主选项
     function MainTab(data, secondaryMenu){
@@ -568,14 +572,14 @@
             removeClass = "alert-warning alert-success";
             addClass = "alert-danger";
         }
-        ajaxActiveTip.removeClass(removeClass).addClass(addClass+" in").css('z-index', Smart.UI.zIndex()).html(msg);
+        ajaxActiveTip.removeClass(removeClass).addClass(addClass).css('z-index', Smart.UI.zIndex()).show().html(msg);
     }
     function hideAjaxActiveTip(){
         if(closeTimeout){
             clearTimeout(closeTimeout);
         }
         closeTimeout = setTimeout(function(){
-            ajaxActiveTip.removeClass('in');
+            ajaxActiveTip.fadeOut(200);
             closeTimeout = 0;
         }, 1500);
     }
