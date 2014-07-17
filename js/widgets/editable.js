@@ -11,7 +11,7 @@
     },{
         onPrepare: function(){
             var that = this;
-            this.S.node.on("change", function(e){
+            this.S.node.delegate("*[s-editable-role='i']", "change", function(e){
                 that.S._submit($(e.target));
                 e.stopPropagation();
             });

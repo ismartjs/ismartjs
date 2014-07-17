@@ -84,7 +84,7 @@
             var type = "json";
             if (/^.+:.+$/.test(resource)) {
                 var idx = resource.indexOf(":");
-                type = resource.substring(idx);
+                type = resource.substring(0, idx);
                 resource = resource.substring(idx + 1);
             }
             var that = this;

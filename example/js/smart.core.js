@@ -357,6 +357,23 @@
                 p = Smart.of($(window));
             return Smart.of(p);
         },
+        closest: function(wId){
+            function check(smart){
+                if(smart.isWindow()) return null;
+                if(smart.isWidget(wId)) return smart;
+                return check(smart.parent());
+            }
+            return check(this);
+        },
+        isWidget: function(wId){
+            var s = this.node.attr(SMART_ATTR_KEY);
+            if(!s) return false;
+            var wIds = s.split(",");
+            for(var i = 0; i < wIds.length; i++){
+                if($.trim(wIds[i]) == wId) return true;
+            }
+            return false;
+        },
         isWindow: function () {
             return this.node.size() == 1 ? this.node[0] == window : false;
         },
@@ -458,7 +475,7 @@
             this._context = context;
             return this;
         },
-        setContextSmart: function (smart) {
+        _setContextSmart: function (smart) {
             this.node.each(function () {
                 Smart.of($(this))._context_smart_ = smart;
             });
@@ -481,7 +498,7 @@
                     smart = this._context_smart_;
                 } else {
                     smart = getContextSmart(this);
-                    this.setContextSmart(smart);
+                    this._setContextSmart(smart);
                 }
                 if (smart.isWindow()) {
                     return null;
@@ -600,7 +617,8 @@
                             valueCtx = true;
                         }
                         if (keyCtx || valueCtx) {
-                            optionValues[key] = this.S.context(value);
+                            //这里的context不能从自身去查找，要从自身的parent去查找，因为自身所处的环境就是在parent中的
+                            optionValues[key] = this.S.parent().context(value);
                         } else {
                             optionValues[key] = value;
                         }
@@ -663,7 +681,8 @@
                 var dataType = $.type(data);
                 if (dataType == "boolean" || dataType == "number" || dataType == "string") {
                     //如果没有子元素
-                    if (this.node.is("input[type='text'],select,textarea,input[type='password'],input[type='email'],input[type='number']")) {
+                    if (this.node.is("input[type='text'],input[type='hidden'],select,textarea," +
+                        "input[type='password'],input[type='email'],input[type='number']")) {
                         this.node.val(data);
                         this.node.trigger("data.set");
                         return;

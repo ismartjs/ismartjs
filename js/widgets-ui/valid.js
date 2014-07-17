@@ -50,10 +50,39 @@
                 }
                 item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
                 item.addClass(this.widget.valid.options[level.style]);
-                $(MSG_ROLE_SELECTOR,item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+                var msgNode = $(MSG_ROLE_SELECTOR,item);
+                if(msgNode.size() > 0){
+                    $(MSG_ROLE_SELECTOR,item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+                } else {
+                    if(level.style == "s-class"){
+                        node.tooltip('destroy');
+                        return;
+                    }
+                    node.tooltip({
+                        container: node.parent(),
+                        title: msg,
+                        trigger:"focus",
+                        delay: { "show": 200, "hide": 300 }
+                    });
+                    setTimeout(function(){
+                        node.tooltip('show');
+                    },1);
+                    var tooltipHideTimeout = node.data("tooltip_hide_timeout");
+                    if(tooltipHideTimeout){
+                        clearTimeout(tooltipHideTimeout);
+                        node.removeData("tooltip_hide_timeout")
+                    }
+                    node.on("shown.bs.tooltip", function(){
+                        var hideTimeout = setTimeout(function(){
+                            node.tooltip('destroy');
+                        }, 3000);
+                        node.data("tooltip_hide_timeout", hideTimeout);
+                    });
+                }
             },
             'resetShow': function(node){
                 var item = node.closest(ITEM_ROLE_SELECTOR);
+                node.tooltip('destroy');
                 $(MSG_ROLE_SELECTOR,item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
                 item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
             }

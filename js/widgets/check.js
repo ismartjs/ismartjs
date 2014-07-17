@@ -29,7 +29,7 @@
 
             var checkallHandles = [];
             this.cache.checkallHandles = checkallHandles;
-            var innerCheckallHandle = $("*[s-check-role='checkall-h']", this.node);
+            var innerCheckallHandle = $("*[s-check-role='checkall-h']", this.S.node);
 
             if (innerCheckallHandle.size() > 0) {
                 checkallHandles.push(innerCheckallHandle);

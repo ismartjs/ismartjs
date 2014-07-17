@@ -150,12 +150,24 @@
 
     Smart.widgetExtend({
         id: "window",
-        options: "href"
+        options: "href,args"
     }, {
+        onPrepare: function () {
+            this.S._WINDOW_ID = "_w_" + (CURRENT_WINDOW_ID++);
+            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+            this.cache[EVENT_ON_CACHE] = [];
+            this.location = {
+                href: this.options.href,
+                args: this.options.args
+            };
+            if (!this.S.node.attr("id")) {
+                this.S.node.attr("id", this.S._WINDOW_ID);
+            }
+        },
         onReady: function () {
             var deferred = $.Deferred();
-            if (this.cache.href) {
-                this.S.load.apply(this.S, [this.cache.href].concat(this.cache._loadArgs || [])).always(function () {
+            if (this.location.href) {
+                this.S.load.apply(this.S, [this.location.href].concat(this.location.args || [])).always(function () {
                     deferred.resolve()
                 });
                 return deferred.promise();
@@ -163,23 +175,16 @@
                 return deferred.resolve();
             }
         },
-        onPrepare: function () {
-            this.S._WINDOW_ID = "_w_" + (CURRENT_WINDOW_ID++);
-            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
-            this.cache[EVENT_ON_CACHE] = [];
-            this.cache.href = this.options.href;
-            if (!this.S.node.attr("id")) {
-                this.S.node.attr("id", this.S._WINDOW_ID);
-            }
-        },
         onClean: function(){
             this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
             this.S.node.html("正在刷新");
+        },
+        onDestroy: function(){
+            this.onClean();
+            this.S._offEvent();
+            this.S.node.empty();
         }
     }, {
-        currentHref: function () {
-            return this.widget.window.cache['href'];
-        },
         _offEvent: function(){
             var that = this;
             $.each(this.widget.window.cache[EVENT_ON_CACHE], function (i, paramAry) {
@@ -193,9 +198,9 @@
             this.trigger("loading");
             var deferred = $.Deferred();
             var args = $.makeArray(arguments);
-            this.widget.window.cache['_loadArgs'] = args;
+            this.widget.window.location.args = args;
             var that = this;
-            this.widget.window.cache['href'] = href;
+            this.widget.window.location.href = href;
             this.get(href, null, "text").done(function (html) {
                 var result = parseHtml(html);
                 var scriptSrcs = result.scriptSrcs;
@@ -362,9 +367,7 @@
             return html;
         },
         S: function (selector) {
-            var smart = Smart.of(this.N(selector));
-            smart.setContextSmart(this);
-            return smart;
+            return Smart.of(this.N(selector));
         },
         N: function (selector) {
             var _selector = [];

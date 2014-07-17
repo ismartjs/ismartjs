@@ -480,6 +480,23 @@
                 p = Smart.of($(window));
             return Smart.of(p);
         },
+        closest: function(wId){
+            function check(smart){
+                if(smart.isWindow()) return null;
+                if(smart.isWidget(wId)) return smart;
+                return check(smart.parent());
+            }
+            return check(this);
+        },
+        isWidget: function(wId){
+            var s = this.node.attr(SMART_ATTR_KEY);
+            if(!s) return false;
+            var wIds = s.split(",");
+            for(var i = 0; i < wIds.length; i++){
+                if($.trim(wIds[i]) == wId) return true;
+            }
+            return false;
+        },
         isWindow: function () {
             return this.node.size() == 1 ? this.node[0] == window : false;
         },
@@ -581,7 +598,7 @@
             this._context = context;
             return this;
         },
-        setContextSmart: function (smart) {
+        _setContextSmart: function (smart) {
             this.node.each(function () {
                 Smart.of($(this))._context_smart_ = smart;
             });
@@ -604,7 +621,7 @@
                     smart = this._context_smart_;
                 } else {
                     smart = getContextSmart(this);
-                    this.setContextSmart(smart);
+                    this._setContextSmart(smart);
                 }
                 if (smart.isWindow()) {
                     return null;
@@ -723,7 +740,8 @@
                             valueCtx = true;
                         }
                         if (keyCtx || valueCtx) {
-                            optionValues[key] = this.S.context(value);
+                            //这里的context不能从自身去查找，要从自身的parent去查找，因为自身所处的环境就是在parent中的
+                            optionValues[key] = this.S.parent().context(value);
                         } else {
                             optionValues[key] = value;
                         }
@@ -786,7 +804,8 @@
                 var dataType = $.type(data);
                 if (dataType == "boolean" || dataType == "number" || dataType == "string") {
                     //如果没有子元素
-                    if (this.node.is("input[type='text'],select,textarea,input[type='password'],input[type='email'],input[type='number']")) {
+                    if (this.node.is("input[type='text'],input[type='hidden'],select,textarea," +
+                        "input[type='password'],input[type='email'],input[type='number']")) {
                         this.node.val(data);
                         this.node.trigger("data.set");
                         return;
@@ -1287,7 +1306,7 @@
 
             var checkallHandles = [];
             this.cache.checkallHandles = checkallHandles;
-            var innerCheckallHandle = $("*[s-check-role='checkall-h']", this.node);
+            var innerCheckallHandle = $("*[s-check-role='checkall-h']", this.S.node);
 
             if (innerCheckallHandle.size() > 0) {
                 checkallHandles.push(innerCheckallHandle);
@@ -1599,7 +1618,7 @@
     },{
         onPrepare: function(){
             var that = this;
-            this.S.node.on("change", function(e){
+            this.S.node.delegate("*[s-editable-role='i']", "change", function(e){
                 that.S._submit($(e.target));
                 e.stopPropagation();
             });
@@ -1985,7 +2004,7 @@
             var type = "json";
             if (/^.+:.+$/.test(resource)) {
                 var idx = resource.indexOf(":");
-                type = resource.substring(idx);
+                type = resource.substring(0, idx);
                 resource = resource.substring(idx + 1);
             }
             var that = this;
@@ -2229,12 +2248,24 @@
 
     Smart.widgetExtend({
         id: "window",
-        options: "href"
+        options: "href,args"
     }, {
+        onPrepare: function () {
+            this.S._WINDOW_ID = "_w_" + (CURRENT_WINDOW_ID++);
+            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+            this.cache[EVENT_ON_CACHE] = [];
+            this.location = {
+                href: this.options.href,
+                args: this.options.args
+            };
+            if (!this.S.node.attr("id")) {
+                this.S.node.attr("id", this.S._WINDOW_ID);
+            }
+        },
         onReady: function () {
             var deferred = $.Deferred();
-            if (this.cache.href) {
-                this.S.load.apply(this.S, [this.cache.href].concat(this.cache._loadArgs || [])).always(function () {
+            if (this.location.href) {
+                this.S.load.apply(this.S, [this.location.href].concat(this.location.args || [])).always(function () {
                     deferred.resolve()
                 });
                 return deferred.promise();
@@ -2242,23 +2273,16 @@
                 return deferred.resolve();
             }
         },
-        onPrepare: function () {
-            this.S._WINDOW_ID = "_w_" + (CURRENT_WINDOW_ID++);
-            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
-            this.cache[EVENT_ON_CACHE] = [];
-            this.cache.href = this.options.href;
-            if (!this.S.node.attr("id")) {
-                this.S.node.attr("id", this.S._WINDOW_ID);
-            }
-        },
         onClean: function(){
             this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
             this.S.node.html("正在刷新");
+        },
+        onDestroy: function(){
+            this.onClean();
+            this.S._offEvent();
+            this.S.node.empty();
         }
     }, {
-        currentHref: function () {
-            return this.widget.window.cache['href'];
-        },
         _offEvent: function(){
             var that = this;
             $.each(this.widget.window.cache[EVENT_ON_CACHE], function (i, paramAry) {
@@ -2272,9 +2296,9 @@
             this.trigger("loading");
             var deferred = $.Deferred();
             var args = $.makeArray(arguments);
-            this.widget.window.cache['_loadArgs'] = args;
+            this.widget.window.location.args = args;
             var that = this;
-            this.widget.window.cache['href'] = href;
+            this.widget.window.location.href = href;
             this.get(href, null, "text").done(function (html) {
                 var result = parseHtml(html);
                 var scriptSrcs = result.scriptSrcs;
@@ -2441,9 +2465,7 @@
             return html;
         },
         S: function (selector) {
-            var smart = Smart.of(this.N(selector));
-            smart.setContextSmart(this);
-            return smart;
+            return Smart.of(this.N(selector));
         },
         N: function (selector) {
             var _selector = [];
@@ -2629,6 +2651,7 @@
             }
             CURRENT_SHOWN_CONTEXTMENU = this;
             Smart.UI.contextmenu.target = Smart.of(el);
+            Smart.UI.contextmenu.node = $(e.target);
             //过滤菜单
             if(this.widget.contextmenu.options.filter){
                 var menuNodes = this.node.find("li[menuId]");
@@ -3041,10 +3064,39 @@
                 }
                 item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
                 item.addClass(this.widget.valid.options[level.style]);
-                $(MSG_ROLE_SELECTOR,item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+                var msgNode = $(MSG_ROLE_SELECTOR,item);
+                if(msgNode.size() > 0){
+                    $(MSG_ROLE_SELECTOR,item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+                } else {
+                    if(level.style == "s-class"){
+                        node.tooltip('destroy');
+                        return;
+                    }
+                    node.tooltip({
+                        container: node.parent(),
+                        title: msg,
+                        trigger:"focus",
+                        delay: { "show": 200, "hide": 300 }
+                    });
+                    setTimeout(function(){
+                        node.tooltip('show');
+                    },1);
+                    var tooltipHideTimeout = node.data("tooltip_hide_timeout");
+                    if(tooltipHideTimeout){
+                        clearTimeout(tooltipHideTimeout);
+                        node.removeData("tooltip_hide_timeout")
+                    }
+                    node.on("shown.bs.tooltip", function(){
+                        var hideTimeout = setTimeout(function(){
+                            node.tooltip('destroy');
+                        }, 3000);
+                        node.data("tooltip_hide_timeout", hideTimeout);
+                    });
+                }
             },
             'resetShow': function(node){
                 var item = node.closest(ITEM_ROLE_SELECTOR);
+                node.tooltip('destroy');
                 $(MSG_ROLE_SELECTOR,item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
                 item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
             }

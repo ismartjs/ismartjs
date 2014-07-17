@@ -81,6 +81,14 @@
     </li>
 </ul>
 
+<ul id="mainContextmenu" s="contextmenu" class="s-ui-contextmenu">
+    <li menuId="showSource" s="click" s-click-action="MainContextmenu.showSourceHtml(e)">
+        <span>查看源码</span>
+    </li>
+    <li class="s-ui-contextmenu-line"></li>
+    <li menuId="copyright" s="click" s-click-action="MainContextmenu.showCopyright()"><span>版权声明</span></li>
+</ul>
+
 <script type="text/javascript">
 
     function openMenuById(id){
@@ -93,7 +101,7 @@
             openMenuById(url.substring(5));
         } else {
             if(url.indexOf("url:") == 0) url = url.substring(4);
-            var nowUrl = e.smart.currentHref();
+            var nowUrl = e.smart.widget.window.location.href;
             if(!Smart.isEmpty(nowUrl)){
                 url = Smart.realPath(url, nowUrl);
             }
@@ -420,7 +428,7 @@
         },
         setMeta:function(meta){
             var that = this;
-            $.each(meta, function(key, value){
+            $.each(meta || {}, function(key, value){
                 switch(key){
                     case "title": that.titleNode.html(" " + value); that.node.attr("title", value); break;
                     case "icon" : that.iconNode.attr("class", "").addClass(value);break;
@@ -477,6 +485,30 @@
         }
     };
 
+    var MainContextmenu = {
+        smart: S.S("#mainContextmenu"),
+        bindTarget: function(node, mainTab){
+            node.data("mainTab", mainTab);
+            this.smart.bindTarget(node);
+        },
+        showCopyright: function(){
+            S.alert("iSmart JS 版权所有，QQ群：51729123");
+        },
+        showSourceHtml: function(){
+            var node = Smart.UI.contextmenu.node;
+            var windowSmart = Smart.of(node).closest('window');
+            if(windowSmart == null) return;
+            var menu = {
+                url: 'source-view.html',
+                args:[{url:windowSmart.widget.window.location.href}]};
+            new MainTab(menu).add().active();
+        }
+    };
+
+    this.on("window.document.ready", function(){
+        MainContextmenu.bindTarget(S.node);
+    });
+
     var SecondaryTabPanel = {
         smart: S.S("#secondaryTabPanel"),
         show: function(data, tabWindowId){
@@ -528,7 +560,7 @@
             TabWindow.currentTabWindow = this;
             this.mainTab.currentTabWindow = this;
             this.node.fadeIn();
-            Page.Main.historyListener.onPush(this.data.url);
+            if(this.data.url) Page.Main.historyListener.onPush(this.data.url);
         },
         hide: function(){
             this.node.hide();
@@ -537,6 +569,7 @@
             this.made = true;
             this.smart.make();
             TabWindow.container.append(this.node);
+            if(!this.data.url) return $.Deferred().resolve(this.smart);
             return this.smart.load.apply(this.smart, [this.data.url].concat(this.data.args));
         },
         close: function(){

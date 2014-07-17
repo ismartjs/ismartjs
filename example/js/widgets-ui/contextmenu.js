@@ -62,6 +62,7 @@
             }
             CURRENT_SHOWN_CONTEXTMENU = this;
             Smart.UI.contextmenu.target = Smart.of(el);
+            Smart.UI.contextmenu.node = $(e.target);
             //过滤菜单
             if(this.widget.contextmenu.options.filter){
                 var menuNodes = this.node.find("li[menuId]");
