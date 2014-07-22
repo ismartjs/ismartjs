@@ -23,8 +23,8 @@
            s-cds-dk="ids"
            s-cds-c-msg="确认删除所选的省份吗？" /> <span class="lead">由于服务器不支持动态语言，这里删除动作仅仅做展示，请打开浏览器debug，查看network就能看到相关提交数据</span>
     <div id="districtsGrid" s='resource,check,datac'
-         s-resource-data-res="json/districts.json"
-         s-resource-data-form="S.N('#districtsSearchForm')">
+         s-resource-src="json/districts.json"
+         s-resource-form="S.N('#districtsSearchForm')">
         <table  class="table table-striped table-hover" style="width: 100%;">
             <thead>
             <tr>
@@ -65,8 +65,8 @@
        s-cds-dk="ids"
        s-cds-c-msg="确认删除所选的省份吗？"</span> /&gt;
 &lt;div id="districtsGrid" <span class="text-warning">s='resource,check,datac'
-     s-resource-data-res="json/districts.json"
-     s-resource-data-form="S.N('#districtsSearchForm')"</span>&gt;
+     s-resource-src="json/districts.json"
+     s-resource-form="S.N('#districtsSearchForm')"</span>&gt;
     &lt;table  class="table table-striped table-hover" style="width: 100%;"&gt;
         &lt;thead&gt;
         &lt;tr&gt;
