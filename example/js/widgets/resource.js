@@ -16,7 +16,7 @@
             that.cache.params = {}
             this.S.on("request.params", function (e, params) {
                 $.extend(that.cache.params, params || {});
-                that.S.refresh(false);
+                that.S.refresh(true);
             });
         },
         onRender: function () {
@@ -35,7 +35,7 @@
             return this._commonLoad();
         },
         onRefresh: function (flag) {
-            flag && (this.cache.params = {});
+            !flag && (this.cache.params = {});
             return this._load(this.cache.currentSrc || this.options.src);
         },
         _cascadeLoad: function (cascadeData) {

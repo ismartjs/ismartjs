@@ -140,6 +140,10 @@
                 $.each(menus, function(i, menu){
                     urlMapping[menu.url] = menu;
                     menu.icon = menu.icon || Page.Main.defaultMenuIcon;
+                    if((menu.closeable != undefined && menu.closeable == false)){
+                        //如果menu不允许关闭
+                        return;
+                    }
                     that.menuMapping[menu.id] = menu;
                     //顶级菜单如果没有子菜单，则允许其打开
                     if(menu.open && !menu.children) needOpenMenus.push(menu);
@@ -502,7 +506,7 @@
     };
 
     this.on("window.document.ready", function(){
-        MainContextmenu.bindTarget(S.node);
+        MainContextmenu.bindTarget($("body"));
     });
 
     var SecondaryTabPanel = {
