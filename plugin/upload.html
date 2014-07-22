@@ -4,12 +4,12 @@
     <p class="lead">upload上传文件插件使用html5的 <code>FormData</code> 对文件进行上传，所以其支持IE10+，大多数的firefox，chrome等浏览器。</p>
     <hr />
     <h3>1. 使用 <code>Smart.post()</code> 上传含有文件域的表单</h3>
-    <form id="uploadForm" role="form" enctype="multipart/form-data" class="form-inline" style="width:500px;">
+    <form id="uploadForm" role="form" s="submit" enctype="multipart/form-data" class="form-inline" style="width:500px;">
         <div class="form-group">
             <label >图片</label>
             <input type="file" name="avatarFile" id="avatarFile" />
         </div>
-        <button type="submit" s="submit,click" s-click-action="submitUploadForm()" class="btn btn-primary">上传</button>
+        <button type="submit" s="click" s-click-action="submitUploadForm()" class="btn btn-primary">上传</button>
     </form>
     <script type="text/javascript">
         function submitUploadForm(){
@@ -67,12 +67,12 @@
         </li>
     </ol>
     <h4>示例</h4>
-    <form class="form-inline">
-    <div class="form-group">
-        <label >图片</label>
-        <input type="file" name="avatarFile"  multiple= multiple id="avatarFile1" />
-    </div>
-    <button type="submit" id="uploadBtn" s="submit,click" s-click-action="return uploadFile()" class="btn btn-primary">上传</button>
+    <form class="form-inline" s="submit">
+        <div class="form-group">
+            <label >图片</label>
+            <input type="file" name="avatarFile"  multiple= multiple id="avatarFile1" />
+        </div>
+        <button type="submit" id="uploadBtn" s="click" s-click-action="return uploadFile()" class="btn btn-primary">上传</button>
     </form>
     <script type="text/javascript">
         function uploadFile(){
