@@ -21,11 +21,11 @@
             var script = scripts.join("\n");
             var fn = eval(script);
             this.cache[TABLE_FN_KEY] = fn;
-        },
-        onData: function(data){
-            this.S._insertData(data);
         }
     },{
+        dataSetter: function(data){
+            this._insertData(data)
+        },
         appendData: function(data){
             this._insertData(data, "appendNode");
         },

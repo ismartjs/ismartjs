@@ -19,14 +19,14 @@
     };
 
     //控件生命周期的事件禁止冒泡
-    var STOP_PROPAGATION_EVENT = ["made", "load", "loading", "close", "refresh"];
+    var STOP_PROPAGATION_EVENT = ["smart-made", "load", "loading",
+        "close", "smart-refresh", "smart-data", "smart-reset"];
 
     var NODE_ATTR_PREFIX = "s";
 
     var Smart = window.Smart = function (node) {
         this.node = node || $();
         this.node.data(SMART_NODE_CACHE_KEY, this);
-        this.lifeStage = LIFE_STAGE.initial;
         this.widgets = [];
         this.widget = {};
         var that = this;
@@ -150,6 +150,13 @@
                 }
             }
             return _datas;
+        },
+        deferredListen:function(defer, listenDefer){
+            listenDefer.done(function(){
+                defer.resolve.apply(defer, $.makeArray(arguments));
+            }).fail(function(){
+                defer.reject.apply(defer, $.makeArray(arguments));
+            })
         },
         serializeToObject: function (form) {
             if (!form.is("form")) {
@@ -316,6 +323,7 @@
                 if (/^(http|https|ftp|):.*$/.test(path)) {
                     return path;
                 }
+                if(path[0] == "/") return path;
                 path = baseUrl === undefined ? path : dirName(baseUrl) + path;
                 return realPath(path);
             }
@@ -570,13 +578,12 @@
         }
 
         SmartWidget.prototype = {
-            onData: Smart.noop,//接受赋值
             onPrepare: Smart.noop,//控件准备
-            onBuild: Smart.noop,//构造，该方式异步方法
             onDestroy: Smart.noop,//刷新控件
+            onRender: Smart.noop,
             onReady: Smart.noop,
             onReset: Smart.noop,//重置控件
-            onClean: Smart.noop//清理控件,
+            onRefresh: Smart.noop
         };
 
         Smart.extend(SmartWidget.prototype, {
@@ -664,17 +671,15 @@
             id: "smart",
             options: "key, data, null"
         }, {
-            onReady: function () {
-                (this.options.data != undefined || this.S._smart_data_ != undefined)
-                && this.S.data(this.S._smart_data_ || this.options.data);
-            },
-            onData: function () {
-                this.S.dataSetter.apply(this.S, $.makeArray(arguments));
+            onRender: function () {
+                if(this.options.data != undefined){
+                    this.S.data(this.options.data)
+                }
             }
         }, {
             //控件的获取dataGetter的方法，只有主要控件才需要实现该方法。
             dataGetter: function () {
-                if ("_smart_data" in this) return this._smart_data_;
+                if ("_smart_data_" in this) return this._smart_data_;
                 return this.widget.smart.options.data;
             },
             dataSetter: function (data) {
@@ -684,17 +689,14 @@
                     if (this.node.is("input[type='text'],input[type='hidden'],select,textarea," +
                         "input[type='password'],input[type='email'],input[type='number']")) {
                         this.node.val(data);
-                        this.node.trigger("data.set");
                         return;
                     } else if (this.node.is("input[type='radio']")) {
                         if (data + "" == this.node.val()) {
                             this.node.prop("checked", true);
-                            this.node.trigger("data.set");
                         }
                         return;
                     }
                     this.node.html(data);
-                    this.node.trigger("data.set");
                     return;
                 }
                 if (dataType == "array") {
@@ -702,14 +704,25 @@
                         var val = this.node.val();
                         if ($.inArray(val, data) != -1) {
                             this.node.prop("checked", true);
-                            this.node.trigger("data.set");
+                            return;
+                        }else{
+                            return false;
                         }
                     }
+                    return false;
                 }
             },
             data: function () {
                 if (arguments.length == 0) {
                     return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
+                }
+                if(!this.isMade()){
+                    var that = this;
+                    var args = arguments;
+                    this.onMade(function(){
+                        that.data.apply(that, $.makeArray(args));
+                    });
+                    return;
                 }
                 this._smart_data_ = arguments.length == 1 && arguments[0];
                 var args = SLICE.call(arguments);
@@ -720,32 +733,32 @@
                     value = [data == undefined ? null : data[dataKey]];
                 }
                 value = (value == null ? [this.widget.smart.options['null']] : value);
-                $.each(this.widgets, function (i, widget) {
-                    widget.onData.apply(widget, value);
-                });
+                if(this.dataSetter.apply(this, value) !== false){
+                    this.trigger("smart-data");
+                }
             },
-            build: Smart.noop,
+            /**
+             * build的时候，需要初始化赋值。
+             * */
+            build: function(){
+                this.buildSetter.apply(this, $.makeArray(arguments));
+                this.trigger("smart-change");
+            },
+            buildSetter: Smart.noop,
             refresh: function () {
-                //refresh 表明是要先destory，然后rebuild。
-                var deferreds = [];
-                var readyDeferreds = [];
+                var deferreds = []
                 var args = $.makeArray(arguments);
                 $.each(this.widgets, function (i, widget) {
-                    widget.onClean.apply(widget, args);
-                    deferreds.push(function () {
-                        return widget.onBuild.apply(widget, args);
-                    });
-                    readyDeferreds.push(function () {
-                        return widget.onReady.apply(widget, args);
-                    });
+                    deferreds.push(function(){
+                        return widget.onRefresh.apply(widget, args);
+                    })
                 });
                 var that = this;
-                return Smart.deferredQueue(deferreds.concat(readyDeferreds)).done(function () {
-                    that.trigger("refresh", args);
+                return Smart.deferredQueue(deferreds).done(function(){
+                    that.trigger("smart-refresh", args);
                 });
             },
             destroy: function () {
-                //refresh 表明是要先destory，然后rebuild。
                 $.each(this.widgets, function (i, widget) {
                     widget.onDestroy();
                 });
@@ -755,6 +768,7 @@
                 $.each(this.widgets, function (i, widget) {
                     widget.onReset();
                 });
+                this.trigger("smart-reset");
             }
         });
 
@@ -815,7 +829,7 @@
                 deferreds.push(function () {
                     widget.processOptions();
                     widget.onPrepare();
-                    return widget.onBuild();
+                    return widget.onRender();
                 })
             });
 
@@ -833,7 +847,7 @@
 
             Smart.deferredQueue(deferreds).always(function () {
                 smart.lifeStage = LIFE_STAGE.made;
-                smart.trigger("made");
+                smart.trigger("smart-made");
                 deferred.resolve();
             });
 
@@ -912,12 +926,15 @@
     //生命周期事件接口,这些事件都不是冒泡事件
     (function () {
         Smart.extend(Smart.prototype, {
+            isMade: function(){
+                return this.lifeStage == LIFE_STAGE.made
+            },
             onMade: function (fn) {
                 var that = this;
                 if (this.lifeStage == LIFE_STAGE.made) {
                     fn.call(that);
                 }
-                this.on("made", function () {
+                this.on("smart-made", function () {
                     fn.apply(that, SLICE.call(arguments));
                 });
                 return this;
@@ -962,7 +979,7 @@
                 type = type || "json";//默认json请求
                 var deferred = $.Deferred();
                 if (!cfg.silent) {
-                    this.trigger("ajaxStart", [cfg.startTip]);
+                    this.trigger("smart-ajaxStart", [cfg.startTip]);
                 }
                 var _this = this;
                 //处理url
@@ -985,17 +1002,17 @@
                 $.ajax(ajaxOptions).done(function (result) {
                     deferred.resolve.apply(deferred, SLICE.call(arguments));
                     if (!cfg.silent) {
-                        _this.trigger("ajaxSuccess", [cfg.successTip]);
+                        _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
                     }
                 }).fail(function (xhr) {
                     deferred.reject.apply(deferred, SLICE.call(arguments));
                     if (!cfg.silent) {
-                        _this.trigger("ajaxError", [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url)]);
+                        _this.trigger("smart-ajaxError", [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url)]);
                     }
                 }).always(function () {
                     deferred.always.apply(deferred, SLICE.call(arguments));
                     if (!cfg.silent) {
-                        _this.trigger("ajaxComplete");
+                        _this.trigger("smart-ajaxComplete");
                     }
                 });
                 return deferred;
@@ -1085,7 +1102,13 @@
                 if (!files.length) {
                     deferred.resolve();
                 } else {
-                    loadFile(files.shift(), baseUrl).done(function () {
+                    var file = files.shift();
+                    if(file.indexOf('?') != -1){
+                        file += "&_=" + new Date().getTime();
+                    } else {
+                        file += "?_=" + new Date().getTime();
+                    }
+                    loadFile(file, baseUrl).done(function () {
                         _load();
                     }).fail(function () {
                         deferred.resolve();

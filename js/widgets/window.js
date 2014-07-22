@@ -132,6 +132,8 @@
         this.on("window.document.ready", function(e){e.stopPropagation()});
         this.makeChildren().done(function(){
             that.trigger("window.document.ready");
+            //处理自动焦点的元素
+            that.node.find("*[s-window-role='focus']:first").focus();
         });
 
         //处理锚点滚动
@@ -175,13 +177,21 @@
                 return deferred.resolve();
             }
         },
-        onClean: function(){
-            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+        onRefresh: function(){
+            this._clean();
             this.S.node.html("正在刷新");
+            this.onReady();
+        },
+        _clean: function(){
+            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+            this.S._offEvent();
+            this.S.node.empty();
         },
         onDestroy: function(){
-            this.onClean();
-            this.S._offEvent();
+            this.onReset()
+        },
+        onReset: function(){
+            this._clean();
             this.S.node.empty();
         }
     }, {

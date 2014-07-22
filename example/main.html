@@ -616,12 +616,12 @@
             closeTimeout = 0;
         }, 1500);
     }
-    $("body").on("ajaxStart", function(e, tip){
+    $("body").on("smart-ajaxStart", function(e, tip){
         showAjaxActiveTip(tip, "warning");
-    }).on("ajaxSuccess", function(e, tip){
+    }).on("smart-ajaxSuccess", function(e, tip){
         showAjaxActiveTip(tip, "success");
         hideAjaxActiveTip();
-    }).on("ajaxError", function(e, errorTip, msg){
+    }).on("smart-ajaxError", function(e, errorTip, msg){
         S.alert($.trim(msg), "error");
         showAjaxActiveTip(errorTip, "error");
         hideAjaxActiveTip();

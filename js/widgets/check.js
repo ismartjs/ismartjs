@@ -54,11 +54,10 @@
             });
         },
         onRefresh: function(){
-            var checkallHandles = this.cache.checkallHandles;
-            var that = this;
-            $.each(checkallHandles, function(){
-                that.S._uncheckHandle($(this));
-            });
+            this.S.uncheckAll()
+        },
+        onReset: function(){
+            this.S.uncheckAll()
         }
     }, {
         turn: function (type) {

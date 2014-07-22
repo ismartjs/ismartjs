@@ -80,7 +80,7 @@ span.label {
 }
 
 .btn {
-    font-size: 12px;
+    -font-size: 12px;
     border-radius: 2px;
     box-shadow: inset 0px 0px 2px rgba(255, 255, 255, 0.3);
     text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2);
@@ -208,14 +208,14 @@ span.label {
 }
 
 .btn-sm {
-    font-size: 12px;
+    -font-size: 12px;
     padding: 4px 12px;
     height: 24px;
     line-height: 14px
 }
 
 .btn-xs {
-    font-size: 12px;
+    -font-size: 12px;
     padding: 2px 8px;
     height: 20px;
     line-height: 14px
@@ -264,7 +264,7 @@ span.label {
 
 .table {
     background: #FFF;
-    font-size: 12px;
+    -font-size: 12px;
     border-top: 1px solid #DDD;
     margin-top: 8px
 }
@@ -357,7 +357,7 @@ span.label {
     padding: 6px;
     -webkit-transition: none;
     transition: none;
-    font-size: 12px
+    -font-size: 12px
 }
 
 .form-control:focus {
@@ -434,7 +434,7 @@ select {
 
 label.control-label {
     font-weight: normal;
-    font-size: 12px;
+    -font-size: 12px;
     color: #666
 }
 

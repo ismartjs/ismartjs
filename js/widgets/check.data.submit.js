@@ -8,7 +8,7 @@
          * s:check控件的smart对象，key:数据的key，c-msg:确认消息，e-msg:错误警告消息，r:是否刷新
          * dk: 将使用该值作为 选取的数据 的 key
          * */
-        options: "ctx:cs,ck,dk,c-msg,e-msg,r",//
+        options: "ctx:cs,ck,dk,c-msg,e-msg,r",
         defaultOptions: {
             "c-msg": "确认进行此操作吗？",
             "e-msg": "请选择你要操作的数据？",

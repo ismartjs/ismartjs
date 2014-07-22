@@ -14,17 +14,16 @@
             this.cache.originalOptions = originalOptions;
             this.options.form = this.options.form.split(":");
             this.options.form[1] = this.options.form[1].split(",");
-        },
-        onClean: function(){
-            this.S.node.empty();
-            this.S.node.append(this.cache.originalOptions);
         }
     }, {
-        build: function (datas) {
+        buildSetter: function (datas) {
+            datas = datas || [];
             if (!$.isArray(datas)) {
                 Smart.error("构建select选项所需的数据必须是数组");
                 return;
             }
+            this.node.empty();
+            this.node.append(this.widget.select.cache.originalOptions);
             for (var i in datas) {
                 this.node.append(this._createOption(datas[i]));
             }

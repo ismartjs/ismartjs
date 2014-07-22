@@ -142,14 +142,14 @@
     };
 
     //控件生命周期的事件禁止冒泡
-    var STOP_PROPAGATION_EVENT = ["made", "load", "loading", "close", "refresh"];
+    var STOP_PROPAGATION_EVENT = ["smart-made", "load", "loading",
+        "close", "smart-refresh", "smart-data", "smart-reset"];
 
     var NODE_ATTR_PREFIX = "s";
 
     var Smart = window.Smart = function (node) {
         this.node = node || $();
         this.node.data(SMART_NODE_CACHE_KEY, this);
-        this.lifeStage = LIFE_STAGE.initial;
         this.widgets = [];
         this.widget = {};
         var that = this;
@@ -273,6 +273,13 @@
                 }
             }
             return _datas;
+        },
+        deferredListen:function(defer, listenDefer){
+            listenDefer.done(function(){
+                defer.resolve.apply(defer, $.makeArray(arguments));
+            }).fail(function(){
+                defer.reject.apply(defer, $.makeArray(arguments));
+            })
         },
         serializeToObject: function (form) {
             if (!form.is("form")) {
@@ -439,6 +446,7 @@
                 if (/^(http|https|ftp|):.*$/.test(path)) {
                     return path;
                 }
+                if(path[0] == "/") return path;
                 path = baseUrl === undefined ? path : dirName(baseUrl) + path;
                 return realPath(path);
             }
@@ -693,13 +701,12 @@
         }
 
         SmartWidget.prototype = {
-            onData: Smart.noop,//接受赋值
             onPrepare: Smart.noop,//控件准备
-            onBuild: Smart.noop,//构造，该方式异步方法
             onDestroy: Smart.noop,//刷新控件
+            onRender: Smart.noop,
             onReady: Smart.noop,
             onReset: Smart.noop,//重置控件
-            onClean: Smart.noop//清理控件,
+            onRefresh: Smart.noop
         };
 
         Smart.extend(SmartWidget.prototype, {
@@ -787,17 +794,15 @@
             id: "smart",
             options: "key, data, null"
         }, {
-            onReady: function () {
-                (this.options.data != undefined || this.S._smart_data_ != undefined)
-                && this.S.data(this.S._smart_data_ || this.options.data);
-            },
-            onData: function () {
-                this.S.dataSetter.apply(this.S, $.makeArray(arguments));
+            onRender: function () {
+                if(this.options.data != undefined){
+                    this.S.data(this.options.data)
+                }
             }
         }, {
             //控件的获取dataGetter的方法，只有主要控件才需要实现该方法。
             dataGetter: function () {
-                if ("_smart_data" in this) return this._smart_data_;
+                if ("_smart_data_" in this) return this._smart_data_;
                 return this.widget.smart.options.data;
             },
             dataSetter: function (data) {
@@ -807,17 +812,14 @@
                     if (this.node.is("input[type='text'],input[type='hidden'],select,textarea," +
                         "input[type='password'],input[type='email'],input[type='number']")) {
                         this.node.val(data);
-                        this.node.trigger("data.set");
                         return;
                     } else if (this.node.is("input[type='radio']")) {
                         if (data + "" == this.node.val()) {
                             this.node.prop("checked", true);
-                            this.node.trigger("data.set");
                         }
                         return;
                     }
                     this.node.html(data);
-                    this.node.trigger("data.set");
                     return;
                 }
                 if (dataType == "array") {
@@ -825,14 +827,25 @@
                         var val = this.node.val();
                         if ($.inArray(val, data) != -1) {
                             this.node.prop("checked", true);
-                            this.node.trigger("data.set");
+                            return;
+                        }else{
+                            return false;
                         }
                     }
+                    return false;
                 }
             },
             data: function () {
                 if (arguments.length == 0) {
                     return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
+                }
+                if(!this.isMade()){
+                    var that = this;
+                    var args = arguments;
+                    this.onMade(function(){
+                        that.data.apply(that, $.makeArray(args));
+                    });
+                    return;
                 }
                 this._smart_data_ = arguments.length == 1 && arguments[0];
                 var args = SLICE.call(arguments);
@@ -843,32 +856,32 @@
                     value = [data == undefined ? null : data[dataKey]];
                 }
                 value = (value == null ? [this.widget.smart.options['null']] : value);
-                $.each(this.widgets, function (i, widget) {
-                    widget.onData.apply(widget, value);
-                });
+                if(this.dataSetter.apply(this, value) !== false){
+                    this.trigger("smart-data");
+                }
             },
-            build: Smart.noop,
+            /**
+             * build的时候，需要初始化赋值。
+             * */
+            build: function(){
+                this.buildSetter.apply(this, $.makeArray(arguments));
+                this.trigger("smart-change");
+            },
+            buildSetter: Smart.noop,
             refresh: function () {
-                //refresh 表明是要先destory，然后rebuild。
-                var deferreds = [];
-                var readyDeferreds = [];
+                var deferreds = []
                 var args = $.makeArray(arguments);
                 $.each(this.widgets, function (i, widget) {
-                    widget.onClean.apply(widget, args);
-                    deferreds.push(function () {
-                        return widget.onBuild.apply(widget, args);
-                    });
-                    readyDeferreds.push(function () {
-                        return widget.onReady.apply(widget, args);
-                    });
+                    deferreds.push(function(){
+                        return widget.onRefresh.apply(widget, args);
+                    })
                 });
                 var that = this;
-                return Smart.deferredQueue(deferreds.concat(readyDeferreds)).done(function () {
-                    that.trigger("refresh", args);
+                return Smart.deferredQueue(deferreds).done(function(){
+                    that.trigger("smart-refresh", args);
                 });
             },
             destroy: function () {
-                //refresh 表明是要先destory，然后rebuild。
                 $.each(this.widgets, function (i, widget) {
                     widget.onDestroy();
                 });
@@ -878,6 +891,7 @@
                 $.each(this.widgets, function (i, widget) {
                     widget.onReset();
                 });
+                this.trigger("smart-reset");
             }
         });
 
@@ -938,7 +952,7 @@
                 deferreds.push(function () {
                     widget.processOptions();
                     widget.onPrepare();
-                    return widget.onBuild();
+                    return widget.onRender();
                 })
             });
 
@@ -956,7 +970,7 @@
 
             Smart.deferredQueue(deferreds).always(function () {
                 smart.lifeStage = LIFE_STAGE.made;
-                smart.trigger("made");
+                smart.trigger("smart-made");
                 deferred.resolve();
             });
 
@@ -1035,12 +1049,15 @@
     //生命周期事件接口,这些事件都不是冒泡事件
     (function () {
         Smart.extend(Smart.prototype, {
+            isMade: function(){
+                return this.lifeStage == LIFE_STAGE.made
+            },
             onMade: function (fn) {
                 var that = this;
                 if (this.lifeStage == LIFE_STAGE.made) {
                     fn.call(that);
                 }
-                this.on("made", function () {
+                this.on("smart-made", function () {
                     fn.apply(that, SLICE.call(arguments));
                 });
                 return this;
@@ -1085,7 +1102,7 @@
                 type = type || "json";//默认json请求
                 var deferred = $.Deferred();
                 if (!cfg.silent) {
-                    this.trigger("ajaxStart", [cfg.startTip]);
+                    this.trigger("smart-ajaxStart", [cfg.startTip]);
                 }
                 var _this = this;
                 //处理url
@@ -1108,17 +1125,17 @@
                 $.ajax(ajaxOptions).done(function (result) {
                     deferred.resolve.apply(deferred, SLICE.call(arguments));
                     if (!cfg.silent) {
-                        _this.trigger("ajaxSuccess", [cfg.successTip]);
+                        _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
                     }
                 }).fail(function (xhr) {
                     deferred.reject.apply(deferred, SLICE.call(arguments));
                     if (!cfg.silent) {
-                        _this.trigger("ajaxError", [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url)]);
+                        _this.trigger("smart-ajaxError", [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url)]);
                     }
                 }).always(function () {
                     deferred.always.apply(deferred, SLICE.call(arguments));
                     if (!cfg.silent) {
-                        _this.trigger("ajaxComplete");
+                        _this.trigger("smart-ajaxComplete");
                     }
                 });
                 return deferred;
@@ -1208,7 +1225,13 @@
                 if (!files.length) {
                     deferred.resolve();
                 } else {
-                    loadFile(files.shift(), baseUrl).done(function () {
+                    var file = files.shift();
+                    if(file.indexOf('?') != -1){
+                        file += "&_=" + new Date().getTime();
+                    } else {
+                        file += "?_=" + new Date().getTime();
+                    }
+                    loadFile(file, baseUrl).done(function () {
                         _load();
                     }).fail(function () {
                         deferred.resolve();
@@ -1229,7 +1252,7 @@
          * s:check控件的smart对象，key:数据的key，c-msg:确认消息，e-msg:错误警告消息，r:是否刷新
          * dk: 将使用该值作为 选取的数据 的 key
          * */
-        options: "ctx:cs,ck,dk,c-msg,e-msg,r",//
+        options: "ctx:cs,ck,dk,c-msg,e-msg,r",
         defaultOptions: {
             "c-msg": "确认进行此操作吗？",
             "e-msg": "请选择你要操作的数据？",
@@ -1331,11 +1354,10 @@
             });
         },
         onRefresh: function(){
-            var checkallHandles = this.cache.checkallHandles;
-            var that = this;
-            $.each(checkallHandles, function(){
-                that.S._uncheckHandle($(this));
-            });
+            this.S.uncheckAll()
+        },
+        onReset: function(){
+            this.S.uncheckAll()
         }
     }, {
         turn: function (type) {
@@ -1838,12 +1860,17 @@
                 }
 
             }
+            row.css("opacity", 0);
             var rowSmart = Smart.of(row);
-            rowSmart.on("made", function(){
+            rowSmart.on("smart-made", function(){
                 rowSmart.data(data);
             });
-            this[(mode || "append")+"Node"](row);
-            this.trigger("row-add", [row, data, indentNum, mode]);
+            var that = this
+            setTimeout(function(){
+                that[(mode || "append")+"Node"](row);
+                that.trigger("row-add", [row, data, indentNum, mode]);
+                row.css("opacity", 1);
+            },0)
         },
         addRows: function(datas, indentNum, mode){
             indentNum = indentNum == undefined ? 0 : indentNum;
@@ -1874,6 +1901,7 @@
                 this._addEmptyRow();
                 return;
             }
+            this.reset();
             this.addRows(datas);
         },
         dataSetter: function(data){
@@ -1923,93 +1951,73 @@
  */
 (function () {
 
-    var STAGE = {
-        build: {
-            id: "build",
-            resourceKey: "__original_build_resource_key__"
-        },
-        data: {
-            id: "data",
-            resourceKey: "__original_data_resource_key__"
-        }
-    };
-
     Smart.widgetExtend({
         id: "resource",
-        options: "data-res,ctx:data-form,ctx:data-adapter,ctx:data-cascade,data-cascade-key," +
-            "build-res,ctx:build-form,ctx:build-adapter,ctx:build-cascade,build-cascade-key,data-switch,ignore",
+        options: "src,ctx:form,ctx:adapter,ctx:cascade,cascade-key,switch,cascade-data,ignore,fn",
         defaultOptions: {
-            'data-switch': "on"
+            'switch': "on",
+            'fn': "data"
         }
     }, {
         onPrepare: function () {
-            //级联
-            if (this.options['data-cascade']) {
-                this.options[STAGE.data.resourceKey] = this.options['data-res'];
-                var that = this;
-                this.options['data-cascade'].on("change refresh data.set", function () {
-                    that.S.refresh();
-                });
-            }
-            if (this.options['build-cascade']) {
-                this.options[STAGE.build.resourceKey] = this.options['build-res'];
-                var that = this;
-                this.options['build-cascade'].on("change refresh data.set", function () {
-                    that.S.refresh();
-                });
-            }
             var that = this;
-            this.S.on("request.params", function(e, params){
-                that.cache.params = params;
+            that.cache.params = {}
+            this.S.on("request.params", function (e, params) {
+                $.extend(that.cache.params, params || {});
                 that.S.refresh(false);
             });
         },
-        onClean: function(flag){
-            if(flag == undefined || flag == true){
-                this.cache.params = {};
-            }
-        },
-        onBuild: function () {
-            return this._build();
-        },
-        onReady: function () {
-            if(this.options['data-switch'] == "off"){
-                this.options['data-switch'] = "on";
+        onRender: function () {
+            if (this.options.switch == "off") return $.Deferred().resolve();
+            if (this.options['cascade']) {
+                var that = this;
+                this.options['cascade'].on('smart-change change', function () {
+                    that._cascadeLoad();
+                });
+                if ('cascade-data' in this.options) {
+                    //如果cascade-data存在，则进行初始化调用
+                    return this._cascadeLoad(this.options['cascade-data']);
+                }
                 return $.Deferred().resolve();
             }
-//            if (this.options['data-cascade']) return $.Deferred().resolve();
-            return this._ready();
+            return this._commonLoad();
         },
-        _cascadeLoad: function (stage) {
-            var cascade = this.options[stage + '-cascade'];
-            var val = cascade.val();
-            if(val == this.options.ignore) {
+        onRefresh: function (flag) {
+            flag && (this.cache.params = {});
+            return this._load(this.cache.currentSrc || this.options.src);
+        },
+        _cascadeLoad: function (cascadeData) {
+            var cascade = this.options.cascade;
+            var val = cascadeData != undefined ? cascadeData : cascade.val()
+            if (val == this.options.ignore) {
+                this.S[this.options.fn]();
                 return $.Deferred().resolve();
             }
-            var resKey = stage + '-res';
-            var originalRes = this.options[STAGE[stage].resourceKey];
-            var cascadeKey = stage + '-cascade-key';
-            this.options[resKey] = originalRes.replace("{val}", val);
-            if (this.options[cascadeKey]) {
+            var src = this.options['src'].replace("{val}", val);
+            if (this.options['cascade-key']) {
                 var params = {};
-                params[this.options[cascadeKey]] = val;
+                params[this.options['cascade-key']] = val;
             }
-            return this._load(this.options[resKey], params, stage);
+            return this._load(src, params);
         },
-        _load: function (resource, params, stage) {
+        _commonLoad: function () {
+            return this._load(this.options['src'], {});
+        },
+        _load: function (src, params) {
+            this.cache.currentSrc = src;
             var deferred = $.Deferred();
-            if (resource == undefined) {
+            if (src == undefined) {
                 return deferred.resolve();
             }
             var type = "json";
-            if (/^.+:.+$/.test(resource)) {
-                var idx = resource.indexOf(":");
-                type = resource.substring(0, idx);
-                resource = resource.substring(idx + 1);
+            if (/^.+:.+$/.test(src)) {
+                var idx = src.indexOf(":");
+                type = src.substring(0, idx);
+                src = src.substring(idx + 1);
             }
             var that = this;
-            var form = this.options[stage + "-form"];
-            var adapter = this.options[stage + "-adapter"];
+            var form = this.options["form"];
+            var adapter = this.options["adapter"];
             params = params || {};
             if (form) {
                 var formParam = Smart.serializeToObject(form);
@@ -2017,41 +2025,16 @@
                 params = formParam;
             }
             $.extend(params, this.cache.params);
-            this.S.get(resource, params, type).done(function (rs) {
+            this.S.get(src, params, type).done(function (rs) {
                 if ($.isFunction(adapter)) {
                     rs = adapter(rs);
                 }
-                if (stage == STAGE.build.id) {
-                    that.S.build(rs);
-                } else if (stage == STAGE.data.id) {
-                    that.S.data(rs);
-                }
+                that.S[that.options.fn](rs)
                 deferred.resolve();
             }).fail(function () {
                 deferred.reject();
             });
             return deferred.promise();
-        },
-        _build: function () {
-            if (this.options['build-cascade']) {
-                return this._cascadeLoad(STAGE.build.id);
-            }
-            return this._load(this.options['build-res'], {}, STAGE.build.id);
-        },
-        _ready: function () {
-            if (this.options['data-cascade']) {
-                if (Smart.isWidgetNode(this.options['data-cascade'])) {
-                    var deferred = $.Deferred();
-                    var that = this;
-                    Smart.of(this.options['data-cascade']).onMade(function () {
-                        that._cascadeLoad(STAGE.data.id);
-                        deferred.resolve();
-                    });
-                    return deferred.promise();
-                }
-                return this._cascadeLoad(STAGE.data.id);
-            }
-            return this._load(this.options['data-res'], {}, STAGE.data.id);
         }
     }, {
 
@@ -2079,11 +2062,11 @@
             var script = scripts.join("\n");
             var fn = eval(script);
             this.cache[TABLE_FN_KEY] = fn;
-        },
-        onData: function(data){
-            this.S._insertData(data);
         }
     },{
+        dataSetter: function(data){
+            this._insertData(data)
+        },
         appendData: function(data){
             this._insertData(data, "appendNode");
         },
@@ -2230,6 +2213,8 @@
         this.on("window.document.ready", function(e){e.stopPropagation()});
         this.makeChildren().done(function(){
             that.trigger("window.document.ready");
+            //处理自动焦点的元素
+            that.node.find("*[s-window-role='focus']:first").focus();
         });
 
         //处理锚点滚动
@@ -2273,13 +2258,21 @@
                 return deferred.resolve();
             }
         },
-        onClean: function(){
-            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+        onRefresh: function(){
+            this._clean();
             this.S.node.html("正在刷新");
+            this.onReady();
+        },
+        _clean: function(){
+            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+            this.S._offEvent();
+            this.S.node.empty();
         },
         onDestroy: function(){
-            this.onClean();
-            this.S._offEvent();
+            this.onReset()
+        },
+        onReset: function(){
+            this._clean();
             this.S.node.empty();
         }
     }, {
@@ -2803,9 +2796,7 @@
             "ed-pk": "page"//event.data的page key
         }
     }, {
-        onPrepare: function () {
 
-        }
     }, {
         dataSetter: function (data) {
             var pi = paging(data[this.widget.pagination.options['pagekey']],
@@ -2893,17 +2884,16 @@
             this.cache.originalOptions = originalOptions;
             this.options.form = this.options.form.split(":");
             this.options.form[1] = this.options.form[1].split(",");
-        },
-        onClean: function(){
-            this.S.node.empty();
-            this.S.node.append(this.cache.originalOptions);
         }
     }, {
-        build: function (datas) {
+        buildSetter: function (datas) {
+            datas = datas || [];
             if (!$.isArray(datas)) {
                 Smart.error("构建select选项所需的数据必须是数组");
                 return;
             }
+            this.node.empty();
+            this.node.append(this.widget.select.cache.originalOptions);
             for (var i in datas) {
                 this.node.append(this._createOption(datas[i]));
             }
@@ -2947,6 +2937,9 @@
                 }
                 return false;
             };
+        },
+        onReset: function(){
+            this.S.node[0].reset();
         }
     },{
         submit: function(){
@@ -2988,7 +2981,7 @@
                     .done(function(rs){
                         that.widget.submit.options.done && that.widget.submit.options.done.call(that, rs);
                         if(that.widget.submit.options.reset == 'true'){
-                            that.node[0].reset();
+                            that.reset();
                         }
                         deferred.resolve(rs);
                 }).fail(function(){

@@ -2,10 +2,10 @@
 <p class="lead">通过定义元素的 <code>s</code> 属性值来定义元素的控件，如： <code>s="resource,loop"</code>，多个声明用逗号隔开</p>
 <h3>控件参数的声明</h3>
 <p class="lead">为了保证控件的参数属性唯一，参数对应的属性配置都有一个namespace，这个namespace由控件的id和参数名构成，
-    如：<code>resource</code> 控件的 <code>data-res</code> 参数对应的属性名为 <code>s-resource-data-res</code></p>
+    如：<code>resource</code> 控件的 <code>data-res</code> 参数对应的属性名为 <code>s-resource-src</code></p>
 <h4>示例：</h4>
 <pre>
- &lt;table <code>s="resource,loop"</code> <code>s-resource-data-res="json/users.json"</code> <code>s-loop-type="tree"</code>&gt;</table>
+ &lt;table <code>s="resource,loop"</code> <code>s-resource-src="json/users.json"</code> <code>s-loop-type="tree"</code>&gt;</table>
 </pre>
 <hr />
 <h3 id="base" s-window-role="a" title="基本控件">1. 基本控件</h3>
@@ -64,7 +64,7 @@
             <td>资源加载控件，通过该控件可以自动加载服务器的资源</td>
             <td>
                 <code>
-                    &lt;div s="resource" s-resource-data-res="xxx.json" &gt;&lt;/div&gt;
+                    &lt;div s="resource" s-resource-src="xxx.json" &gt;&lt;/div&gt;
                 </code>
             </td>
             <td><a href="javascript:;" s="click" s-click-action="S.open('url:resource.html')"><code>详细描述</code></a>

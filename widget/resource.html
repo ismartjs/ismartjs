@@ -4,47 +4,36 @@
 <p class="lead">资源访问控件，通过该控件可以自动访问服务器资源，并将返回值赋值给控件。</p>
 <hr />
 <h3 s-window-role="a" title="控件定义" id="define">1. 控件定义</h3>
-<code>&lt;div s="resource" s-resource-res="xxx.json" &gt;&lt;/div&gt;</code>
+<code>&lt;div s="resource" s-resource-src="xxx.json" &gt;&lt;/div&gt;</code>
 <h4>配置参数</h4>
 <ol>
     <li><code>s</code>：resource</li>
-    <li><code>data-res</code>：运行阶段读取的资源，然后调用 <code>data(arg)</code> 方法为控件赋值。</li>
-    <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>data-form</code>：
-        运行阶段资源的查询form，当访问资源的时候，会把 <code>form.serialize()</code> 的返回值作为请求参数。该参数的返回值必须是form的jQuery的实例。</li>
-    <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>data-adapter</code>：
-        适配运行阶段返回的数据，该参数值必须是一个function，该function接受ajax的返回值，并返回处理后的值，然后使用该返回值去调用data方法。</li>
-    <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>data-cascade</code>：
-        配置运行阶段级联元素，当级联的元素发生改变的时候，就会使用级联元素的值刷新当前控件。</li>
-    <li><code>data-cascade-key</code>：级联事件发生的时候，该参数值会作为级联元素值的key，如：
-        <code>data-cascade-key="province"</code>，请求的时候会生成查询参数<code>province=级联元素值</code></li>
-    <li><code>build-res</code>：构建阶段读取的资源，然后调用 <code>build(arg)</code> 方法为控件赋值。</li>
-    <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>build-form</code>：
-        构建阶段资源的查询form，当访问资源的时候，会把 <code>form.serialize()</code> 的返回值作为请求参数。该参数的返回值必须是form的jQuery的实例。</li>
-    <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>build-adapter</code>：
-        适配构建阶段返回的数据，该参数值必须是一个function，该function接受ajax的返回值，并返回处理后的值，然后使用该返回值去调用data方法。</li>
-    <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>build-cascade</code>：
-        配置构建阶段级联元素，当级联的元素发生改变的时候，就会使用级联元素的值重新构建。典型案例：<code>省市区的联动加载</code></li>
-    <li><code>build-cascade-key</code>：级联事件发生的时候，该参数值会作为级联元素值的key，如：
-        <code>build-cascade-key="province"</code>，请求的时候会生成查询参数<code>province=级联元素值</code></li>
+    <li><code>src</code>：请求的资源路径</li>
+    <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>form</code>：
+        资源的查询form，当访问资源的时候，会把 <code>form.serialize()</code> 的返回值作为请求参数。该参数的返回值必须是form的jQuery的实例。</li>
+    <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>adapter</code>：
+        适配返回的数据，该参数值必须是一个function，该function接受ajax的返回值，并返回处理后的值，然后使用该返回值去调用data方法。</li>
+    <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>cascade</code>：
+        级联元素，当级联的元素发生改变的时候，就会使用级联元素的值刷新当前控件，该值配置必须是jQuery的对象</li>
+    <li><code>cascade-key</code>：级联事件发生的时候，该参数值会作为级联元素值的key，如：
+        <code>cascade-key="province"</code>，请求的时候会生成查询参数<code>province=级联元素值</code></li>
+    <li><code>cascade-data</code>：级联资源读取的初始值，当控件创建的时候，会使用该值读取资源。</li>
+    <li><code>fn</code>：资源读取后调用控件的方法。默认为 <code>data</code></li>
 </ol>
-<p>resource控件可以作用于控件的两个阶段：<span class="text-info">构建</span>和<span class="text-info">运行</span>，
-    在构建阶段会请求 <code>s-resource-build-res</code> 资源，然后调用控件的 <code>build(arg)</code> 方法构建控件，在运行阶段会请求
-    <code>s-resource-data-res</code> 资源，然后调用控件的 <code>data(arg)</code> 方法为控件赋值。
-</p>
 <h4>配置资源的类型</h4>
-<p >资源的类型可以包括：json,text等jQuery ajax支持的其他类型。在定义 <code>s-resource-data-res</code> 或 <code>s-resource-build-res</code>
+<p >资源的类型可以包括：json,text等jQuery ajax支持的其他类型。在定义 <code>s-resource-src</code>
 的时候，通过为资源添加前缀即可定义资源的类型，默认类型是 <code>json</code> 类型。示例：
 </p>
-<p class="text-info">s-resource-data-res='html:xxx.html'、s-resource-build-res="json:resource.json"</p>
+<p class="text-info">s-resource-src='html:xxx.html'、s-resource-src="json:resource.json"</p>
 <hr />
 <h3 s-window-role="a" title="示例" id="example">2. 示例</h3>
 <p>加载json/resource.json资源</p>
-<div s="datac,resource" s-resource-data-res="json/resource.json" style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
+<div s="datac,resource" s-resource-src="json/resource.json" style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
     <span s s-smart-key="name" class="text-info"></span>, <span s s-smart-key="feel" class="text-info"></span>
 </div>
 <h5>控件源码</h5>
 <pre>
-&lt;div <span class="text-info">s="resource,datac" s-resource-data-res="json/resource.json"</span> &gt;
+&lt;div <span class="text-info">s="resource,datac" s-resource-src="json/resource.json"</span> &gt;
     &lt;span <span class="text-info">s s-smart-key="name"</span> class="text-info"&gt;&lt;/span&gt;,
     &lt;span <span class="text-info">s s-smart-key="feel"</span> class="text-info"&gt;&lt;/span&gt;
 &lt;/div&gt;
@@ -58,7 +47,7 @@
 </pre>
 <hr />
 <h3 s-window-role="a" title="绑定查询表单" id="bindSearchForm">3. 绑定查询表单</h3>
-<p>通过 <code>s-resource-data-form</code> 绑定查询表单，当resource控件加载资源的时候，会自动序列化绑定的表单数据（<code>form.serialize()</code>）进行查询。</p>
+<p>通过 <code>s-resource-form</code> 绑定查询表单，当resource控件加载资源的时候，会自动序列化绑定的表单数据（<code>form.serialize()</code>）进行查询。</p>
 <div>
     <form class="form-inline" id="resourceSearchForm">
         <div class="form-group">
@@ -72,7 +61,7 @@
         <input s="click" s-click-action="S.S('#searchResourceDiv').refresh()" type="button" class="btn btn-primary btn-small" value="刷新" />
     </form>
     <br />
-    <div id="searchResourceDiv" s="resource,datac" s-resource-data-res="json/resource.json" s-resource-data-form="S.N('#resourceSearchForm')"
+    <div id="searchResourceDiv" s="resource,datac" s-resource-src="json/resource.json" s-resource-form="S.N('#resourceSearchForm')"
          style="width: 500px; border: 1px solid #ddd; padding: 10px;">
         <span s s-smart-key="name" class="text-info"></span>, <span s s-smart-key="feel" class="text-info"></span>
     </div>
@@ -92,7 +81,7 @@
     &lt;input s="click" s-click-action="S.S('#searchResourceDiv').refresh()" type="button" class="btn btn-primary btn-small" value="刷新" /&gt;
 &lt;/form&gt;
 &lt;br /&gt;
-&lt;div id="searchResourceDiv" s="resource,datac" s-resource-data-res="json/resource.json" <span class="text-info">s-resource-data-form="S.N('#resourceSearchForm')"</span>
+&lt;div id="searchResourceDiv" s="resource,datac" s-resource-src="json/resource.json" <span class="text-info">s-resource-form="S.N('#resourceSearchForm')"</span>
      style="width: 500px; border: 1px solid #ddd; padding: 10px;"&gt;
     &lt;span s s-smart-key="name" class="text-info"&gt;&lt;/span&gt;, &lt;span s s-smart-key="feel" class="text-info"&gt;&lt;/span&gt;
 &lt;/div&gt;
@@ -104,8 +93,8 @@
 <hr />
 <h3 s-window-role="a" title="数据适配" id="dataAdapter">4. 数据适配</h3>
 <p>加载json/resource.json资源</p>
-<div s="resource,datac" s-resource-data-res="json/resource.json"
-     s-resource-data-adapter="adaptData"
+<div s="resource,datac" s-resource-src="json/resource.json"
+     s-resource-adapter="adaptData"
      style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
     <span s s-smart-key="name" class="text-info"></span>, <span s s-smart-key="feel" class="text-info"></span>
 </div>
@@ -118,7 +107,7 @@
 </script>
 <h4>控件源码</h4>
 <pre>
-&lt;div <span class="text-info">s="resource,datac" s-resource-data-adapter="adaptData" s-resource-data-res="json/resource.json"</span> &gt;
+&lt;div <span class="text-info">s="resource,datac" s-resource-adapter="adaptData" s-resource-src="json/resource.json"</span> &gt;
     &lt;span <span class="text-info">s s-smart-key="name"</span> class="text-info"&gt;&lt;/span&gt;,
     &lt;span <span class="text-info">s s-smart-key="feel"</span> class="text-info"&gt;&lt;/span&gt;
 &lt;/div&gt;
@@ -146,7 +135,7 @@
     <option value="resource-ui.json">resource-ui.json</option>
 </select>
 <br />
-<div s="resource,datac" s-resource-data-res="json/{val}" s-resource-data-cascade="S.N('#cascadeSelect')"
+<div s="resource,datac" s-resource-src="json/{val}" s-resource-cascade="S.N('#cascadeSelect')"
      style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
     <span s s-smart-key="name" class="text-info"></span>, <span s s-smart-key="feel" class="text-info"></span>
 </div>
@@ -156,13 +145,13 @@
     &lt;option value="resource.json"&gt;resource.json&lt;/option&gt;
     &lt;option value="resource-ui.json"&gt;resource-ui.json&lt;/option&gt;
 &lt;/select>
-&lt;div <span class="text-info">s="resource,datac" s-resource-data-res="<span class="text-warning">json/{val}</span>" s-resource-data-cascade="S.N('#cascadeSelect')"</span> &gt;
+&lt;div <span class="text-info">s="resource,datac" s-resource-src="<span class="text-warning">json/{val}</span>" s-resource-cascade="S.N('#cascadeSelect')"</span> &gt;
     &lt;span <span class="text-info">s s-smart-key="name"</span> class="text-info"&gt;&lt;/span&gt;,
     &lt;span <span class="text-info">s s-smart-key="feel"</span> class="text-info"&gt;&lt;/span&gt;
 &lt;/div&gt;
 </pre>
-<p class="lead">配置级联的时候，可以在s-resource-data-res配置中设置占位符 <code>{val}</code>，请求资源的时候，该占位符会被替换成级联元素的值。</p>
-<p class="lead">也可以配置 <code>s-resource-data-cascade-key</code> 作为request参数的key去请求资源，该key参数的值是元素的值。</p>
+<p class="lead">配置级联的时候，可以在s-resource-src配置中设置占位符 <code>{val}</code>，请求资源的时候，该占位符会被替换成级联元素的值。</p>
+<p class="lead">也可以配置 <code>s-resource-cascade-key</code> 作为request参数的key去请求资源，该key参数的值是元素的值。</p>
     <h4>resource.json源码</h4>
 <pre>
 {
@@ -181,14 +170,14 @@
 <h3 s-window-role="a" title="与其他控件组合使用" id="zuhe">6. 与其他控件组合使用</h3>
 <p class="lead">组合使用的时候，resource控件可以嵌套其他控件，也可以其他控件与resource同时定义到一个元素上面。</p>
 <h4>a. 与模板控件（tpl）组合使用，同时定义一个元素，示例如下：</h4>
-<div s="resource,tpl" s-resource-data-res="json/resource-ary.json" style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
+<div s="resource,tpl" s-resource-src="json/resource-ary.json" style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
     {%for(var i=0; i lt this.length; i++){%}
     <span class="text-info">{%=this[i]%}</span>
     {%}%}
 </div>
 <h5>控件源码</h5>
 <pre>
-&lt;div <span class="text-info">s="resource,tpl" s-resource-data-res="json/resource-ary.json"</span> style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;"&gt;
+&lt;div <span class="text-info">s="resource,tpl" s-resource-src="json/resource-ary.json"</span> style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;"&gt;
     {% for(var i=0; i lt this.length; i++){ %}
          &lt;span class="text-info"&gt;{%=this[i]%}&lt;/span&gt;
     {% } %}
@@ -205,7 +194,7 @@
 ]
 </pre>
 <h4>b. 自动填充表单</h4>
-<form s="resource,nda,datac" s-resource-data-res="json/resource-form.json" class="form-horizontal" style="width: 500px; border-radius: 4px; border: 1px solid #ddd; padding:20px;">
+<form s="resource,nda,datac" s-resource-src="json/resource-form.json" class="form-horizontal" style="width: 500px; border-radius: 4px; border: 1px solid #ddd; padding:20px;">
     <div class="form-group">
         <label class="col-sm-2 control-label" >Name</label>
         <div class="col-sm-10">
@@ -254,7 +243,7 @@
 </form>
 <h5>表单源码</h5>
 <pre>
-&lt;form s="resource,nda,datac" s-resource-data-res="json/resource-form.json" class="form-horizontal" &gt;
+&lt;form s="resource,nda,datac" s-resource-src="json/resource-form.json" class="form-horizontal" &gt;
     &lt;div class="form-group"&gt;
         &lt;label class="col-sm-2 control-label" &gt;Name&lt;/label&gt;
         &lt;div class="col-sm-10"&gt;
@@ -332,24 +321,12 @@
     <tbody>
     <tr>
         <td>
-            <code>buildRefresh()</code>
-        </td>
-        <td>
-            <code>deferred</code> jQuery的<span>$.Deferred</span>实例。
-        </td>
-        <td>重新构建该控件，当一个控件需要重新构建的时候调用该方法，如 <code>select</code> 下拉列表重新构建的时候。
-            会重新请求 <code>s-resource-build-res</code> 资源，然后调用 <code>build(arg)</code> 方法，返回值是deferred，
-            当刷新成功，则调用<span class="text-info">deferred.resolve()</span>;否则调用<span class="text-info">deferred.reject()</span></td>
-        <td>&nbsp;</td>
-    </tr>
-    <tr>
-        <td>
             <code>refresh()</code>
         </td>
         <td>
             <code>deferred</code> jQuery的<span>$.Deferred</span>实例。
         </td>
-        <td>重新为该控件赋值，会请求 <code>s-resource-data-res</code> 资源，然后调用 <code>data(arg)</code> 方法。返回值是deferred，
+        <td>重新为该控件赋值，会请求 <code>s-resource-src</code> 资源，然后调用 <code>data(arg)</code> 方法。返回值是deferred，
             当刷新成功，则调用<span class="text-info">deferred.resolve()</span>;否则调用<span class="text-info">deferred.reject()</span></td>
         <td>&nbsp;</td>
     </tr>

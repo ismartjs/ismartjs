@@ -65,9 +65,7 @@
             "ed-pk": "page"//event.data的page key
         }
     }, {
-        onPrepare: function () {
 
-        }
     }, {
         dataSetter: function (data) {
             var pi = paging(data[this.widget.pagination.options['pagekey']],

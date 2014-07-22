@@ -3,93 +3,73 @@
  */
 (function () {
 
-    var STAGE = {
-        build: {
-            id: "build",
-            resourceKey: "__original_build_resource_key__"
-        },
-        data: {
-            id: "data",
-            resourceKey: "__original_data_resource_key__"
-        }
-    };
-
     Smart.widgetExtend({
         id: "resource",
-        options: "data-res,ctx:data-form,ctx:data-adapter,ctx:data-cascade,data-cascade-key," +
-            "build-res,ctx:build-form,ctx:build-adapter,ctx:build-cascade,build-cascade-key,data-switch,ignore",
+        options: "src,ctx:form,ctx:adapter,ctx:cascade,cascade-key,switch,cascade-data,ignore,fn",
         defaultOptions: {
-            'data-switch': "on"
+            'switch': "on",
+            'fn': "data"
         }
     }, {
         onPrepare: function () {
-            //级联
-            if (this.options['data-cascade']) {
-                this.options[STAGE.data.resourceKey] = this.options['data-res'];
-                var that = this;
-                this.options['data-cascade'].on("change refresh data.set", function () {
-                    that.S.refresh();
-                });
-            }
-            if (this.options['build-cascade']) {
-                this.options[STAGE.build.resourceKey] = this.options['build-res'];
-                var that = this;
-                this.options['build-cascade'].on("change refresh data.set", function () {
-                    that.S.refresh();
-                });
-            }
             var that = this;
-            this.S.on("request.params", function(e, params){
-                that.cache.params = params;
+            that.cache.params = {}
+            this.S.on("request.params", function (e, params) {
+                $.extend(that.cache.params, params || {});
                 that.S.refresh(false);
             });
         },
-        onClean: function(flag){
-            if(flag == undefined || flag == true){
-                this.cache.params = {};
-            }
-        },
-        onBuild: function () {
-            return this._build();
-        },
-        onReady: function () {
-            if(this.options['data-switch'] == "off"){
-                this.options['data-switch'] = "on";
+        onRender: function () {
+            if (this.options.switch == "off") return $.Deferred().resolve();
+            if (this.options['cascade']) {
+                var that = this;
+                this.options['cascade'].on('smart-change change', function () {
+                    that._cascadeLoad();
+                });
+                if ('cascade-data' in this.options) {
+                    //如果cascade-data存在，则进行初始化调用
+                    return this._cascadeLoad(this.options['cascade-data']);
+                }
                 return $.Deferred().resolve();
             }
-//            if (this.options['data-cascade']) return $.Deferred().resolve();
-            return this._ready();
+            return this._commonLoad();
         },
-        _cascadeLoad: function (stage) {
-            var cascade = this.options[stage + '-cascade'];
-            var val = cascade.val();
-            if(val == this.options.ignore) {
+        onRefresh: function (flag) {
+            flag && (this.cache.params = {});
+            return this._load(this.cache.currentSrc || this.options.src);
+        },
+        _cascadeLoad: function (cascadeData) {
+            var cascade = this.options.cascade;
+            var val = cascadeData != undefined ? cascadeData : cascade.val()
+            if (val == this.options.ignore) {
+                this.S[this.options.fn]();
                 return $.Deferred().resolve();
             }
-            var resKey = stage + '-res';
-            var originalRes = this.options[STAGE[stage].resourceKey];
-            var cascadeKey = stage + '-cascade-key';
-            this.options[resKey] = originalRes.replace("{val}", val);
-            if (this.options[cascadeKey]) {
+            var src = this.options['src'].replace("{val}", val);
+            if (this.options['cascade-key']) {
                 var params = {};
-                params[this.options[cascadeKey]] = val;
+                params[this.options['cascade-key']] = val;
             }
-            return this._load(this.options[resKey], params, stage);
+            return this._load(src, params);
         },
-        _load: function (resource, params, stage) {
+        _commonLoad: function () {
+            return this._load(this.options['src'], {});
+        },
+        _load: function (src, params) {
+            this.cache.currentSrc = src;
             var deferred = $.Deferred();
-            if (resource == undefined) {
+            if (src == undefined) {
                 return deferred.resolve();
             }
             var type = "json";
-            if (/^.+:.+$/.test(resource)) {
-                var idx = resource.indexOf(":");
-                type = resource.substring(0, idx);
-                resource = resource.substring(idx + 1);
+            if (/^.+:.+$/.test(src)) {
+                var idx = src.indexOf(":");
+                type = src.substring(0, idx);
+                src = src.substring(idx + 1);
             }
             var that = this;
-            var form = this.options[stage + "-form"];
-            var adapter = this.options[stage + "-adapter"];
+            var form = this.options["form"];
+            var adapter = this.options["adapter"];
             params = params || {};
             if (form) {
                 var formParam = Smart.serializeToObject(form);
@@ -97,41 +77,16 @@
                 params = formParam;
             }
             $.extend(params, this.cache.params);
-            this.S.get(resource, params, type).done(function (rs) {
+            this.S.get(src, params, type).done(function (rs) {
                 if ($.isFunction(adapter)) {
                     rs = adapter(rs);
                 }
-                if (stage == STAGE.build.id) {
-                    that.S.build(rs);
-                } else if (stage == STAGE.data.id) {
-                    that.S.data(rs);
-                }
+                that.S[that.options.fn](rs)
                 deferred.resolve();
             }).fail(function () {
                 deferred.reject();
             });
             return deferred.promise();
-        },
-        _build: function () {
-            if (this.options['build-cascade']) {
-                return this._cascadeLoad(STAGE.build.id);
-            }
-            return this._load(this.options['build-res'], {}, STAGE.build.id);
-        },
-        _ready: function () {
-            if (this.options['data-cascade']) {
-                if (Smart.isWidgetNode(this.options['data-cascade'])) {
-                    var deferred = $.Deferred();
-                    var that = this;
-                    Smart.of(this.options['data-cascade']).onMade(function () {
-                        that._cascadeLoad(STAGE.data.id);
-                        deferred.resolve();
-                    });
-                    return deferred.promise();
-                }
-                return this._cascadeLoad(STAGE.data.id);
-            }
-            return this._load(this.options['data-res'], {}, STAGE.data.id);
         }
     }, {
 

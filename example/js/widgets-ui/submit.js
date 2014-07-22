@@ -26,6 +26,9 @@
                 }
                 return false;
             };
+        },
+        onReset: function(){
+            this.S.node[0].reset();
         }
     },{
         submit: function(){
@@ -67,7 +70,7 @@
                     .done(function(rs){
                         that.widget.submit.options.done && that.widget.submit.options.done.call(that, rs);
                         if(that.widget.submit.options.reset == 'true'){
-                            that.node[0].reset();
+                            that.reset();
                         }
                         deferred.resolve(rs);
                 }).fail(function(){

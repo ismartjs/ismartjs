@@ -44,12 +44,17 @@
                 }
 
             }
+            row.css("opacity", 0);
             var rowSmart = Smart.of(row);
-            rowSmart.on("made", function(){
+            rowSmart.on("smart-made", function(){
                 rowSmart.data(data);
             });
-            this[(mode || "append")+"Node"](row);
-            this.trigger("row-add", [row, data, indentNum, mode]);
+            var that = this
+            setTimeout(function(){
+                that[(mode || "append")+"Node"](row);
+                that.trigger("row-add", [row, data, indentNum, mode]);
+                row.css("opacity", 1);
+            },0)
         },
         addRows: function(datas, indentNum, mode){
             indentNum = indentNum == undefined ? 0 : indentNum;
@@ -80,6 +85,7 @@
                 this._addEmptyRow();
                 return;
             }
+            this.reset();
             this.addRows(datas);
         },
         dataSetter: function(data){

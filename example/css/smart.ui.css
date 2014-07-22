@@ -10,13 +10,13 @@
 /***/
     /*css3过渡特效*/
 /**/
-/**{*/
-    /*transition: color .2s ease-out, background-color .2s ease-out, border-color .2s ease-out;*/
-    /*-moz-transition: color .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; *//* Firefox 4 */
-    /*-webkit-transition: color .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; *//* Safari 和 Chrome */
-    /*-o-transition: color .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; *//* Opera */
-    /*-ms-transition: color .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; *//* Opera */
-/*}*/
+*{
+    transition: color .2s ease-out, opacity .2s ease-out,background-color .2s ease-out, border-color .2s ease-out;
+    -moz-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; /* Firefox 4 */
+    -webkit-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; /* Safari 和 Chrome */
+    -o-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out;/* Opera */
+    -ms-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; /* Opera */
+}
 
 a{
     text-decoration: none;
@@ -151,6 +151,15 @@ ul.s-ui-contextmenu li.disabled:hover > span{
 .s-ui-grid-action{
     background: #fff;
     padding: 10px;
+}
+
+.s-ui-grid-action h3,.s-ui-grid-action h4,.s-ui-grid-action h5,.s-ui-grid-action h6{
+    display: inline-block;
+    text-indent: 8px;
+    border-left: 2px solid #88B7E0;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 8px;
 }
 
 .s-ui-editable{
