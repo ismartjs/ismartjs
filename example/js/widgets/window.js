@@ -350,24 +350,6 @@
             this.widget.window.cache[ON_BEFORE_CLOSE_FN_KEY].push(fn);
             return this;
         },
-
-        action: function (script) {
-            var script_body = [];
-//            script_body.push(" var e = arguments[1]; ");
-//            script_body.push(script);
-//            script_body = script_body.join("\n");
-//            var ___context_holder__ = this;
-//            var action = function (e) {
-//                ___context_holder__.context.apply(this, [script_body, e]);
-//            };
-//            return action;
-            script_body.push("(function(){");
-            script_body.push("      return function(){");
-            script_body.push("          " + script);
-            script_body.push("      }")
-            script_body.push("})()");
-            return this.context(script_body.join("\n"));
-        },
         _tidyId: function (html) {//整理清理html，
             //清理html的id
             var that = this;
@@ -412,4 +394,5 @@
             return this.inherited([events, selector, fn]);
         }
     });
+
 })(jQuery);

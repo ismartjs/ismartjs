@@ -235,6 +235,15 @@
             }
             return true;
         },
+        newFn: function (args, script, namespace) {
+            if(namespace){
+
+                    return eval("(function(){" +
+                        "   return function(){with(){"+script+"}}" +
+                        "})()")
+            }
+            return new Function(args, script)
+        },
         isEmpty: function (val) {
             if (val == null) {
                 return true;
@@ -274,10 +283,10 @@
             }
             return _datas;
         },
-        deferredListen:function(defer, listenDefer){
-            listenDefer.done(function(){
+        deferredListen: function (defer, listenDefer) {
+            listenDefer.done(function () {
                 defer.resolve.apply(defer, $.makeArray(arguments));
-            }).fail(function(){
+            }).fail(function () {
                 defer.reject.apply(defer, $.makeArray(arguments));
             })
         },
@@ -446,7 +455,7 @@
                 if (/^(http|https|ftp|):.*$/.test(path)) {
                     return path;
                 }
-                if(path[0] == "/") return path;
+                if (path[0] == "/") return path;
                 path = baseUrl === undefined ? path : dirName(baseUrl) + path;
                 return realPath(path);
             }
@@ -488,20 +497,21 @@
                 p = Smart.of($(window));
             return Smart.of(p);
         },
-        closest: function(wId){
-            function check(smart){
-                if(smart.isWindow()) return null;
-                if(smart.isWidget(wId)) return smart;
+        closest: function (wId) {
+            function check(smart) {
+                if (smart.isWindow()) return null;
+                if (smart.isWidget(wId)) return smart;
                 return check(smart.parent());
             }
+
             return check(this);
         },
-        isWidget: function(wId){
+        isWidget: function (wId) {
             var s = this.node.attr(SMART_ATTR_KEY);
-            if(!s) return false;
+            if (!s) return false;
             var wIds = s.split(",");
-            for(var i = 0; i < wIds.length; i++){
-                if($.trim(wIds[i]) == wId) return true;
+            for (var i = 0; i < wIds.length; i++) {
+                if ($.trim(wIds[i]) == wId) return true;
             }
             return false;
         },
@@ -637,6 +647,43 @@
                 return smart._context.apply(this, $.makeArray(arguments));
             };
         })(),
+        _action:  function (script) {
+            var script_body = [];
+            script_body.push("(function(){");
+            script_body.push("      return function(){");
+            script_body.push("          " + script);
+            script_body.push("      }")
+            script_body.push("})()");
+            return this.context(script_body.join("\n"));
+        },
+        action: (function () {
+            var getActionSmart = function (smart) {
+                if (smart._action) {
+                    return smart;
+                }
+                var parent = smart.parent();
+                if (parent == null || parent.isWindow()) {
+                    return null;
+                }
+                return getActionSmart(parent);
+            };
+            return function (script) {
+                var actionSmart = getActionSmart(this);
+                var script_body = [];
+                script_body.push(script);
+                if (actionSmart == null) {
+                    var window_body = [];
+                    window_body.push("(function(){");
+                    window_body.push("      return function(){");
+                    window_body.push("          "+script_body.join("\n"));
+                    window_body.push("      }")
+                    window_body.push("})()");
+                    return eval(window_body);
+                } else {
+                    return actionSmart._action(script_body.join("\n"));
+                }
+            }
+        })()
     });
 
     //class 继承
@@ -795,7 +842,7 @@
             options: "key, data, null"
         }, {
             onRender: function () {
-                if(this.options.data != undefined){
+                if (this.options.data != undefined) {
                     this.S.data(this.options.data)
                 }
             }
@@ -828,7 +875,7 @@
                         if ($.inArray(val, data) != -1) {
                             this.node.prop("checked", true);
                             return;
-                        }else{
+                        } else {
                             return false;
                         }
                     }
@@ -839,10 +886,10 @@
                 if (arguments.length == 0) {
                     return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
                 }
-                if(!this.isMade()){
+                if (!this.isMade()) {
                     var that = this;
                     var args = arguments;
-                    this.onMade(function(){
+                    this.onMade(function () {
                         that.data.apply(that, $.makeArray(args));
                     });
                     return;
@@ -857,14 +904,14 @@
                     value = [data == undefined ? null : fn_flag ? eval("data." + dataKey) : data[dataKey]];
                 }
                 value = (value == null ? [this.widget.smart.options['null']] : value);
-                if(this.dataSetter.apply(this, value) !== false){
+                if (this.dataSetter.apply(this, value) !== false) {
                     this.trigger("smart-data");
                 }
             },
             /**
              * build的时候，需要初始化赋值。
              * */
-            build: function(){
+            build: function () {
                 this.buildSetter.apply(this, $.makeArray(arguments));
                 this.trigger("smart-change");
             },
@@ -873,12 +920,12 @@
                 var deferreds = []
                 var args = $.makeArray(arguments);
                 $.each(this.widgets, function (i, widget) {
-                    deferreds.push(function(){
+                    deferreds.push(function () {
                         return widget.onRefresh.apply(widget, args);
                     })
                 });
                 var that = this;
-                return Smart.deferredQueue(deferreds).done(function(){
+                return Smart.deferredQueue(deferreds).done(function () {
                     that.trigger("smart-refresh", args);
                 });
             },
@@ -1050,7 +1097,7 @@
     //生命周期事件接口,这些事件都不是冒泡事件
     (function () {
         Smart.extend(Smart.prototype, {
-            isMade: function(){
+            isMade: function () {
                 return this.lifeStage == LIFE_STAGE.made
             },
             onMade: function (fn) {
@@ -1227,7 +1274,7 @@
                     deferred.resolve();
                 } else {
                     var file = files.shift();
-                    if(file.indexOf('?') != -1){
+                    if (file.indexOf('?') != -1) {
                         file += "&_=" + new Date().getTime();
                     } else {
                         file += "?_=" + new Date().getTime();
@@ -1675,44 +1722,11 @@
  * Created by Administrator on 2014/6/19.
  */
 (function(){
-    Smart.extend({
-        eventAction: (function () {
-
-            var getActionSmart = function (smart) {
-                if (smart.action) {
-                    return smart;
-                }
-                var parent = smart.parent();
-                if (parent == null || parent.isWindow()) {
-                    return null;
-                }
-                return getActionSmart(parent);
-            };
-
-            return function (smart, script) {
-                var actionSmart = getActionSmart(smart);
-                var script_body = [];
-                script_body.push("var e = arguments[1];");
-                script_body.push(script);
-                if (actionSmart == null) {
-                    var window_body = [];
-                    window_body.push("(function(){");
-                    window_body.push("      return function(){");
-                    window_body.push("          "+script_body.join("\n"));
-                    window_body.push("      }")
-                    window_body.push("})()");
-                    return eval(window_body);
-                } else {
-                    return actionSmart.action(script_body.join("\n"));
-                }
-            }
-        })()
-    });
     var bindEvent = function(smart, event, action){
         if(Smart.isEmpty(event) || Smart.isEmpty(action)){
             return;
         }
-        action = Smart.eventAction(smart, action);
+        action = smart.action("var e = arguments[1];\n" + action);
         smart.node[event](function (e) {
             var result = action.call(smart, e);
             if(result == null) return;
@@ -1963,10 +1977,6 @@
         onPrepare: function () {
             var that = this;
             that.cache.params = {}
-            this.S.on("request.params", function (e, params) {
-                $.extend(that.cache.params, params || {});
-                that.S.refresh(true);
-            });
         },
         onRender: function () {
             if (this.options.switch == "off") return $.Deferred().resolve();
@@ -1983,8 +1993,12 @@
             }
             return this._commonLoad();
         },
-        onRefresh: function (flag) {
-            !flag && (this.cache.params = {});
+        onRefresh: function (params, flag) {
+            if(flag){
+                $.extend(this.cache.params, params|| {})
+            } else {
+                this.cache.params = params || {}
+            }
             return this._load(this.cache.currentSrc || this.options.src);
         },
         _cascadeLoad: function (cascadeData) {
@@ -2432,24 +2446,6 @@
             this.widget.window.cache[ON_BEFORE_CLOSE_FN_KEY].push(fn);
             return this;
         },
-
-        action: function (script) {
-            var script_body = [];
-//            script_body.push(" var e = arguments[1]; ");
-//            script_body.push(script);
-//            script_body = script_body.join("\n");
-//            var ___context_holder__ = this;
-//            var action = function (e) {
-//                ___context_holder__.context.apply(this, [script_body, e]);
-//            };
-//            return action;
-            script_body.push("(function(){");
-            script_body.push("      return function(){");
-            script_body.push("          " + script);
-            script_body.push("      }")
-            script_body.push("})()");
-            return this.context(script_body.join("\n"));
-        },
         _tidyId: function (html) {//整理清理html，
             //清理html的id
             var that = this;
@@ -2494,6 +2490,7 @@
             return this.inherited([events, selector, fn]);
         }
     });
+
 })(jQuery);;/**
  * Created by Administrator on 2014/6/17.
  */
@@ -2702,30 +2699,30 @@
     var dropdown_title_selector = "*["+Smart.optionAttrName('dropdown','role')+"='title']";
     Smart.widgetExtend({
         id: "dropdown",
-        options: "e,name,ctx:t",
-        defaultOptions: {
-            e: "request.data"
-        }
+        options: "action,key,ctx:t"
     },{
         onPrepare: function(){
             var that = this;
+             if(that.options.action){
+                 that.options.action = this.S.action("var data = arguments[0]; \n" + this.options.action)
+             }
             this.S.node.delegate("*["+dropdown_val_attr+"]", 'click', function(e){
                 var val = $(this).attr(dropdown_val_attr);
                 //如果配置了target，则把该值赋值给target
                 if(that.options.t){
                     that.options.t.val(val);
                 }
-                if(that.options.e){//如果配置了e，则发送该事件
+                if(that.options.action){//如果配置了e，则发送该事件
                     var data = {};
-                    if(that.options['name'] == null){
+                    if(that.options['key'] == null){
                         data = val;
                     } else {
-                        data[that.options['name']] = val;
+                        data[that.options['key']] = val;
                     }
-                    that.trigger(that.options['e'], [data]);
+                    that.options.action(data);
                 }
                 var title = $(this).attr(dropdown_title_attr) || $(this).text();
-                $(dropdown_title_selector, that.node).html(title);
+                $(dropdown_title_selector, that.S.node).html(title);
             });
         }
     });
@@ -2737,7 +2734,10 @@
 
     var paging = function (page, pageSize, totalCount, showSize) {
         showSize = showSize || 10;
-        page = page < 1 ? 1 : page;
+        page = page < 1 ? 1 : parseInt(page);
+        pageSize = parseInt(pageSize)
+        totalCount = parseInt(totalCount)
+        showSize = parseInt(showSize)
         var totalPage = Math.ceil(totalCount / pageSize);
         var startPage = page - Math.floor(showSize / 2);
         if (startPage < 1)
@@ -2755,7 +2755,8 @@
         var endNextPage = 0;
         if (endPage < totalPage)
             endNextPage = endPage + 1;
-        var prePage = 0, nextPage = 0;
+        var prePage = 0;
+        var nextPage = 0;
         if(page > 1) prePage = page - 1;
         if(page < totalPage) nextPage = page + 1;
         var startNum = (page - 1) * pageSize + 1;
@@ -2781,7 +2782,7 @@
     //分页控件
     Smart.widgetExtend({
         id: "pagination",
-        options: "pagekey, pskey, totalkey, showsize, start-p, end-n, disabled-c, active-c, pre, next, event",
+        options: "pagekey,pskey,totalkey,showsize,start-p,end-n,disabled-c,active-c,pre,next,key,action",
         defaultOptions: {
             'pagekey': "page",
             'pskey': "pageSize",
@@ -2793,10 +2794,18 @@
             "next": "›",
             "disabled-c": "disabled",
             "active-c": "active",
-            "event": "request.params",//页点击所触发的事件
-            "ed-pk": "page"//event.data的page key
+            key:"page"
         }
     }, {
+        onPrepare: function(){
+            if(this.options['action']){
+                if(!$.isFunction(this.options['action'])){
+                    var script = "var pagination = arguments[0];\n" + this.options['action'];
+                    var action = this.S.action(script);
+                    this.options['action'] = action;
+                }
+            }
+        }
 
     }, {
         dataSetter: function (data) {
@@ -2857,9 +2866,14 @@
             this.node.append(endNextLi);
         },
         _triggerPage: function(page){
-            var arg = {};
-            arg[this.widget.pagination.options['ed-pk']] = page;
-            this.trigger(this.widget.pagination.options['event'], [arg]);
+            var args = {};
+            if(this.widget.pagination.options['key']){
+                args[this.widget.pagination.options['key']] = page;
+            } else args = page
+            if(this.widget.pagination.options['action']){
+                this.widget.pagination.options['action'](args);
+            }
+            this.trigger("pagination-page", [page]);
         },
         _createLi: function (txt) {
             var li = $("<li />");

@@ -112,6 +112,15 @@
             }
             return true;
         },
+        newFn: function (args, script, namespace) {
+            if(namespace){
+
+                    return eval("(function(){" +
+                        "   return function(){with(){"+script+"}}" +
+                        "})()")
+            }
+            return new Function(args, script)
+        },
         isEmpty: function (val) {
             if (val == null) {
                 return true;
@@ -151,10 +160,10 @@
             }
             return _datas;
         },
-        deferredListen:function(defer, listenDefer){
-            listenDefer.done(function(){
+        deferredListen: function (defer, listenDefer) {
+            listenDefer.done(function () {
                 defer.resolve.apply(defer, $.makeArray(arguments));
-            }).fail(function(){
+            }).fail(function () {
                 defer.reject.apply(defer, $.makeArray(arguments));
             })
         },
@@ -323,7 +332,7 @@
                 if (/^(http|https|ftp|):.*$/.test(path)) {
                     return path;
                 }
-                if(path[0] == "/") return path;
+                if (path[0] == "/") return path;
                 path = baseUrl === undefined ? path : dirName(baseUrl) + path;
                 return realPath(path);
             }
@@ -365,20 +374,21 @@
                 p = Smart.of($(window));
             return Smart.of(p);
         },
-        closest: function(wId){
-            function check(smart){
-                if(smart.isWindow()) return null;
-                if(smart.isWidget(wId)) return smart;
+        closest: function (wId) {
+            function check(smart) {
+                if (smart.isWindow()) return null;
+                if (smart.isWidget(wId)) return smart;
                 return check(smart.parent());
             }
+
             return check(this);
         },
-        isWidget: function(wId){
+        isWidget: function (wId) {
             var s = this.node.attr(SMART_ATTR_KEY);
-            if(!s) return false;
+            if (!s) return false;
             var wIds = s.split(",");
-            for(var i = 0; i < wIds.length; i++){
-                if($.trim(wIds[i]) == wId) return true;
+            for (var i = 0; i < wIds.length; i++) {
+                if ($.trim(wIds[i]) == wId) return true;
             }
             return false;
         },
@@ -514,6 +524,43 @@
                 return smart._context.apply(this, $.makeArray(arguments));
             };
         })(),
+        _action:  function (script) {
+            var script_body = [];
+            script_body.push("(function(){");
+            script_body.push("      return function(){");
+            script_body.push("          " + script);
+            script_body.push("      }")
+            script_body.push("})()");
+            return this.context(script_body.join("\n"));
+        },
+        action: (function () {
+            var getActionSmart = function (smart) {
+                if (smart._action) {
+                    return smart;
+                }
+                var parent = smart.parent();
+                if (parent == null || parent.isWindow()) {
+                    return null;
+                }
+                return getActionSmart(parent);
+            };
+            return function (script) {
+                var actionSmart = getActionSmart(this);
+                var script_body = [];
+                script_body.push(script);
+                if (actionSmart == null) {
+                    var window_body = [];
+                    window_body.push("(function(){");
+                    window_body.push("      return function(){");
+                    window_body.push("          "+script_body.join("\n"));
+                    window_body.push("      }")
+                    window_body.push("})()");
+                    return eval(window_body);
+                } else {
+                    return actionSmart._action(script_body.join("\n"));
+                }
+            }
+        })()
     });
 
     //class 继承
@@ -672,7 +719,7 @@
             options: "key, data, null"
         }, {
             onRender: function () {
-                if(this.options.data != undefined){
+                if (this.options.data != undefined) {
                     this.S.data(this.options.data)
                 }
             }
@@ -705,7 +752,7 @@
                         if ($.inArray(val, data) != -1) {
                             this.node.prop("checked", true);
                             return;
-                        }else{
+                        } else {
                             return false;
                         }
                     }
@@ -716,10 +763,10 @@
                 if (arguments.length == 0) {
                     return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
                 }
-                if(!this.isMade()){
+                if (!this.isMade()) {
                     var that = this;
                     var args = arguments;
-                    this.onMade(function(){
+                    this.onMade(function () {
                         that.data.apply(that, $.makeArray(args));
                     });
                     return;
@@ -734,14 +781,14 @@
                     value = [data == undefined ? null : fn_flag ? eval("data." + dataKey) : data[dataKey]];
                 }
                 value = (value == null ? [this.widget.smart.options['null']] : value);
-                if(this.dataSetter.apply(this, value) !== false){
+                if (this.dataSetter.apply(this, value) !== false) {
                     this.trigger("smart-data");
                 }
             },
             /**
              * build的时候，需要初始化赋值。
              * */
-            build: function(){
+            build: function () {
                 this.buildSetter.apply(this, $.makeArray(arguments));
                 this.trigger("smart-change");
             },
@@ -750,12 +797,12 @@
                 var deferreds = []
                 var args = $.makeArray(arguments);
                 $.each(this.widgets, function (i, widget) {
-                    deferreds.push(function(){
+                    deferreds.push(function () {
                         return widget.onRefresh.apply(widget, args);
                     })
                 });
                 var that = this;
-                return Smart.deferredQueue(deferreds).done(function(){
+                return Smart.deferredQueue(deferreds).done(function () {
                     that.trigger("smart-refresh", args);
                 });
             },
@@ -927,7 +974,7 @@
     //生命周期事件接口,这些事件都不是冒泡事件
     (function () {
         Smart.extend(Smart.prototype, {
-            isMade: function(){
+            isMade: function () {
                 return this.lifeStage == LIFE_STAGE.made
             },
             onMade: function (fn) {
@@ -1104,7 +1151,7 @@
                     deferred.resolve();
                 } else {
                     var file = files.shift();
-                    if(file.indexOf('?') != -1){
+                    if (file.indexOf('?') != -1) {
                         file += "&_=" + new Date().getTime();
                     } else {
                         file += "?_=" + new Date().getTime();

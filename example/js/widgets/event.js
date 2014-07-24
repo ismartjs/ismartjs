@@ -2,44 +2,11 @@
  * Created by Administrator on 2014/6/19.
  */
 (function(){
-    Smart.extend({
-        eventAction: (function () {
-
-            var getActionSmart = function (smart) {
-                if (smart.action) {
-                    return smart;
-                }
-                var parent = smart.parent();
-                if (parent == null || parent.isWindow()) {
-                    return null;
-                }
-                return getActionSmart(parent);
-            };
-
-            return function (smart, script) {
-                var actionSmart = getActionSmart(smart);
-                var script_body = [];
-                script_body.push("var e = arguments[1];");
-                script_body.push(script);
-                if (actionSmart == null) {
-                    var window_body = [];
-                    window_body.push("(function(){");
-                    window_body.push("      return function(){");
-                    window_body.push("          "+script_body.join("\n"));
-                    window_body.push("      }")
-                    window_body.push("})()");
-                    return eval(window_body);
-                } else {
-                    return actionSmart.action(script_body.join("\n"));
-                }
-            }
-        })()
-    });
     var bindEvent = function(smart, event, action){
         if(Smart.isEmpty(event) || Smart.isEmpty(action)){
             return;
         }
-        action = Smart.eventAction(smart, action);
+        action = smart.action("var e = arguments[1];\n" + action);
         smart.node[event](function (e) {
             var result = action.call(smart, e);
             if(result == null) return;

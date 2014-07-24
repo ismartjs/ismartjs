@@ -5,7 +5,10 @@
 
     var paging = function (page, pageSize, totalCount, showSize) {
         showSize = showSize || 10;
-        page = page < 1 ? 1 : page;
+        page = page < 1 ? 1 : parseInt(page);
+        pageSize = parseInt(pageSize)
+        totalCount = parseInt(totalCount)
+        showSize = parseInt(showSize)
         var totalPage = Math.ceil(totalCount / pageSize);
         var startPage = page - Math.floor(showSize / 2);
         if (startPage < 1)
@@ -23,7 +26,8 @@
         var endNextPage = 0;
         if (endPage < totalPage)
             endNextPage = endPage + 1;
-        var prePage = 0, nextPage = 0;
+        var prePage = 0;
+        var nextPage = 0;
         if(page > 1) prePage = page - 1;
         if(page < totalPage) nextPage = page + 1;
         var startNum = (page - 1) * pageSize + 1;
@@ -49,7 +53,7 @@
     //分页控件
     Smart.widgetExtend({
         id: "pagination",
-        options: "pagekey, pskey, totalkey, showsize, start-p, end-n, disabled-c, active-c, pre, next, event",
+        options: "pagekey,pskey,totalkey,showsize,start-p,end-n,disabled-c,active-c,pre,next,key,action",
         defaultOptions: {
             'pagekey': "page",
             'pskey': "pageSize",
@@ -61,10 +65,18 @@
             "next": "›",
             "disabled-c": "disabled",
             "active-c": "active",
-            "event": "request.params",//页点击所触发的事件
-            "ed-pk": "page"//event.data的page key
+            key:"page"
         }
     }, {
+        onPrepare: function(){
+            if(this.options['action']){
+                if(!$.isFunction(this.options['action'])){
+                    var script = "var pagination = arguments[0];\n" + this.options['action'];
+                    var action = this.S.action(script);
+                    this.options['action'] = action;
+                }
+            }
+        }
 
     }, {
         dataSetter: function (data) {
@@ -125,9 +137,14 @@
             this.node.append(endNextLi);
         },
         _triggerPage: function(page){
-            var arg = {};
-            arg[this.widget.pagination.options['ed-pk']] = page;
-            this.trigger(this.widget.pagination.options['event'], [arg]);
+            var args = {};
+            if(this.widget.pagination.options['key']){
+                args[this.widget.pagination.options['key']] = page;
+            } else args = page
+            if(this.widget.pagination.options['action']){
+                this.widget.pagination.options['action'](args);
+            }
+            this.trigger("pagination-page", [page]);
         },
         _createLi: function (txt) {
             var li = $("<li />");

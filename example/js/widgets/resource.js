@@ -14,10 +14,6 @@
         onPrepare: function () {
             var that = this;
             that.cache.params = {}
-            this.S.on("request.params", function (e, params) {
-                $.extend(that.cache.params, params || {});
-                that.S.refresh(true);
-            });
         },
         onRender: function () {
             if (this.options.switch == "off") return $.Deferred().resolve();
@@ -34,8 +30,12 @@
             }
             return this._commonLoad();
         },
-        onRefresh: function (flag) {
-            !flag && (this.cache.params = {});
+        onRefresh: function (params, flag) {
+            if(flag){
+                $.extend(this.cache.params, params|| {})
+            } else {
+                this.cache.params = params || {}
+            }
             return this._load(this.cache.currentSrc || this.options.src);
         },
         _cascadeLoad: function (cascadeData) {
