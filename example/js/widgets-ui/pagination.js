@@ -53,7 +53,7 @@
     //分页控件
     Smart.widgetExtend({
         id: "pagination",
-        options: "pagekey,pskey,totalkey,showsize,start-p,end-n,disabled-c,active-c,pre,next,key,action",
+        options: "pagekey,pskey,totalkey,showsize,start-p,end-n,disabled-c,active-c,pre,next,action",
         defaultOptions: {
             'pagekey': "page",
             'pskey': "pageSize",
@@ -64,14 +64,13 @@
             "pre": "‹",
             "next": "›",
             "disabled-c": "disabled",
-            "active-c": "active",
-            key:"page"
+            "active-c": "active"
         }
     }, {
         onPrepare: function(){
             if(this.options['action']){
                 if(!$.isFunction(this.options['action'])){
-                    var script = "var pagination = arguments[0];\n" + this.options['action'];
+                    var script = this.options['action'];
                     var action = this.S.action(script);
                     this.options['action'] = action;
                 }
@@ -137,12 +136,8 @@
             this.node.append(endNextLi);
         },
         _triggerPage: function(page){
-            var args = {};
-            if(this.widget.pagination.options['key']){
-                args[this.widget.pagination.options['key']] = page;
-            } else args = page
             if(this.widget.pagination.options['action']){
-                this.widget.pagination.options['action'](args);
+                this.widget.pagination.options['action'].call(page);
             }
             this.trigger("pagination-page", [page]);
         },

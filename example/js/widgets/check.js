@@ -13,7 +13,7 @@
         defaultOptions: {
             "turn": "on",
             "i-checked-class": "warning",
-            multiple: "true",
+            multiple: true,
             "h-checked-class": "s-ui-checked",
             "path": "false"
         }
@@ -53,16 +53,16 @@
                 e.stopPropagation();
             });
         },
-        onRefresh: function(){
+        onRefresh: function () {
             this.S.uncheckAll()
         },
-        onReset: function(){
+        onReset: function () {
             this.S.uncheckAll()
         }
     }, {
         turn: function (type) {
             this.widget.check.options.turn = type;
-            if(type != "on"){
+            if (type != "on") {
                 $(CHECK_ITEM_HANDLER_SELECTOR, this.node).prop("disabled", true);
             } else {
                 $(CHECK_ITEM_HANDLER_SELECTOR, this.node).prop("disabled", false);
@@ -79,14 +79,14 @@
             }
             flag ? this.checkAll() : this.uncheckAll();
         },
-        checkAll: function(){
+        checkAll: function () {
             this._checkHandlesByFlag(true);
             var that = this;
             $(CHECK_ITEM_SELECTOR, this.node).each(function () {
                 that._checkNode($(this));
             });
         },
-        uncheckAll: function(){
+        uncheckAll: function () {
             this._checkHandlesByFlag(false);
             var that = this;
             $(CHECK_ITEM_SELECTOR, this.node).each(function () {
@@ -113,33 +113,22 @@
             }
         },
         getChecked: function () {
-            if (this.widget.check.options['multiple'] == "true") {
-                var smarts = [];
-                $.each($(CHECK_ITEM_SELECTOR + "." + this.widget.check.options['i-checked-class'], this.node), function () {
-                    smarts.push(Smart.of($(this)));
-                });
-                return smarts;
-            } else {
-                var node = $(CHECK_ITEM_SELECTOR + "." + this.widget.check.options['i-checked-class'], this.node);
-                if(node.size() == 0) return null;
-                return Smart.of($(node[0]));
-            }
+            var smarts = [];
+            $.each($(CHECK_ITEM_SELECTOR + "." + this.widget.check.options['i-checked-class'], this.node), function () {
+                smarts.push(Smart.of($(this)));
+            });
+            return smarts;
         },
-        getCheckedData: function(field){
-            if (this.widget.check.options['multiple'] == "true") {
-                var datas = [];
-                $.each(this.getChecked(), function(){
-                    if(field){
-                        datas.push(this.data()[field]);
-                    } else {
-                        datas.push(this.data());
-                    }
-                });
-                return datas;
-            } else {
-                var smart = this.getChecked();
-                return smart == null ? null : smart.data();
-            }
+        getCheckedData: function (field) {
+            var datas = [];
+            $.each(this.getChecked(), function () {
+                if (field) {
+                    datas.push(this.data()[field]);
+                } else {
+                    datas.push(this.data());
+                }
+            });
+            return datas;
         },
         _toggleCheck: function (node, e) {
             //如果选择项下面拥有选择句柄，而且选择事件不是选择句柄发出的，则跳过。
@@ -161,7 +150,7 @@
             }
             //如果是单选，则需要把其他的item取消选中
             var that = this;
-            if (this.widget.check.options.multiple == "false") {
+            if (this.widget.check.options.multiple == false) {
                 $(CHECK_ITEM_SELECTOR, this.node).not(node).each(function () {
                     that._uncheck($(this));
                 });

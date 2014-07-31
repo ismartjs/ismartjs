@@ -44,7 +44,6 @@
                 }
 
             }
-            row.css("opacity", 0);
             var rowSmart = Smart.of(row);
             rowSmart.on("smart-made", function(){
                 rowSmart.data(data);
@@ -53,7 +52,6 @@
             setTimeout(function(){
                 that[(mode || "append")+"Node"](row);
                 that.trigger("row-add", [row, data, indentNum, mode]);
-                row.css("opacity", 1);
             },0)
         },
         addRows: function(datas, indentNum, mode){

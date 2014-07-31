@@ -633,7 +633,7 @@
                 }
                 return getContextSmart(parent);
             };
-            return function () {
+            return function (key, that) {
                 var smart;
                 if ("_context_smart_" in this) {
                     smart = this._context_smart_;
@@ -644,7 +644,7 @@
                 if (smart.isWindow()) {
                     return null;
                 }
-                return smart._context.apply(this, $.makeArray(arguments));
+                return smart._context.call(that || this, key);
             };
         })(),
         _action:  function (script) {
@@ -795,7 +795,7 @@
                         }
                         if (keyCtx || valueCtx) {
                             //这里的context不能从自身去查找，要从自身的parent去查找，因为自身所处的环境就是在parent中的
-                            optionValues[key] = this.S.parent().context(value);
+                            optionValues[key] = this.S.parent().context(value, this.S);
                         } else {
                             optionValues[key] = value;
                         }
@@ -1361,7 +1361,7 @@
         defaultOptions: {
             "turn": "on",
             "i-checked-class": "warning",
-            multiple: "true",
+            multiple: true,
             "h-checked-class": "s-ui-checked",
             "path": "false"
         }
@@ -1401,16 +1401,16 @@
                 e.stopPropagation();
             });
         },
-        onRefresh: function(){
+        onRefresh: function () {
             this.S.uncheckAll()
         },
-        onReset: function(){
+        onReset: function () {
             this.S.uncheckAll()
         }
     }, {
         turn: function (type) {
             this.widget.check.options.turn = type;
-            if(type != "on"){
+            if (type != "on") {
                 $(CHECK_ITEM_HANDLER_SELECTOR, this.node).prop("disabled", true);
             } else {
                 $(CHECK_ITEM_HANDLER_SELECTOR, this.node).prop("disabled", false);
@@ -1427,14 +1427,14 @@
             }
             flag ? this.checkAll() : this.uncheckAll();
         },
-        checkAll: function(){
+        checkAll: function () {
             this._checkHandlesByFlag(true);
             var that = this;
             $(CHECK_ITEM_SELECTOR, this.node).each(function () {
                 that._checkNode($(this));
             });
         },
-        uncheckAll: function(){
+        uncheckAll: function () {
             this._checkHandlesByFlag(false);
             var that = this;
             $(CHECK_ITEM_SELECTOR, this.node).each(function () {
@@ -1461,33 +1461,22 @@
             }
         },
         getChecked: function () {
-            if (this.widget.check.options['multiple'] == "true") {
-                var smarts = [];
-                $.each($(CHECK_ITEM_SELECTOR + "." + this.widget.check.options['i-checked-class'], this.node), function () {
-                    smarts.push(Smart.of($(this)));
-                });
-                return smarts;
-            } else {
-                var node = $(CHECK_ITEM_SELECTOR + "." + this.widget.check.options['i-checked-class'], this.node);
-                if(node.size() == 0) return null;
-                return Smart.of($(node[0]));
-            }
+            var smarts = [];
+            $.each($(CHECK_ITEM_SELECTOR + "." + this.widget.check.options['i-checked-class'], this.node), function () {
+                smarts.push(Smart.of($(this)));
+            });
+            return smarts;
         },
-        getCheckedData: function(field){
-            if (this.widget.check.options['multiple'] == "true") {
-                var datas = [];
-                $.each(this.getChecked(), function(){
-                    if(field){
-                        datas.push(this.data()[field]);
-                    } else {
-                        datas.push(this.data());
-                    }
-                });
-                return datas;
-            } else {
-                var smart = this.getChecked();
-                return smart == null ? null : smart.data();
-            }
+        getCheckedData: function (field) {
+            var datas = [];
+            $.each(this.getChecked(), function () {
+                if (field) {
+                    datas.push(this.data()[field]);
+                } else {
+                    datas.push(this.data());
+                }
+            });
+            return datas;
         },
         _toggleCheck: function (node, e) {
             //如果选择项下面拥有选择句柄，而且选择事件不是选择句柄发出的，则跳过。
@@ -1509,7 +1498,7 @@
             }
             //如果是单选，则需要把其他的item取消选中
             var that = this;
-            if (this.widget.check.options.multiple == "false") {
+            if (this.widget.check.options.multiple == false) {
                 $(CHECK_ITEM_SELECTOR, this.node).not(node).each(function () {
                     that._uncheck($(this));
                 });
@@ -1875,7 +1864,6 @@
                 }
 
             }
-            row.css("opacity", 0);
             var rowSmart = Smart.of(row);
             rowSmart.on("smart-made", function(){
                 rowSmart.data(data);
@@ -1884,7 +1872,6 @@
             setTimeout(function(){
                 that[(mode || "append")+"Node"](row);
                 that.trigger("row-add", [row, data, indentNum, mode]);
-                row.css("opacity", 1);
             },0)
         },
         addRows: function(datas, indentNum, mode){
@@ -2693,37 +2680,40 @@
 })();;/**
  * Created by Administrator on 2014/6/27.
  */
-(function($){
+(function ($) {
     var dropdown_val_attr = Smart.optionAttrName('dropdown', 'val');
     var dropdown_title_attr = Smart.optionAttrName('dropdown', 'title');
-    var dropdown_title_selector = "*["+Smart.optionAttrName('dropdown','role')+"='title']";
+    var dropdown_title_selector = "*[" + Smart.optionAttrName('dropdown', 'role') + "='title']";
     Smart.widgetExtend({
         id: "dropdown",
-        options: "action,key,ctx:t"
-    },{
-        onPrepare: function(){
+        options: "action,ctx:t,ctx:reset-s"
+    }, {
+        onPrepare: function () {
             var that = this;
-             if(that.options.action){
-                 that.options.action = this.S.action("var data = arguments[0]; \n" + this.options.action)
-             }
-            this.S.node.delegate("*["+dropdown_val_attr+"]", 'click', function(e){
+            if (that.options.action) {
+                that.options.action = this.S.action(this.options.action)
+            }
+            this.cache.dropdownTitle = $(dropdown_title_selector, that.S.node);
+            this.S.node.delegate("*[" + dropdown_val_attr + "]", 'click', function (e) {
                 var val = $(this).attr(dropdown_val_attr);
                 //如果配置了target，则把该值赋值给target
-                if(that.options.t){
+                if (that.options.t) {
                     that.options.t.val(val);
                 }
-                if(that.options.action){//如果配置了e，则发送该事件
-                    var data = {};
-                    if(that.options['key'] == null){
-                        data = val;
-                    } else {
-                        data[that.options['key']] = val;
-                    }
-                    that.options.action(data);
+                if (that.options.action) {//如果配置了e，则发送该事件
+                    that.options.action.call(val);
                 }
                 var title = $(this).attr(dropdown_title_attr) || $(this).text();
-                $(dropdown_title_selector, that.S.node).html(title);
+                that.cache.dropdownTitle.html(title);
+                if(that.options['reset-s']){
+                    that.options['reset-s'].each(function(){
+                        this.reset();
+                    });
+                }
             });
+        },
+        onReset: function () {
+            this.cache.dropdownTitle.html("");
         }
     });
 })(jQuery);
@@ -2782,7 +2772,7 @@
     //分页控件
     Smart.widgetExtend({
         id: "pagination",
-        options: "pagekey,pskey,totalkey,showsize,start-p,end-n,disabled-c,active-c,pre,next,key,action",
+        options: "pagekey,pskey,totalkey,showsize,start-p,end-n,disabled-c,active-c,pre,next,action",
         defaultOptions: {
             'pagekey': "page",
             'pskey': "pageSize",
@@ -2793,14 +2783,13 @@
             "pre": "‹",
             "next": "›",
             "disabled-c": "disabled",
-            "active-c": "active",
-            key:"page"
+            "active-c": "active"
         }
     }, {
         onPrepare: function(){
             if(this.options['action']){
                 if(!$.isFunction(this.options['action'])){
-                    var script = "var pagination = arguments[0];\n" + this.options['action'];
+                    var script = this.options['action'];
                     var action = this.S.action(script);
                     this.options['action'] = action;
                 }
@@ -2866,12 +2855,8 @@
             this.node.append(endNextLi);
         },
         _triggerPage: function(page){
-            var args = {};
-            if(this.widget.pagination.options['key']){
-                args[this.widget.pagination.options['key']] = page;
-            } else args = page
             if(this.widget.pagination.options['action']){
-                this.widget.pagination.options['action'](args);
+                this.widget.pagination.options['action'].call(page);
             }
             this.trigger("pagination-page", [page]);
         },

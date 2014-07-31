@@ -510,7 +510,7 @@
                 }
                 return getContextSmart(parent);
             };
-            return function () {
+            return function (key, that) {
                 var smart;
                 if ("_context_smart_" in this) {
                     smart = this._context_smart_;
@@ -521,7 +521,7 @@
                 if (smart.isWindow()) {
                     return null;
                 }
-                return smart._context.apply(this, $.makeArray(arguments));
+                return smart._context.call(that || this, key);
             };
         })(),
         _action:  function (script) {
@@ -672,7 +672,7 @@
                         }
                         if (keyCtx || valueCtx) {
                             //这里的context不能从自身去查找，要从自身的parent去查找，因为自身所处的环境就是在parent中的
-                            optionValues[key] = this.S.parent().context(value);
+                            optionValues[key] = this.S.parent().context(value, this.S);
                         } else {
                             optionValues[key] = value;
                         }
