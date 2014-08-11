@@ -20,7 +20,17 @@
         var text = (btn.icon ? "<i style='"+btn.icon+"'></i>" : "") + btn.name;
         button.html(text);
         btn.style && button.addClass(btn.style || "btn-default");
-        button.click(btn.click);
+        button.click(function(){
+            button.prop("disabled", true);
+            var rs = btn.click.call(this);
+            if(Smart.isDeferred(rs)){
+                rs.always(function(){
+                    button.prop("disabled", false);
+                })
+            } else {
+                button.prop("disabled", false);
+            }
+        });
         return button;
     };
 

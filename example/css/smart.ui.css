@@ -3,34 +3,38 @@
     content: " ";
     display: table;
 }
+
 .clearfix:after {
     clear: both;
 }
 
 /***/
-    /*css3过渡特效*/
+/*css3过渡特效*/
 /**/
-*{
-    transition: color .2s ease-out, opacity .2s ease-out,background-color .2s ease-out, border-color .2s ease-out;
+* {
+    transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out;
     -moz-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; /* Firefox 4 */
     -webkit-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; /* Safari 和 Chrome */
-    -o-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out;/* Opera */
+    -o-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; /* Opera */
     -ms-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; /* Opera */
 }
 
-a{
-    text-decoration: none;
-}
+/*a {*/
+    /*text-decoration: none;*/
+/*}*/
 
-a:hover{
-    text-decoration: none;
-}
+/*a:hover {*/
+    /*text-decoration: none;*/
+/*}*/
 
-ul li{
+ul li {
     list-style: none;
 }
 
-ul,li{padding: 0; margin: 0;}
+ul, li {
+    padding: 0;
+    margin: 0;
+}
 
 body {
     font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei";
@@ -39,7 +43,7 @@ body {
 /**
     contextmenu ui
 */
-ul.s-ui-contextmenu, ul.s-ui-contextmenu ul{
+ul.s-ui-contextmenu, ul.s-ui-contextmenu ul {
     border: 1px solid #bababa;
     box-shadow: 1px 1px 1px #ddd;
     width: 195px;
@@ -49,26 +53,31 @@ ul.s-ui-contextmenu, ul.s-ui-contextmenu ul{
     border-radius: 2px;
     display: none;
 }
-ul.s-ui-contextmenu a{
+
+ul.s-ui-contextmenu a {
     text-decoration: none;
 }
-ul.s-ui-contextmenu a:hover{
+
+ul.s-ui-contextmenu a:hover {
     text-decoration: none;
 }
-ul.s-ui-contextmenu  li{
+
+ul.s-ui-contextmenu li {
     position: relative;
     color: #000;
     height: 24px;
     line-height: 24px;
 }
-ul.s-ui-contextmenu  li i{
+
+ul.s-ui-contextmenu li i {
     font-size: 12px;
     position: absolute;
     top: 6px;
     left: 6px;
     z-index: 1;
 }
-ul.s-ui-contextmenu  li span{
+
+ul.s-ui-contextmenu li span {
     padding-left: 25px;
     position: absolute;
     left: 0px;
@@ -79,61 +88,77 @@ ul.s-ui-contextmenu  li span{
     cursor: default;
 }
 
-ul.s-ui-contextmenu li:hover > span{
+ul.s-ui-contextmenu li:hover > span {
     background: #4281f4;
     left: -1px;
     bottom: -1px;
     color: #fff;
 }
 
-ul.s-ui-contextmenu li:hover > i{
+ul.s-ui-contextmenu li:hover > i {
     color: #fff;
 }
 
-ul.s-ui-contextmenu li ul{
+ul.s-ui-contextmenu li ul {
     display: none;
     position: absolute;
 }
-ul.s-ui-contextmenu .s-ui-contextmenu-line{
+
+ul.s-ui-contextmenu .s-ui-contextmenu-line {
     height: 1px;
     line-height: 1px;
     border-top: 1px solid #e9e9e9;
     margin: 2px 0;
 }
-ul.s-ui-contextmenu li .caret-r{
+
+ul.s-ui-contextmenu li .caret-r {
     position: absolute;
     right: 5px;
     top: 8px;
 }
 
-ul.s-ui-contextmenu li:hover > .caret-r{color: #fff;}
+ul.s-ui-contextmenu li:hover > .caret-r {
+    color: #fff;
+}
 
-ul.s-ui-contextmenu li.disabled{
+ul.s-ui-contextmenu li.disabled {
     color: #999;
 }
-ul.s-ui-contextmenu li.disabled:hover > span{
+
+ul.s-ui-contextmenu li.disabled:hover > span {
     left: 0px;
     bottom: 0px;
     background: #ddd;
 }
 
-.s-ui-upload-progressbar{height: 2px;}
+.s-ui-upload-progressbar {
+    height: 2px;
+}
 
 /**
     valid插件所需css
 */
 
-.s-valid-feedback-success,.s-valid-feedback-warning,.s-valid-feedback-error{
+.s-valid-feedback-success, .s-valid-feedback-warning, .s-valid-feedback-error {
     opacity: 0;
 }
-.has-success .s-valid-feedback-success{opacity: 1;}
-.has-error .s-valid-feedback-error{opacity: 1;}
-.has-warning .s-valid-feedback-warning{opacity: 1;}
+
+.has-success .s-valid-feedback-success {
+    opacity: 1;
+}
+
+.has-error .s-valid-feedback-error {
+    opacity: 1;
+}
+
+.has-warning .s-valid-feedback-warning {
+    opacity: 1;
+}
 
 /**
 通用
 */
-.caret-r{
+.caret-r {
     display: inline-block;
     width: 0;
     height: 0;
@@ -148,12 +173,12 @@ ul.s-ui-contextmenu li.disabled:hover > span{
     font-size: 32px !important;
 }
 
-.s-ui-grid-action{
+.s-ui-grid-action {
     background: #fff;
     padding: 10px;
 }
 
-.s-ui-grid-action h3,.s-ui-grid-action h4,.s-ui-grid-action h5,.s-ui-grid-action h6{
+.s-ui-grid-action h3, .s-ui-grid-action h4, .s-ui-grid-action h5, .s-ui-grid-action h6 {
     display: inline-block;
     text-indent: 8px;
     border-left: 2px solid #88B7E0;
@@ -162,28 +187,36 @@ ul.s-ui-contextmenu li.disabled:hover > span{
     margin-right: 8px;
 }
 
-.s-ui-editable{
+.s-ui-editable {
     border: none;
     background: transparent;
     box-shadow: none;
     border-color: #ccc;
 }
 
-.s-ui-editable:hover{
+.s-ui-editable:hover {
     border-width: 1px;
     border-style: solid;
 }
-.s-ui-editable:focus,input[type='text'].s-ui-editable.focus{
+
+.s-ui-editable:focus, input[type='text'].s-ui-editable.focus {
     border-width: 1px;
     border-style: solid;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
     background: #fff;
 }
+
 .has-error .s-ui-editable,
 .has-warning .s-ui-editable,
-.has-success .s-ui-editable{
+.has-success .s-ui-editable {
     border-width: 1px;
     border-style: solid;
     background: #fff;
+}
+
+.text-explode {
+    color: #CCC !important;
+    font-weight: normal !important;
+    margin: 0px 4px !important;
 }

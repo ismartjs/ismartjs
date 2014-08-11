@@ -18,6 +18,7 @@
         "          this.print(str == null ? '' : str + '\\n');\n" +
         "     }\n" +
         " };\n";
+    var token = 1;
     var compile = function (body) {
         var scripts = [];
         scripts.push(OUT_SCRIPT);
@@ -28,6 +29,7 @@
             if (type == "script") {
                 //TODO FIX LATTER 对于 out.print("xxx lt xxx");这样的脚本，则也会替换成 out.print("xxx < xxx");这样
                 lineStr = lineStr.replace(/\slt\s/gi,"<").replace(/\sgt\s/gi, ">");
+                lineStr = lineStr.replace(/\slte\s/gi,"<=").replace(/\sgte\s/gi, ">=");
                 scripts.push(lineStr);
                 line = [];
             } else {
@@ -43,7 +45,7 @@
         var scriptOutputFlag = false;
         var skipFlag = false;
         for (var i = 0; i < body.length; i++) {
-            var char = body[i];
+            var char = body.charAt(i);
             if(char == "\n"){
                 if (!inScriptFlag) {
                     writeLine("output");
@@ -58,7 +60,7 @@
                 continue;
             }
             if(char == "#"){
-                if (body[i + 1] == "}" && skipFlag) {
+                if (body.charAt(i+1) == "}" && skipFlag) {
                     writeLine("output");
                     i++;
                     skipFlag = false;
@@ -71,14 +73,14 @@
             }
             switch (char) {
                 case "{" :
-                    if (body[i + 1] == "#") {
+                    if (body.charAt(i+1) == "#") {
                         //则表示skip，不做任何处理
                         skipFlag = true;
                         i++;
                         writeLine(inScriptFlag ? "script" : "output");
                         break;
                     }
-                    if (body[i + 1] == "%" && !inScriptFlag) {//则说明脚本开始
+                    if (body.charAt(i+1) == "%" && !inScriptFlag) {//则说明脚本开始
                         writeLine("output");
                         i++;
                         inScriptFlag = true;
@@ -87,7 +89,7 @@
                     line.push(char);
                     break;
                 case "%" :
-                    if (body[i + 1] == "}" && inScriptFlag) {//则说明脚本结束
+                    if (body.charAt(i+1) == "}" && inScriptFlag) {//则说明脚本结束
                         if (scriptOutputFlag) {
                             line.push(");");
                             scriptOutputFlag = false;
@@ -100,7 +102,7 @@
                     line.push(char);
                     break;
                 case "=" :
-                    if (inScriptFlag && i - 2 >= 0 && body[i - 2] == "{" && body[i - 1] == "%") {//则表示是输出
+                    if (inScriptFlag && i - 2 >= 0 && body.charAt(i - 2)== "{" && body.charAt(i-1) == "%") {//则表示是输出
                         line.push("out.print(");
                         scriptOutputFlag = true;
                     } else {

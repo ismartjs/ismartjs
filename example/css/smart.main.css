@@ -8,6 +8,7 @@
     box-sizing: content-box;
     width: 100%;
 }
+.topbar a:hover{text-decoration: none;}
 .topbar .logo{
     float: left;
     padding: 0;
