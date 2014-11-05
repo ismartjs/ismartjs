@@ -33,7 +33,7 @@ module.exports = function (grunt) {
                         "js/**", "index.html", "home.html",
                             "main.html", "topbar-left.html",
                             "topbar-right.html", "css/**",
-                            "bootstrap3/**"
+                            "bootstrap3/**","font-awesome/**"
                         ], dest: 'example'},
                     {src:"json/menu-example.json",dest:"example/json/menu.json"},
                     {src:"ui-template.html",dest:"example/ui-template.html"}

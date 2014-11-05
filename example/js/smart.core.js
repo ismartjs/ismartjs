@@ -232,38 +232,41 @@
         //当所有方法执行完成时，才会触发deferredQueue的done。
         deferredQueue: function (fns) {
             var deferred = $.Deferred();
-            if (arguments.length == 1) {
-                if ($.type(fns) != "array") {
-                    fns = [fns];
-                }
-            } else if (arguments.length > 1) {
-                fns = SLICE.call(arguments);
-            }
+			if (arguments.length == 1) {
+				if ($.type(fns) != "array") {
+					fns = [fns];
+				}
+			} else if (arguments.length > 1) {
+				fns = Array.prototype.slice.call(arguments);
+			}
+			var results = [];
+			function callFn(i) {
+				if (i == fns.length) {
+					deferred.resolve(results);
+					return;
+				}
+				var fn = fns[i];
+				if (!$.isFunction(fn)) {
+					results.push(fn);
+					callFn(i + 1);
+					return;
+				}
+				var fnDefer = fn();
+				if (!fnDefer || !$.isFunction(fnDefer['done'])) {
+					results.push(fnDefer);
+					callFn(i + 1);
+					return;
+				}
+				fnDefer.done(function (rs) {
+					results.push(rs);
+					callFn(i + 1);
+				}).fail(function () {
+					deferred.reject();
+				});
+			}
 
-            function callFn(i) {
-                if (i == fns.length) {
-                    deferred.resolve();
-                    return;
-                }
-                var fn = fns[i];
-                if (!$.isFunction(fn)) {
-                    callFn(i + 1);
-                    return;
-                }
-                var fnDefer = fn();
-                if (!fnDefer) {
-                    callFn(i + 1);
-                    return;
-                }
-                fnDefer.done(function () {
-                    callFn(i + 1);
-                }).fail(function () {
-                    deferred.reject();
-                });
-            }
-
-            callFn(0);
-            return deferred.promise();
+			callFn(0);
+			return deferred.promise();
         },
         pick: function (node) {
             var smart = Smart.of();

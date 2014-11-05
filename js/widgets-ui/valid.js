@@ -34,7 +34,7 @@
     //验证控件
     Smart.widgetExtend({
         id: "valid",
-        options: "ctx:msg,ctx:show,ctx:resetShow,s-class,e-class,w-class,blur,ctx:validators",
+        options: "ctx:msg,ctx:show,ctx:resetShow,s-class,e-class,w-class,blur,ctx:validators,ctx:after",
         defaultOptions: {
             msg: DEFAULT_MSG,
             blur: "true",
@@ -132,6 +132,11 @@
                     return that.validateNode(node);
                 });
             });
+            if(this.widget.valid.options.after){
+                deferreds.push(function(){
+                    return this.widget.valid.options.after();
+                });
+            }
             return Smart.deferredQueue(deferreds);
         },
         resetValidate: function(){

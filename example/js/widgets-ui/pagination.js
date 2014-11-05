@@ -142,10 +142,13 @@
             this.trigger("pagination-page", [page]);
         },
         _createLi: function (txt) {
-            var li = $("<li />");
-            var a = $("<a href='javascript:;'>" + txt + "</a>");
+            var li = $("<li />").attr("_page", txt);
+            var a = $("<a href='javascript:;' >" + txt + "</a>");
             li.append(a);
             return li;
+        },
+        getPage: function(){
+            return this.node.find("li." + this.widget.pagination.options['active-c']).attr("_page");
         }
     });
 })(jQuery);

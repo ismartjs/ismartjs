@@ -1,5 +1,6 @@
+<meta args="Main" />
 <div class="topbar" >
-    <div s="window" s-window-href="{Page.Main.topbarLeftUrl}" class="pull-left"></div>
+    <div s="window" s-window-href="{Main.topbarLeftUrl}" class="pull-left"></div>
     <div class="topbar-nav">
         <div class="topbar-nav-menu dropdown" >
             <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
@@ -39,7 +40,7 @@
         <div class="topbar-nav-menu" >
             <a href="javascript:;" class="main-menu-arrow arrow-right" ><i class="glyphicon glyphicon-chevron-right"></i></a>
         </div>
-        <div s="window" s-window-href="{Page.Main.topbarRightUrl}"></div>
+        <div s="window" s-window-href="{Main.topbarRightUrl}"></div>
     </div>
     <ul class="tab" id="mainTabContainer">
 
@@ -63,6 +64,8 @@
 
     </div>
 </div>
+
+<div class="main-bottom" id="mainBottom" s="window" s-window-href="{Main.bottomUrl}"></div>
 
 <ul id="mainTabContextmenu" s="contextmenu" s-contextmenu-filter="MainTabContextmenu.filter" class="s-ui-contextmenu" >
     <li menuId="close" s="click" s-click-action="MainTabContextmenu.closeTarget()">
@@ -105,18 +108,19 @@
             if(!Smart.isEmpty(nowUrl)){
                 url = Smart.realPath(url, nowUrl);
             }
-            openUrl.apply(null, [e.deferred, url].concat(Smart.SLICE.call(arguments, 2)));
+            openUrl(e.deferred, url, Smart.SLICE.call(arguments, 2));
         }
         e.stopPropagation();
     });
 
-    var openUrl = function(deferred, url){
+    var openUrl = function(deferred, url, args){
         //根据当前控件的url处理 打开的url的真实路径。
         var data = {
             title:"加载中",
             type: "url",
             url: url,
-            deferred: deferred
+            deferred: deferred,
+            args: args
         };
         new MainTab(data).add().active();
     };
@@ -126,7 +130,7 @@
         smart: S.S("#menuPanel"),
         menuMapping: {},
         loadMenu: function(){
-            var menuUrl = Page.Main.menuUrl;
+            var menuUrl = Main.menuUrl;
             if(Smart.isEmpty(menuUrl)){
                 return;
             }
@@ -139,7 +143,7 @@
                 var levelMenus= [];//一级菜单拥有子菜单的菜单
                 $.each(menus, function(i, menu){
                     urlMapping[menu.url] = menu;
-                    menu.icon = menu.icon || Page.Main.defaultMenuIcon;
+                    menu.icon = menu.icon || Main.defaultMenuIcon;
                     //if((menu.closeable != undefined && menu.closeable == false)){
                         //如果menu不允许关闭
                         //return;
@@ -157,7 +161,7 @@
                                 return;
                             }
                             if(c.open) needOpenMenus.push(c);
-                            c.icon = c.icon || Page.Main.defaultMenuIcon;
+                            c.icon = c.icon || Main.defaultMenuIcon;
                             that.menuMapping[c.id] = c;
                             urlMapping[c.url] = c;
                             c.parent = menu;
@@ -166,7 +170,7 @@
                                     that.menuMapping[cc.id] = cc;
                                     urlMapping[cc.url] = cc;
                                     cc.parent = c;
-                                    cc.icon = cc.icon || Page.Main.defaultMenuIcon;
+                                    cc.icon = cc.icon || Main.defaultMenuIcon;
                                 });
                             }
                         });
@@ -178,7 +182,7 @@
                 var openMainTab;
                 //如果根据hash要打开的页面的url和默认需要打开的有相同的，则不需要创建新的，直接将已经打开的置为active。
                 var openedUrlMap = {};
-                var hash = Page.Main.historyListener.onGet();
+                var hash = Main.historyListener.onGet();
                 $.each(needOpenMenus, function(i, m){
                     var _openMainTab ;
                     if(!m.url){
@@ -320,7 +324,7 @@
             }
             var data = this.data;
             this.titleNode = $("<span> " + data.title + "</span>");
-            this.iconNode = $("<i class='" + (data.icon ? data.icon : Page.Main.defaultTabIcon) + "'></i> ");
+            this.iconNode = $("<i class='" + (data.icon ? data.icon : Main.defaultTabIcon) + "'></i> ");
             a.append(this.iconNode);
             a.append(this.titleNode);
             this.node.attr("title", data.title);
@@ -417,13 +421,17 @@
         },
         bindTabWindowEvent: function(tabWindow){
             var that = this;
+            var loadIcon = $('<loadi class="fa fa-circle-o-notch s-ui-spin"></loadi>');
             tabWindow.smart.on("close", function(){
                 that.destroy();
                 MainTab.activeTop();
             }).on("loading", function(){
-                that.node.addClass("loading");
+                $("i", that.node).hide();
+                $("loadi", that.node).remove();
+                $("a", that.node).prepend(loadIcon);
             }).on("load", function(){
-                that.node.removeClass("loading");
+                loadIcon.remove();
+                $("i", that.node).show();
             });
         },
         setMeta:function(meta){
@@ -560,7 +568,7 @@
             TabWindow.currentTabWindow = this;
             this.mainTab.currentTabWindow = this;
             this.node.fadeIn();
-            if(this.data.url) Page.Main.historyListener.onPush(this.data.url);
+            if(this.data.url) Main.historyListener.onPush(this.data.url);
         },
         hide: function(){
             this.node.hide();
@@ -626,4 +634,9 @@
         showAjaxActiveTip(errorTip, "error");
         hideAjaxActiveTip();
     });
+    //处理bottom的url问题，mainWindow的底部位置
+    S.S("#mainBottom").on("window.document.ready", function(){
+        var node = S.N("#mainBottom");
+        S.N("#mainWindow").css("bottom",node.height());
+    })
 </script>

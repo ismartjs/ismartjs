@@ -220,3 +220,86 @@ ul.s-ui-contextmenu li.disabled:hover > span {
     font-weight: normal !important;
     margin: 0px 4px !important;
 }
+
+
+/**
+    定义脚本动画
+*/
+@keyframes spin_frame_fade
+{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    50% {-webkit-transform: rotate(360deg); opacity: .3;}
+    100% {-webkit-transform: rotate(720deg); opacity: 1;}
+}
+@-moz-keyframes spin_frame_fade{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    50% {-webkit-transform: rotate(360deg); opacity: .3;}
+    100% {-webkit-transform: rotate(720deg); opacity: 1;}
+}
+@-webkit-keyframes spin_frame_fade{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    50% {-webkit-transform: rotate(360deg); opacity: .3;}
+    100% {-webkit-transform: rotate(720deg); opacity: 1;}
+}
+@-o-keyframes spin_frame_fade{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    50% {-webkit-transform: rotate(360deg); opacity: .3;}
+    100% {-webkit-transform: rotate(720deg); opacity: 1;}
+}
+@-ms-keyframes spin_frame_fade{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    50% {-webkit-transform: rotate(360deg); opacity: .3;}
+    100% {-webkit-transform: rotate(720deg); opacity: 1;}
+}
+
+.s-ui-spin-fade-ease{
+    animation:  spin_frame_fade 2s ease-in-out .1s infinite ;
+    -moz-animation:  spin_frame_fade 2s ease-in-out .1s infinite ;
+    -webkit-animation:  spin_frame_fade 2s ease-in-out .1s infinite ;
+    -o-animation:  spin_frame_fade 2s ease-in-out .1s infinite ;
+    -ms-animation:  spin_frame_fade 2s ease-in-out .1s infinite ;
+}
+.s-ui-spin-fade{
+    animation:  spin_frame_fade 2s infinite linear  ;
+    -moz-animation:  spin_frame_fade 2s infinite linear  ;
+    -webkit-animation:  spin_frame_fade 2s infinite linear  ;
+    -o-animation:  spin_frame_fade 2s infinite linear  ;
+    -ms-animation:  spin_frame_fade 2s infinite linear  ;
+}
+
+@keyframes spin_frame
+{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    100% {-webkit-transform: rotate(720deg); opacity: 1;}
+}
+@-moz-keyframes spin_frame{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    100% {-webkit-transform: rotate(720deg); opacity: 1;}
+}
+@-webkit-keyframes spin_frame{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    100% {-webkit-transform: rotate(720deg); opacity: 1;}
+}
+@-o-keyframes spin_frame{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    100% {-webkit-transform: rotate(720deg); opacity: 1;}
+}
+@-ms-keyframes spin_frame{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    100% {-webkit-transform: rotate(720deg); opacity: 1;}
+}
+
+.s-ui-spin-ease{
+    animation:  spin_frame 2s ease-in-out infinite ;
+    -moz-animation:  spin_frame 2s ease-in-out infinite ;
+    -webkit-animation:  spin_frame 2s ease-in-out infinite ;
+    -o-animation:  spin_frame 2s ease-in-out infinite ;
+    -ms-animation:  spin_frame 2s ease-in-out infinite ;
+}
+.s-ui-spin{
+    animation:  spin_frame 2s infinite linear  ;
+    -moz-animation:  spin_frame 2s infinite linear  ;
+    -webkit-animation:  spin_frame 2s infinite linear  ;
+    -o-animation:  spin_frame 2s infinite linear  ;
+    -ms-animation:  spin_frame 2s infinite linear  ;
+}

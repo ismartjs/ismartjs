@@ -5,7 +5,7 @@
 
     Smart.widgetExtend({
         id: "resource",
-        options: "src,ctx:form,ctx:adapter,ctx:cascade,cascade-key,switch,cascade-data,ignore,fn",
+        options: "src,ctx:form,ctx:adapter,ctx:cascade,cascade-key,cascade-e,switch,cascade-data,ignore,fn",
         defaultOptions: {
             'switch': "on",
             'fn': "data"
@@ -19,7 +19,7 @@
             if (this.options.switch == "off") return $.Deferred().resolve();
             if (this.options['cascade']) {
                 var that = this;
-                this.options['cascade'].on('smart-change change', function () {
+                this.options['cascade'].on(this.options['cascade-e'] || 'smart-change change', function () {
                     that._cascadeLoad();
                 });
                 if ('cascade-data' in this.options) {

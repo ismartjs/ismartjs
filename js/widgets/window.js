@@ -208,7 +208,7 @@
             this.trigger("loading");
             var deferred = $.Deferred();
             var args = $.makeArray(arguments);
-            this.widget.window.location.args = args;
+            this.widget.window.location.args = loadArgs;
             var that = this;
             this.widget.window.location.href = href;
             this.get(href, null, "text").done(function (html) {

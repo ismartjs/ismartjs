@@ -21,7 +21,9 @@
         onPrepare: function(){
             var emptyRow = getRoleNode("empty", this.S.node);
             var loopRow = getRoleNode("row", this.S.node);
+            var prepareRow = getRoleNode("prepare", this.S.node);
             this.S.node.empty();
+            prepareRow.size() && this.S.node.append(prepareRow);
             this.cache.emptyRow = emptyRow;
             this.cache.loopRow = loopRow;
         }
@@ -49,10 +51,12 @@
                 rowSmart.data(data);
             });
             var that = this
-            setTimeout(function(){
-                that[(mode || "append")+"Node"](row);
-                that.trigger("row-add", [row, data, indentNum, mode]);
-            },0)
+//            setTimeout(function(){
+//                that[(mode || "append")+"Node"](row);
+//                that.trigger("row-add", [row, data, indentNum, mode]);
+//            },0)
+            that[(mode || "append")+"Node"](row);
+            that.trigger("row-add", [row, data, indentNum, mode]);
         },
         addRows: function(datas, indentNum, mode){
             indentNum = indentNum == undefined ? 0 : indentNum;
@@ -84,7 +88,10 @@
                 return;
             }
             this.reset();
-            this.addRows(datas);
+            var that = this;
+            setTimeout(function(){
+                that.addRows(datas);
+            }, 0);
         },
         dataSetter: function(data){
             if(!$.isArray(data)){

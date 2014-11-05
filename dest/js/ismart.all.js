@@ -30,6 +30,7 @@
                 //TODO FIX LATTER 对于 out.print("xxx lt xxx");这样的脚本，则也会替换成 out.print("xxx < xxx");这样
                 lineStr = lineStr.replace(/\slt\s/gi,"<").replace(/\sgt\s/gi, ">");
                 lineStr = lineStr.replace(/\slte\s/gi,"<=").replace(/\sgte\s/gi, ">=");
+                lineStr = lineStr.replace(/\sand\s/gi,"&&");
                 scripts.push(lineStr);
                 line = [];
             } else {
@@ -357,38 +358,41 @@
         //当所有方法执行完成时，才会触发deferredQueue的done。
         deferredQueue: function (fns) {
             var deferred = $.Deferred();
-            if (arguments.length == 1) {
-                if ($.type(fns) != "array") {
-                    fns = [fns];
-                }
-            } else if (arguments.length > 1) {
-                fns = SLICE.call(arguments);
-            }
+			if (arguments.length == 1) {
+				if ($.type(fns) != "array") {
+					fns = [fns];
+				}
+			} else if (arguments.length > 1) {
+				fns = Array.prototype.slice.call(arguments);
+			}
+			var results = [];
+			function callFn(i) {
+				if (i == fns.length) {
+					deferred.resolve(results);
+					return;
+				}
+				var fn = fns[i];
+				if (!$.isFunction(fn)) {
+					results.push(fn);
+					callFn(i + 1);
+					return;
+				}
+				var fnDefer = fn();
+				if (!fnDefer || !$.isFunction(fnDefer['done'])) {
+					results.push(fnDefer);
+					callFn(i + 1);
+					return;
+				}
+				fnDefer.done(function (rs) {
+					results.push(rs);
+					callFn(i + 1);
+				}).fail(function () {
+					deferred.reject();
+				});
+			}
 
-            function callFn(i) {
-                if (i == fns.length) {
-                    deferred.resolve();
-                    return;
-                }
-                var fn = fns[i];
-                if (!$.isFunction(fn)) {
-                    callFn(i + 1);
-                    return;
-                }
-                var fnDefer = fn();
-                if (!fnDefer) {
-                    callFn(i + 1);
-                    return;
-                }
-                fnDefer.done(function () {
-                    callFn(i + 1);
-                }).fail(function () {
-                    deferred.reject();
-                });
-            }
-
-            callFn(0);
-            return deferred.promise();
+			callFn(0);
+			return deferred.promise();
         },
         pick: function (node) {
             var smart = Smart.of();
@@ -1871,10 +1875,12 @@
                 rowSmart.data(data);
             });
             var that = this
-            setTimeout(function(){
-                that[(mode || "append")+"Node"](row);
-                that.trigger("row-add", [row, data, indentNum, mode]);
-            },0)
+//            setTimeout(function(){
+//                that[(mode || "append")+"Node"](row);
+//                that.trigger("row-add", [row, data, indentNum, mode]);
+//            },0)
+            that[(mode || "append")+"Node"](row);
+            that.trigger("row-add", [row, data, indentNum, mode]);
         },
         addRows: function(datas, indentNum, mode){
             indentNum = indentNum == undefined ? 0 : indentNum;
@@ -1906,7 +1912,10 @@
                 return;
             }
             this.reset();
-            this.addRows(datas);
+            var that = this;
+            setTimeout(function(){
+                that.addRows(datas);
+            }, 0);
         },
         dataSetter: function(data){
             if(!$.isArray(data)){
@@ -2680,6 +2689,34 @@
         }
     });
 })();;/**
+ * Created by Administrator on 2014/9/2.
+ */
+(function ($) {
+    Smart.widgetExtend({
+        id: "datetimepicker",
+        options: "format,config,autoclose,minView,maxView,language,pickTime",
+        defaultOptions: {
+            format: "yyyy-mm-dd",
+            autoclose: true,
+            language: 'zh-CN',
+            showMeridian: 'day',
+            minView: 'month',
+            todayHighlight: true
+        }
+    }, {
+        onPrepare: function () {
+            var config = this.options.config || {};
+            var that = this;
+            $.each(['format','autoclose','todayHighlight','minView','language'], function(i, v){
+               if(config[v] == undefined){
+                   config[v] = that.options[v];
+               }
+            });
+            this.S.node.datetimepicker(config);
+        }
+    });
+})(jQuery);
+;/**
  * Created by Administrator on 2014/6/27.
  */
 (function ($) {
@@ -2863,10 +2900,13 @@
             this.trigger("pagination-page", [page]);
         },
         _createLi: function (txt) {
-            var li = $("<li />");
-            var a = $("<a href='javascript:;'>" + txt + "</a>");
+            var li = $("<li />").attr("_page", txt);
+            var a = $("<a href='javascript:;' >" + txt + "</a>");
             li.append(a);
             return li;
+        },
+        getPage: function(){
+            return this.node.find("li." + this.widget.pagination.options['active-c']).attr("_page");
         }
     });
 })(jQuery);

@@ -220,3 +220,44 @@ ul.s-ui-contextmenu li.disabled:hover > span {
     font-weight: normal !important;
     margin: 0px 4px !important;
 }
+
+
+/**
+    定义脚本动画
+*/
+@keyframes spin_frame
+{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    100% {-webkit-transform: rotate(450deg); opacity: .3;}
+}
+@-moz-keyframes spin_frame{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    100% {-webkit-transform: rotate(450deg); opacity: .3;}
+}
+@-webkit-keyframes spin_frame{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    100% {-webkit-transform: rotate(450deg); opacity: .3;}
+}
+@-o-keyframes spin_frame{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    100% {-webkit-transform: rotate(450deg); opacity: .3;}
+}
+@-ms-keyframes spin_frame{
+    0% {-webkit-transform: rotate(0deg); opacity: 1;}
+    100% {-webkit-transform: rotate(450deg); opacity: .3;}
+}
+
+.s-ui-spin-ease{
+    animation:  spin_frame 2s ease .1s infinite alternate;
+    -moz-animation:  spin_frame 2s ease .1s infinite alternate;
+    -webkit-animation:  spin_frame 2s ease .1s infinite alternate;
+    -o-animation:  spin_frame 2s ease .1s infinite alternate;
+    -ms-animation:  spin_frame 2s ease .1s infinite alternate;
+}
+.s-ui-spin{
+    animation:  spin_frame 2s infinite linear infinite alternate;
+    -moz-animation:  spin_frame 2s infinite linear infinite alternate;
+    -webkit-animation:  spin_frame 2s infinite linear infinite alternate;
+    -o-animation:  spin_frame 2s infinite linear infinite alternate;
+    -ms-animation:  spin_frame 2s infinite linear infinite alternate;
+}

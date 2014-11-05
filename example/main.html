@@ -421,9 +421,9 @@
                 that.destroy();
                 MainTab.activeTop();
             }).on("loading", function(){
-                that.node.addClass("loading");
+                $("i", that.node).addClass("s-ui-spin");
             }).on("load", function(){
-                that.node.removeClass("loading");
+                $("i", that.node).removeClass("s-ui-spin");
             });
         },
         setMeta:function(meta){
