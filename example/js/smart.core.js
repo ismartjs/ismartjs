@@ -476,6 +476,7 @@
             return this._insertNode(node);
         },
         _insertNode: function (node, mode) {
+            //插入的node不能是textnode的节点，否则无法插入进去
             try {
                 if ($.type(node) == "string") {
                     node = $(node);
@@ -522,7 +523,7 @@
                     this._setContextSmart(smart);
                 }
                 if (smart.isWindow()) {
-                    return null;
+                    return window[key];
                 }
                 return smart._context.call(that || this, key);
             };
@@ -734,13 +735,15 @@
             },
             dataSetter: function (data) {
                 var dataType = $.type(data);
-                if (dataType == "boolean" || dataType == "number" || dataType == "string") {
+                if (dataType == "boolean" || dataType == "number" || dataType == "string" || data == undefined) {
                     //如果没有子元素
                     if (this.node.is("input[type='text'],input[type='hidden'],select,textarea," +
                         "input[type='password'],input[type='email'],input[type='number']")) {
-                        this.node.val(data);
+                        data = data == undefined ? '' : data;
+                        this.node.val(data+'');
                         return;
                     } else if (this.node.is("input[type='radio']")) {
+                        data = data == undefined ? '' : data;
                         if (data + "" == this.node.val()) {
                             this.node.prop("checked", true);
                         }
@@ -1050,22 +1053,28 @@
                     ajaxOptions.processData = false;
                 }
                 $.extend(ajaxOptions, ajaxSetting || {});
-                $.ajax(ajaxOptions).done(function (result) {
-                    deferred.resolve.apply(deferred, SLICE.call(arguments));
-                    if (!cfg.silent) {
-                        _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
-                    }
-                }).fail(function (xhr) {
-                    deferred.reject.apply(deferred, SLICE.call(arguments));
-                    if (!cfg.silent) {
-                        _this.trigger("smart-ajaxError", [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url)]);
-                    }
-                }).always(function () {
-                    deferred.always.apply(deferred, SLICE.call(arguments));
-                    if (!cfg.silent) {
-                        _this.trigger("smart-ajaxComplete");
-                    }
-                });
+                function doRequest(){
+                    $.ajax(ajaxOptions).done(function (result) {
+                        deferred.resolve.apply(deferred, SLICE.call(arguments));
+                        if (!cfg.silent) {
+                            _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
+                        }
+                    }).fail(function (xhr) {
+//                    deferred.reject.apply(deferred, SLICE.call(arguments));
+                        if (!cfg.silent) {
+                            var event = $.Event('smart-ajaxError', {
+                                retryRequest: doRequest
+                            });
+                            _this.trigger(event, [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url), xhr]);
+                        }
+                    }).always(function () {
+//                    deferred.always.apply(deferred, SLICE.call(arguments));
+                        if (!cfg.silent) {
+                            _this.trigger("smart-ajaxComplete");
+                        }
+                    });
+                }
+                doRequest();
                 return deferred;
             };
         });

@@ -564,6 +564,19 @@
             }
         },
         {
+            id: "min",
+            valid: function (min) {
+                if (this.value < min) {
+                    this.putVar("min", min);
+                    return -1;
+                }
+                return 1;
+            },
+            msg: {
+                "-1": "{label}不能小于{min}"
+            }
+        },
+        {
             id: "word",
             valid: (function () {
                 var regex = /^[A-Za-z0-9_\-]*$/;

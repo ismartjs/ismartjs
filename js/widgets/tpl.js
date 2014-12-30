@@ -21,6 +21,9 @@
             var script = scripts.join("\n");
             var fn = eval(script);
             this.cache[TABLE_FN_KEY] = fn;
+            if(this.S.node.hasClass('s-ui-tpl-hide')){
+                this.S.node.removeClass("s-ui-tpl-hide");
+            }
         }
     },{
         dataSetter: function(data){

@@ -6,7 +6,7 @@
     var roleAttr = Smart.optionAttrName("loop", "role");
 
     function getRoleNode(val, node){
-        return $("*["+roleAttr+"='"+val+"']", node);
+        return $("*["+roleAttr+"='"+val+"']:first", node);
     }
 
     //loop控件，可以用该控件来构建列表，grid。
@@ -32,7 +32,7 @@
             this.node.empty();
         },
         addRow: function(data, indentNum, mode){
-            var row = this._getRow();
+            var row = this._getRow().show();
             if(indentNum){
                 var indentNode = row.find('*[s-loop-tree-role="indent"]');
                 if(this.widget.loop.options['tree-indent-str']){

@@ -602,6 +602,7 @@
             return this._insertNode(node);
         },
         _insertNode: function (node, mode) {
+            //插入的node不能是textnode的节点，否则无法插入进去
             try {
                 if ($.type(node) == "string") {
                     node = $(node);
@@ -648,7 +649,7 @@
                     this._setContextSmart(smart);
                 }
                 if (smart.isWindow()) {
-                    return null;
+                    return window[key];
                 }
                 return smart._context.call(that || this, key);
             };
@@ -860,13 +861,15 @@
             },
             dataSetter: function (data) {
                 var dataType = $.type(data);
-                if (dataType == "boolean" || dataType == "number" || dataType == "string") {
+                if (dataType == "boolean" || dataType == "number" || dataType == "string" || data == undefined) {
                     //如果没有子元素
                     if (this.node.is("input[type='text'],input[type='hidden'],select,textarea," +
                         "input[type='password'],input[type='email'],input[type='number']")) {
-                        this.node.val(data);
+                        data = data == undefined ? '' : data;
+                        this.node.val(data+'');
                         return;
                     } else if (this.node.is("input[type='radio']")) {
+                        data = data == undefined ? '' : data;
                         if (data + "" == this.node.val()) {
                             this.node.prop("checked", true);
                         }
@@ -1176,22 +1179,28 @@
                     ajaxOptions.processData = false;
                 }
                 $.extend(ajaxOptions, ajaxSetting || {});
-                $.ajax(ajaxOptions).done(function (result) {
-                    deferred.resolve.apply(deferred, SLICE.call(arguments));
-                    if (!cfg.silent) {
-                        _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
-                    }
-                }).fail(function (xhr) {
-                    deferred.reject.apply(deferred, SLICE.call(arguments));
-                    if (!cfg.silent) {
-                        _this.trigger("smart-ajaxError", [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url)]);
-                    }
-                }).always(function () {
-                    deferred.always.apply(deferred, SLICE.call(arguments));
-                    if (!cfg.silent) {
-                        _this.trigger("smart-ajaxComplete");
-                    }
-                });
+                function doRequest(){
+                    $.ajax(ajaxOptions).done(function (result) {
+                        deferred.resolve.apply(deferred, SLICE.call(arguments));
+                        if (!cfg.silent) {
+                            _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
+                        }
+                    }).fail(function (xhr) {
+//                    deferred.reject.apply(deferred, SLICE.call(arguments));
+                        if (!cfg.silent) {
+                            var event = $.Event('smart-ajaxError', {
+                                retryRequest: doRequest
+                            });
+                            _this.trigger(event, [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url), xhr]);
+                        }
+                    }).always(function () {
+//                    deferred.always.apply(deferred, SLICE.call(arguments));
+                        if (!cfg.silent) {
+                            _this.trigger("smart-ajaxComplete");
+                        }
+                    });
+                }
+                doRequest();
                 return deferred;
             };
         });
@@ -1723,7 +1732,7 @@
         }
         action = smart.action("var e = arguments[1];\n" + action);
         smart.node[event](function (e) {
-            var result = action.call(smart, e);
+            var result = action.call(Smart.of($(this)), e);
             if(result == null) return;
             if(Smart.isDeferred(result)){//说明这个是deferred对象
                 var target = $(e.target);
@@ -1832,7 +1841,7 @@
     var roleAttr = Smart.optionAttrName("loop", "role");
 
     function getRoleNode(val, node){
-        return $("*["+roleAttr+"='"+val+"']", node);
+        return $("*["+roleAttr+"='"+val+"']:first", node);
     }
 
     //loop控件，可以用该控件来构建列表，grid。
@@ -1847,7 +1856,9 @@
         onPrepare: function(){
             var emptyRow = getRoleNode("empty", this.S.node);
             var loopRow = getRoleNode("row", this.S.node);
+            var prepareRow = getRoleNode("prepare", this.S.node);
             this.S.node.empty();
+            prepareRow.size() && this.S.node.append(prepareRow);
             this.cache.emptyRow = emptyRow;
             this.cache.loopRow = loopRow;
         }
@@ -1856,7 +1867,7 @@
             this.node.empty();
         },
         addRow: function(data, indentNum, mode){
-            var row = this._getRow();
+            var row = this._getRow().show();
             if(indentNum){
                 var indentNode = row.find('*[s-loop-tree-role="indent"]');
                 if(this.widget.loop.options['tree-indent-str']){
@@ -1966,10 +1977,11 @@
 
     Smart.widgetExtend({
         id: "resource",
-        options: "src,ctx:form,ctx:adapter,ctx:cascade,cascade-key,switch,cascade-data,ignore,fn",
+        options: "src,ctx:form,ctx:adapter,ctx:cascade,cascade-key,cascade-e,auto,switch,cascade-data,ignore,fn,type",
         defaultOptions: {
-            'switch': "on",
-            'fn': "data"
+            'auto': "on",
+            'fn': "data",
+            type: "json"
         }
     }, {
         onPrepare: function () {
@@ -1977,11 +1989,18 @@
             that.cache.params = {}
         },
         onRender: function () {
-            if (this.options.switch == "off") return $.Deferred().resolve();
+            if (this.options.auto == "off") return $.Deferred().resolve();
             if (this.options['cascade']) {
                 var that = this;
-                this.options['cascade'].on('smart-change change', function () {
-                    that._cascadeLoad();
+                var cascade_timeout;
+                this.options['cascade'].on(this.options['cascade-e'] || 'smart-change change', function () {
+                    if(cascade_timeout){
+                        clearTimeout(cascade_timeout);
+                    }
+                    cascade_timeout = setTimeout(function(){
+                        cascade_timeout = null;
+                        that._cascadeLoad();
+                    }, 500);
                 });
                 if ('cascade-data' in this.options) {
                     //如果cascade-data存在，则进行初始化调用
@@ -2001,7 +2020,7 @@
         },
         _cascadeLoad: function (cascadeData) {
             var cascade = this.options.cascade;
-            var val = cascadeData != undefined ? cascadeData : cascade.val()
+            var val = cascadeData != undefined ? cascadeData : cascade.val();
             if (val == this.options.ignore) {
                 this.S[this.options.fn]();
                 return $.Deferred().resolve();
@@ -2017,12 +2036,22 @@
             return this._load(this.options['src'], {});
         },
         _load: function (src, params) {
+            if('switch' in this.options && this.options.switch != null){
+                if($.isFunction(this.options.switch)){
+                    if(this.options.switch.call(this) == false){
+                        return $.Deferred().resolve();
+                    }
+                }
+                if(this.options.switch == false || this.options.switch == 'false'){
+                    return $.Deferred().resolve();
+                }
+            }
             this.cache.currentSrc = src;
             var deferred = $.Deferred();
             if (src == undefined) {
                 return deferred.resolve();
             }
-            var type = "json";
+            var type = this.options.type;
             if (/^.+:.+$/.test(src)) {
                 var idx = src.indexOf(":");
                 type = src.substring(0, idx);
@@ -2302,7 +2331,7 @@
             this.trigger("loading");
             var deferred = $.Deferred();
             var args = $.makeArray(arguments);
-            this.widget.window.location.args = args;
+            this.widget.window.location.args = loadArgs;
             var that = this;
             this.widget.window.location.href = href;
             this.get(href, null, "text").done(function (html) {
@@ -2559,7 +2588,9 @@
                         return deferred.resolve();
                     }
                     var callback = function(){
-                        backdrop.hide();
+                        if(!backdrop.hasClass('in')){
+                            backdrop.hide();
+                        }
                         deferred.resolve();
                     };
                     isShown = false;
@@ -2575,6 +2606,37 @@
             }
         })()
     };
+})(jQuery);
+;/**
+ * Created by Administrator on 2014/6/27.
+ */
+(function ($) {
+    var mark_class = "s-btnGroup-active";
+    var active_class_def_attr = Smart.optionAttrName('btnGroup', 'active-class');
+    var actived_attr = Smart.optionAttrName('btnGroup', 'active');
+    Smart.widgetExtend({
+        id: "btnGroup",
+        options: "active-class"
+    }, {
+        onPrepare: function () {
+            var that = this;
+            this.S.node.delegate(" > * ", "click", function(e){
+                var btn = $(this);
+                if(btn.hasClass(mark_class)) return;
+                var lastBtn = btn.siblings("."+mark_class);
+                lastBtn.size() && lastBtn.removeClass(that._getBtnActiveClass(lastBtn)).removeClass(mark_class);
+                btn.addClass(mark_class).addClass(that._getBtnActiveClass(btn));
+                e.stopPropagation();
+            });
+            this.cache.initActivedNode = $(" > *["+actived_attr+"] ", this.S.node).click();
+        },
+        _getBtnActiveClass: function(btn){
+            return btn.attr(active_class_def_attr) || this.option['active-class'];
+        },
+        onReset: function () {
+            this.cache.initActivedNode.click();
+        }
+    });
 })(jQuery);
 ;/**
  * Created by Administrator on 2014/6/21.
@@ -2694,7 +2756,7 @@
 (function ($) {
     Smart.widgetExtend({
         id: "datetimepicker",
-        options: "format,config,autoclose,minView,maxView,language,pickTime",
+        options: "format,config,autoclose,minView,maxView,maxView,language,pickTime,startView",
         defaultOptions: {
             format: "yyyy-mm-dd",
             autoclose: true,
@@ -2707,7 +2769,7 @@
         onPrepare: function () {
             var config = this.options.config || {};
             var that = this;
-            $.each(['format','autoclose','todayHighlight','minView','language'], function(i, v){
+            $.each(['format','autoclose','todayHighlight','minView','language','maxView','startView'], function(i, v){
                if(config[v] == undefined){
                    config[v] = that.options[v];
                }
@@ -2757,6 +2819,40 @@
     });
 })(jQuery);
 ;/**
+ * Created by Administrator on 2014/11/29.
+ */
+(function ($) {
+    var dropdown_filter_selector = "*[" + Smart.optionAttrName('dropdownlist', 'role') + "='filter']";
+    var dropdown_item_selector = "*[" + Smart.optionAttrName('dropdownlist', 'role') + "='item']";
+    Smart.widgetExtend({
+        id: "dropdownlist",
+        options: "ctx:filter"
+    }, {
+        onPrepare: function () {
+            var that = this;
+            var filterNode = $(dropdown_filter_selector, this.S.node);
+            var outerFilter = this.options.filter;
+            filterNode.click(function(e){
+                e.stopPropagation();
+            });
+            filterNode = filterNode.add(outerFilter);
+            if(filterNode.size() > 0){
+                filterNode.keyup(function(e){
+                    $(dropdown_item_selector, that.S.node).hide();
+                    $(dropdown_item_selector+":contains("+$(e.target).val()+")", that.S.node).show();
+                    e.stopPropagation();
+                });
+                filterNode.focus(function(e){
+                    e.stopPropagation();
+                    $(e.target).select();
+                });
+            }
+        },
+        onReset: function () {
+            $(dropdown_item_selector, this.S.node).show();
+        }
+    });
+})(jQuery);;/**
  * Created by Administrator on 2014/6/27.
  */
 (function ($) {
@@ -2926,6 +3022,7 @@
             this.cache.originalOptions = originalOptions;
             this.options.form = this.options.form.split(":");
             this.options.form[1] = this.options.form[1].split(",");
+            this.cache.dataMap = {};
         }
     }, {
         buildSetter: function (datas) {
@@ -2934,6 +3031,7 @@
                 Smart.error("构建select选项所需的数据必须是数组");
                 return;
             }
+            this.widget.select.cache.dataMap = {};
             this.node.empty();
             this.node.append(this.widget.select.cache.originalOptions);
             for (var i in datas) {
@@ -2944,11 +3042,16 @@
 
             var value = data[this.widget.select.options.form[0]];
             var title = data[this.widget.select.options.form[1][0]];
+            this.widget.select.cache.dataMap[value] = data;
             if (!title && this.widget.select.options.form[1].length == 2) {
                 title = data[this.widget.select.options.form[1][1]];
             }
             var option = $('<option value="' + value + '">' + title + '</option>');
             return option;
+        },
+        getSelectData: function(){
+            var val = this.node.val();
+            return this.widget.select.cache.dataMap[val];
         }
     });
 })(jQuery);;/**
@@ -3083,7 +3186,7 @@
     //验证控件
     Smart.widgetExtend({
         id: "valid",
-        options: "ctx:msg,ctx:show,ctx:resetShow,s-class,e-class,w-class,blur,ctx:validators",
+        options: "ctx:msg,ctx:show,ctx:resetShow,s-class,e-class,w-class,blur,ctx:validators,ctx:after",
         defaultOptions: {
             msg: DEFAULT_MSG,
             blur: "true",
@@ -3181,6 +3284,11 @@
                     return that.validateNode(node);
                 });
             });
+            if(this.widget.valid.options.after){
+                deferreds.push(function(){
+                    return this.widget.valid.options.after();
+                });
+            }
             return Smart.deferredQueue(deferreds);
         },
         resetValidate: function(){
@@ -3608,6 +3716,19 @@
             }
         },
         {
+            id: "min",
+            valid: function (min) {
+                if (this.value < min) {
+                    this.putVar("min", min);
+                    return -1;
+                }
+                return 1;
+            },
+            msg: {
+                "-1": "{label}不能小于{min}"
+            }
+        },
+        {
             id: "word",
             valid: (function () {
                 var regex = /^[A-Za-z0-9_\-]*$/;
@@ -3863,7 +3984,7 @@
     var createBtn = function(btn){
         var button = $('<button class="btn" type="button"></button>');
         btn.id && button.attr("s-ui-dialog-btn-id", btn.id);
-        var text = (btn.icon ? "<i style='"+btn.icon+"'></i>" : "") + btn.name;
+        var text = (btn.icon ? "<i class='"+btn.icon+"'></i> " : "") + btn.name;
         button.html(text);
         btn.style && button.addClass(btn.style || "btn-default");
         button.click(function(){
@@ -3877,80 +3998,98 @@
                 button.prop("disabled", false);
             }
         });
+        btn.hidden && button.hide();
         return button;
     };
 
     var showDialog = function(dialog){
         Smart.UI.backdrop();
-        dialog.on("hide.bs.modal", function(){
-            Smart.UI.backdrop(false);
+        dialog.on("hide.bs.modal", function(e){
+            if(this == e.target)
+                Smart.UI.backdrop(false);
         }).css('zIndex', Smart.UI.zIndex()).modal({
             keyboard: false,
             backdrop: false
         });
     };
 
-    Smart.fn.extend({
-        dialogOpen: function () {
-            var deferred = $.Deferred();
-            var dialog = Smart.UI.template("dialog");
-            var node = $("<div s='window' />");
-            var nodeSmart = Smart.of(node);
-            var bodyNode = $("*[s-ui-dialog-role='body']", dialog);
-            var bodySmart = Smart.of(bodyNode);
-            var titleNode = $("*[s-ui-dialog-role='title']", dialog);
-            var footerNode = $("*[s-ui-dialog-role='footer']", dialog);
-            var closeBtn = $("*[s-ui-dialog-role='close']", dialog);
-            var dialogMain = $("*[s-ui-dialog-role='dialog']", dialog);
+    var popupOpen = function () {
+        var deferred = $.Deferred();
+        var dialog = Smart.UI.template("dialog");
+        var node = $("<div s='window' />");
+        var nodeSmart = Smart.of(node);
+        var bodyNode = $("*[s-ui-dialog-role='body']", dialog);
+        var bodySmart = Smart.of(bodyNode);
+        var titleNode = $("*[s-ui-dialog-role='title']", dialog);
+        var footerNode = $("*[s-ui-dialog-role='footer']", dialog);
+        var closeBtn = $("*[s-ui-dialog-role='close']", dialog);
+        var dialogMain = $("*[s-ui-dialog-role='dialog']", dialog);
 
-            bodySmart.setNode(node);
+        bodySmart.setNode(node);
 
-            closeBtn.click(function(){
-                nodeSmart.closeWithConfirm();
+        closeBtn.click(function(){
+            nodeSmart.closeWithConfirm();
+        });
+
+        nodeSmart.on("close", function(e){
+            var eDeferred = e.deferred;
+            var args = Smart.SLICE.call(arguments, 1);
+            dialog.on("hidden.bs.modal", function(){
+                eDeferred.resolve();
+                dialog.remove();
+                deferred.resolve.apply(deferred, args);
             });
-
-            nodeSmart.on("close", function(e){
-                var eDeferred = e.deferred;
-                var args = Smart.SLICE.call(arguments, 1);
-                dialog.on("hidden.bs.modal", function(){
-                    eDeferred.resolve();
-                    dialog.remove();
-                    deferred.resolve.apply(deferred, args);
+            dialog.modal('hide');
+            e.deferred = eDeferred.promise();
+        }).on("load", function(){
+            titleNode.html(nodeSmart.meta.title || DIALOG_DEFAULT_TITLE);
+            if(nodeSmart.meta.btns){
+                $.each(nodeSmart.meta.btns, function(i, btn){
+                    footerNode.append(createBtn(btn));
                 });
-                dialog.modal('hide');
-                e.deferred = eDeferred.promise();
-            }).on("load", function(){
-                titleNode.html(nodeSmart.meta.title || DIALOG_DEFAULT_TITLE);
-                if(nodeSmart.meta.btns){
-                    $.each(nodeSmart.meta.btns, function(i, btn){
-                        footerNode.append(createBtn(btn));
-                    });
-                }
-
-                nodeSmart.meta.height && node.height(nodeSmart.meta.height);
-                nodeSmart.meta.width && node.width(nodeSmart.meta.width);
-                //这里主要处理内容的高度
-                dialogMain.css({"position":"absolute", "width": "auto"});
-                bodyNode.css("padding", 0).css("position","relative");
-                node.css({"overflow-y":"auto", padding: "0"});
-                dialog.appendTo("body");
-                dialog.show();
-                dialogMain.width(dialogMain.innerWidth()).css("position","relative");
-                footerNode.css("marginTop", "0");
-                showDialog(dialog);
-            }).on("dialog.btn.disable", function(e, id){
-                getButtonById(id).prop("disabled", true);
-            }).on("dialog.btn.enable", function(e, id){
-                getButtonById(id).prop("disabled", false);
-            });
-
-            function getButtonById(id){
-                return $("button[s-ui-dialog-btn-id='"+id+"']", footerNode);
+            } else {
+                //如果底部没有按钮，则进行隐藏
+                footerNode.hide();
             }
 
-            nodeSmart.load.apply(nodeSmart, $.makeArray(arguments));
+            nodeSmart.meta.height && node.height(nodeSmart.meta.height);
+            nodeSmart.meta.width && node.width(nodeSmart.meta.width);
+            //这里主要处理内容的高度
+            dialogMain.css({"position":"absolute", "width": "auto"});
+            bodyNode.css("padding", 0).css("position","relative");
+            node.css({"overflow-y":"auto", padding: "0"});
+            dialog.appendTo("body");
+            dialog.show();
+            dialogMain.width(dialogMain.innerWidth()).css("position","relative");
+            footerNode.css("marginTop", "0");
+            showDialog(dialog);
+        }).on("dialog.btn.disable", function(e, id){
+            getButtonById(id).prop("disabled", true);
+        }).on("dialog.btn.enable", function(e, id){
+            getButtonById(id).prop("disabled", false);
+        });
 
-            return deferred;
+        function getButtonById(id){
+            return $("button[s-ui-dialog-btn-id='"+id+"']", footerNode);
+        }
+        nodeSmart.getButtonById = getButtonById;
+        nodeSmart.load.apply(nodeSmart, $.makeArray(arguments));
+
+        return $.extend(deferred, {
+            close: function(){
+                nodeSmart.close();
+            }
+        });
+    };
+
+    Smart.fn.extend({
+        popupOpen: popupOpen,
+        /**
+         * @duplicate
+         * */
+        dialogOpen : function(){
+            Smart.warn("dialogOpen 已经过时，请使用popupOpen代替。");
+            return popupOpen.apply(this, Smart.SLICE.call(arguments));
         }
     });
 })(jQuery);

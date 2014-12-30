@@ -4,7 +4,7 @@
 (function ($) {
     Smart.widgetExtend({
         id: "datetimepicker",
-        options: "format,config,autoclose,minView,maxView,language,pickTime",
+        options: "format,config,autoclose,minView,maxView,maxView,language,pickTime,startView",
         defaultOptions: {
             format: "yyyy-mm-dd",
             autoclose: true,
@@ -17,7 +17,7 @@
         onPrepare: function () {
             var config = this.options.config || {};
             var that = this;
-            $.each(['format','autoclose','todayHighlight','minView','language'], function(i, v){
+            $.each(['format','autoclose','todayHighlight','minView','language','maxView','startView'], function(i, v){
                if(config[v] == undefined){
                    config[v] = that.options[v];
                }

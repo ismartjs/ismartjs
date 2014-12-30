@@ -231,44 +231,15 @@
 }
 
 /**
-定义tab加载的时候 图标的闪烁动画
-*/
-.topbar .tab li.loading i{
-    animation:  main_loading_frame 1s ease .1s infinite alternate;
-    -moz-animation:  main_loading_frame 1s ease .1s infinite alternate;	/* Firefox */
-    -webkit-animation:  main_loading_frame 1s ease .1s infinite alternate;	/* Safari 和 Chrome */
-    -o-animation:  main_loading_frame 1s ease .1s infinite alternate;
-    -ms-animation:  main_loading_frame 1s ease .1s infinite alternate;
-}
-
-/**
     ajax 活跃提示
 */
 .ajax-active-tip{position: absolute; z-index: 100000; padding: 5px 10px;right: 20px; top: 39px; font-size: 12px; min-width: 200px;}
 
-/**
-定义主菜单加载动画
-*/
-@keyframes main_loading_frame
-{
-    0% {-webkit-transform: rotate(0deg); opacity: 1;}
-    100% {-webkit-transform: rotate(450deg); opacity: .3;}
-}
-@-moz-keyframes main_loading_frame{
-    0% {-webkit-transform: rotate(0deg); opacity: 1;}
-    100% {-webkit-transform: rotate(450deg); opacity: .3;}
-}
-@-webkit-keyframes main_loading_frame{
-    0% {-webkit-transform: rotate(0deg); opacity: 1;}
-    100% {-webkit-transform: rotate(450deg); opacity: .3;}
-}
-@-o-keyframes main_loading_frame{
-    0% {-webkit-transform: rotate(0deg); opacity: 1;}
-    100% {-webkit-transform: rotate(450deg); opacity: .3;}
-}
-@-ms-keyframes main_loading_frame{
-    0% {-webkit-transform: rotate(0deg); opacity: 1;}
-    100% {-webkit-transform: rotate(450deg); opacity: .3;}
+.main-bottom{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .main-window{

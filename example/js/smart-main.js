@@ -15,6 +15,7 @@ $(function () {
         defaultMenuIcon: "",
         topbarRightUrl: "topbar-right.html",
         topbarLeftUrl: "topbar-left.html",
+        bottomUrl: "main-bottom.html",
         historyListener: {
             onPush: function (url) {
                 history.replaceState(null, null, "#" + url);

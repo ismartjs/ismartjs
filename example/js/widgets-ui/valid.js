@@ -34,7 +34,7 @@
     //验证控件
     Smart.widgetExtend({
         id: "valid",
-        options: "ctx:msg,ctx:show,ctx:resetShow,s-class,e-class,w-class,blur,ctx:validators",
+        options: "ctx:msg,ctx:show,ctx:resetShow,s-class,e-class,w-class,blur,ctx:validators,ctx:after",
         defaultOptions: {
             msg: DEFAULT_MSG,
             blur: "true",
@@ -132,6 +132,11 @@
                     return that.validateNode(node);
                 });
             });
+            if(this.widget.valid.options.after){
+                deferreds.push(function(){
+                    return this.widget.valid.options.after();
+                });
+            }
             return Smart.deferredQueue(deferreds);
         },
         resetValidate: function(){
@@ -556,6 +561,19 @@
             msg: {
                 "-1": "{label}不能小于{min}",
                 "-2": "{label}不能大于{max}"
+            }
+        },
+        {
+            id: "min",
+            valid: function (min) {
+                if (this.value < min) {
+                    this.putVar("min", min);
+                    return -1;
+                }
+                return 1;
+            },
+            msg: {
+                "-1": "{label}不能小于{min}"
             }
         },
         {

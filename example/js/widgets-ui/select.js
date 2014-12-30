@@ -14,6 +14,7 @@
             this.cache.originalOptions = originalOptions;
             this.options.form = this.options.form.split(":");
             this.options.form[1] = this.options.form[1].split(",");
+            this.cache.dataMap = {};
         }
     }, {
         buildSetter: function (datas) {
@@ -22,6 +23,7 @@
                 Smart.error("构建select选项所需的数据必须是数组");
                 return;
             }
+            this.widget.select.cache.dataMap = {};
             this.node.empty();
             this.node.append(this.widget.select.cache.originalOptions);
             for (var i in datas) {
@@ -32,11 +34,16 @@
 
             var value = data[this.widget.select.options.form[0]];
             var title = data[this.widget.select.options.form[1][0]];
+            this.widget.select.cache.dataMap[value] = data;
             if (!title && this.widget.select.options.form[1].length == 2) {
                 title = data[this.widget.select.options.form[1][1]];
             }
             var option = $('<option value="' + value + '">' + title + '</option>');
             return option;
+        },
+        getSelectData: function(){
+            var val = this.node.val();
+            return this.widget.select.cache.dataMap[val];
         }
     });
 })(jQuery);

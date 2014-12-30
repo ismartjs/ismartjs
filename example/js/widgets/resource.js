@@ -5,10 +5,11 @@
 
     Smart.widgetExtend({
         id: "resource",
-        options: "src,ctx:form,ctx:adapter,ctx:cascade,cascade-key,switch,cascade-data,ignore,fn",
+        options: "src,ctx:form,ctx:adapter,ctx:cascade,cascade-key,cascade-e,auto,switch,cascade-data,ignore,fn,type",
         defaultOptions: {
-            'switch': "on",
-            'fn': "data"
+            'auto': "on",
+            'fn': "data",
+            type: "json"
         }
     }, {
         onPrepare: function () {
@@ -16,11 +17,18 @@
             that.cache.params = {}
         },
         onRender: function () {
-            if (this.options.switch == "off") return $.Deferred().resolve();
+            if (this.options.auto == "off") return $.Deferred().resolve();
             if (this.options['cascade']) {
                 var that = this;
-                this.options['cascade'].on('smart-change change', function () {
-                    that._cascadeLoad();
+                var cascade_timeout;
+                this.options['cascade'].on(this.options['cascade-e'] || 'smart-change change', function () {
+                    if(cascade_timeout){
+                        clearTimeout(cascade_timeout);
+                    }
+                    cascade_timeout = setTimeout(function(){
+                        cascade_timeout = null;
+                        that._cascadeLoad();
+                    }, 500);
                 });
                 if ('cascade-data' in this.options) {
                     //如果cascade-data存在，则进行初始化调用
@@ -40,7 +48,7 @@
         },
         _cascadeLoad: function (cascadeData) {
             var cascade = this.options.cascade;
-            var val = cascadeData != undefined ? cascadeData : cascade.val()
+            var val = cascadeData != undefined ? cascadeData : cascade.val();
             if (val == this.options.ignore) {
                 this.S[this.options.fn]();
                 return $.Deferred().resolve();
@@ -56,12 +64,22 @@
             return this._load(this.options['src'], {});
         },
         _load: function (src, params) {
+            if('switch' in this.options && this.options.switch != null){
+                if($.isFunction(this.options.switch)){
+                    if(this.options.switch.call(this) == false){
+                        return $.Deferred().resolve();
+                    }
+                }
+                if(this.options.switch == false || this.options.switch == 'false'){
+                    return $.Deferred().resolve();
+                }
+            }
             this.cache.currentSrc = src;
             var deferred = $.Deferred();
             if (src == undefined) {
                 return deferred.resolve();
             }
-            var type = "json";
+            var type = this.options.type;
             if (/^.+:.+$/.test(src)) {
                 var idx = src.indexOf(":");
                 type = src.substring(0, idx);

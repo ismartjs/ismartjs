@@ -303,3 +303,35 @@ ul.s-ui-contextmenu li.disabled:hover > span {
     -o-animation:  spin_frame 2s infinite linear  ;
     -ms-animation:  spin_frame 2s infinite linear  ;
 }
+
+.s-ui-dropdownlist{
+    padding-top: 0;
+}
+.s-ui-dropdownlist .s-ui-dropdownlist-filter{
+    border-left: none;
+    border-right: none;
+    width: 100%;
+}
+
+.s-ui-dropdownlist-menu > li > a{
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: 400;
+    line-height: 1.42857143;
+    color: #333;
+    white-space: nowrap;
+}
+.s-ui-dropdownlist-menu>li>a:hover, .s-ui-dropdownlist-menu>li>a:focus {
+    text-decoration: none;
+    color: #262626;
+    background-color: #f5f5f5;
+}
+
+*[s-loop-role='row']{
+    display: none;
+}
+
+.s-ui-tpl-hide{
+    visibility: hidden;
+}

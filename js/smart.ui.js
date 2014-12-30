@@ -68,7 +68,9 @@
                         return deferred.resolve();
                     }
                     var callback = function(){
-                        backdrop.hide();
+                        if(!backdrop.hasClass('in')){
+                            backdrop.hide();
+                        }
                         deferred.resolve();
                     };
                     isShown = false;

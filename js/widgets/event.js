@@ -8,7 +8,7 @@
         }
         action = smart.action("var e = arguments[1];\n" + action);
         smart.node[event](function (e) {
-            var result = action.call(smart, e);
+            var result = action.call(Smart.of($(this)), e);
             if(result == null) return;
             if(Smart.isDeferred(result)){//说明这个是deferred对象
                 var target = $(e.target);
