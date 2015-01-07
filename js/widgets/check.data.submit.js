@@ -8,10 +8,11 @@
          * s:check控件的smart对象，key:数据的key，c-msg:确认消息，e-msg:错误警告消息，r:是否刷新
          * dk: 将使用该值作为 选取的数据 的 key
          * */
-        options: "ctx:cs,ck,dk,c-msg,e-msg,r",
+        options: "ctx:cs,ck,dk,c-msg,e-msg,r,confirm",
         defaultOptions: {
             "c-msg": "确认进行此操作吗？",
             "e-msg": "请选择你要操作的数据？",
+            confirm: true,
             r: "true",
             ck: "id"//获取选择数据的key
         }
@@ -40,12 +41,14 @@
                     obj[that.widget.cds.options.dk] = data;
                     deferred.resolve(obj);
                 }
-                if(this.widget.cds.options['c-msg']){
+                if(this.widget.cds.options[confirm]){
                     this.confirm(this.widget.cds.options['c-msg'], {sign:"warning"}).done(function(){
                         resolve();
                     }).fail(function(){
                         deferred.reject();
                     });
+                } else {
+                    resolve();
                 }
 
             } else {

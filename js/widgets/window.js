@@ -81,7 +81,6 @@
         scripts.push(scriptTexts.join("\n"));
         scripts.push("			return function(key){");
         scripts.push("				try{");
-        scripts.push("					key += ';//@ sourceURL=" + href + "_context.js'");
         scripts.push("					return eval(key);");
         scripts.push("				}catch(e){Smart.error(e);}");
         scripts.push("			};");

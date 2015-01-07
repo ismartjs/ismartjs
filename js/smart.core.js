@@ -1021,6 +1021,7 @@
         $.each(['get', 'post', 'put', 'remove', 'update'], function (i, method) {
             Smart.prototype[method] = function (url, data, type, cfg, ajaxSetting) {
                 if (TO_STRING.call(type) == "[object Object]") {
+                    ajaxSetting = cfg;
                     cfg = type;
                     type = null;
                 }
@@ -1060,13 +1061,20 @@
                             _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
                         }
                     }).fail(function (xhr) {
-//                    deferred.reject.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
                             var event = $.Event('smart-ajaxError', {
                                 retryRequest: doRequest
                             });
                             _this.trigger(event, [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url), xhr]);
+                            if(event.isPropagationStopped()){
+                                return;
+                            }
+                            deferred.reject.apply(deferred, SLICE.call(arguments));
+                        } else {
+                            deferred.reject.apply(deferred, SLICE.call(arguments));
                         }
+
+
                     }).always(function () {
 //                    deferred.always.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {

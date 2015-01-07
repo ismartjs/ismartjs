@@ -368,8 +368,10 @@
                 } else if ($.type(rs) == "object" && 'done' in rs) {
                     rs.done(function (code, _msg) {
                         if (code == successCode) {
+                            msgLevel = LEVELS.success;
                             processSuccess(_msg);
                         } else {
+                            msgLevel = LEVELS.error;
                             processMsg(validation,  _msg || msg[code]);//这里只显示错误提示
                             //处理msg消息
                             reject();

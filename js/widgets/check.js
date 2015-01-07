@@ -6,6 +6,9 @@
     var CHECK_ITEM_SELECTOR = "*[" + Smart.optionAttrName('check', 'role') + "='i']";
     var CHECK_ITEM_HANDLER_SELECTOR = "*[" + Smart.optionAttrName('check', 'role') + "='h']";
     var CHECK_PATH_ATTR = Smart.optionAttrName('check', 'path');
+    var CHECKED_ATTR = "s_check_checked";
+    var CHECKED_CLASS = "s-ui-check-checked";
+    var CHECK_ROW_IG_SELECTOR = "*[" + Smart.optionAttrName('check', 'ig') + "]";
     //选中控件
     Smart.widgetExtend({
         id: "check",
@@ -14,7 +17,7 @@
             "turn": "on",
             "i-checked-class": "warning",
             multiple: true,
-            "h-checked-class": "s-ui-checked",
+            "h-checked-class": "",
             "path": "false"
         }
     }, {
@@ -70,12 +73,12 @@
         },
         _toggleCheckAll: function (node) {
             var flag;
-            if (node.hasClass(this.widget.check.options['h-checked-class'])) {
+            if (node.hasClass(CHECKED_CLASS)) {
                 flag = false;
-                node.removeClass(this.widget.check.options['h-checked-class']);
+                node.removeClass(this.widget.check.options['h-checked-class']).removeClass(CHECKED_CLASS);
             } else {
                 flag = true;
-                node.addClass(this.widget.check.options['h-checked-class']);
+                node.addClass(this.widget.check.options['h-checked-class']).addClass(CHECKED_CLASS);
             }
             flag ? this.checkAll() : this.uncheckAll();
         },
@@ -112,20 +115,21 @@
                 node.prop("checked", false);
             }
         },
-        getChecked: function () {
+        getChecked: function (type) {
             var smarts = [];
-            $.each($(CHECK_ITEM_SELECTOR + "." + this.widget.check.options['i-checked-class'], this.node), function () {
-                smarts.push(Smart.of($(this)));
+            $.each($(CHECK_ITEM_SELECTOR + "[" + CHECKED_ATTR + "]", this.node), function () {
+                smarts.push(type == "node" ? $(this) : Smart.of($(this)));
             });
             return smarts;
         },
         getCheckedData: function (field) {
             var datas = [];
+            var that = this;
             $.each(this.getChecked(), function () {
                 if (field) {
-                    datas.push(this.data()[field]);
+                    datas.push(that.data()[field]);
                 } else {
-                    datas.push(this.data());
+                    datas.push(that.data());
                 }
             });
             return datas;
@@ -211,14 +215,14 @@
             }
         },
         _checkNode: function (node) {
-            if (node.hasClass(this.widget.check.options['i-checked-class'])) {
+            if (node.attr(CHECKED_ATTR) || $(CHECK_ROW_IG_SELECTOR, node).size() > 0 || node.attr(CHECK_ROW_IG_SELECTOR)) {
                 return;
             }
-            node.addClass(this.widget.check.options['i-checked-class']).trigger("checked");
+            node.attr(CHECKED_ATTR, true).addClass(this.widget.check.options['i-checked-class']).addClass(CHECKED_CLASS).trigger("checked");
 
             var handler = $(CHECK_ITEM_HANDLER_SELECTOR, node);
             if (handler.size() == 0) return;
-            handler.addClass(this.widget.check.options['h-checked-class']);
+            handler.addClass(this.widget.check.options['h-checked-class']).addClass(CHECKED_CLASS);
             if (handler.is(":checkbox")) {
                 setTimeout(function () {
                     if (!handler.prop("checked")) handler.prop("checked", true);
@@ -226,13 +230,13 @@
             }
         },
         _uncheckNode: function (node) {
-            if (!node.hasClass(this.widget.check.options['i-checked-class'])) {
+            if (!node.attr(CHECKED_ATTR)) {
                 return;
             }
-            node.removeClass(this.widget.check.options['i-checked-class']).trigger("unchecked");
+            node.removeAttr(CHECKED_ATTR).removeClass(this.widget.check.options['i-checked-class']).removeClass(CHECKED_CLASS).trigger("unchecked");
             var handler = $(CHECK_ITEM_HANDLER_SELECTOR, node);
             if (handler.size() == 0) return;
-            handler.removeClass(this.widget.check.options['h-checked-class']);
+            handler.removeClass(this.widget.check.options['h-checked-class']).removeClass(CHECKED_CLASS);
             if (handler.is(":checkbox")) {
                 setTimeout(function () {
                     if (handler.prop("checked")) handler.prop("checked", false);

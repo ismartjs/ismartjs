@@ -346,7 +346,7 @@
 }
 .main-window .window-container > div.padding-sidebar{ padding-right:300px;}
 
-.topbar .topbar-right ul li{float: left;}
+.topbar .topbar-right ul.topbar-right-menu > li{float: left;}
 .topbar .topbar-right > div{float: left;}
 
 .topbar .dropdown.open .s-ui-topbar-btn .caret {

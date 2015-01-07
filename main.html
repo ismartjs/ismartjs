@@ -630,7 +630,8 @@
         showAjaxActiveTip(tip, "success");
         hideAjaxActiveTip();
     }).on("smart-ajaxError", function(e, errorTip, msg){
-        Main.handleAjaxError ? Main.handleAjaxError.apply(S, Array.prototype.slice.call(arguments)) : (S.alert($.trim(msg), "error"));
+        Main.handleAjaxError ? Main.handleAjaxError.apply(S, Array.prototype.slice.call(arguments))
+                : (S.alert($.trim(msg), "error"));
         showAjaxActiveTip(errorTip, "error");
         hideAjaxActiveTip();
     });

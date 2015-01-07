@@ -1060,7 +1060,7 @@
                             _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
                         }
                     }).fail(function (xhr) {
-//                    deferred.reject.apply(deferred, SLICE.call(arguments));
+                        deferred.reject.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
                             var event = $.Event('smart-ajaxError', {
                                 retryRequest: doRequest
@@ -1068,7 +1068,7 @@
                             _this.trigger(event, [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url), xhr]);
                         }
                     }).always(function () {
-//                    deferred.always.apply(deferred, SLICE.call(arguments));
+                        //deferred.always.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
                             _this.trigger("smart-ajaxComplete");
                         }

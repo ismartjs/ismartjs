@@ -335,3 +335,20 @@ ul.s-ui-contextmenu li.disabled:hover > span {
 .s-ui-tpl-hide{
     visibility: hidden;
 }
+
+.s-ui-pagination-info{
+    height: 30px;
+    line-height: 30px;
+    margin: 0 10px;
+}
+
+.s-ui-affix.affix{
+    position: fixed;
+    z-index: 100;
+}
+
+.s-ui-boxshadow-default{
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: 4px;
+}
