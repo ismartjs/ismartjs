@@ -124,12 +124,11 @@
         },
         getCheckedData: function (field) {
             var datas = [];
-            var that = this;
             $.each(this.getChecked(), function () {
                 if (field) {
-                    datas.push(that.data()[field]);
+                    datas.push(this.data()[field]);
                 } else {
-                    datas.push(that.data());
+                    datas.push(this.data());
                 }
             });
             return datas;

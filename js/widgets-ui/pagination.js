@@ -34,6 +34,8 @@
         var endNum = startNum + pageSize - 1;
         if (endNum > totalCount)
             endNum = totalCount;
+        totalPage = totalPage || 1;
+        endPage = endPage || 1;
         return {
             page: page,
             pageSize: pageSize,
@@ -108,11 +110,10 @@
                     var pageLi = that._createLi(i);
                     if (i == pi.page) {
                         pageLi.addClass(that.widget.pagination.options['active-c']);
-                    } else {
-                        pageLi.click(function () {
-                            that._triggerPage(i);
-                        });
                     }
+                    pageLi.click(function () {
+                        that._triggerPage(i);
+                    });
                     that.node.append(pageLi);
                 })(i);
             }

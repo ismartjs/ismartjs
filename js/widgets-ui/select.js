@@ -4,7 +4,7 @@
 (function ($) {
     Smart.widgetExtend({
         id: "select",
-        options: "form",
+        options: "form,ctx:title,ctx:value,ctx:build-done",
         defaultOptions: {
             form: "id:name,title"
         }
@@ -29,11 +29,14 @@
             for (var i in datas) {
                 this.node.append(this._createOption(datas[i]));
             }
+            this.widget.select.options['build-done'] && this.widget.select.options['build-done'].call(this);
         },
         _createOption: function (data) {
 
-            var value = data[this.widget.select.options.form[0]];
-            var title = data[this.widget.select.options.form[1][0]];
+            var value = this.widget.select.options.value ?
+                this.widget.select.options.value(data) : data[this.widget.select.options.form[0]];
+            var title = this.widget.select.options.title ?
+                this.widget.select.options.title(data) : data[this.widget.select.options.form[1][0]];
             this.widget.select.cache.dataMap[value] = data;
             if (!title && this.widget.select.options.form[1].length == 2) {
                 title = data[this.widget.select.options.form[1][1]];

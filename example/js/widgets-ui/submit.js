@@ -13,13 +13,13 @@
             this.cache.action = this.S.node.attr("action");
             this.cache.method = this.S.node.attr("method") || "post";
             this.cache.enctype = this.S.node.attr("enctype") || "application/x-www-form-urlencoded";
-            var submtBtn = this.S.node.find(":submit")
+            var submitBtn = this.S.node.find(":submit")
             this.S.node[0].onsubmit = function(e){
                 e.stopPropagation();
                 try{
-                    Smart.disableNode(submtBtn);
+                    Smart.disableNode(submitBtn);
                     that.S.submit().always(function(){
-                        Smart.disableNode(submtBtn, false);
+                        Smart.disableNode(submitBtn, false);
                     });
                 } catch(e){
                     Smart.error(e);
@@ -73,12 +73,12 @@
                             that.reset();
                         }
                         deferred.resolve(rs);
-                }).fail(function(){
+                    }).fail(function(){
                         deferred.reject.apply(deferred, $.makeArray(arguments));
-                    that.widget.submit.options.done && that.widget.submit.options.done.apply(that, $.makeArray(arguments));
-                }).always(function(){
-                    that.widget.submit.options.always && that.widget.submit.options.always.call(that);
-                });
+                        that.widget.submit.options.fail && that.widget.submit.options.fail.apply(that, $.makeArray(arguments));
+                    }).always(function(){
+                        that.widget.submit.options.always && that.widget.submit.options.always.call(that);
+                    });
             };
 
             //证明该form是需要验证的

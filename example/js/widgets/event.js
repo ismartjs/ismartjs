@@ -6,7 +6,7 @@
         if(Smart.isEmpty(event) || Smart.isEmpty(action)){
             return;
         }
-        action = smart.action("var e = arguments[1];\n" + action);
+        action = smart.action("var e = arguments[0];\n" + action);
         smart.node[event](function (e) {
             var result = action.call(Smart.of($(this)), e);
             if(result == null) return;

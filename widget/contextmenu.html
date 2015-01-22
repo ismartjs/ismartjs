@@ -47,8 +47,8 @@
     <h3 id="example" s-window-role="a" title="示例">2. 示例</h3>
     <p>加载json/resource.json资源，右击下面行以修改其内容</p>
     <div s="resource,datac" id="testDiv" s-resource-src="json/resource.json" style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
-        <span s s-smart-key="name" class="text-info"></span><br />
-        <span s s-smart-key="feel" class="text-info"></span>
+        <span s s-smart-alipayKey="name" class="text-info"></span><br />
+        <span s s-smart-alipayKey="feel" class="text-info"></span>
     </div>
     <ul s="contextmenu" s-contextmenu-target="S.N('#testDiv span')" s-contextmenu-filter="filterMenu" class="s-ui-contextmenu" >
         <li>
@@ -96,12 +96,12 @@
         }
         function filterMenu(id, node){
             var target = Smart.UI.contextmenu.target;
-            if(target.node.is("*[s-smart-key='name']")){
+            if(target.node.is("*[s-smart-alipayKey='name']")){
                 if(id == "modifyFeel"){
                     return false;
                 }
             }
-            if(target.node.is("*[s-smart-key='feel']")){
+            if(target.node.is("*[s-smart-alipayKey='feel']")){
                 if(id == "modifyName"){
                     return false;
                 }
@@ -111,8 +111,8 @@
     <h4>源码</h4>
 <pre>
 &lt;div s="resource,datac" <span class="text-info">id="testDiv"</span> s-resource-src="json/resource.json" style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;"&gt;
-    &lt;span s s-smart-key="name" class="text-info"&gt;&lt;/span&gt;&lt;br /&gt;
-    &lt;span s s-smart-key="feel" class="text-info"&gt;&lt;/span&gt;
+    &lt;span s s-smart-alipayKey="name" class="text-info"&gt;&lt;/span&gt;&lt;br /&gt;
+    &lt;span s s-smart-alipayKey="feel" class="text-info"&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;!--右击菜单--&gt;
 &lt;ul <span class="text-warning">s="contextmenu" s-contextmenu-target="S.N('#testDiv span')" s-contextmenu-filter="filterMenu"</span> class="s-ui-contextmenu" &gt;
@@ -162,12 +162,12 @@
         //菜单filter
         <span class="text-warning">function filterMenu(id){
             var target = Smart.UI.contextmenu.target;
-            if(target.node.is("*[s-smart-key='name']")){
+            if(target.node.is("*[s-smart-alipayKey='name']")){
                 if(id == "modifyFeel"){
                     return false;
                 }
             }
-            if(target.node.is("*[s-smart-key='feel']")){
+            if(target.node.is("*[s-smart-alipayKey='feel']")){
                 if(id == "modifyName"){
                     return false;
                 }

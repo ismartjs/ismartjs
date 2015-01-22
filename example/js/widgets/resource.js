@@ -5,7 +5,9 @@
 
     Smart.widgetExtend({
         id: "resource",
-        options: "src,ctx:form,ctx:adapter,ctx:cascade,cascade-key,cascade-e,auto,switch,cascade-data,ignore,fn,type",
+        options: "src,ctx:form,ctx:adapter," +
+        "ctx:cascade,cascade-key,cascade-e,auto,switch,cascade-data,ctx:params," +
+        "ignore,fn,type",
         defaultOptions: {
             'auto': "on",
             'fn': "data",
@@ -95,6 +97,13 @@
                 params = formParam;
             }
             $.extend(params, this.cache.params);
+            if(this.options.params){
+                $.each(this.options.params, function(key, value){
+                    if(!(key in params)){
+                        params[key] = value;
+                    }
+                });
+            }
             this.S.get(src, params, type).done(function (rs) {
                 if ($.isFunction(adapter)) {
                     rs = adapter(rs);

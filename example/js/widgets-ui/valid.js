@@ -5,14 +5,14 @@
     var VALID_NODE_ERROR_ATTR = Smart.optionAttrName("valid", "error");
     var VALID_NODE_LABEL_ATTR = Smart.optionAttrName("valid", "label");
     var VALID_NODE_WARNING_ATTR = Smart.optionAttrName("valid", "warning");
-    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not('disabled'),*["+VALID_NODE_WARNING_ATTR+"]:not('disabled')";
+    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not('disabled'),*[" + VALID_NODE_WARNING_ATTR + "]:not('disabled')";
     var VALID_NODE_ID_ATTR = Smart.optionAttrName("valid", 'id');
-    var VALID_NODE_SHOW_ATTR = Smart.optionAttrName("valid",'show');
-    var VALID_NODE_RESET_SHOW_ATTR = Smart.optionAttrName("valid",'resetShow');
+    var VALID_NODE_SHOW_ATTR = Smart.optionAttrName("valid", 'show');
+    var VALID_NODE_RESET_SHOW_ATTR = Smart.optionAttrName("valid", 'resetShow');
     var VALID_NODE_BLUR_IG_ATTR = Smart.optionAttrName("valid", "blur-ig");
 
-    var ITEM_ROLE_SELECTOR = "*["+Smart.optionAttrName("valid", "role")+"='item']";
-    var MSG_ROLE_SELECTOR = "*["+Smart.optionAttrName("valid", "role")+"='msg']";
+    var ITEM_ROLE_SELECTOR = "*[" + Smart.optionAttrName("valid", "role") + "='item']";
+    var MSG_ROLE_SELECTOR = "*[" + Smart.optionAttrName("valid", "role") + "='msg']";
 
     var NODE_ORIGINAL_VALID_MSG_KEY = "s-valid-original-msg";
 
@@ -41,50 +41,50 @@
             's-class': "has-success",
             'e-class': "has-error",
             'w-class': "has-warning",
-            'show': function(node, msg, level){
+            'show': function (node, msg, level) {
                 level = level || LEVELS.error;
                 var item = node.closest(ITEM_ROLE_SELECTOR);
-                var msgNode = $(MSG_ROLE_SELECTOR,item);
-                if(node.data(NODE_ORIGINAL_VALID_MSG_KEY) == undefined){
+                var msgNode = $(MSG_ROLE_SELECTOR, item);
+                if (node.data(NODE_ORIGINAL_VALID_MSG_KEY) == undefined) {
                     node.data(NODE_ORIGINAL_VALID_MSG_KEY, msgNode.html());
                 }
-                item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
+                item.removeClass(this.widget.valid.options['s-class'] + " " + this.widget.valid.options['e-class'] + " " + this.widget.valid.options['w-class']);
                 item.addClass(this.widget.valid.options[level.style]);
-                var msgNode = $(MSG_ROLE_SELECTOR,item);
-                if(msgNode.size() > 0){
-                    $(MSG_ROLE_SELECTOR,item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+                var msgNode = $(MSG_ROLE_SELECTOR, item);
+                if (msgNode.size() > 0) {
+                    $(MSG_ROLE_SELECTOR, item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
                 } else {
-                    if(level.style == "s-class"){
+                    if (level.style == "s-class") {
                         node.tooltip('destroy');
                         return;
                     }
                     node.tooltip({
                         container: node.parent(),
                         title: msg,
-                        trigger:"focus",
-                        delay: { "show": 200, "hide": 300 }
+                        trigger: "focus",
+                        delay: {"show": 200, "hide": 300}
                     });
-                    setTimeout(function(){
+                    setTimeout(function () {
                         node.tooltip('show');
-                    },1);
+                    }, 1);
                     var tooltipHideTimeout = node.data("tooltip_hide_timeout");
-                    if(tooltipHideTimeout){
+                    if (tooltipHideTimeout) {
                         clearTimeout(tooltipHideTimeout);
                         node.removeData("tooltip_hide_timeout")
                     }
-                    node.on("shown.bs.tooltip", function(){
-                        var hideTimeout = setTimeout(function(){
+                    node.on("shown.bs.tooltip", function () {
+                        var hideTimeout = setTimeout(function () {
                             node.tooltip('destroy');
                         }, 3000);
                         node.data("tooltip_hide_timeout", hideTimeout);
                     });
                 }
             },
-            'resetShow': function(node){
+            'resetShow': function (node) {
                 var item = node.closest(ITEM_ROLE_SELECTOR);
                 node.tooltip('destroy');
-                $(MSG_ROLE_SELECTOR,item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
-                item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
+                $(MSG_ROLE_SELECTOR, item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+                item.removeClass(this.widget.valid.options['s-class'] + " " + this.widget.valid.options['e-class'] + " " + this.widget.valid.options['w-class']);
             }
         },
         addValidators: addValidators,//添加新的验证器
@@ -92,18 +92,18 @@
 
     }, {
         onPrepare: function () {
-            if(this.options.blur === "true"){
+            if (this.options.blur === "true") {
                 var that = this;
-                this.S.node.delegate(VALID_NODE_SELECTOR, "blur", function(){
-                    if($(this).attr(VALID_NODE_BLUR_IG_ATTR) == "true"){
+                this.S.node.delegate(VALID_NODE_SELECTOR, "blur", function () {
+                    if ($(this).attr(VALID_NODE_BLUR_IG_ATTR) == "true") {
                         return;
                     }
                     that.S.validateNode($(this));
                 });
             }
-            if(this.options.validators){
+            if (this.options.validators) {
                 var map = {};
-                for(var i = 0; i < this.options.validators.length; i++){
+                for (var i = 0; i < this.options.validators.length; i++) {
                     var v = this.options.validators[i];
                     map[v.id] = v;
                 }
@@ -112,10 +112,10 @@
             this.cache.validateItemMap = {};
             this.cache.validedNodes = [];
         },
-        onReset: function(){
+        onReset: function () {
             var validedNodes = this.cache.validedNodes;
             var that = this;
-            $.each(validedNodes, function(i, node){
+            $.each(validedNodes, function (i, node) {
                 that.S.resetValidateNode(node);
             });
             this.cache.validedNodes = [];
@@ -126,30 +126,30 @@
             var deferreds = [];
             var that = this;
             this.widget.valid.cache.validedNodes = [];
-            validNodes.each(function(){
+            validNodes.each(function () {
                 var node = $(this);
-                deferreds.push(function(){
+                deferreds.push(function () {
                     return that.validateNode(node);
                 });
             });
-            if(this.widget.valid.options.after){
-                deferreds.push(function(){
+            if (this.widget.valid.options.after) {
+                deferreds.push(function () {
                     return this.widget.valid.options.after();
                 });
             }
             return Smart.deferredQueue(deferreds);
         },
-        resetValidate: function(){
+        resetValidate: function () {
             var validNodes = this.node.find(VALID_NODE_SELECTOR);
             var that = this;
-            validNodes.each(function(){
+            validNodes.each(function () {
                 var node = $(this);
                 that.resetValidateNode(node);
             });
         },
-        resetValidateNode: function(node){
+        resetValidateNode: function (node) {
             var resetShow = node.attr(VALID_NODE_RESET_SHOW_ATTR);
-            if(resetShow){
+            if (resetShow) {
                 resetShow = this.context(resetShow);//resetShow是一个context闭包参数。
             }
             (resetShow || this.widget.valid.options.resetShow).call(this, node);
@@ -163,7 +163,7 @@
             var deferreds = [];
             var that = this;
             var show = node.attr(VALID_NODE_SHOW_ATTR);
-            if(show){
+            if (show) {
                 show = this.context(show);//shown是一个context闭包参数。
             }
             var validateItem = {
@@ -173,25 +173,25 @@
                 value: node.val()
             };
             var validateItemMap = this.widget.valid.cache.validateItemMap;
-            if(id != undefined){
+            if (id != undefined) {
                 validateItemMap[id] = validateItem;
             }
 
             var msg = "";
             var level;
 
-            if(errorExp){
-                deferreds.push(function(){
+            if (errorExp) {
+                deferreds.push(function () {
                     var deferred = $.Deferred();
                     var errorDefMsg = defMsg['error'] || {};
-                    executeExp(that, errorExp, errorDefMsg, validateItem, validateItemMap)
-                        .done(function(result, _level){
+                    executeExp(that, node, errorExp, errorDefMsg, validateItem, validateItemMap)
+                        .done(function (result, _level) {
                             msg = result;
                             level = _level || LEVELS.success;
                             deferred.resolve();
-                        }).fail(function(result, _level){
+                        }).fail(function (result, _level) {
                             level = _level || LEVELS.error;
-                            (show || that.widget.valid.options.show).call(that, node,  result || defMsg[level.key+"Msg"] || "", level);
+                            (show || that.widget.valid.options.show).call(that, node, result || defMsg[level.key + "Msg"] || "", level);
                             deferred.reject();
                         });
                     return deferred;
@@ -199,17 +199,17 @@
             }
 
             var warningExp = node.attr(VALID_NODE_WARNING_ATTR);
-            if(warningExp){
-                deferreds.push(function(){
+            if (warningExp) {
+                deferreds.push(function () {
                     var deferred = $.Deferred();
                     var warningMsg = defMsg['warning'] || {};
-                    executeExp(that, warningExp, warningMsg, validateItem, validateItemMap).always(function(result, level){
+                    executeExp(that, node, warningExp, warningMsg, validateItem, validateItemMap).always(function (result, level) {
                         msg = result;
                         deferred.resolve();
-                    }).done(function(result, _level){
+                    }).done(function (result, _level) {
                         //warning级别的验证通过
                         level = _level || LEVELS.success;
-                    }).fail(function(result, _level){
+                    }).fail(function (result, _level) {
                         //warning级别的验证不通过
                         level = _level || LEVELS.warning;
                     });
@@ -217,8 +217,8 @@
                     return deferred;
                 });
             }
-            deferreds.push(function(){
-                (show || that.widget.valid.options.show).call(that, node, defMsg[level.key+"Msg"] || msg || "", level);
+            deferreds.push(function () {
+                (show || that.widget.valid.options.show).call(that, node, defMsg[level.key + "Msg"] || msg || "", level);
             });
             return Smart.deferredQueue(deferreds);
         }
@@ -228,9 +228,10 @@
      * valid
      * */
 
-    function Validation(smart, value, item ,itemMap) {
+    function Validation(smart, node, value, item, itemMap) {
         this.varMap = {};
         this.item = item;
+        this.node = node;
         this.value = value;
         this.smart = smart;
         this._interrupt = false;
@@ -241,7 +242,7 @@
         putVar: function (key, val) {
             this.varMap[key] = val;
         },
-        getItemById: function(id){
+        getItemById: function (id) {
             return this._validateItemMap[id];
         },
         processMsg: function (msg) {
@@ -252,32 +253,33 @@
                 return str != undefined ? str : "";
             });
         },
-        interrupt: function(){//中断验证
+        interrupt: function () {//中断验证
             this._interrupt = true;
         },
-        interrupted: function(){//是否中断
+        interrupted: function () {//是否中断
             return this._interrupt;
         }
     }
 
     //require:true,len(6,12),eq(ctx:S.N('#aaaaa').val())
 
-    function executeExp(smart, exp, nodeMsg, item, validateItemMap) {
+    function executeExp(smart, node, exp, nodeMsg, item, validateItemMap) {
         var validSegs = getValidSegs(exp);
         var deferred = $.Deferred();
         var validMsg = "";
         var msgLevel = LEVELS.error
+
         function processMsg(validation, msg) {
             if (msg == null) {
                 return ""
             }
-            if(msg.indexOf('success:') == 0){//说明验证成功
+            if (msg.indexOf('success:') == 0) {//说明验证成功
                 msgLevel = LEVELS['success'];
                 msg = msg.substring(8);
-            } else if(msg.indexOf('error:') == 0){//说明验证失败
+            } else if (msg.indexOf('error:') == 0) {//说明验证失败
                 msgLevel = LEVELS.error;
                 msg = msg.substring(6);
-            } else if(msg.indexOf('warning:') == 0){
+            } else if (msg.indexOf('warning:') == 0) {
                 msgLevel = LEVELS.warning;
                 msg = msg.substring(8);
             } else {
@@ -290,23 +292,23 @@
 
         var methodCount = {};
 
-        function resolve(){
+        function resolve() {
             return deferred.resolve(validMsg, msgLevel);
         }
 
-        function reject(){
+        function reject() {
             return deferred.reject(validMsg, msgLevel);
         }
 
-        function validate(i){
-            if(i == validSegs.length){
+        function validate(i) {
+            if (i == validSegs.length) {
                 resolve();
                 return;
             }
             var vs = validSegs[i];
             var s = /^(\w+)\((.*)\)$/g.exec(vs);
             var method = s[1];
-            var validation = new Validation(smart, item.value, item ,validateItemMap);
+            var validation = new Validation(smart, node, item.value, item, validateItemMap);
             validation.putVar('label', item.label);
             var argStr = ".valid.call(validation";
             if (s.length == 3 && $.trim(s[2]) != "") {
@@ -332,17 +334,17 @@
                             '1': "密码强度强"
                         }
                     },
-                    然后 regex#0是第一个验证器的msg， regex#1是第二个验证器的msg，regex#3是第三个验证器的msg，
+                 然后 regex#0是第一个验证器的msg， regex#1是第二个验证器的msg，regex#3是第三个验证器的msg，
                  如果根据这样的规则找不到验证器，则根据验证器名称去寻找，即 regex去寻找。
                  * */
                 var count = methodCount[method];
-                if(count == undefined){
+                if (count == undefined) {
                     count = 0;
                 } else {
                     count++;
                 }
                 methodCount[method] = count;//method计数
-                var methodCountMsg = nodeMsg[method+"#"+count] || {};
+                var methodCountMsg = nodeMsg[method + "#" + count] || {};
                 var methodMsg = nodeMsg[method] || {};
                 var msg = methodCountMsg.msg || methodMsg.msg || "";
 
@@ -351,15 +353,15 @@
 
                 msg = $.extend($.extend({}, validator.msg), msg);
 
-                function processSuccess(msgStr){
+                function processSuccess(msgStr) {
                     msgLevel = LEVELS.success;
                     processMsg(validation, msgStr || msg[successCode]);
                     //如果验证成功，并且不继续往下验证，则中断验证。
-                    if(validation.interrupted()){
+                    if (validation.interrupted()) {
                         resolve();
                         return;
                     }
-                    validate(i+1);
+                    validate(i + 1);
                 }
 
                 if (rs == successCode) {
@@ -368,16 +370,18 @@
                 } else if ($.type(rs) == "object" && 'done' in rs) {
                     rs.done(function (code, _msg) {
                         if (code == successCode) {
+                            msgLevel = LEVELS.success;
                             processSuccess(_msg);
                         } else {
-                            processMsg(validation,  _msg || msg[code]);//这里只显示错误提示
+                            msgLevel = LEVELS.error;
+                            processMsg(validation, _msg || msg[code]);//这里只显示错误提示
                             //处理msg消息
                             reject();
                         }
                     });
                 } else {
                     msgLevel = LEVELS.error;
-                    processMsg(validation,  msg[rs]);
+                    processMsg(validation, msg[rs]);
                     return reject();
                 }
             } else {
@@ -425,13 +429,13 @@
         }
     }
 
-    function setValidatorMsg(defs){
-        if(!$.isArray(defs)){
+    function setValidatorMsg(defs) {
+        if (!$.isArray(defs)) {
             defs = [defs];
         }
-        $.each(defs, function(i, def){
+        $.each(defs, function (i, def) {
             var validator = validatorMap[def.id];
-            if(!validator) return;
+            if (!validator) return;
             validator.msg = $.extend(validator.msg || {}, def.msg);
         });
     }
@@ -452,7 +456,7 @@
                 if (flag && Smart.isEmpty(this.value)) {
                     return 0;
                 }
-                if(!flag && Smart.isEmpty(this.value)){
+                if (!flag && Smart.isEmpty(this.value)) {
                     //如果不是必须的，并且验证的值为空，则中断验证，返回1
                     this.interrupt();//中断后续的验证
                     return 1;//验证通过
@@ -468,9 +472,9 @@
             valid: function (url, codeKey, msgKey) {
                 var deferred = $.Deferred();
                 url = url.replace("{val}", this.value);
-                this.smart.get(url, null, null, {silent:true}).done(function(rs){
-                    var code,msgStr;
-                    if($.type(rs) == "object"){
+                this.smart.get(url, null, null, {silent: true}).done(function (rs) {
+                    var code, msgStr;
+                    if ($.type(rs) == "object") {
                         code = rs[codeKey || "code"];
                         msgStr = rs[msgKey || "msg"];
                     } else {
@@ -511,8 +515,8 @@
         },
         {
             id: "checked",
-            valid: function(){
-                if(this.item.node.prop("checked")){
+            valid: function () {
+                if (this.item.node.prop("checked")) {
                     return 1;
                 }
                 return 0;
@@ -625,7 +629,7 @@
             id: "eq",
             valid: function (id) {
                 var item = this.getItemById(id);
-                if(item == undefined){
+                if (item == undefined) {
                     return -1;
                 }
                 if (this.value != item.value) {
@@ -663,6 +667,16 @@
             })(),
             msg: {
                 '0': "{label|ip}格式输入不正确"
+            }
+        }, {
+            id: "checkboxRequire",
+            valid: function () {
+                if (this.node.find(":checkbox:checked").size() > 0)
+                    return 1;
+                return 0;
+            },
+            msg: {
+                '0': "请选择{label}"
             }
         },
         {

@@ -15,8 +15,8 @@
         适配返回的数据，该参数值必须是一个function，该function接受ajax的返回值，并返回处理后的值，然后使用该返回值去调用data方法。</li>
     <li><abbr title="闭包参数，该参数值是根据属性值从页面闭包中获取的。">ctx</abbr> <code>cascade</code>：
         级联元素，当级联的元素发生改变的时候，就会使用级联元素的值刷新当前控件，该值配置必须是jQuery的对象</li>
-    <li><code>cascade-key</code>：级联事件发生的时候，该参数值会作为级联元素值的key，如：
-        <code>cascade-key="province"</code>，请求的时候会生成查询参数<code>province=级联元素值</code></li>
+    <li><code>cascade-alipayKey</code>：级联事件发生的时候，该参数值会作为级联元素值的key，如：
+        <code>cascade-alipayKey="province"</code>，请求的时候会生成查询参数<code>province=级联元素值</code></li>
     <li><code>cascade-data</code>：级联资源读取的初始值，当控件创建的时候，会使用该值读取资源。</li>
     <li><code>fn</code>：资源读取后调用控件的方法。默认为 <code>data</code></li>
 </ol>
@@ -29,13 +29,13 @@
 <h3 s-window-role="a" title="示例" id="example">2. 示例</h3>
 <p>加载json/resource.json资源</p>
 <div s="datac,resource" s-resource-src="json/resource.json" style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
-    <span s s-smart-key="name" class="text-info"></span>, <span s s-smart-key="feel" class="text-info"></span>
+    <span s s-smart-alipayKey="name" class="text-info"></span>, <span s s-smart-alipayKey="feel" class="text-info"></span>
 </div>
 <h5>控件源码</h5>
 <pre>
 &lt;div <span class="text-info">s="resource,datac" s-resource-src="json/resource.json"</span> &gt;
-    &lt;span <span class="text-info">s s-smart-key="name"</span> class="text-info"&gt;&lt;/span&gt;,
-    &lt;span <span class="text-info">s s-smart-key="feel"</span> class="text-info"&gt;&lt;/span&gt;
+    &lt;span <span class="text-info">s s-smart-alipayKey="name"</span> class="text-info"&gt;&lt;/span&gt;,
+    &lt;span <span class="text-info">s s-smart-alipayKey="feel"</span> class="text-info"&gt;&lt;/span&gt;
 &lt;/div&gt;
 </pre>
 <h5>resource.json源码</h5>
@@ -63,7 +63,7 @@
     <br />
     <div id="searchResourceDiv" s="resource,datac" s-resource-src="json/resource.json" s-resource-form="S.N('#resourceSearchForm')"
          style="width: 500px; border: 1px solid #ddd; padding: 10px;">
-        <span s s-smart-key="name" class="text-info"></span>, <span s s-smart-key="feel" class="text-info"></span>
+        <span s s-smart-alipayKey="name" class="text-info"></span>, <span s s-smart-alipayKey="feel" class="text-info"></span>
     </div>
 </div>
 <p class="text-warning">因为后台不是动态语言，所以无法输出查询参数，同学们可以打开debug，查看network请求信息，可以看到在点击刷新的时候可以看到查询参数。</p>
@@ -83,7 +83,7 @@
 &lt;br /&gt;
 &lt;div id="searchResourceDiv" s="resource,datac" s-resource-src="json/resource.json" <span class="text-info">s-resource-form="S.N('#resourceSearchForm')"</span>
      style="width: 500px; border: 1px solid #ddd; padding: 10px;"&gt;
-    &lt;span s s-smart-key="name" class="text-info"&gt;&lt;/span&gt;, &lt;span s s-smart-key="feel" class="text-info"&gt;&lt;/span&gt;
+    &lt;span s s-smart-alipayKey="name" class="text-info"&gt;&lt;/span&gt;, &lt;span s s-smart-alipayKey="feel" class="text-info"&gt;&lt;/span&gt;
 &lt;/div&gt;
 </pre>
 <p class="lead">
@@ -96,7 +96,7 @@
 <div s="resource,datac" s-resource-src="json/resource.json"
      s-resource-adapter="adaptData"
      style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
-    <span s s-smart-key="name" class="text-info"></span>, <span s s-smart-key="feel" class="text-info"></span>
+    <span s s-smart-alipayKey="name" class="text-info"></span>, <span s s-smart-alipayKey="feel" class="text-info"></span>
 </div>
 <script type="text/javascript">
     function adaptData(data){
@@ -108,8 +108,8 @@
 <h4>控件源码</h4>
 <pre>
 &lt;div <span class="text-info">s="resource,datac" s-resource-adapter="adaptData" s-resource-src="json/resource.json"</span> &gt;
-    &lt;span <span class="text-info">s s-smart-key="name"</span> class="text-info"&gt;&lt;/span&gt;,
-    &lt;span <span class="text-info">s s-smart-key="feel"</span> class="text-info"&gt;&lt;/span&gt;
+    &lt;span <span class="text-info">s s-smart-alipayKey="name"</span> class="text-info"&gt;&lt;/span&gt;,
+    &lt;span <span class="text-info">s s-smart-alipayKey="feel"</span> class="text-info"&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;script type="text/javascript"&gt;
     function adaptData(data){
@@ -137,7 +137,7 @@
 <br />
 <div s="resource,datac" s-resource-src="json/{val}" s-resource-cascade="S.N('#cascadeSelect')"
      style="width: 400px; border-radius: 4px; border:1px solid #ddd; padding: 10px;">
-    <span s s-smart-key="name" class="text-info"></span>, <span s s-smart-key="feel" class="text-info"></span>
+    <span s s-smart-alipayKey="name" class="text-info"></span>, <span s s-smart-alipayKey="feel" class="text-info"></span>
 </div>
 <h4>控件源码</h4>
 <pre>
@@ -146,12 +146,12 @@
     &lt;option value="resource-ui.json"&gt;resource-ui.json&lt;/option&gt;
 &lt;/select>
 &lt;div <span class="text-info">s="resource,datac" s-resource-src="<span class="text-warning">json/{val}</span>" s-resource-cascade="S.N('#cascadeSelect')"</span> &gt;
-    &lt;span <span class="text-info">s s-smart-key="name"</span> class="text-info"&gt;&lt;/span&gt;,
-    &lt;span <span class="text-info">s s-smart-key="feel"</span> class="text-info"&gt;&lt;/span&gt;
+    &lt;span <span class="text-info">s s-smart-alipayKey="name"</span> class="text-info"&gt;&lt;/span&gt;,
+    &lt;span <span class="text-info">s s-smart-alipayKey="feel"</span> class="text-info"&gt;&lt;/span&gt;
 &lt;/div&gt;
 </pre>
 <p class="lead">配置级联的时候，可以在s-resource-src配置中设置占位符 <code>{val}</code>，请求资源的时候，该占位符会被替换成级联元素的值。</p>
-<p class="lead">也可以配置 <code>s-resource-cascade-key</code> 作为request参数的key去请求资源，该key参数的值是元素的值。</p>
+<p class="lead">也可以配置 <code>s-resource-cascade-alipayKey</code> 作为request参数的key去请求资源，该key参数的值是元素的值。</p>
     <h4>resource.json源码</h4>
 <pre>
 {

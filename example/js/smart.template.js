@@ -28,9 +28,11 @@
             var lineStr = line.join("");
             if (type == "script") {
                 //TODO FIX LATTER 对于 out.print("xxx lt xxx");这样的脚本，则也会替换成 out.print("xxx < xxx");这样
-                lineStr = lineStr.replace(/\slt\s/gi,"<").replace(/\sgt\s/gi, ">");
-                lineStr = lineStr.replace(/\slte\s/gi,"<=").replace(/\sgte\s/gi, ">=");
-                lineStr = lineStr.replace(/\sand\s/gi,"&&");
+                //lineStr = lineStr.replace(/\slt\s/gi,"<").replace(/\sgt\s/gi, ">");
+                //lineStr = lineStr.replace(/\slte\s/gi,"<=").replace(/\sgte\s/gi, ">=");
+                lineStr = lineStr.replace(/&amp;/gi,"&");
+				lineStr = lineStr.replace(/&gt;/gi,">");
+				lineStr = lineStr.replace(/&lt;/gi,"<");
                 scripts.push(lineStr);
                 line = [];
             } else {

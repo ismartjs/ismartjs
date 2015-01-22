@@ -7,7 +7,7 @@
     <ol>
         <li><abbr title="闭包参数">ctx:</abbr><code>cs</code>：提供所需提交的数据的控件，该控件必须 <code>check</code> 控件</li>
         <li><code>ck</code>：根据此值去挑选出每一条数据的值</li>
-        <li><code>dk</code>：把该值作为 <code>getCheckedData</code> 返回值的 key，组成 submit 的data对象</li>
+        <li><code>dk</code>：把该值作为 <code>getCheckedData</code> 返回值的 alipayKey，组成 submit 的data对象</li>
         <li><code>c-msg</code>：确认框提示的信息</li>
         <li><code>e-msg</code>：错误框提示的信息</li>
         <li><code>r</code>：在数据提交成功后，是否刷新 <code>cs</code> 配置的Smart对象，默认为"true"</li>
@@ -41,9 +41,9 @@
             </tr>
             <tr s-loop-role="row" s="datac,row" s-check-role="i">
                 <td><input type="checkbox"  s-check-role="h"/></td>
-                <td s s-smart-key="id"></td>
-                <td s s-smart-key="name"></td>
-                <td s s-smart-key="idx"></td>
+                <td s s-smart-alipayKey="id"></td>
+                <td s s-smart-alipayKey="name"></td>
+                <td s s-smart-alipayKey="idx"></td>
                 <td>
                     <a href="#" class="btn btn-link">市区管理</a>
                 </td>
@@ -83,9 +83,9 @@
         &lt;/tr&gt;
         &lt;tr s-loop-role="row" s="datac,row" s-check-role="i"&gt;
             &lt;td&gt;&lt;input type="checkbox"  s-check-role="h"/&gt;&lt;/td&gt;
-            &lt;td s s-smart-key="id"&gt;&lt;/td&gt;
-            &lt;td s s-smart-key="name"&gt;&lt;/td&gt;
-            &lt;td s s-smart-key="idx"&gt;&lt;/td&gt;
+            &lt;td s s-smart-alipayKey="id"&gt;&lt;/td&gt;
+            &lt;td s s-smart-alipayKey="name"&gt;&lt;/td&gt;
+            &lt;td s s-smart-alipayKey="idx"&gt;&lt;/td&gt;
             &lt;td&gt;
                 &lt;a href="#" class="btn btn-link"&gt;市区管理&lt;/a&gt;
             &lt;/td&gt;

@@ -405,12 +405,12 @@
 
             var that = this;
             if(Smart.isEmpty(this.data.children)){
-                tabWindow.smart.on("meta", function(e, key, value){
-                    if($.type(key) == 'object'){
-                        that.setMeta(key);
+                tabWindow.smart.on("meta", function(e, alipayKey, value){
+                    if($.type(alipayKey) == 'object'){
+                        that.setMeta(alipayKey);
                     } else {
                         var meta = {};
-                        meta[key] = value;
+                        meta[alipayKey] = value;
                         that.setMeta(meta);
                     }
                 });
@@ -436,8 +436,8 @@
         },
         setMeta:function(meta){
             var that = this;
-            $.each(meta || {}, function(key, value){
-                switch(key){
+            $.each(meta || {}, function(alipayKey, value){
+                switch(alipayKey){
                     case "title": that.titleNode.html(" " + value); that.node.attr("title", value); break;
                     case "icon" : that.iconNode.attr("class", "").addClass(value);break;
                     case "description": that.node.attr("title", value);break;
@@ -630,7 +630,8 @@
         showAjaxActiveTip(tip, "success");
         hideAjaxActiveTip();
     }).on("smart-ajaxError", function(e, errorTip, msg){
-        Main.handleAjaxError ? Main.handleAjaxError.apply(S, Array.prototype.slice.call(arguments)) : (S.alert($.trim(msg), "error"));
+        Main.handleAjaxError ? Main.handleAjaxError.apply(S, Array.prototype.slice.call(arguments))
+                : (S.alert($.trim(msg), "error"));
         showAjaxActiveTip(errorTip, "error");
         hideAjaxActiveTip();
     });

@@ -30,9 +30,9 @@
             </thead>
             <tbody s="loop,check" s-smart-data="ctx:userData" >
                 <tr s-loop-role="row" s-check-role="i" s="datac,row">
-                    <td s s-smart-key="name"></td>
-                    <td s s-smart-key="tj"></td>
-                    <td s s-smart-key="kind"></td>
+                    <td s s-smart-alipayKey="name"></td>
+                    <td s s-smart-alipayKey="tj"></td>
+                    <td s s-smart-alipayKey="kind"></td>
                 </tr>
             </tbody>
         </table>
@@ -63,9 +63,9 @@
     &lt;/thead&gt;
     &lt;tbody s="loop,check" s-smart-data="ctx:userData" &gt;
     &lt;tr s-loop-role="row" <abbr class="text-warning" title="声明该行可以选中">s-check-role="i"</abbr> s="datac,row"&gt;
-        &lt;td s s-smart-key="name"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="tj"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="kind"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="name"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="tj"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="kind"&gt;&lt;/td&gt;
     &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
@@ -98,9 +98,9 @@
         </thead>
         <tbody s="loop,check" s-check-multiple="false" s-smart-data="ctx:userData"  >
         <tr s-loop-role="row" s-check-role="i" s="datac,row">
-            <td s s-smart-key="name"></td>
-            <td s s-smart-key="tj"></td>
-            <td s s-smart-key="kind"></td>
+            <td s s-smart-alipayKey="name"></td>
+            <td s s-smart-alipayKey="tj"></td>
+            <td s s-smart-alipayKey="kind"></td>
         </tr>
         </tbody>
     </table>
@@ -120,9 +120,9 @@
         <tbody s="loop,check" s-check-multiple="false" s-smart-data="ctx:userData"  >
         <tr s-loop-role="row" s-check-role="i" s="datac,row">
             <td><input type="checkbox" s-check-role="h"/></td>
-            <td s s-smart-key="name"></td>
-            <td s s-smart-key="tj"></td>
-            <td s s-smart-key="kind"></td>
+            <td s s-smart-alipayKey="name"></td>
+            <td s s-smart-alipayKey="tj"></td>
+            <td s s-smart-alipayKey="kind"></td>
         </tr>
         </tbody>
     </table>
@@ -140,9 +140,9 @@
     &lt;tbody s="loop,check" s-check-multiple="false" s-smart-data="ctx:userData"  &gt;
     &lt;tr s-loop-role="row" <abbr class="text-warning" title="通过为该元素添加 s-check-role='h' 元素，来声明该元素只能通过 s-check-role='h' 元素选中">s-check-role="i"</abbr> s="datac,row"&gt;
         &lt;td&gt;&lt;input type="checkbox" <abbr class="text-warning" title="行选中器，声明了之后，只能通过该选中器选中 s-check-role='i' 元素">s-check-role="h"</abbr>/&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="name"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="tj"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="kind"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="name"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="tj"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="kind"&gt;&lt;/td&gt;
     &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
@@ -163,9 +163,9 @@
         <tbody s="loop,check" s-smart-data="ctx:userData" s-check-checkall-h="S.N('#checkAll4')" >
         <tr s-loop-role="row" s-check-role="i" s="datac,row">
             <td><input type="checkbox" s-check-role="h"/></td>
-            <td s s-smart-key="name"></td>
-            <td s s-smart-key="tj"></td>
-            <td s s-smart-key="kind"></td>
+            <td s s-smart-alipayKey="name"></td>
+            <td s s-smart-alipayKey="tj"></td>
+            <td s s-smart-alipayKey="kind"></td>
         </tr>
         </tbody>
     </table>
@@ -183,9 +183,9 @@
     &lt;tbody s="loop,check" s-smart-data="ctx:userData" <abbr class="text-warning" title="声明全选按钮">s-check-checkall-h="<span class="text-success">S.N('#checkAll4')</span>"</abbr> &gt;
     &lt;tr s-loop-role="row" s-check-role="i" s="datac,row"&gt;
         &lt;td&gt;&lt;input type="checkbox" s-check-role="h"/&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="name"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="tj"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="kind"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="name"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="tj"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="kind"&gt;&lt;/td&gt;
     &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table>    
@@ -205,9 +205,9 @@
             <td >
                 <input type="checkbox" s-check-role="h"/>
             </td>
-            <td s s-smart-key="name"></td>
-            <td s s-smart-key="tj"></td>
-            <td s s-smart-key="kind"></td>
+            <td s s-smart-alipayKey="name"></td>
+            <td s s-smart-alipayKey="tj"></td>
+            <td s s-smart-alipayKey="kind"></td>
         </tr>
         </tbody>
     </table>
@@ -227,9 +227,9 @@
         &lt;td &gt;
             &lt;input type="checkbox" s-check-role="h"/&gt;
         &lt;/td&gt;
-        &lt;td s s-smart-key="name"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="tj"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="kind"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="name"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="tj"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="kind"&gt;&lt;/td&gt;
     &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
@@ -252,9 +252,9 @@
         <tr s-loop-role="row" s-check-role="i" s="datac,row">
             <td><input type="checkbox" s-check-role="h"/></td>
             <td s-loop-tree-role="indent">
-                <span s s-smart-key="name"></span>
+                <span s s-smart-alipayKey="name"></span>
             </td>
-            <td s s-smart-key="num"></td>
+            <td s s-smart-alipayKey="num"></td>
             <td class="text-right"><a href="#">编辑</a></td>
         </tr>
         </tbody>
@@ -318,9 +318,9 @@
     &lt;tr s-loop-role="row" s-check-role="i" s="datac,row"&gt;
         &lt;td&gt;&lt;input type="checkbox" s-check-role="h"/&gt;&lt;/td&gt;
         &lt;td s-loop-tree-role="indent"&gt;
-            &lt;span s s-smart-key="name"&gt;&lt;/span&gt;
+            &lt;span s s-smart-alipayKey="name"&gt;&lt;/span&gt;
         &lt;/td&gt;
-        &lt;td s s-smart-key="num"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="num"&gt;&lt;/td&gt;
         &lt;td class="text-right"&gt;&lt;a href="#"&gt;编辑&lt;/a&gt;&lt;/td&gt;
     &lt;/tr&gt;
     &lt;/tbody&gt;
@@ -384,9 +384,9 @@
         <tbody s="loop" s-smart-data="ctx:userData" >
         <tr s-loop-role="row" s-check-role="i" s="datac,row">
             <td><input type="checkbox" s-check-role="h"/></td>
-            <td s s-smart-key="name"></td>
-            <td s s-smart-key="tj"></td>
-            <td s s-smart-key="kind"></td>
+            <td s s-smart-alipayKey="name"></td>
+            <td s s-smart-alipayKey="tj"></td>
+            <td s s-smart-alipayKey="kind"></td>
         </tr>
         </tbody>
         <tfoot>
@@ -425,9 +425,9 @@
     &lt;tbody s="loop" s-smart-data="ctx:userData" &gt;
     &lt;tr s-loop-role="row" <span class="text-warning">s-check-role="i"</span> s="datac,row"&gt;
         &lt;td&gt;&lt;input type="checkbox" <span class="text-warning">s-check-role="h"</span>/&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="name"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="tj"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="kind"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="name"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="tj"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="kind"&gt;&lt;/td&gt;
     &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table>
@@ -466,10 +466,10 @@
             <td>无</td>
         </tr>
         <tr>
-            <td><code>getCheckedData(key)</code></td>
+            <td><code>getCheckedData(alipayKey)</code></td>
             <td>数组</td>
             <td>当参数key为空时，返回选中项的Smart对象的 <code>data()</code> 方法返回值组成的数组，
-                不为空时，返回其 <code>data()[key]</code> 值组成的数组</td>
+                不为空时，返回其 <code>data()[alipayKey]</code> 值组成的数组</td>
             <td>无</td>
         </tr>
         <tr>

@@ -29,6 +29,7 @@
         this.node.data(SMART_NODE_CACHE_KEY, this);
         this.widgets = [];
         this.widget = {};
+        this.scope
         var that = this;
         $.each(STOP_PROPAGATION_EVENT, function (i, evt) {
             that.on(evt, function (e) {
@@ -113,11 +114,11 @@
             return true;
         },
         newFn: function (args, script, namespace) {
-            if(namespace){
+            if (namespace) {
 
-                    return eval("(function(){" +
-                        "   return function(){with(){"+script+"}}" +
-                        "})()")
+                return eval("(function(){" +
+                "   return function(){with(){" + script + "}}" +
+                "})()")
             }
             return new Function(args, script)
         },
@@ -215,7 +216,7 @@
         httpSuccess: function (xhr) {
             try {
                 return !xhr.status && location.protocol === "file:" ||
-                    // Opera returns 0 when status is 304
+                        // Opera returns 0 when status is 304
                     ( xhr.status >= 200 && xhr.status < 300 ) ||
                     xhr.status === 304 || xhr.status === 1223 || xhr.status === 0;
             } catch (e) {
@@ -232,41 +233,42 @@
         //当所有方法执行完成时，才会触发deferredQueue的done。
         deferredQueue: function (fns) {
             var deferred = $.Deferred();
-			if (arguments.length == 1) {
-				if ($.type(fns) != "array") {
-					fns = [fns];
-				}
-			} else if (arguments.length > 1) {
-				fns = Array.prototype.slice.call(arguments);
-			}
-			var results = [];
-			function callFn(i) {
-				if (i == fns.length) {
-					deferred.resolve(results);
-					return;
-				}
-				var fn = fns[i];
-				if (!$.isFunction(fn)) {
-					results.push(fn);
-					callFn(i + 1);
-					return;
-				}
-				var fnDefer = fn();
-				if (!fnDefer || !$.isFunction(fnDefer['done'])) {
-					results.push(fnDefer);
-					callFn(i + 1);
-					return;
-				}
-				fnDefer.done(function (rs) {
-					results.push(rs);
-					callFn(i + 1);
-				}).fail(function () {
-					deferred.reject();
-				});
-			}
+            if (arguments.length == 1) {
+                if ($.type(fns) != "array") {
+                    fns = [fns];
+                }
+            } else if (arguments.length > 1) {
+                fns = Array.prototype.slice.call(arguments);
+            }
+            var results = [];
 
-			callFn(0);
-			return deferred.promise();
+            function callFn(i) {
+                if (i == fns.length) {
+                    deferred.resolve(results);
+                    return;
+                }
+                var fn = fns[i];
+                if (!$.isFunction(fn)) {
+                    results.push(fn);
+                    callFn(i + 1);
+                    return;
+                }
+                var fnDefer = fn();
+                if (!fnDefer || !$.isFunction(fnDefer['done'])) {
+                    results.push(fnDefer);
+                    callFn(i + 1);
+                    return;
+                }
+                fnDefer.done(function (rs) {
+                    results.push(rs);
+                    callFn(i + 1);
+                }).fail(function () {
+                    deferred.reject();
+                });
+            }
+
+            callFn(0);
+            return deferred.promise();
         },
         pick: function (node) {
             var smart = Smart.of();
@@ -343,10 +345,10 @@
     });
     (function () {
         var console = window.console || {
-            info: Smart.noop,
-            debug: Smart.noop,
-            warn: Smart.noop
-        };
+                info: Smart.noop,
+                debug: Smart.noop,
+                warn: Smart.noop
+            };
 
         Smart.extend({
             info: function () {
@@ -491,11 +493,37 @@
         }
     });
 
+    var getContextSmart = function (smart) {
+        if (smart.hasContext || smart.isWindow()) {
+            return smart;
+        }
+        if ("_context_smart_" in this) {
+            return smart._context_smart_;
+        }
+        var contextSmart = getContextSmart(smart.parent());
+        smart._setContextSmart(contextSmart);
+        return contextSmart;
+    };
+
     Smart.extend(Smart.prototype, {
         setContext: function (context) {
             this.hasContext = true;
             this._context = context;
             return this;
+        },
+        setValueScope: function(valueScope){
+            this._valueScope = valueScope;
+        },
+        scopeValue: function (key, value) {
+            var contextSmart = getContextSmart(this);
+            if (arguments.length == 0) {
+                return contextSmart._valueScope;
+            }
+            if (value === undefined) {
+                return contextSmart._valueScope[key];
+            }
+            contextSmart._valueScope[key] = value;
+            return contextSmart._valueScope;
         },
         _setContextSmart: function (smart) {
             this.node.each(function () {
@@ -503,32 +531,14 @@
             });
             return this;
         },
-        context: (function () {
-            var getContextSmart = function (smart) {
-                if (smart.hasContext) {
-                    return smart;
-                }
-                var parent = smart.parent();
-                if (parent.isWindow()) {
-                    return parent;
-                }
-                return getContextSmart(parent);
-            };
-            return function (key, that) {
-                var smart;
-                if ("_context_smart_" in this) {
-                    smart = this._context_smart_;
-                } else {
-                    smart = getContextSmart(this);
-                    this._setContextSmart(smart);
-                }
-                if (smart.isWindow()) {
-                    return window[key];
-                }
-                return smart._context.call(that || this, key);
-            };
-        })(),
-        _action:  function (script) {
+        context: function (key, that) {
+            var contextSmart = getContextSmart(this);
+            if (contextSmart.isWindow()) {
+                return window[key];
+            }
+            return contextSmart._context.call(that || this, key);
+        },
+        _action: function (script) {
             var script_body = [];
             script_body.push("(function(){");
             script_body.push("      return function(){");
@@ -556,7 +566,7 @@
                     var window_body = [];
                     window_body.push("(function(){");
                     window_body.push("      return function(){");
-                    window_body.push("          "+script_body.join("\n"));
+                    window_body.push("          " + script_body.join("\n"));
                     window_body.push("      }")
                     window_body.push("})()");
                     return eval(window_body);
@@ -740,7 +750,7 @@
                     if (this.node.is("input[type='text'],input[type='hidden'],select,textarea," +
                         "input[type='password'],input[type='email'],input[type='number']")) {
                         data = data == undefined ? '' : data;
-                        this.node.val(data+'');
+                        this.node.val(data + '');
                         return;
                     } else if (this.node.is("input[type='radio']")) {
                         data = data == undefined ? '' : data;
@@ -783,7 +793,7 @@
                 var value = args;
                 if (dataKey) {
                     var data = args[0];
-                    var fn_flag = /^.+\(.*\).*$/.test(dataKey) ? true : false;
+                    var fn_flag = (dataKey.indexOf(".") != -1 || /^.+\(.*\).*$/.test(dataKey)) ? true : false;
                     value = [data == undefined ? null : fn_flag ? eval("data." + dataKey) : data[dataKey]];
                 }
                 value = (value == null ? [this.widget.smart.options['null']] : value);
@@ -883,6 +893,11 @@
                 deferreds.push(function () {
                     widget.processOptions();
                     widget.onPrepare();
+                })
+            });
+
+            $.each(smart.widgets, function (i, widget) {
+                deferreds.push(function () {
                     return widget.onRender();
                 })
             });
@@ -1021,6 +1036,7 @@
         $.each(['get', 'post', 'put', 'remove', 'update'], function (i, method) {
             Smart.prototype[method] = function (url, data, type, cfg, ajaxSetting) {
                 if (TO_STRING.call(type) == "[object Object]") {
+                    ajaxSetting = cfg;
                     cfg = type;
                     type = null;
                 }
@@ -1053,27 +1069,35 @@
                     ajaxOptions.processData = false;
                 }
                 $.extend(ajaxOptions, ajaxSetting || {});
-                function doRequest(){
+                function doRequest() {
                     $.ajax(ajaxOptions).done(function (result) {
                         deferred.resolve.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
                             _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
                         }
                     }).fail(function (xhr) {
-                        deferred.reject.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
                             var event = $.Event('smart-ajaxError', {
                                 retryRequest: doRequest
                             });
                             _this.trigger(event, [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url), xhr]);
+                            if (event.isPropagationStopped()) {
+                                return;
+                            }
+                            deferred.reject.apply(deferred, SLICE.call(arguments));
+                        } else {
+                            deferred.reject.apply(deferred, SLICE.call(arguments));
                         }
+
+
                     }).always(function () {
-                        //deferred.always.apply(deferred, SLICE.call(arguments));
+//                    deferred.always.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
                             _this.trigger("smart-ajaxComplete");
                         }
                     });
                 }
+
                 doRequest();
                 return deferred;
             };

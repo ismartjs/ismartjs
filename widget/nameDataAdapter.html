@@ -2,7 +2,7 @@
 <div>
     <h2 class="page-header">nda <small>将所有拥有 <code>name</code> 属性的元素适配成基础控件</small></h2>
     <p class="lead">该控件是将其node的子元素中拥有 <code>name</code> 属性的元素适配成基础控件，如果已经是控件，则不作处理，
-        如果子元素没有 <code>s-smart-key</code> 属性，就将 <code>name</code> 属性的值设置为 <span>s-smart-key</span>属性的值。</p>
+        如果子元素没有 <code>s-smart-alipayKey</code> 属性，就将 <code>name</code> 属性的值设置为 <span>s-smart-alipayKey</span>属性的值。</p>
     <h3>控件定义 <small>配置参数</small></h3>
     <ol>
         <li><code>s</code>：nda</li>
@@ -13,13 +13,13 @@
 &lt;form s="nda"&gt;
     &lt;input type="text" name="email" /&gt;
     &lt;input type="text" name="password" /&gt;
-    &lt;input type="text" name="address" <span class="text-info">s-smart-key="adr"</span> /&gt;
+    &lt;input type="text" name="address" <span class="text-info">s-smart-alipayKey="adr"</span> /&gt;
 &lt;/form&gt;
 上述form会被适配成如下：
 &lt;form s="nda"&gt;
-    &lt;input <span class="text-info">w="" s-smart-key="email" </span> type="text" name="email" /&gt;
-    &lt;input <span class="text-info">w="" s-smart-key="password" </span> type="text" name="password" /&gt;
-    &lt;input <span class="text-info">w=""</span> type="text" name="address" <span class="text-info">s-smart-key="adr"</span> /&gt; &lt;!--该元素拥有 s-smart-key 属性，则处理 s-smart-key 的属性值。--&gt;
+    &lt;input <span class="text-info">w="" s-smart-alipayKey="email" </span> type="text" name="email" /&gt;
+    &lt;input <span class="text-info">w="" s-smart-alipayKey="password" </span> type="text" name="password" /&gt;
+    &lt;input <span class="text-info">w=""</span> type="text" name="address" <span class="text-info">s-smart-alipayKey="adr"</span> /&gt; &lt;!--该元素拥有 s-smart-alipayKey 属性，则处理 s-smart-alipayKey 的属性值。--&gt;
 &lt;/form&gt;
 </pre>
 </div>

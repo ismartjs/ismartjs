@@ -28,9 +28,9 @@
             </thead>
             <tbody s="loop" s-smart-data="ctx:userData" >
                 <tr s-loop-role="row" s="datac,row">
-                    <td s s-smart-key="name"></td>
-                    <td s s-smart-key="tj"></td>
-                    <td s s-smart-key="kind"></td>
+                    <td s s-smart-alipayKey="name"></td>
+                    <td s s-smart-alipayKey="tj"></td>
+                    <td s s-smart-alipayKey="kind"></td>
                 </tr>
             </tbody>
         </table>
@@ -61,9 +61,9 @@
     &lt;/thead&gt;
     &lt;tbody s="loop" <abbr class="text-warning" title="定义loop控件，并定义该控件的初始赋值的值是userData。">s-smart-data="ctx:userData"</abbr> &gt;
     &lt;tr s-loop-role="row" s="datac,row"&gt;
-        &lt;td s s-smart-key="name"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="tj"&gt;&lt;/td&gt;
-        &lt;td s s-smart-key="kind"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="name"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="tj"&gt;&lt;/td&gt;
+        &lt;td s s-smart-alipayKey="kind"&gt;&lt;/td&gt;
     &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
@@ -102,9 +102,9 @@
         <tr s-loop-role="row" s="datac,row">
             <td><input type="checkbox" /></td>
             <td s-loop-tree-role="indent">
-                <span s s-smart-key="name"></span>
+                <span s s-smart-alipayKey="name"></span>
             </td>
-            <td s s-smart-key="num"></td>
+            <td s s-smart-alipayKey="num"></td>
             <td class="text-right"><a href="#">编辑</a></td>
         </tr>
         </tbody>
@@ -163,9 +163,9 @@
      &lt;tr s-loop-role="row" s="datac,row"&gt;
          &lt;td&gt;&lt;input type="checkbox" /&gt;&lt;/td&gt;
          &lt;td <abbr class="text-warning" title="定义缩进的元素">s-loop-tree-role="indent"</abbr>&gt;
-             &lt;span s s-smart-key="name"&gt;&lt;/span&gt;
+             &lt;span s s-smart-alipayKey="name"&gt;&lt;/span&gt;
          &lt;/td&gt;
-         &lt;td s s-smart-key="num"&gt;&lt;/td&gt;
+         &lt;td s s-smart-alipayKey="num"&gt;&lt;/td&gt;
          &lt;td class="text-right"&gt;&lt;a href="#"&gt;编辑&lt;/a&gt;&lt;/td&gt;
      &lt;/tr&gt;
      &lt;/tbody&gt;

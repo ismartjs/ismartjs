@@ -1,6 +1,6 @@
 .topbar{
     position: relative;
-    z-index: 10;
+    z-index: 200;
     clear: both;
     height: 36px;
     background: #333;
@@ -204,6 +204,7 @@
     opacity: 0.7;
     -width: 130px;
     width: 100%;
+    text-decoration: none;
 }
 .topbar .tab li a:hover{
     opacity: 1;

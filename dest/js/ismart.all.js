@@ -28,9 +28,11 @@
             var lineStr = line.join("");
             if (type == "script") {
                 //TODO FIX LATTER 对于 out.print("xxx lt xxx");这样的脚本，则也会替换成 out.print("xxx < xxx");这样
-                lineStr = lineStr.replace(/\slt\s/gi,"<").replace(/\sgt\s/gi, ">");
-                lineStr = lineStr.replace(/\slte\s/gi,"<=").replace(/\sgte\s/gi, ">=");
-                lineStr = lineStr.replace(/\sand\s/gi,"&&");
+                //lineStr = lineStr.replace(/\slt\s/gi,"<").replace(/\sgt\s/gi, ">");
+                //lineStr = lineStr.replace(/\slte\s/gi,"<=").replace(/\sgte\s/gi, ">=");
+                lineStr = lineStr.replace(/&amp;/gi,"&");
+				lineStr = lineStr.replace(/&gt;/gi,">");
+				lineStr = lineStr.replace(/&lt;/gi,"<");
                 scripts.push(lineStr);
                 line = [];
             } else {
@@ -155,6 +157,7 @@
         this.node.data(SMART_NODE_CACHE_KEY, this);
         this.widgets = [];
         this.widget = {};
+        this.scope
         var that = this;
         $.each(STOP_PROPAGATION_EVENT, function (i, evt) {
             that.on(evt, function (e) {
@@ -239,11 +242,11 @@
             return true;
         },
         newFn: function (args, script, namespace) {
-            if(namespace){
+            if (namespace) {
 
-                    return eval("(function(){" +
-                        "   return function(){with(){"+script+"}}" +
-                        "})()")
+                return eval("(function(){" +
+                "   return function(){with(){" + script + "}}" +
+                "})()")
             }
             return new Function(args, script)
         },
@@ -341,7 +344,7 @@
         httpSuccess: function (xhr) {
             try {
                 return !xhr.status && location.protocol === "file:" ||
-                    // Opera returns 0 when status is 304
+                        // Opera returns 0 when status is 304
                     ( xhr.status >= 200 && xhr.status < 300 ) ||
                     xhr.status === 304 || xhr.status === 1223 || xhr.status === 0;
             } catch (e) {
@@ -358,41 +361,42 @@
         //当所有方法执行完成时，才会触发deferredQueue的done。
         deferredQueue: function (fns) {
             var deferred = $.Deferred();
-			if (arguments.length == 1) {
-				if ($.type(fns) != "array") {
-					fns = [fns];
-				}
-			} else if (arguments.length > 1) {
-				fns = Array.prototype.slice.call(arguments);
-			}
-			var results = [];
-			function callFn(i) {
-				if (i == fns.length) {
-					deferred.resolve(results);
-					return;
-				}
-				var fn = fns[i];
-				if (!$.isFunction(fn)) {
-					results.push(fn);
-					callFn(i + 1);
-					return;
-				}
-				var fnDefer = fn();
-				if (!fnDefer || !$.isFunction(fnDefer['done'])) {
-					results.push(fnDefer);
-					callFn(i + 1);
-					return;
-				}
-				fnDefer.done(function (rs) {
-					results.push(rs);
-					callFn(i + 1);
-				}).fail(function () {
-					deferred.reject();
-				});
-			}
+            if (arguments.length == 1) {
+                if ($.type(fns) != "array") {
+                    fns = [fns];
+                }
+            } else if (arguments.length > 1) {
+                fns = Array.prototype.slice.call(arguments);
+            }
+            var results = [];
 
-			callFn(0);
-			return deferred.promise();
+            function callFn(i) {
+                if (i == fns.length) {
+                    deferred.resolve(results);
+                    return;
+                }
+                var fn = fns[i];
+                if (!$.isFunction(fn)) {
+                    results.push(fn);
+                    callFn(i + 1);
+                    return;
+                }
+                var fnDefer = fn();
+                if (!fnDefer || !$.isFunction(fnDefer['done'])) {
+                    results.push(fnDefer);
+                    callFn(i + 1);
+                    return;
+                }
+                fnDefer.done(function (rs) {
+                    results.push(rs);
+                    callFn(i + 1);
+                }).fail(function () {
+                    deferred.reject();
+                });
+            }
+
+            callFn(0);
+            return deferred.promise();
         },
         pick: function (node) {
             var smart = Smart.of();
@@ -469,10 +473,10 @@
     });
     (function () {
         var console = window.console || {
-            info: Smart.noop,
-            debug: Smart.noop,
-            warn: Smart.noop
-        };
+                info: Smart.noop,
+                debug: Smart.noop,
+                warn: Smart.noop
+            };
 
         Smart.extend({
             info: function () {
@@ -617,11 +621,37 @@
         }
     });
 
+    var getContextSmart = function (smart) {
+        if (smart.hasContext || smart.isWindow()) {
+            return smart;
+        }
+        if ("_context_smart_" in this) {
+            return smart._context_smart_;
+        }
+        var contextSmart = getContextSmart(smart.parent());
+        smart._setContextSmart(contextSmart);
+        return contextSmart;
+    };
+
     Smart.extend(Smart.prototype, {
         setContext: function (context) {
             this.hasContext = true;
             this._context = context;
             return this;
+        },
+        setValueScope: function(valueScope){
+            this._valueScope = valueScope;
+        },
+        scopeValue: function (key, value) {
+            var contextSmart = getContextSmart(this);
+            if (arguments.length == 0) {
+                return contextSmart._valueScope;
+            }
+            if (value === undefined) {
+                return contextSmart._valueScope[key];
+            }
+            contextSmart._valueScope[key] = value;
+            return contextSmart._valueScope;
         },
         _setContextSmart: function (smart) {
             this.node.each(function () {
@@ -629,32 +659,14 @@
             });
             return this;
         },
-        context: (function () {
-            var getContextSmart = function (smart) {
-                if (smart.hasContext) {
-                    return smart;
-                }
-                var parent = smart.parent();
-                if (parent.isWindow()) {
-                    return parent;
-                }
-                return getContextSmart(parent);
-            };
-            return function (key, that) {
-                var smart;
-                if ("_context_smart_" in this) {
-                    smart = this._context_smart_;
-                } else {
-                    smart = getContextSmart(this);
-                    this._setContextSmart(smart);
-                }
-                if (smart.isWindow()) {
-                    return window[key];
-                }
-                return smart._context.call(that || this, key);
-            };
-        })(),
-        _action:  function (script) {
+        context: function (key, that) {
+            var contextSmart = getContextSmart(this);
+            if (contextSmart.isWindow()) {
+                return window[key];
+            }
+            return contextSmart._context.call(that || this, key);
+        },
+        _action: function (script) {
             var script_body = [];
             script_body.push("(function(){");
             script_body.push("      return function(){");
@@ -682,7 +694,7 @@
                     var window_body = [];
                     window_body.push("(function(){");
                     window_body.push("      return function(){");
-                    window_body.push("          "+script_body.join("\n"));
+                    window_body.push("          " + script_body.join("\n"));
                     window_body.push("      }")
                     window_body.push("})()");
                     return eval(window_body);
@@ -866,7 +878,7 @@
                     if (this.node.is("input[type='text'],input[type='hidden'],select,textarea," +
                         "input[type='password'],input[type='email'],input[type='number']")) {
                         data = data == undefined ? '' : data;
-                        this.node.val(data+'');
+                        this.node.val(data + '');
                         return;
                     } else if (this.node.is("input[type='radio']")) {
                         data = data == undefined ? '' : data;
@@ -909,7 +921,7 @@
                 var value = args;
                 if (dataKey) {
                     var data = args[0];
-                    var fn_flag = /^.+\(.*\).*$/.test(dataKey) ? true : false;
+                    var fn_flag = (dataKey.indexOf(".") != -1 || /^.+\(.*\).*$/.test(dataKey)) ? true : false;
                     value = [data == undefined ? null : fn_flag ? eval("data." + dataKey) : data[dataKey]];
                 }
                 value = (value == null ? [this.widget.smart.options['null']] : value);
@@ -1009,6 +1021,11 @@
                 deferreds.push(function () {
                     widget.processOptions();
                     widget.onPrepare();
+                })
+            });
+
+            $.each(smart.widgets, function (i, widget) {
+                deferreds.push(function () {
                     return widget.onRender();
                 })
             });
@@ -1147,6 +1164,7 @@
         $.each(['get', 'post', 'put', 'remove', 'update'], function (i, method) {
             Smart.prototype[method] = function (url, data, type, cfg, ajaxSetting) {
                 if (TO_STRING.call(type) == "[object Object]") {
+                    ajaxSetting = cfg;
                     cfg = type;
                     type = null;
                 }
@@ -1179,20 +1197,27 @@
                     ajaxOptions.processData = false;
                 }
                 $.extend(ajaxOptions, ajaxSetting || {});
-                function doRequest(){
+                function doRequest() {
                     $.ajax(ajaxOptions).done(function (result) {
                         deferred.resolve.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
                             _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
                         }
                     }).fail(function (xhr) {
-//                    deferred.reject.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
                             var event = $.Event('smart-ajaxError', {
                                 retryRequest: doRequest
                             });
                             _this.trigger(event, [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url), xhr]);
+                            if (event.isPropagationStopped()) {
+                                return;
+                            }
+                            deferred.reject.apply(deferred, SLICE.call(arguments));
+                        } else {
+                            deferred.reject.apply(deferred, SLICE.call(arguments));
                         }
+
+
                     }).always(function () {
 //                    deferred.always.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
@@ -1200,6 +1225,7 @@
                         }
                     });
                 }
+
                 doRequest();
                 return deferred;
             };
@@ -1315,10 +1341,11 @@
          * s:check控件的smart对象，key:数据的key，c-msg:确认消息，e-msg:错误警告消息，r:是否刷新
          * dk: 将使用该值作为 选取的数据 的 key
          * */
-        options: "ctx:cs,ck,dk,c-msg,e-msg,r",
+        options: "ctx:cs,ck,dk,c-msg,e-msg,r,confirm",
         defaultOptions: {
             "c-msg": "确认进行此操作吗？",
             "e-msg": "请选择你要操作的数据？",
+            confirm: true,
             r: "true",
             ck: "id"//获取选择数据的key
         }
@@ -1347,12 +1374,14 @@
                     obj[that.widget.cds.options.dk] = data;
                     deferred.resolve(obj);
                 }
-                if(this.widget.cds.options['c-msg']){
+                if(this.widget.cds.options[confirm]){
                     this.confirm(this.widget.cds.options['c-msg'], {sign:"warning"}).done(function(){
                         resolve();
                     }).fail(function(){
                         deferred.reject();
                     });
+                } else {
+                    resolve();
                 }
 
             } else {
@@ -1369,6 +1398,9 @@
     var CHECK_ITEM_SELECTOR = "*[" + Smart.optionAttrName('check', 'role') + "='i']";
     var CHECK_ITEM_HANDLER_SELECTOR = "*[" + Smart.optionAttrName('check', 'role') + "='h']";
     var CHECK_PATH_ATTR = Smart.optionAttrName('check', 'path');
+    var CHECKED_ATTR = "s_check_checked";
+    var CHECKED_CLASS = "s-ui-check-checked";
+    var CHECK_ROW_IG_SELECTOR = "*[" + Smart.optionAttrName('check', 'ig') + "]";
     //选中控件
     Smart.widgetExtend({
         id: "check",
@@ -1377,7 +1409,7 @@
             "turn": "on",
             "i-checked-class": "warning",
             multiple: true,
-            "h-checked-class": "s-ui-checked",
+            "h-checked-class": "",
             "path": "false"
         }
     }, {
@@ -1433,12 +1465,12 @@
         },
         _toggleCheckAll: function (node) {
             var flag;
-            if (node.hasClass(this.widget.check.options['h-checked-class'])) {
+            if (node.hasClass(CHECKED_CLASS)) {
                 flag = false;
-                node.removeClass(this.widget.check.options['h-checked-class']);
+                node.removeClass(this.widget.check.options['h-checked-class']).removeClass(CHECKED_CLASS);
             } else {
                 flag = true;
-                node.addClass(this.widget.check.options['h-checked-class']);
+                node.addClass(this.widget.check.options['h-checked-class']).addClass(CHECKED_CLASS);
             }
             flag ? this.checkAll() : this.uncheckAll();
         },
@@ -1475,10 +1507,10 @@
                 node.prop("checked", false);
             }
         },
-        getChecked: function () {
+        getChecked: function (type) {
             var smarts = [];
-            $.each($(CHECK_ITEM_SELECTOR + "." + this.widget.check.options['i-checked-class'], this.node), function () {
-                smarts.push(Smart.of($(this)));
+            $.each($(CHECK_ITEM_SELECTOR + "[" + CHECKED_ATTR + "]", this.node), function () {
+                smarts.push(type == "node" ? $(this) : Smart.of($(this)));
             });
             return smarts;
         },
@@ -1574,14 +1606,14 @@
             }
         },
         _checkNode: function (node) {
-            if (node.hasClass(this.widget.check.options['i-checked-class'])) {
+            if (node.attr(CHECKED_ATTR) || $(CHECK_ROW_IG_SELECTOR, node).size() > 0 || node.attr(CHECK_ROW_IG_SELECTOR)) {
                 return;
             }
-            node.addClass(this.widget.check.options['i-checked-class']).trigger("checked");
+            node.attr(CHECKED_ATTR, true).addClass(this.widget.check.options['i-checked-class']).addClass(CHECKED_CLASS).trigger("checked");
 
             var handler = $(CHECK_ITEM_HANDLER_SELECTOR, node);
             if (handler.size() == 0) return;
-            handler.addClass(this.widget.check.options['h-checked-class']);
+            handler.addClass(this.widget.check.options['h-checked-class']).addClass(CHECKED_CLASS);
             if (handler.is(":checkbox")) {
                 setTimeout(function () {
                     if (!handler.prop("checked")) handler.prop("checked", true);
@@ -1589,13 +1621,13 @@
             }
         },
         _uncheckNode: function (node) {
-            if (!node.hasClass(this.widget.check.options['i-checked-class'])) {
+            if (!node.attr(CHECKED_ATTR)) {
                 return;
             }
-            node.removeClass(this.widget.check.options['i-checked-class']).trigger("unchecked");
+            node.removeAttr(CHECKED_ATTR).removeClass(this.widget.check.options['i-checked-class']).removeClass(CHECKED_CLASS).trigger("unchecked");
             var handler = $(CHECK_ITEM_HANDLER_SELECTOR, node);
             if (handler.size() == 0) return;
-            handler.removeClass(this.widget.check.options['h-checked-class']);
+            handler.removeClass(this.widget.check.options['h-checked-class']).removeClass(CHECKED_CLASS);
             if (handler.is(":checkbox")) {
                 setTimeout(function () {
                     if (handler.prop("checked")) handler.prop("checked", false);
@@ -1730,7 +1762,7 @@
         if(Smart.isEmpty(event) || Smart.isEmpty(action)){
             return;
         }
-        action = smart.action("var e = arguments[1];\n" + action);
+        action = smart.action("var e = arguments[0];\n" + action);
         smart.node[event](function (e) {
             var result = action.call(Smart.of($(this)), e);
             if(result == null) return;
@@ -1977,7 +2009,9 @@
 
     Smart.widgetExtend({
         id: "resource",
-        options: "src,ctx:form,ctx:adapter,ctx:cascade,cascade-key,cascade-e,auto,switch,cascade-data,ignore,fn,type",
+        options: "src,ctx:form,ctx:adapter," +
+        "ctx:cascade,cascade-key,cascade-e,auto,switch,cascade-data,ctx:params," +
+        "ignore,fn,type",
         defaultOptions: {
             'auto': "on",
             'fn': "data",
@@ -2067,6 +2101,13 @@
                 params = formParam;
             }
             $.extend(params, this.cache.params);
+            if(this.options.params){
+                $.each(this.options.params, function(key, value){
+                    if(!(key in params)){
+                        params[key] = value;
+                    }
+                });
+            }
             this.S.get(src, params, type).done(function (rs) {
                 if ($.isFunction(adapter)) {
                     rs = adapter(rs);
@@ -2094,16 +2135,30 @@
             this.S.node.empty();
             //处理脚本定义中的 lt,gt lt 处理成 <, gt处理成 >。
             //tplText = tplText.replace(/\slt\s/gi,"<").replace(/\sgt\s/gi, ">");
-            var compiledText = $.template.compile(tplText);
-            var scripts = [];
-            scripts.push("(function(){");
-            scripts.push("      return function(){");
-            scripts.push(compiledText);
-            scripts.push("      }");
-            scripts.push("})();//@ sourceURL=" + (token++) + "_template.js");
-            var script = scripts.join("\n");
-            var fn = eval(script);
+            var fn;
+            var fn_map = this.S.scopeValue("s-tpl-fn_map");
+            if(!fn_map){
+                fn_map = {};
+                this.S.scopeValue("s-tpl-fn_map", fn_map);
+            }
+            if(tplText in fn_map){
+                fn = fn_map[tplText]
+            } else {
+                var compiledText = $.template.compile(tplText);
+                var scripts = [];
+                scripts.push("(function(){");
+                scripts.push("      return function(){");
+                scripts.push(compiledText);
+                scripts.push("      }");
+                scripts.push("})();//@ sourceURL=" + (token++) + "_template.js");
+                var script = scripts.join("\n");
+                fn = this.S.context(script);
+                fn_map[tplText] = fn;
+            }
             this.cache[TABLE_FN_KEY] = fn;
+            if(this.S.node.hasClass('s-ui-tpl-hide')){
+                this.S.node.removeClass("s-ui-tpl-hide");
+            }
         }
     },{
         dataSetter: function(data){
@@ -2204,7 +2259,6 @@
         scripts.push(scriptTexts.join("\n"));
         scripts.push("			return function(key){");
         scripts.push("				try{");
-        scripts.push("					key += ';//@ sourceURL=" + href + "_context.js'");
         scripts.push("					return eval(key);");
         scripts.push("				}catch(e){Smart.error(e);}");
         scripts.push("			};");
@@ -2279,6 +2333,7 @@
     }, {
         onPrepare: function () {
             this.S._WINDOW_ID = "_w_" + (CURRENT_WINDOW_ID++);
+            this.S.setValueScope({});
             this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
             this.cache[EVENT_ON_CACHE] = [];
             this.location = {
@@ -2309,6 +2364,7 @@
             this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
             this.S._offEvent();
             this.S.node.empty();
+            this.S.setValueScope({});
         },
         onDestroy: function(){
             this.onReset()
@@ -2326,6 +2382,7 @@
             this.widget.window.cache[EVENT_ON_CACHE] = [];
         },
         load: function (href, loadArgs) {
+            this.reset();
             this.widget.window.cache["loadState"] = true;//是否已经加载
             this._offEvent();
             this.trigger("loading");
@@ -2608,6 +2665,143 @@
     };
 })(jQuery);
 ;/**
+ * Created by Administrator on 2015/1/8.
+ */
+( function($) {
+    'use strict';
+
+    // AFFIX CLASS DEFINITION
+    // ======================
+
+    var Affix = function (element, options) {
+        this.options = $.extend({}, Affix.DEFAULTS, options)
+        this.$window = $(options.of || window)
+            .on('scroll.bs.affix.data-api', $.proxy(this.checkPosition, this))
+            .on('click.bs.affix.data-api',  $.proxy(this.checkPositionWithEventLoop, this))
+
+        this.$element     = $(element)
+        this.affixed      =
+            this.unpin        =
+                this.pinnedOffset = null
+
+        this.checkPosition()
+    }
+
+    Affix.RESET = 'affix affix-top affix-bottom'
+
+    Affix.DEFAULTS = {
+        offset: 0
+    }
+
+    Affix.prototype.getPinnedOffset = function () {
+        if (this.pinnedOffset) return this.pinnedOffset
+        this.$element.removeClass(Affix.RESET).addClass('affix')
+        var scrollTop = this.$window.scrollTop()
+        var position  = this.$element.offset()
+        return (this.pinnedOffset = position.top - scrollTop)
+    }
+
+    Affix.prototype.checkPositionWithEventLoop = function () {
+        setTimeout($.proxy(this.checkPosition, this), 1)
+    }
+
+    Affix.prototype.checkPosition = function () {
+        if (!this.$element.is(':visible')) return
+
+        var scrollHeight = $(document).height()
+        var scrollTop    = this.$window.scrollTop()
+        var position     = this.$element.offset()
+        var offset       = this.options.offset
+        var offsetTop    = offset.top
+        var offsetBottom = offset.bottom
+
+        if (this.affixed == 'top') position.top += scrollTop
+
+        if (typeof offset != 'object')         offsetBottom = offsetTop = offset
+        if (typeof offsetTop == 'function')    offsetTop    = offset.top(this.$element)
+        if (typeof offsetBottom == 'function') offsetBottom = offset.bottom(this.$element)
+
+        var affix = this.unpin   != null && (scrollTop + this.unpin <= position.top) ? false :
+            offsetBottom != null && (position.top + this.$element.height() >= scrollHeight - offsetBottom) ? 'bottom' :
+                offsetTop    != null && (scrollTop <= offsetTop) ? 'top' : false
+
+        if (this.affixed === affix) return
+        if (this.unpin) this.$element.css('top', '')
+
+        var affixType = 'affix' + (affix ? '-' + affix : '')
+        var e         = $.Event(affixType + '.bs.affix')
+
+        this.$element.trigger(e)
+
+        if (e.isDefaultPrevented()) return
+
+        this.affixed = affix
+        this.unpin = affix == 'bottom' ? this.getPinnedOffset() : null
+
+        this.$element
+            .removeClass(Affix.RESET)
+            .addClass(affixType)
+            .trigger($.Event(affixType.replace('affix', 'affixed')))
+
+        if (affix == 'bottom') {
+            this.$element.offset({ top: scrollHeight - offsetBottom - this.$element.height() })
+        }
+    }
+
+
+    // AFFIX PLUGIN DEFINITION
+    // =======================
+
+    var old = $.fn.affix
+
+    $.fn.smartAffix = function (option) {
+        return this.each(function () {
+            var $this   = $(this)
+            var data    = $this.data('bs.affix')
+            var options = typeof option == 'object' && option
+
+            if (!data) $this.data('bs.affix', (data = new Affix(this, options)))
+            if (typeof option == 'string') data[option]()
+        })
+    }
+
+    $.fn.smartAffix.Constructor = Affix
+
+
+    // AFFIX NO CONFLICT
+    // =================
+
+    $.fn.smartAffix.noConflict = function () {
+        $.fn.affix = old
+        return this
+    }
+
+})(jQuery);
+(function ($) {
+    Smart.widgetExtend({
+        id: "affix",
+        options: "ctx:offset,ctx:target,ctx:of,class"
+    }, {
+        onPrepare: function () {
+            this.S.node.addClass('s-ui-affix').smartAffix({
+                target: this.options.target,
+                offset: this.options.offset,
+                of: this.options.of
+            });
+            if(this.options['class']){
+                var that = this;
+                this.S.node.on("affixed.bs.affix", function(e){
+                    e.stopPropagation();
+                    that.S.node.addClass(that.options['class']);
+                }).on("affixed-top.bs.affix", function(e){
+                    e.stopPropagation();
+                    that.S.node.removeClass(that.options['class']);
+                });
+            }
+        }
+    });
+})(jQuery);
+;/**
  * Created by Administrator on 2014/6/27.
  */
 (function ($) {
@@ -2631,7 +2825,7 @@
             this.cache.initActivedNode = $(" > *["+actived_attr+"] ", this.S.node).click();
         },
         _getBtnActiveClass: function(btn){
-            return btn.attr(active_class_def_attr) || this.option['active-class'];
+            return btn.attr(active_class_def_attr) || this.options['active-class'];
         },
         onReset: function () {
             this.cache.initActivedNode.click();
@@ -2888,6 +3082,8 @@
         var endNum = startNum + pageSize - 1;
         if (endNum > totalCount)
             endNum = totalCount;
+        totalPage = totalPage || 1;
+        endPage = endPage || 1;
         return {
             page: page,
             pageSize: pageSize,
@@ -2962,11 +3158,10 @@
                     var pageLi = that._createLi(i);
                     if (i == pi.page) {
                         pageLi.addClass(that.widget.pagination.options['active-c']);
-                    } else {
-                        pageLi.click(function () {
-                            that._triggerPage(i);
-                        });
                     }
+                    pageLi.click(function () {
+                        that._triggerPage(i);
+                    });
                     that.node.append(pageLi);
                 })(i);
             }
@@ -3012,7 +3207,7 @@
 (function ($) {
     Smart.widgetExtend({
         id: "select",
-        options: "form",
+        options: "form,ctx:title,ctx:value,ctx:build-done",
         defaultOptions: {
             form: "id:name,title"
         }
@@ -3037,11 +3232,14 @@
             for (var i in datas) {
                 this.node.append(this._createOption(datas[i]));
             }
+            this.widget.select.options['build-done'] && this.widget.select.options['build-done'].call(this);
         },
         _createOption: function (data) {
 
-            var value = data[this.widget.select.options.form[0]];
-            var title = data[this.widget.select.options.form[1][0]];
+            var value = this.widget.select.options.value ?
+                this.widget.select.options.value(data) : data[this.widget.select.options.form[0]];
+            var title = this.widget.select.options.title ?
+                this.widget.select.options.title(data) : data[this.widget.select.options.form[1][0]];
             this.widget.select.cache.dataMap[value] = data;
             if (!title && this.widget.select.options.form[1].length == 2) {
                 title = data[this.widget.select.options.form[1][1]];
@@ -3069,13 +3267,13 @@
             this.cache.action = this.S.node.attr("action");
             this.cache.method = this.S.node.attr("method") || "post";
             this.cache.enctype = this.S.node.attr("enctype") || "application/x-www-form-urlencoded";
-            var submtBtn = this.S.node.find(":submit")
+            var submitBtn = this.S.node.find(":submit")
             this.S.node[0].onsubmit = function(e){
                 e.stopPropagation();
                 try{
-                    Smart.disableNode(submtBtn);
+                    Smart.disableNode(submitBtn);
                     that.S.submit().always(function(){
-                        Smart.disableNode(submtBtn, false);
+                        Smart.disableNode(submitBtn, false);
                     });
                 } catch(e){
                     Smart.error(e);
@@ -3129,12 +3327,12 @@
                             that.reset();
                         }
                         deferred.resolve(rs);
-                }).fail(function(){
+                    }).fail(function(){
                         deferred.reject.apply(deferred, $.makeArray(arguments));
-                    that.widget.submit.options.done && that.widget.submit.options.done.apply(that, $.makeArray(arguments));
-                }).always(function(){
-                    that.widget.submit.options.always && that.widget.submit.options.always.call(that);
-                });
+                        that.widget.submit.options.fail && that.widget.submit.options.fail.apply(that, $.makeArray(arguments));
+                    }).always(function(){
+                        that.widget.submit.options.always && that.widget.submit.options.always.call(that);
+                    });
             };
 
             //证明该form是需要验证的
@@ -3151,20 +3349,29 @@
         }
     });
 })(jQuery);;(function ($) {
+    Smart.widgetExtend({
+        id: "tooltip"
+    }, {
+        onPrepare: function () {
+            this.S.node.tooltip()
+        }
+    });
+})(jQuery);
+;(function ($) {
 
     var DEFAULT_MSG = {};
 
     var VALID_NODE_ERROR_ATTR = Smart.optionAttrName("valid", "error");
     var VALID_NODE_LABEL_ATTR = Smart.optionAttrName("valid", "label");
     var VALID_NODE_WARNING_ATTR = Smart.optionAttrName("valid", "warning");
-    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not('disabled'),*["+VALID_NODE_WARNING_ATTR+"]:not('disabled')";
+    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not('disabled'),*[" + VALID_NODE_WARNING_ATTR + "]:not('disabled')";
     var VALID_NODE_ID_ATTR = Smart.optionAttrName("valid", 'id');
-    var VALID_NODE_SHOW_ATTR = Smart.optionAttrName("valid",'show');
-    var VALID_NODE_RESET_SHOW_ATTR = Smart.optionAttrName("valid",'resetShow');
+    var VALID_NODE_SHOW_ATTR = Smart.optionAttrName("valid", 'show');
+    var VALID_NODE_RESET_SHOW_ATTR = Smart.optionAttrName("valid", 'resetShow');
     var VALID_NODE_BLUR_IG_ATTR = Smart.optionAttrName("valid", "blur-ig");
 
-    var ITEM_ROLE_SELECTOR = "*["+Smart.optionAttrName("valid", "role")+"='item']";
-    var MSG_ROLE_SELECTOR = "*["+Smart.optionAttrName("valid", "role")+"='msg']";
+    var ITEM_ROLE_SELECTOR = "*[" + Smart.optionAttrName("valid", "role") + "='item']";
+    var MSG_ROLE_SELECTOR = "*[" + Smart.optionAttrName("valid", "role") + "='msg']";
 
     var NODE_ORIGINAL_VALID_MSG_KEY = "s-valid-original-msg";
 
@@ -3193,50 +3400,50 @@
             's-class': "has-success",
             'e-class': "has-error",
             'w-class': "has-warning",
-            'show': function(node, msg, level){
+            'show': function (node, msg, level) {
                 level = level || LEVELS.error;
                 var item = node.closest(ITEM_ROLE_SELECTOR);
-                var msgNode = $(MSG_ROLE_SELECTOR,item);
-                if(node.data(NODE_ORIGINAL_VALID_MSG_KEY) == undefined){
+                var msgNode = $(MSG_ROLE_SELECTOR, item);
+                if (node.data(NODE_ORIGINAL_VALID_MSG_KEY) == undefined) {
                     node.data(NODE_ORIGINAL_VALID_MSG_KEY, msgNode.html());
                 }
-                item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
+                item.removeClass(this.widget.valid.options['s-class'] + " " + this.widget.valid.options['e-class'] + " " + this.widget.valid.options['w-class']);
                 item.addClass(this.widget.valid.options[level.style]);
-                var msgNode = $(MSG_ROLE_SELECTOR,item);
-                if(msgNode.size() > 0){
-                    $(MSG_ROLE_SELECTOR,item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+                var msgNode = $(MSG_ROLE_SELECTOR, item);
+                if (msgNode.size() > 0) {
+                    $(MSG_ROLE_SELECTOR, item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
                 } else {
-                    if(level.style == "s-class"){
+                    if (level.style == "s-class") {
                         node.tooltip('destroy');
                         return;
                     }
                     node.tooltip({
                         container: node.parent(),
                         title: msg,
-                        trigger:"focus",
-                        delay: { "show": 200, "hide": 300 }
+                        trigger: "focus",
+                        delay: {"show": 200, "hide": 300}
                     });
-                    setTimeout(function(){
+                    setTimeout(function () {
                         node.tooltip('show');
-                    },1);
+                    }, 1);
                     var tooltipHideTimeout = node.data("tooltip_hide_timeout");
-                    if(tooltipHideTimeout){
+                    if (tooltipHideTimeout) {
                         clearTimeout(tooltipHideTimeout);
                         node.removeData("tooltip_hide_timeout")
                     }
-                    node.on("shown.bs.tooltip", function(){
-                        var hideTimeout = setTimeout(function(){
+                    node.on("shown.bs.tooltip", function () {
+                        var hideTimeout = setTimeout(function () {
                             node.tooltip('destroy');
                         }, 3000);
                         node.data("tooltip_hide_timeout", hideTimeout);
                     });
                 }
             },
-            'resetShow': function(node){
+            'resetShow': function (node) {
                 var item = node.closest(ITEM_ROLE_SELECTOR);
                 node.tooltip('destroy');
-                $(MSG_ROLE_SELECTOR,item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
-                item.removeClass(this.widget.valid.options['s-class']+" "+this.widget.valid.options['e-class']+" "+this.widget.valid.options['w-class']);
+                $(MSG_ROLE_SELECTOR, item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
+                item.removeClass(this.widget.valid.options['s-class'] + " " + this.widget.valid.options['e-class'] + " " + this.widget.valid.options['w-class']);
             }
         },
         addValidators: addValidators,//添加新的验证器
@@ -3244,18 +3451,18 @@
 
     }, {
         onPrepare: function () {
-            if(this.options.blur === "true"){
+            if (this.options.blur === "true") {
                 var that = this;
-                this.S.node.delegate(VALID_NODE_SELECTOR, "blur", function(){
-                    if($(this).attr(VALID_NODE_BLUR_IG_ATTR) == "true"){
+                this.S.node.delegate(VALID_NODE_SELECTOR, "blur", function () {
+                    if ($(this).attr(VALID_NODE_BLUR_IG_ATTR) == "true") {
                         return;
                     }
                     that.S.validateNode($(this));
                 });
             }
-            if(this.options.validators){
+            if (this.options.validators) {
                 var map = {};
-                for(var i = 0; i < this.options.validators.length; i++){
+                for (var i = 0; i < this.options.validators.length; i++) {
                     var v = this.options.validators[i];
                     map[v.id] = v;
                 }
@@ -3264,10 +3471,10 @@
             this.cache.validateItemMap = {};
             this.cache.validedNodes = [];
         },
-        onReset: function(){
+        onReset: function () {
             var validedNodes = this.cache.validedNodes;
             var that = this;
-            $.each(validedNodes, function(i, node){
+            $.each(validedNodes, function (i, node) {
                 that.S.resetValidateNode(node);
             });
             this.cache.validedNodes = [];
@@ -3278,30 +3485,30 @@
             var deferreds = [];
             var that = this;
             this.widget.valid.cache.validedNodes = [];
-            validNodes.each(function(){
+            validNodes.each(function () {
                 var node = $(this);
-                deferreds.push(function(){
+                deferreds.push(function () {
                     return that.validateNode(node);
                 });
             });
-            if(this.widget.valid.options.after){
-                deferreds.push(function(){
+            if (this.widget.valid.options.after) {
+                deferreds.push(function () {
                     return this.widget.valid.options.after();
                 });
             }
             return Smart.deferredQueue(deferreds);
         },
-        resetValidate: function(){
+        resetValidate: function () {
             var validNodes = this.node.find(VALID_NODE_SELECTOR);
             var that = this;
-            validNodes.each(function(){
+            validNodes.each(function () {
                 var node = $(this);
                 that.resetValidateNode(node);
             });
         },
-        resetValidateNode: function(node){
+        resetValidateNode: function (node) {
             var resetShow = node.attr(VALID_NODE_RESET_SHOW_ATTR);
-            if(resetShow){
+            if (resetShow) {
                 resetShow = this.context(resetShow);//resetShow是一个context闭包参数。
             }
             (resetShow || this.widget.valid.options.resetShow).call(this, node);
@@ -3315,7 +3522,7 @@
             var deferreds = [];
             var that = this;
             var show = node.attr(VALID_NODE_SHOW_ATTR);
-            if(show){
+            if (show) {
                 show = this.context(show);//shown是一个context闭包参数。
             }
             var validateItem = {
@@ -3325,25 +3532,25 @@
                 value: node.val()
             };
             var validateItemMap = this.widget.valid.cache.validateItemMap;
-            if(id != undefined){
+            if (id != undefined) {
                 validateItemMap[id] = validateItem;
             }
 
             var msg = "";
             var level;
 
-            if(errorExp){
-                deferreds.push(function(){
+            if (errorExp) {
+                deferreds.push(function () {
                     var deferred = $.Deferred();
                     var errorDefMsg = defMsg['error'] || {};
-                    executeExp(that, errorExp, errorDefMsg, validateItem, validateItemMap)
-                        .done(function(result, _level){
+                    executeExp(that, node, errorExp, errorDefMsg, validateItem, validateItemMap)
+                        .done(function (result, _level) {
                             msg = result;
                             level = _level || LEVELS.success;
                             deferred.resolve();
-                        }).fail(function(result, _level){
+                        }).fail(function (result, _level) {
                             level = _level || LEVELS.error;
-                            (show || that.widget.valid.options.show).call(that, node,  result || defMsg[level.key+"Msg"] || "", level);
+                            (show || that.widget.valid.options.show).call(that, node, result || defMsg[level.key + "Msg"] || "", level);
                             deferred.reject();
                         });
                     return deferred;
@@ -3351,17 +3558,17 @@
             }
 
             var warningExp = node.attr(VALID_NODE_WARNING_ATTR);
-            if(warningExp){
-                deferreds.push(function(){
+            if (warningExp) {
+                deferreds.push(function () {
                     var deferred = $.Deferred();
                     var warningMsg = defMsg['warning'] || {};
-                    executeExp(that, warningExp, warningMsg, validateItem, validateItemMap).always(function(result, level){
+                    executeExp(that, node, warningExp, warningMsg, validateItem, validateItemMap).always(function (result, level) {
                         msg = result;
                         deferred.resolve();
-                    }).done(function(result, _level){
+                    }).done(function (result, _level) {
                         //warning级别的验证通过
                         level = _level || LEVELS.success;
-                    }).fail(function(result, _level){
+                    }).fail(function (result, _level) {
                         //warning级别的验证不通过
                         level = _level || LEVELS.warning;
                     });
@@ -3369,8 +3576,8 @@
                     return deferred;
                 });
             }
-            deferreds.push(function(){
-                (show || that.widget.valid.options.show).call(that, node, defMsg[level.key+"Msg"] || msg || "", level);
+            deferreds.push(function () {
+                (show || that.widget.valid.options.show).call(that, node, defMsg[level.key + "Msg"] || msg || "", level);
             });
             return Smart.deferredQueue(deferreds);
         }
@@ -3380,9 +3587,10 @@
      * valid
      * */
 
-    function Validation(smart, value, item ,itemMap) {
+    function Validation(smart, node, value, item, itemMap) {
         this.varMap = {};
         this.item = item;
+        this.node = node;
         this.value = value;
         this.smart = smart;
         this._interrupt = false;
@@ -3393,7 +3601,7 @@
         putVar: function (key, val) {
             this.varMap[key] = val;
         },
-        getItemById: function(id){
+        getItemById: function (id) {
             return this._validateItemMap[id];
         },
         processMsg: function (msg) {
@@ -3404,32 +3612,33 @@
                 return str != undefined ? str : "";
             });
         },
-        interrupt: function(){//中断验证
+        interrupt: function () {//中断验证
             this._interrupt = true;
         },
-        interrupted: function(){//是否中断
+        interrupted: function () {//是否中断
             return this._interrupt;
         }
     }
 
     //require:true,len(6,12),eq(ctx:S.N('#aaaaa').val())
 
-    function executeExp(smart, exp, nodeMsg, item, validateItemMap) {
+    function executeExp(smart, node, exp, nodeMsg, item, validateItemMap) {
         var validSegs = getValidSegs(exp);
         var deferred = $.Deferred();
         var validMsg = "";
         var msgLevel = LEVELS.error
+
         function processMsg(validation, msg) {
             if (msg == null) {
                 return ""
             }
-            if(msg.indexOf('success:') == 0){//说明验证成功
+            if (msg.indexOf('success:') == 0) {//说明验证成功
                 msgLevel = LEVELS['success'];
                 msg = msg.substring(8);
-            } else if(msg.indexOf('error:') == 0){//说明验证失败
+            } else if (msg.indexOf('error:') == 0) {//说明验证失败
                 msgLevel = LEVELS.error;
                 msg = msg.substring(6);
-            } else if(msg.indexOf('warning:') == 0){
+            } else if (msg.indexOf('warning:') == 0) {
                 msgLevel = LEVELS.warning;
                 msg = msg.substring(8);
             } else {
@@ -3442,23 +3651,23 @@
 
         var methodCount = {};
 
-        function resolve(){
+        function resolve() {
             return deferred.resolve(validMsg, msgLevel);
         }
 
-        function reject(){
+        function reject() {
             return deferred.reject(validMsg, msgLevel);
         }
 
-        function validate(i){
-            if(i == validSegs.length){
+        function validate(i) {
+            if (i == validSegs.length) {
                 resolve();
                 return;
             }
             var vs = validSegs[i];
             var s = /^(\w+)\((.*)\)$/g.exec(vs);
             var method = s[1];
-            var validation = new Validation(smart, item.value, item ,validateItemMap);
+            var validation = new Validation(smart, node, item.value, item, validateItemMap);
             validation.putVar('label', item.label);
             var argStr = ".valid.call(validation";
             if (s.length == 3 && $.trim(s[2]) != "") {
@@ -3484,17 +3693,17 @@
                             '1': "密码强度强"
                         }
                     },
-                    然后 regex#0是第一个验证器的msg， regex#1是第二个验证器的msg，regex#3是第三个验证器的msg，
+                 然后 regex#0是第一个验证器的msg， regex#1是第二个验证器的msg，regex#3是第三个验证器的msg，
                  如果根据这样的规则找不到验证器，则根据验证器名称去寻找，即 regex去寻找。
                  * */
                 var count = methodCount[method];
-                if(count == undefined){
+                if (count == undefined) {
                     count = 0;
                 } else {
                     count++;
                 }
                 methodCount[method] = count;//method计数
-                var methodCountMsg = nodeMsg[method+"#"+count] || {};
+                var methodCountMsg = nodeMsg[method + "#" + count] || {};
                 var methodMsg = nodeMsg[method] || {};
                 var msg = methodCountMsg.msg || methodMsg.msg || "";
 
@@ -3503,15 +3712,15 @@
 
                 msg = $.extend($.extend({}, validator.msg), msg);
 
-                function processSuccess(msgStr){
+                function processSuccess(msgStr) {
                     msgLevel = LEVELS.success;
                     processMsg(validation, msgStr || msg[successCode]);
                     //如果验证成功，并且不继续往下验证，则中断验证。
-                    if(validation.interrupted()){
+                    if (validation.interrupted()) {
                         resolve();
                         return;
                     }
-                    validate(i+1);
+                    validate(i + 1);
                 }
 
                 if (rs == successCode) {
@@ -3520,16 +3729,18 @@
                 } else if ($.type(rs) == "object" && 'done' in rs) {
                     rs.done(function (code, _msg) {
                         if (code == successCode) {
+                            msgLevel = LEVELS.success;
                             processSuccess(_msg);
                         } else {
-                            processMsg(validation,  _msg || msg[code]);//这里只显示错误提示
+                            msgLevel = LEVELS.error;
+                            processMsg(validation, _msg || msg[code]);//这里只显示错误提示
                             //处理msg消息
                             reject();
                         }
                     });
                 } else {
                     msgLevel = LEVELS.error;
-                    processMsg(validation,  msg[rs]);
+                    processMsg(validation, msg[rs]);
                     return reject();
                 }
             } else {
@@ -3577,13 +3788,13 @@
         }
     }
 
-    function setValidatorMsg(defs){
-        if(!$.isArray(defs)){
+    function setValidatorMsg(defs) {
+        if (!$.isArray(defs)) {
             defs = [defs];
         }
-        $.each(defs, function(i, def){
+        $.each(defs, function (i, def) {
             var validator = validatorMap[def.id];
-            if(!validator) return;
+            if (!validator) return;
             validator.msg = $.extend(validator.msg || {}, def.msg);
         });
     }
@@ -3604,7 +3815,7 @@
                 if (flag && Smart.isEmpty(this.value)) {
                     return 0;
                 }
-                if(!flag && Smart.isEmpty(this.value)){
+                if (!flag && Smart.isEmpty(this.value)) {
                     //如果不是必须的，并且验证的值为空，则中断验证，返回1
                     this.interrupt();//中断后续的验证
                     return 1;//验证通过
@@ -3620,9 +3831,9 @@
             valid: function (url, codeKey, msgKey) {
                 var deferred = $.Deferred();
                 url = url.replace("{val}", this.value);
-                this.smart.get(url, null, null, {silent:true}).done(function(rs){
-                    var code,msgStr;
-                    if($.type(rs) == "object"){
+                this.smart.get(url, null, null, {silent: true}).done(function (rs) {
+                    var code, msgStr;
+                    if ($.type(rs) == "object") {
                         code = rs[codeKey || "code"];
                         msgStr = rs[msgKey || "msg"];
                     } else {
@@ -3663,8 +3874,8 @@
         },
         {
             id: "checked",
-            valid: function(){
-                if(this.item.node.prop("checked")){
+            valid: function () {
+                if (this.item.node.prop("checked")) {
                     return 1;
                 }
                 return 0;
@@ -3777,7 +3988,7 @@
             id: "eq",
             valid: function (id) {
                 var item = this.getItemById(id);
-                if(item == undefined){
+                if (item == undefined) {
                     return -1;
                 }
                 if (this.value != item.value) {
@@ -3815,6 +4026,16 @@
             })(),
             msg: {
                 '0': "{label|ip}格式输入不正确"
+            }
+        }, {
+            id: "checkboxRequire",
+            valid: function () {
+                if (this.node.find(":checkbox:checked").size() > 0)
+                    return 1;
+                return 0;
+            },
+            msg: {
+                '0': "请选择{label}"
             }
         },
         {

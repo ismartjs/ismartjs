@@ -331,3 +331,47 @@ ul.s-ui-contextmenu li.disabled:hover > span {
 *[s-loop-role='row']{
     display: none;
 }
+
+.s-ui-tpl-hide{
+    visibility: hidden;
+}
+
+.s-ui-pagination-info{
+    height: 30px;
+    line-height: 30px;
+    margin: 0 10px;
+}
+
+.s-ui-affix.affix{
+    position: fixed;
+    z-index: 100;
+}
+
+.s-ui-boxshadow-default{
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: 4px;
+}
+
+
+.s-ui-table-view-header {
+    margin-top: 10px;
+    margin-bottom: -1px;
+    height: 40px;
+    background: #F5f6FA;
+    line-height: 38px;
+    border: 1px solid #e1e6eb;
+    position: relative;
+    border-left: 4px solid #6d7781;
+}
+.s-ui-table-view-header .s-ui-table-view-title {
+    font-size: 14px;
+    color: #333333;
+    display: inline-block;
+    margin-left: 16px;
+}
+
+.s-ui-table-default-view td {
+    padding: 11px 20px;
+    border: 1px solid #eeeeee;
+}

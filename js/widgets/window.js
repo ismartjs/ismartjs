@@ -155,6 +155,7 @@
     }, {
         onPrepare: function () {
             this.S._WINDOW_ID = "_w_" + (CURRENT_WINDOW_ID++);
+            this.S.setValueScope({});
             this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
             this.cache[EVENT_ON_CACHE] = [];
             this.location = {
@@ -185,6 +186,7 @@
             this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
             this.S._offEvent();
             this.S.node.empty();
+            this.S.setValueScope({});
         },
         onDestroy: function(){
             this.onReset()
@@ -202,6 +204,7 @@
             this.widget.window.cache[EVENT_ON_CACHE] = [];
         },
         load: function (href, loadArgs) {
+            this.reset();
             this.widget.window.cache["loadState"] = true;//是否已经加载
             this._offEvent();
             this.trigger("loading");

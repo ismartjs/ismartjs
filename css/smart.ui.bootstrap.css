@@ -284,7 +284,7 @@ span.label {
 }
 
 .table tbody tr td {
-    padding: 12px 8px;
+    /*padding: 12px 8px;*/
     border-top: 0px;
     border-bottom: 1px solid #DDD;
     vertical-align: middle
@@ -295,7 +295,7 @@ span.label {
 }
 
 .table tfoot tr td {
-    padding: 12px 8px;
+    /*padding: 12px 8px;*/
     border-bottom: 1px solid #DDD;
     vertical-align: middle
 }
@@ -376,6 +376,11 @@ span.label {
     zoom: 1;
     *display: inline
 }
+
+.form-horizontal .form-group{
+    margin-right: 0;
+}
+
 
 select {
     color: #555555;

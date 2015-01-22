@@ -22,7 +22,7 @@
             this.cache.initActivedNode = $(" > *["+actived_attr+"] ", this.S.node).click();
         },
         _getBtnActiveClass: function(btn){
-            return btn.attr(active_class_def_attr) || this.option['active-class'];
+            return btn.attr(active_class_def_attr) || this.options['active-class'];
         },
         onReset: function () {
             this.cache.initActivedNode.click();

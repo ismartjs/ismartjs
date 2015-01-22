@@ -94,7 +94,7 @@
         }
 
         function alertShow(node, msg, level){
-            if(level.key == "error"){
+            if(level.alipayKey == "error"){
                 S.alert(msg);
             }
         }
@@ -222,7 +222,7 @@
 
     <span class="text-warning">// 处理条款复选框验证消息的提示方法。</span>
     function alertShow(node, msg, level){
-        if(level.key == "error"){
+        if(level.alipayKey == "error"){
             S.alert(msg);
         }
     }
@@ -428,7 +428,7 @@
     valid: function ([arg1[,arg2[,arg3[,..]]]) {<span class="text-warning">//声明valid方法</span>
         ...
         <span class="text-warning">//this的api参考下面的说明</span>
-        this.putVar(key, value);<span class="text-warning">//该方法是保存变量，用于替换消息中的 {key} 的占位符</span>
+        this.putVar(alipayKey, value);<span class="text-warning">//该方法是保存变量，用于替换消息中的 {alipayKey} 的占位符</span>
         ...
     },
     msg: {<span class="text-warning">//消息提示，key对应的是valid方法的返回值</span>
@@ -467,8 +467,8 @@
             <td><code>this.value</code></td>
         </tr>
         <tr>
-            <td><code>putVar(key,value)</code></td>
-            <td>添加变量，用于处理消息中的 <code>{key}</code> 占位符</td>
+            <td><code>putVar(alipayKey,value)</code></td>
+            <td>添加变量，用于处理消息中的 <code>{alipayKey}</code> 占位符</td>
             <td><code>this.putvar("min_len", min_len)</code></td>
         </tr>
         <tr>
@@ -496,7 +496,7 @@
 <h4 id="validMsgDefine" s-window-role="a" title="4.1.c 声明msg消息提示">c. 声明msg消息提示</h4>
 <p class="lead">通过 <code>消息码</code>:<code>消息</code> 的方式来声明验证消息，消息码对应valid方法返回或者通知的code。</p>
 <h4>消息占位符：</h4>
-<p>消息占位符最终会被替换成为在验证器验证的过程中使用<code>putVar(key,value)</code>方法put进去的key的值。<code>{label}</code> 是一个预定变量，
+<p>消息占位符最终会被替换成为在验证器验证的过程中使用<code>putVar(alipayKey,value)</code>方法put进去的key的值。<code>{label}</code> 是一个预定变量，
     会被 <code>s-valid-label</code> 属性的值所替换。如上述格式参考中的 <code>"-1": "{label}长度必须为{len}位"</code></p>
 <hr />
 <h3 id="defineMsg" s-window-role="a" title="5. 自定义消息提示">5. 自定义消息提示</h3>
@@ -568,7 +568,7 @@
     <li><code>node</code>：当前验证元素的jQuery对象</li>
     <li><code>msg</code>：当前提示的验证信息</li>
     <li><code>level</code>：消息的级别（success、error、warning级别中的一种），分别表示验证通过，验证失败，验证警告。level的格式为：
-    <code>{key:"success|error|warning", style:"has-success|has-error|has-warning"}</code></li>
+    <code>{alipayKey:"success|error|warning", style:"has-success|has-error|has-warning"}</code></li>
 </ol>
     <p>可以通过 <code>Smart.widgetOptionsExtend('valid', {show:function(node,msg,level){...}})</code> 来设定全局消息处理方法</p>
 <p>也可以在控件定义上使用 <code>s-valid-show="showMsg"</code> 设定控件范围的show方法，
