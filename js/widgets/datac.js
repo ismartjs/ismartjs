@@ -9,12 +9,14 @@
         dataSetter: function(){
             var args = Smart.SLICE.call(arguments);
             var igAttr = this.widget.datac.optionName("ig");
+            var fnAttr = this.widget.datac.optionName("fn");
             this.children().each(function(){
                 var ig = this.node.attr(igAttr);
                 if(ig == "true" || ig == ""){
                     return;
                 }
-                this.data.apply(this, args);
+                var fn = this.node.attr(fnAttr) || "data";
+                this[fn].apply(this, args);
             });
         }
     });

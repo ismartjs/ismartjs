@@ -64,6 +64,7 @@
                         trigger: "focus",
                         delay: {"show": 200, "hide": 300}
                     });
+                    this.notice(msg);
                     setTimeout(function () {
                         node.tooltip('show');
                     }, 1);

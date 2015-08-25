@@ -35,12 +35,11 @@
         return button;
     };
 
-    var showDialog = function(dialog){
-        Smart.UI.backdrop();
+    var showDialog = function(dialog, zIndex){
         dialog.on("hide.bs.modal", function(e){
             if(this == e.target)
                 Smart.UI.backdrop(false);
-        }).css('zIndex', Smart.UI.zIndex()).modal({
+        }).css('zIndex', zIndex).modal({
             keyboard: false,
             backdrop: false
         });
@@ -63,7 +62,8 @@
         closeBtn.click(function(){
             nodeSmart.closeWithConfirm();
         });
-
+        Smart.UI.backdrop();
+        var zIndex = Smart.UI.zIndex();
         nodeSmart.on("close", function(e){
             var eDeferred = e.deferred;
             var args = Smart.SLICE.call(arguments, 1);
@@ -95,7 +95,7 @@
             dialog.show();
             dialogMain.width(dialogMain.innerWidth()).css("position","relative");
             footerNode.css("marginTop", "0");
-            showDialog(dialog);
+            showDialog(dialog, zIndex);
         }).on("dialog.btn.disable", function(e, id){
             getButtonById(id).prop("disabled", true);
         }).on("dialog.btn.enable", function(e, id){

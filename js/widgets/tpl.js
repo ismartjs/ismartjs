@@ -5,9 +5,12 @@
 (function(){
     var token = 0;
     var TABLE_FN_KEY = "_TPL_FN_";
-    Smart.widgetExtend("tpl", {
+    Smart.widgetExtend({
+        id: "tpl",
+        options: "template"
+    }, {
         onPrepare: function(){
-            var tplText = this.S.node.html();
+            var tplText = this.options.template || this.S.node.html();
             this.S.node.empty();
             //处理脚本定义中的 lt,gt lt 处理成 <, gt处理成 >。
             //tplText = tplText.replace(/\slt\s/gi,"<").replace(/\sgt\s/gi, ">");

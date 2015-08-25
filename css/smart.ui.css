@@ -11,12 +11,12 @@
 /***/
 /*css3过渡特效*/
 /**/
-* {
-    transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out;
-    -moz-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; /* Firefox 4 */
-    -webkit-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; /* Safari 和 Chrome */
-    -o-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; /* Opera */
-    -ms-transition: color .2s ease-out, opacity .2s ease-out, background-color .2s ease-out, border-color .2s ease-out; /* Opera */
+.s-ui-trans {
+    transition: all .2s ease-out;
+    -moz-transition: all .2s ease-out; /* Firefox 4 */
+    -webkit-transition: all .2s ease-out; /* Safari 和 Chrome */
+    -o-transition: all .2s ease-out; /* Opera */
+    -ms-transition: all .2s ease-out; /* Opera */
 }
 
 /*a {*/
@@ -374,4 +374,28 @@ ul.s-ui-contextmenu li.disabled:hover > span {
 .s-ui-table-default-view td {
     padding: 11px 20px;
     border: 1px solid #eeeeee;
+}
+
+.s-ui-notice{
+    position: fixed;
+    top: 0;
+    border-radius: 0px 0px 4px 4px;
+    /*border: 1px solid rgba(0,0,0,.4);*/
+    box-shadow: 0 1px 4px rgba(0,0,0,.5);
+    width: 500px;
+    padding: 10px;
+}
+.s-ui-notice .close{
+   float: right;
+}
+.s-ui-notice .s-ui-notice-msg{
+    margin-right: 20px;
+}
+
+.icon-unfold:before {
+    content: "\e707";
+}
+
+.icon-fold:before {
+    content: "\e706";
 }

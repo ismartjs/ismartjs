@@ -224,6 +224,21 @@
 
             return false;
         },
+        walkTree: (function(){
+            function _walkTree(tree, walker, childrenKey){
+                childrenKey = childrenKey || "children";
+                if(!$.isArray(tree)){
+                    tree = [tree];
+                }
+                $.each(tree, function(i, node){
+                    walker(node);
+                    if(node[childrenKey]){
+                        _walkTree(node[childrenKey], walker, childrenKey);
+                    }
+                });
+            }
+            return _walkTree;
+        })(),
         //获取配置的属性名。
         optionAttrName: function (id, name) {
             return NODE_ATTR_PREFIX + "-" + id + "-" + name;
@@ -1073,7 +1088,7 @@
                     $.ajax(ajaxOptions).done(function (result) {
                         deferred.resolve.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
-                            _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
+                            _this.trigger("smart-ajaxSuccess", [cfg.successTip, result]);
                         }
                     }).fail(function (xhr) {
                         if (!cfg.silent) {

@@ -41,7 +41,7 @@
                     obj[that.widget.cds.options.dk] = data;
                     deferred.resolve(obj);
                 }
-                if(this.widget.cds.options[confirm]){
+                if(this.widget.cds.options["confirm"]){
                     this.confirm(this.widget.cds.options['c-msg'], {sign:"warning"}).done(function(){
                         resolve();
                     }).fail(function(){

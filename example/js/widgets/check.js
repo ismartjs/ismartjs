@@ -153,7 +153,7 @@
             }
             //如果是单选，则需要把其他的item取消选中
             var that = this;
-            if (this.widget.check.options.multiple == false) {
+            if (this.widget.check.options.multiple == "false" || !this.widget.check.options.multiple) {
                 $(CHECK_ITEM_SELECTOR, this.node).not(node).each(function () {
                     that._uncheck($(this));
                 });

@@ -352,6 +352,21 @@
 
             return false;
         },
+        walkTree: (function(){
+            function _walkTree(tree, walker, childrenKey){
+                childrenKey = childrenKey || "children";
+                if(!$.isArray(tree)){
+                    tree = [tree];
+                }
+                $.each(tree, function(i, node){
+                    walker(node);
+                    if(node[childrenKey]){
+                        _walkTree(node[childrenKey], walker, childrenKey);
+                    }
+                });
+            }
+            return _walkTree;
+        })(),
         //获取配置的属性名。
         optionAttrName: function (id, name) {
             return NODE_ATTR_PREFIX + "-" + id + "-" + name;
@@ -1201,7 +1216,7 @@
                     $.ajax(ajaxOptions).done(function (result) {
                         deferred.resolve.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
-                            _this.trigger("smart-ajaxSuccess", [cfg.successTip]);
+                            _this.trigger("smart-ajaxSuccess", [cfg.successTip, result]);
                         }
                     }).fail(function (xhr) {
                         if (!cfg.silent) {
@@ -1374,7 +1389,7 @@
                     obj[that.widget.cds.options.dk] = data;
                     deferred.resolve(obj);
                 }
-                if(this.widget.cds.options[confirm]){
+                if(this.widget.cds.options["confirm"]){
                     this.confirm(this.widget.cds.options['c-msg'], {sign:"warning"}).done(function(){
                         resolve();
                     }).fail(function(){
@@ -1545,7 +1560,7 @@
             }
             //如果是单选，则需要把其他的item取消选中
             var that = this;
-            if (this.widget.check.options.multiple == false) {
+            if (this.widget.check.options.multiple == "false" || !this.widget.check.options.multiple) {
                 $(CHECK_ITEM_SELECTOR, this.node).not(node).each(function () {
                     that._uncheck($(this));
                 });
@@ -1702,59 +1717,18 @@
         dataSetter: function(){
             var args = Smart.SLICE.call(arguments);
             var igAttr = this.widget.datac.optionName("ig");
+            var fnAttr = this.widget.datac.optionName("fn");
             this.children().each(function(){
                 var ig = this.node.attr(igAttr);
                 if(ig == "true" || ig == ""){
                     return;
                 }
-                this.data.apply(this, args);
+                var fn = this.node.attr(fnAttr) || "data";
+                this[fn].apply(this, args);
             });
         }
     });
 })();;/**
- * Created by Administrator on 2014/7/14.
- */
-(function(){
-    Smart.widgetExtend({
-        id: "editable",
-        options: "url,method",
-        defaultOptions:{
-            method: "put"
-        }
-    },{
-        onPrepare: function(){
-            var that = this;
-            this.S.node.delegate("*[s-editable-role='i']", "change", function(e){
-                that.S._submit($(e.target));
-                e.stopPropagation();
-            });
-        }
-    },{
-        _submit:function(node){
-            var that = this;
-            node.addClass("focus");
-            function submit(){
-                var name = node.attr("name");
-                var val = node.val();
-                var data = {};
-                data[name] = val;
-                that[that.widget.editable.options.method](that.widget.editable.options.url, data).done(function(){
-                    that.reset();
-                    node.removeClass("focus");
-                });
-            }
-
-            if("validateNode" in this && $.isFunction(this.validateNode)){//说明该控件是验证控件
-                this.validateNode(node).done(function(){
-                    submit();
-                });
-            } else {
-                submit();
-            }
-
-        }
-    });
-})();/**
  * Created by Administrator on 2014/6/19.
  */
 (function(){
@@ -3047,6 +3021,49 @@
         }
     });
 })(jQuery);;/**
+ * Created by Administrator on 2014/7/14.
+ */
+(function(){
+    Smart.widgetExtend({
+        id: "editable",
+        options: "url,method",
+        defaultOptions:{
+            method: "put"
+        }
+    },{
+        onPrepare: function(){
+            var that = this;
+            this.S.node.delegate("*[s-editable-role='i']", "change", function(e){
+                that.S._submit($(e.target));
+                e.stopPropagation();
+            });
+        }
+    },{
+        _submit:function(node){
+            var that = this;
+            node.addClass("focus");
+            function submit(){
+                var name = node.attr("name");
+                var val = node.attr("s-editable-val") || node.val();
+                var data = {};
+                data[name] = val;
+                that[that.widget.editable.options.method](that.widget.editable.options.url, data).done(function(){
+                    that.reset();
+                    node.removeClass("focus");
+                });
+            }
+
+            if("validateNode" in this && $.isFunction(this.validateNode)){//说明该控件是验证控件
+                this.validateNode(node).done(function(){
+                    submit();
+                });
+            } else {
+                submit();
+            }
+
+        }
+    });
+})();/**
  * Created by Administrator on 2014/6/27.
  */
 (function ($) {
@@ -3207,7 +3224,7 @@
 (function ($) {
     Smart.widgetExtend({
         id: "select",
-        options: "form,ctx:title,ctx:value,ctx:build-done",
+        options: "form,ctx:title,ctx:value,ctx:build-done,ctx:build-data",
         defaultOptions: {
             form: "id:name,title"
         }
@@ -3218,6 +3235,9 @@
             this.options.form = this.options.form.split(":");
             this.options.form[1] = this.options.form[1].split(",");
             this.cache.dataMap = {};
+            if(this.options['build-data']){
+                this.S.build(this.options['build-data']);
+            }
         }
     }, {
         buildSetter: function (datas) {
@@ -3312,14 +3332,13 @@
 
                 return deferred;
             }
-            var data;
-            switch(this.widget.submit.cache.enctype){
-                case "multipart/form-data" : data = Smart.formData(this.node); break;
-                case "application/x-www-form-urlencoded" :
-                    data = Smart.serializeToObject(this.node); break;
-            }
-
             var submit = function(){
+                var data;
+                switch(that.widget.submit.cache.enctype){
+                    case "multipart/form-data" : data = Smart.formData(that.node); break;
+                    case "application/x-www-form-urlencoded" :
+                        data = Smart.serializeToObject(that.node); break;
+                }
                 that[that.widget.submit.cache.method](that.widget.submit.cache.action, data)
                     .done(function(rs){
                         that.widget.submit.options.done && that.widget.submit.options.done.call(that, rs);
@@ -3423,6 +3442,7 @@
                         trigger: "focus",
                         delay: {"show": 200, "hide": 300}
                     });
+                    this.notice(msg);
                     setTimeout(function () {
                         node.tooltip('show');
                     }, 1);
@@ -4186,6 +4206,53 @@
             return deferred;
         }
     });
+})(jQuery);;(function ($) {
+
+    var ALERT_LEVEL = {
+        warning: {
+            sign: "glyphicon glyphicon-exclamation-sign",
+            color: "alert alert-warning"
+        },
+        info: {
+            sign: "glyphicon glyphicon-info-sign",
+            color: "alert alert-info"
+        },
+        success: {
+            sign: "glyphicon glyphicon-ok-sign",
+            color: "alert alert-success"
+        },
+        danger: {
+            sign: "glyphicon glyphicon-remove-sign",
+            color: "alert alert-danger"
+        }
+    };
+    var DEFAULT_LEVEL = ALERT_LEVEL.warning;
+
+    Smart.fn.extend({
+        notice: function (msg, level) {
+            var noticeTpl = Smart.UI.template("notice");
+            var noticeLevel = ALERT_LEVEL[level] || DEFAULT_LEVEL;
+            $("*[s-ui-notice-role='message']", noticeTpl).html(msg);
+            noticeTpl.addClass(noticeLevel.color).css("top", "-1000px").appendTo("body");
+            var height = noticeTpl.outerHeight();
+            var width = noticeTpl.outerWidth();
+            var windowWidth = $(window).width();
+            var left = (windowWidth - width)/2;
+            noticeTpl.css("top", -height+"px").css("left", left+"px").css("z-index", Smart.UI.zIndex());
+            function removeNotice(){
+                noticeTpl.css("top", -height+"px");
+                noticeTpl.one($.support.transition.end, function(){
+                    noticeTpl.remove();
+                }).emulateTransitionEnd(200)
+            }
+            $(".close", noticeTpl).click(removeNotice);
+            setTimeout(function(){
+                noticeTpl.css("transition", "all .2s ease-out");
+                noticeTpl.css("top", 0);
+                setTimeout(removeNotice,2000);
+            }, 10);
+        }
+    });
 })(jQuery);;/**
  * Created by Administrator on 2014/6/25.
  */
@@ -4223,12 +4290,11 @@
         return button;
     };
 
-    var showDialog = function(dialog){
-        Smart.UI.backdrop();
+    var showDialog = function(dialog, zIndex){
         dialog.on("hide.bs.modal", function(e){
             if(this == e.target)
                 Smart.UI.backdrop(false);
-        }).css('zIndex', Smart.UI.zIndex()).modal({
+        }).css('zIndex', zIndex).modal({
             keyboard: false,
             backdrop: false
         });
@@ -4251,7 +4317,8 @@
         closeBtn.click(function(){
             nodeSmart.closeWithConfirm();
         });
-
+        Smart.UI.backdrop();
+        var zIndex = Smart.UI.zIndex();
         nodeSmart.on("close", function(e){
             var eDeferred = e.deferred;
             var args = Smart.SLICE.call(arguments, 1);
@@ -4283,7 +4350,7 @@
             dialog.show();
             dialogMain.width(dialogMain.innerWidth()).css("position","relative");
             footerNode.css("marginTop", "0");
-            showDialog(dialog);
+            showDialog(dialog, zIndex);
         }).on("dialog.btn.disable", function(e, id){
             getButtonById(id).prop("disabled", true);
         }).on("dialog.btn.enable", function(e, id){

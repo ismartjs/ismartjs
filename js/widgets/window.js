@@ -123,10 +123,12 @@
         });
 
         this.node.empty().append(this._WNODE);
+        undelegateEvent(this);
         var scriptFn = eval(scripts.join("\n"));
         var context = scriptFn.call(this, loadArgs);
         this.setContext(context);
-
+        //绑定浏览器事件，click等
+        delegateEvent(this);
         var that = this;
         this.on("window.document.ready", function(e){e.stopPropagation()});
         this.makeChildren().done(function(){
@@ -141,6 +143,47 @@
             this.scrollTo(anchor);
         }
     };
+
+    var EVENT_MAP = {
+        "s-click": 'click',
+        "s-change": 'change',
+        "s-focus": 'focus',
+        "s-blur": 'blur',
+        "s-dblclick": 'dblclick',
+        "s-mouseover": 'mouseover',
+        "s-mousemove": "mousemove",
+        "s-mouseout": "mouseout"
+    };
+
+    function undelegateEvent(smart){
+        smart.node.undelegate();
+    }
+
+    function delegateEvent(smart){
+        $.each(EVENT_MAP, function(key,val){
+            smart.node.delegate("*["+key+"]", val, function(e){
+                e.stopPropagation();
+                var node = $(e.currentTarget);
+                var evtKey = "__SMART__EVENT__" + key;
+                var action = node.data(evtKey);
+                if(!action){
+                    var evtSCript = node.attr(key);
+                    action = smart.action(evtSCript);
+                    node.data(evtKey, action);
+                }
+                var result = action.call(Smart.of(node), e);
+                if(result == null)
+                    return;
+                if(Smart.isDeferred(result)){//说明这个是deferred对象
+                    Smart.disableNode(node);
+                    result.always(function(){
+                        Smart.disableNode(node, false);
+                    });
+                }
+                return result;
+            });
+        });
+    }
 
     var CURRENT_WINDOW_ID = 0;
 
@@ -394,6 +437,15 @@
                 this.widget.window.cache[EVENT_ON_CACHE].push([events, selector, fn]);
             }
             return this.inherited([events, selector, fn]);
+        },
+        action: function (script) {
+            var script_body = [];
+            script_body.push("(function(){");
+            script_body.push("      return function(){");
+            script_body.push("          " + script);
+            script_body.push("      }")
+            script_body.push("})()");
+            return this.context(script_body.join("\n"));
         }
     });
 

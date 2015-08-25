@@ -58,14 +58,13 @@
 
                 return deferred;
             }
-            var data;
-            switch(this.widget.submit.cache.enctype){
-                case "multipart/form-data" : data = Smart.formData(this.node); break;
-                case "application/x-www-form-urlencoded" :
-                    data = Smart.serializeToObject(this.node); break;
-            }
-
             var submit = function(){
+                var data;
+                switch(that.widget.submit.cache.enctype){
+                    case "multipart/form-data" : data = Smart.formData(that.node); break;
+                    case "application/x-www-form-urlencoded" :
+                        data = Smart.serializeToObject(that.node); break;
+                }
                 that[that.widget.submit.cache.method](that.widget.submit.cache.action, data)
                     .done(function(rs){
                         that.widget.submit.options.done && that.widget.submit.options.done.call(that, rs);

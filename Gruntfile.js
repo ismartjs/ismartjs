@@ -30,10 +30,10 @@ module.exports = function (grunt) {
                 files: [
                     {expand: true,
                         src: [
-                        "js/**", "index.html", "home.html",
-                            "main.html", "topbar-left.html",
-                            "topbar-right.html", "css/**",
-                            "bootstrap3/**","font-awesome/**"
+                        "js/**", "index.html", "home.html", "boot.html", "login-panel.html", "main-bottom.html",
+                            "main.html", "topbar-left.html", "login-panel-dist.html","boot-dist.html",
+                            "topbar-right.html", "css/**", "images/**",
+                            "bootstrap3/**","font-awesome/**","layouts/**"
                         ], dest: 'example'},
                     {src:"json/menu-example.json",dest:"example/json/menu.json"},
                     {src:"ui-template.html",dest:"example/ui-template.html"}

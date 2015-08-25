@@ -16,6 +16,7 @@ $(function () {
         topbarRightUrl: "topbar-right.html",
         topbarLeftUrl: "topbar-left.html",
         bottomUrl: "main-bottom.html",
+        layout: "layouts/main0.html",
         historyListener: {
             onPush: function (url) {
                 history.replaceState(null, null, "#" + url);

@@ -4,7 +4,7 @@
 (function ($) {
     Smart.widgetExtend({
         id: "select",
-        options: "form,ctx:title,ctx:value,ctx:build-done",
+        options: "form,ctx:title,ctx:value,ctx:build-done,ctx:build-data",
         defaultOptions: {
             form: "id:name,title"
         }
@@ -15,6 +15,9 @@
             this.options.form = this.options.form.split(":");
             this.options.form[1] = this.options.form[1].split(",");
             this.cache.dataMap = {};
+            if(this.options['build-data']){
+                this.S.build(this.options['build-data']);
+            }
         }
     }, {
         buildSetter: function (datas) {

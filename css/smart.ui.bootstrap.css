@@ -287,7 +287,7 @@ span.label {
     /*padding: 12px 8px;*/
     border-top: 0px;
     border-bottom: 1px solid #DDD;
-    vertical-align: middle
+    /*vertical-align: middle;*/
 }
 
 .table tbody tr td p {
@@ -472,4 +472,14 @@ code{font-size: 100%;}
 
 .modal.fade .modal-dialog {
     transition: transform .3s cubic-bezier(0.34, 1.21, 0.4, 1);
+}
+
+.dropdown-menu{
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.175);
+}
+
+.modal-content{
+    border-radius: 4px;
 }
