@@ -69,7 +69,8 @@
     -font-size: 12px;
     color: #FFF;
     overflow: hidden;
-    border-right: 1px solid #008FBF;;
+    border-right: 1px solid #008FBF;
+    border-left: 1px solid #00A7DF;
     cursor: pointer;
     padding: 0 15px;
     line-height: 50px;
