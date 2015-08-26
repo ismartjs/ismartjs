@@ -96,6 +96,7 @@
         dataSetter: function(data){
             if(!$.isArray(data)){
                 Smart.error("loop控件接受的赋值参数必须是数组");
+                return;
             }
             this.setRows(data);
         }

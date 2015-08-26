@@ -929,7 +929,9 @@
                 });
             });
 
-            Smart.deferredQueue(deferreds).always(function () {
+            Smart.deferredQueue(deferreds).fail(function(){
+                deferred.reject();
+            }).done(function(){
                 smart.lifeStage = LIFE_STAGE.made;
                 smart.trigger("smart-made");
                 deferred.resolve();

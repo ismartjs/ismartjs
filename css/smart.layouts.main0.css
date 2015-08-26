@@ -209,13 +209,11 @@
     left: 0;
     bottom: 0;
     background-color: #293038;
-    overflow-x: hidden;
     z-index: 100;
 }
 
 .main-left-sidebar .sidebar-fold {
     height: 30px;
-    width: 180px;
     background: #394555;
     color: #aeb9c2;
     text-align: right;
@@ -226,6 +224,21 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     padding-left: 10px;
+    position: absolute;
+    top: 5px;
+    right: 0;
+    left: 0;
+}
+
+.main-left-sidebar .sidebar-menu-panel{
+    position: absolute;
+    top: 40px;
+    bottom: 0px;
+    left: 0;
+    right: -20px;
+    padding-right: 20px;
+    overflow: overlay;
+    overflow-x: hidden;
 }
 
 .main-left-sidebar .sidebar-nav .sidebar-title {
@@ -342,6 +355,7 @@
     top: 0;
     right: 0;
     bottom: 0;
+    z-index: 110;
 }
 
 .window-tabs {

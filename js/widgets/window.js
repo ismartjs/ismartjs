@@ -212,8 +212,10 @@
         onReady: function () {
             var deferred = $.Deferred();
             if (this.location.href) {
-                this.S.load.apply(this.S, [this.location.href].concat(this.location.args || [])).always(function () {
-                    deferred.resolve()
+                this.S.load.apply(this.S, [this.location.href].concat(this.location.args || [])).done(function(){
+                    deferred.resolve();
+                }).fail(function(){
+                    deferred.reject();
                 });
                 return deferred.promise();
             } else {
@@ -223,7 +225,7 @@
         onRefresh: function(){
             this._clean();
             this.S.node.html("正在刷新");
-            this.onReady();
+            return this.onReady();
         },
         _clean: function(){
             this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
@@ -269,8 +271,9 @@
                     that.trigger("load");
                     deferred.resolve(that);
                 });
-            }).fail(function () {
                 that.trigger("load");
+            }).fail(function () {
+                deferred.reject();
             });
             return deferred;
         },

@@ -20,7 +20,7 @@
 <div class="main-view">
     <div class="main-left-sidebar">
         <div class="sidebar-fold"></div>
-        <div id="menuPanel" s="tpl" style="padding-top: 5px;">
+        <div id="menuPanel" s="tpl" class="sidebar-menu-panel">
             {%if(this.topMenus.length){%}
             <div class="sidebar-nav ">
                 <ul class="sidebar-trans">
@@ -121,7 +121,11 @@
         if(node.hasClass("menu-close")){
             node.removeClass("menu-close");
         } else {
-            node.addClass("menu-close");
+            var ul = node.find("> ul");
+            ul.height(ul.height());
+            setTimeout(function(){
+                node.addClass("menu-close");
+            },1);
         }
     });
 
@@ -393,9 +397,12 @@
             var closeSpan = $("<div>×</div>");
             this.node.addClass("closeable").append(closeSpan);
             var that = this;
-            closeSpan.click(function () {
+            this.closeHandle = closeSpan.click(function () {
                 that.close();
             });
+        },
+        _removeCloseHandle: function(){
+            this.closeHandle.unbind().remove();
         },
         bindEvent: function () {
             this.node.click($.proxy(this.active, this));
@@ -488,6 +495,8 @@
                 if (Smart.isEmpty(that.data.children)){
                     that.setMeta(smart.meta);
                 }
+            }).fail(function(){
+                that._addCloseHandle();
             });
         },
         bindTabWindowEvent: function (tabWindow) {
@@ -684,7 +693,9 @@
             });
         },
         refresh: function () {
-            this.smart.refresh();
+            this.smart.refresh().fail(function(){
+
+            });
         }
     };
 
