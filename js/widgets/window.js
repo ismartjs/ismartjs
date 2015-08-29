@@ -271,7 +271,7 @@
                     that.trigger("load");
                     deferred.resolve(that);
                 });
-                that.trigger("load");
+
             }).fail(function () {
                 deferred.reject();
             });

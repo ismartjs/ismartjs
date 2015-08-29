@@ -462,20 +462,45 @@ ul.s-ui-contextmenu li.disabled:hover > span {
 
 .s-ui-notice {
     position: fixed;
-    top: 0;
-    border-radius: 0px 0px 4px 4px;
-    /*border: 1px solid rgba(0,0,0,.4);*/
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .5);
+    border-radius: 0;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     width: 500px;
-    padding: 10px;
+    padding: 15px;
+    bottom: 25px;
+    right: -525px;
+    font-size: 16px;
+    margin-bottom: 0;
+}
+
+@keyframes s-ui-notice-bounce {
+    0%{
+        transform:translateX(0px);
+    }
+    50%{
+        transform:translateX(30px);
+    }
+    100%{
+        transform:translateX(0px);
+    }
+}
+
+
+.s-ui-notice.notice-show{
+    right: 25px;
 }
 
 .s-ui-notice .close {
     float: right;
+    font-size: 40px;
+    font-weight: normal;
+    position: absolute;
+    right: 7px;
+    top: 3px;
 }
 
 .s-ui-notice .s-ui-notice-msg {
-    margin-right: 20px;
+    margin-right: 36px;
+    word-break: break-all;
 }
 
 .icon-unfold:before {
@@ -484,4 +509,18 @@ ul.s-ui-contextmenu li.disabled:hover > span {
 
 .icon-fold:before {
     content: "\e706";
+}
+
+.s-ui-none-data-info {
+    height: 200px;
+    font-size: 18px;
+    padding-top: 90px;
+}
+
+.console-title-border {
+    border-bottom: 1px solid #DDD;
+}
+.console-title {
+    padding: 16px 0px;
+    min-height: 70px;
 }

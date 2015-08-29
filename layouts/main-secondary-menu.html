@@ -21,9 +21,23 @@
     <div class="main-left-sidebar">
         <div class="sidebar-fold"></div>
         <div id="menuPanel" s="tpl" class="sidebar-menu-panel">
-            {% $.each(this.menus, function(i, menu){ %}
-            <div class="sidebar-nav">
-                {%if(menu.children && menu.children.length){%}
+            {%if(this.topMenus.length){%}
+            <div class="sidebar-nav ">
+                <ul class="sidebar-trans">
+                    {% $.each(this.topMenus, function(i, menu){ %}
+                    <li class="nav-item " menuUrl="{%=menu.url%}" menuId="{%=menu.id%}" s="click" s-click-action="openMenuById('{%=menu.id%}')">
+                        <a class="s-ui-trans" href="javascript:;">
+                            <div class="nav-icon s-ui-trans"><i
+                                    class="{%=menu.icon || 'glyphicon glyphicon-file' %}"></i></div>
+                            <span class="nav-title ng-binding">{%=menu.title%}</span>
+                        </a>
+                    </li>
+                    {% }) %}
+                </ul>
+            </div>
+            {%}%}
+            {% $.each(this.levelMenus, function(i, menu){ %}
+            <div class="sidebar-nav ">
                 <div class="sidebar-title">
                     <div class="sidebar-title-inner"><span
                             class="sidebar-title-icon {%=menu.icon%}"></span>
@@ -33,11 +47,9 @@
                     </span>
                     </div>
                 </div>
-                {%}%}
                 <ul class="s-ui-trans">
                     {% $.each(this.children, function(i, c){ %}
-                    <li class="nav-item " menuUrl="{%=c.url%}" menuId="{%=c.id%}" s="click"
-                        s-click-action="openMenuById('{%=c.id%}')">
+                    <li class="nav-item " menuUrl="{%=c.url%}" menuId="{%=c.id%}" s="click" s-click-action="openMenuById('{%=c.id%}')">
                         <a class="s-ui-trans" href="javascript:;">
                             <div class="nav-icon s-ui-trans"><i class="{%=c.icon || 'glyphicon glyphicon-file' %}"></i>
                             </div>
@@ -55,6 +67,16 @@
 
         </ul>
         <div class="main-window" id="mainWindow">
+            <div class="navbar" id="secondaryTabPanel" s="tpl">
+                <div class="navbar-title">{%=this.title%}</div>
+                <ul class="navbar-nav" id="secondaryTabContainer">
+                    {% $.each(this.children, function(i,data){ %}
+                    <li s="click" s-click-action="showTabWindowById('{%=data.tabWindowId%}')"
+                        tabWindowId="{%=data.tabWindowId%}">{%=data.title%}
+                    </li>
+                    {% }); %}
+                </ul>
+            </div>
             <div class="window-container" id="windowContainer">
 
             </div>
@@ -94,24 +116,24 @@
 <script type="text/javascript">
 
     //侧边栏子菜单打开合并
-    S.N("#menuPanel").delegate(".sidebar-title", "click", function (e) {
+    S.N("#menuPanel").delegate(".sidebar-title", "click", function(e){
         var node = $(e.currentTarget).parent();
-        if (node.hasClass("menu-close")) {
+        if(node.hasClass("menu-close")){
             node.removeClass("menu-close");
         } else {
             var ul = node.find("> ul");
             ul.height(ul.height());
-            setTimeout(function () {
+            setTimeout(function(){
                 node.addClass("menu-close");
-            }, 1);
+            },1);
         }
     });
 
-    function activeSidebarMenuByUrl(url) {
-        var node = $("li[menuurl='" + url + "']", S.N("#menuPanel"));
+    function activeSidebarMenuByUrl(url){
+        var node = $("li[menuurl='"+url+"']", S.N("#menuPanel"));
         activeSidebarMenu(node);
     }
-    function activeSidebarMenu(node) {
+    function activeSidebarMenu(node){
         $("li[menuurl].active", S.N("#menuPanel")).removeClass("active");
         node && node.size() && node.addClass("active");
     }
@@ -121,7 +143,7 @@
         var tabNode = $("li[menuurl='" + menu.url + "']", S.N("#mainTabContainer"));
         if (tabNode.size() > 0) {
             var tab = tabNode.data("tab");
-            if (tab.single) {
+            if(tab.single){
                 tab.active();
                 return;
             }
@@ -146,7 +168,7 @@
     var openUrl = function (deferred, url, args) {
         //在已经打开的选项卡中，根据url获取选项卡，判断其上面是否有single=true的属性，如果有，则直接把该选项卡打开，而不是打开新的页面
         var tab = MainTab.findSingleTabByUrl(url);
-        if (tab) {
+        if(tab){
             tab.active();
             return;
         }
@@ -175,30 +197,56 @@
                 that.menus = menus;
                 var urlMapping = {};
                 var needOpenMenus = [];
+                var topMenus = [];//顶级菜单，即一级菜单没有子菜单的菜单，默认级别最高
+                var levelMenus = [];//一级菜单拥有子菜单的菜单
                 $.each(menus, function (i, menu) {
                     urlMapping[menu.url] = menu;
                     menu.icon = menu.icon || Main.defaultMenuIcon;
                     that.menuMapping[menu.id] = menu;
-                    if (menu.open) {
-                        needOpenMenus.push(menu);
-                    }
-                    if (menu.children) {
-                        $.each(menu.children, function (i, cm) {
-                            that.menuMapping[cm.id] = cm;
-                            if (cm.open) {
-                                needOpenMenus.push(cm);
+                    //顶级菜单如果没有子菜单，则允许其打开
+                    if (menu.open && !menu.children) needOpenMenus.push(menu);
+
+                    if (!Smart.isEmpty(menu.children)) {
+                        levelMenus.push(menu);
+                        $.each(menu.children, function (i, c) {
+                            if (c.open) needOpenMenus.push(c);
+                            c.icon = c.icon || Main.defaultMenuIcon;
+                            that.menuMapping[c.id] = c;
+                            urlMapping[c.url] = c;
+                            c.parent = menu;
+                            if (!Smart.isEmpty(c.children)) {
+                                $.each(c.children, function (i, cc) {
+                                    that.menuMapping[cc.id] = cc;
+                                    urlMapping[cc.url] = cc;
+                                    cc.parent = c;
+                                    cc.icon = cc.icon || Main.defaultMenuIcon;
+                                });
                             }
                         });
+                    } else {
+                        topMenus.push(menu);
                     }
                 });
-                that.smart.data({menus: menus});
+                that.smart.data({topMenus: topMenus, levelMenus: levelMenus});
                 var openMainTab;
                 //如果根据hash要打开的页面的url和默认需要打开的有相同的，则不需要创建新的，直接将已经打开的置为active。
                 var openedUrlMap = {};
                 var hash = Main.historyListener.onGet();
                 $.each(needOpenMenus, function (i, m) {
                     var _openMainTab;
-                    if (m.url) {
+                    if (!m.url) {
+                        var flag = false;
+                        $.each(m.children, function (j, c) {
+                            if (c.url == hash) {
+                                _openMainTab = openedUrlMap[c.url] = new MainTab(m, c).add();
+                                flag = true;
+                                return false;
+                            }
+                        });
+                        if (!flag) {
+                            _openMainTab = openedUrlMap[m.url] = new MainTab(m).add();
+                        }
+                    } else {
                         _openMainTab = openedUrlMap[m.url] = new MainTab(m).add();
                     }
                     if (i == 0) {
@@ -210,7 +258,20 @@
                         openedUrlMap[hash].active();
                     } else if (hash in urlMapping) {
                         var menu = urlMapping[hash];
-                        new MainTab(menu).add().active();
+                        var topMenu, secondaryMenu;
+                        if (menu.parent) {
+                            if (menu.parent.parent) {
+                                //如果打开的是3级菜单，则需要打开2级主菜单
+                                topMenu = menu.parent;
+                                secondaryMenu = menu;
+                            } else {
+                                //如果不是，则直接打开菜单
+                                topMenu = menu;
+                            }
+                        } else {
+                            topMenu = menu;
+                        }
+                        new MainTab(topMenu, secondaryMenu).add().active();
                     } else {
                         openUrl(null, hash);
                     }
@@ -230,18 +291,38 @@
     });
 
     //主选项
-    function MainTab(data) {
+    function MainTab(data, secondaryMenu) {
         this.data = data;
         this.tabWindows = [];
-        var tabWindow = new TabWindow(this.data, this);
-        this.bindTabWindowEvent(tabWindow);
-        this.tabWindows.push(tabWindow);
+        this.secondaryTabData = {
+            title: data.title,
+            children: []
+        };
+        if (Smart.isEmpty(this.data.children)) {
+            var tabWindow = new TabWindow(this.data, this);
+            this.bindTabWindowEvent(tabWindow);
+            this.tabWindows.push(tabWindow);
+        } else {
+            var that = this;
+            $.each(this.data.children, function (i, d) {
+                var tabWindow = new TabWindow(d, that);
+                that.tabWindows.push(tabWindow);
+                if (d == secondaryMenu) {
+                    that.currentTabWindow = tabWindow;
+                }
+                that.bindTabWindowEvent(tabWindow);
+                that.secondaryTabData.children.push({
+                    title: d.title,
+                    tabWindowId: tabWindow.id
+                });
+            });
+        }
         this.currentTabWindow = this.currentTabWindow || this.tabWindows[0];
     }
 
-    MainTab.findSingleTabByUrl = function (url) {
-        var tabNode = $("li[menuurl='" + url + "']", MainTab.container);
-        if (tabNode.size() != 1) {
+    MainTab.findSingleTabByUrl = function(url){
+        var tabNode = $("li[menuurl='"+url+"']",  MainTab.container);
+        if(tabNode.size() != 1){
             return null;
         }
         return tabNode.data("tab").single ? tabNode.data("tab") : null;
@@ -308,7 +389,7 @@
             MainTab.TabStack.pushTop(this);
             return this;
         },
-        _addCloseHandle: function () {
+        _addCloseHandle: function(){
             var closeSpan = $("<div>×</div>");
             this.node.addClass("closeable").append(closeSpan);
             var that = this;
@@ -316,7 +397,7 @@
                 that.close();
             });
         },
-        _removeCloseHandle: function () {
+        _removeCloseHandle: function(){
             this.closeHandle.unbind().remove();
         },
         bindEvent: function () {
@@ -356,7 +437,7 @@
             }
             var menuUrl = this.data.url;
             var sidebarMenuNode = $("li[menuurl='" + menuUrl + "']", S.N("#menuPanel"));
-            if (sidebarMenuNode.size() > 0) {
+            if(sidebarMenuNode.size() > 0){
                 activeSidebarMenu(sidebarMenuNode);
             } else {
                 activeSidebarMenu();
@@ -367,6 +448,9 @@
             MainTab.currentTab = this;
             this.node.addClass("active");
             MainTab.TabStack.pushTop(this);
+            if (!Smart.isEmpty(this.data.children)) {
+                SecondaryTabPanel.show(this.secondaryTabData, this.currentTabWindow.id);
+            }
             this.showTabWindow();
             return this;
         },
@@ -404,10 +488,10 @@
             }
             tabWindow.make().done(function (smart) {
                 //如果该mainTab拥有子tab，则不设置meta
-                if (Smart.isEmpty(that.data.children)) {
+                if (Smart.isEmpty(that.data.children)){
                     that.setMeta(smart.meta);
                 }
-            }).fail(function () {
+            }).fail(function(){
                 that._addCloseHandle();
             });
         },
@@ -428,11 +512,6 @@
         },
         setMeta: function (meta) {
             var that = this;
-            if (meta.single === "" || meta.single === true || meta.single == "true" || meta.single == undefined) {
-                meta.single = true;
-            } else {
-                meta.single = false;
-            }
             $.each(meta || {}, function (key, value) {
                 switch (key) {
                     case "title":
@@ -447,12 +526,16 @@
                         break;
                     case "single":
                         that.node.attr("single", value);
-                        that.single = value;
                         break;
                 }
             });
-            if (meta.closeable === "true" || meta.closeable == undefined
-                    || meta.closeable == "" || meta.closeable === true) {
+            if(meta.single === "true" || meta.single === true){
+                this.single = true;
+            } else {
+                this.single = false;
+            }
+            if(meta.closeable === "true" || meta.closeable == undefined
+                    || meta.closeable == "" || meta.closeable === true){
                 this._addCloseHandle();
             }
         }
@@ -530,6 +613,26 @@
 //        MainContextmenu.bindTarget($("body"));
     });
 
+    var SecondaryTabPanel = {
+        smart: S.S("#secondaryTabPanel"),
+        show: function (data, tabWindowId) {
+            this.smart.node.show();
+            this.smart.data(data);
+            this.activeTab(tabWindowId);
+            TabWindow.container.addClass("navbar-on");
+        },
+        hide: function () {
+            this.smart.node.hide();
+            TabWindow.container.removeClass("navbar-on");
+        },
+        activeTab: function (id) {
+            if (!id) return;
+            var li = S.N("#secondaryTabContainer").children("li[tabWindowId=" + id + "]");
+            li.siblings(".active").removeClass("active");
+            li.addClass('active');
+        }
+    };
+
     function showTabWindowById(id) {
         var tabWindow = TabWindow.mapping[id];
         !tabWindow.made && tabWindow.make();
@@ -586,7 +689,7 @@
             });
         },
         refresh: function () {
-            this.smart.refresh().fail(function () {
+            this.smart.refresh().fail(function(){
 
             });
         }
