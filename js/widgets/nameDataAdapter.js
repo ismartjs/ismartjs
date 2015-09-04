@@ -11,11 +11,11 @@
                 if(!Smart.isWidgetNode(nameNode)){
                     //如果不是控件
                     //则把它声明成为一个基本控件
-                    nameNode.attr(Smart.defineKey, "");
+                    nameNode.attr(Smart.DEFINE_KEY, "");
                 }
-                var attrName = Smart.optionAttrName("smart", "key");
+                var attrName = Smart.optionAttrName("data", "filter");
                 if(Smart.isEmpty(nameNode.attr(attrName))){
-                    nameNode.attr(attrName, nameNode.attr("name"));
+                    nameNode.attr(attrName, "'"+nameNode.attr("name")+"'");
                 }
             });
         }

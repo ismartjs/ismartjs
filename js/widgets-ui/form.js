@@ -4,15 +4,17 @@
 (function($){
     //表单提交插件，作用于submit按钮，可以实现表单回车提交
     Smart.widgetExtend({
-        id:"submit",
-        options: "ctx:action,ctx:done,ctx:fail,ctx:always,reset",
-        defaultOptions:{reset:"false"}
+        id:"form",
+        options: "ctx:action,ctx:done,ctx:fail,ctx:always",
+        defaultOptions:{
+            method: "post"
+        }
     }, {
         onPrepare: function(){
             var that = this;
-            this.cache.action = this.S.node.attr("action");
-            this.cache.method = this.S.node.attr("method") || "post";
-            this.cache.enctype = this.S.node.attr("enctype") || "application/x-www-form-urlencoded";
+            this.options.action =  this.S.node.attr("action") || this.options.action;
+            this.options.method = this.S.node.attr("method") || this.options.method || "post";
+            this.options.enctype = this.S.node.attr("enctype") || this.options.enctype || "application/x-www-form-urlencoded";
             var submitBtn = this.S.node.find(":submit")
             this.S.node[0].onsubmit = function(e){
                 e.stopPropagation();
@@ -26,26 +28,34 @@
                 }
                 return false;
             };
-        },
-        onReset: function(){
-            this.S.node[0].reset();
         }
     },{
         submit: function(){
             var deferred = $.Deferred();
-            if(!('action' in this.widget.submit.options) && Smart.isEmpty(this.widget.submit.cache.action)) {
+            if(!('action' in this.widget.form.options)) {
                 return deferred.resolve();
             }
             var that = this;
-            if(this.widget.submit.options.action){//如果定义了submit action，则直接执行该action
+
+            deferred.done(function(rs){
+                that.widget.form.options.done && that.widget.form.options.done.call(that, rs);
+            }).fail(function(){
+                that.widget.form.options.fail && that.widget.form.options.fail.apply(that, $.makeArray(arguments));
+            }).always(function(){
+                that.widget.form.options.always && that.widget.form.options.always.call(that);
+            });
+
+            if($.isFunction(this.widget.form.options.action)){//如果定义了submit action，则直接执行该action
                 var actionSubmit = function(){
-                    var result = that.widget.submit.options.action.call(that);
+                    var result = that.widget.form.options.action.call(that);
                     if(Smart.isDeferred(result)){//说明是deferred对象
-                        result.always(function(){
-                            deferred.resolve();
+                        result.done(function(rs){
+                            deferred.resolve(rs);
+                        }).fail(function(){
+                            deferred.reject.call(deferred, $.makeArray(arguments));
                         });
                     } else {
-                        deferred.resolve();
+                        deferred.resolve(result);
                     }
                 };
                 if("validate" in this){
@@ -60,24 +70,16 @@
             }
             var submit = function(){
                 var data;
-                switch(that.widget.submit.cache.enctype){
+                switch(that.widget.form.options.enctype){
                     case "multipart/form-data" : data = Smart.formData(that.node); break;
                     case "application/x-www-form-urlencoded" :
                         data = Smart.serializeToObject(that.node); break;
                 }
-                that[that.widget.submit.cache.method](that.widget.submit.cache.action, data)
-                    .done(function(rs){
-                        that.widget.submit.options.done && that.widget.submit.options.done.call(that, rs);
-                        if(that.widget.submit.options.reset == 'true'){
-                            that.reset();
-                        }
-                        deferred.resolve(rs);
-                    }).fail(function(){
-                        deferred.reject.apply(deferred, $.makeArray(arguments));
-                        that.widget.submit.options.fail && that.widget.submit.options.fail.apply(that, $.makeArray(arguments));
-                    }).always(function(){
-                        that.widget.submit.options.always && that.widget.submit.options.always.call(that);
-                    });
+                that[that.widget.form.options.method](that.widget.form.options.action, data).done(function(rs){
+                    deferred.resolve(rs);
+                }).fail(function(){
+                    deferred.reject.call(deferred, $.makeArray(arguments));
+                });
             };
 
             //证明该form是需要验证的

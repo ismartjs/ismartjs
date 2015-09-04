@@ -1,20 +1,8 @@
 <meta args="Main"/>
 <div class="topbar">
-    <div s="window" s-window-href="{Main.topbarLeftUrl}" class="pull-left"></div>
-    <div class="topbar-nav">
-        <div class="topbar-nav-menu dropdown">
-            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-                <em>菜单</em>
-                <span class="caret"></span>
-            </a>
-
-            <div class="dropdown-menu" role="menu">
-
-            </div>
-        </div>
-    </div>
+    <div s="window" s-window="{href:Main.topbarLeftUrl}" class="pull-left"></div>
     <div class="pull-right topbar-right">
-        <div s="window" s-window-href="{Main.topbarRightUrl}"></div>
+        <div s="window" s-window="{href:Main.topbarRightUrl}"></div>
     </div>
 </div>
 <div class="main-view">
@@ -35,9 +23,9 @@
                 </div>
                 {%}%}
                 <ul class="s-ui-trans">
-                    {% $.each(this.children, function(i, c){ %}
-                    <li class="nav-item " menuUrl="{%=c.url%}" menuId="{%=c.id%}" s="click"
-                        s-click-action="openMenuById('{%=c.id%}')">
+                    {% $.each(this.children || {}, function(i, c){ %}
+                    <li class="nav-item " menuUrl="{%=c.url%}" menuId="{%=c.id%}"
+                        s-click="openMenuById('{%=c.id%}')">
                         <a class="s-ui-trans" href="javascript:;">
                             <div class="nav-icon s-ui-trans"><i class="{%=c.icon || 'glyphicon glyphicon-file' %}"></i>
                             </div>
@@ -67,28 +55,28 @@
 <div class="main-bottom" id="mainBottom" s="window" s-window-href="{Main.bottomUrl}"></div>
 
 <ul id="mainTabContextmenu" s="contextmenu" s-contextmenu-filter="MainTabContextmenu.filter" class="s-ui-contextmenu">
-    <li menuId="close" s="click" s-click-action="MainTabContextmenu.closeTarget()">
+    <li menuId="close"  s-click="MainTabContextmenu.closeTarget()">
         <span>关闭</span>
     </li>
     <li class="s-ui-contextmenu-line"></li>
-    <li menuId="clostOther" s="click" s-click-action="MainTabContextmenu.closeOthers()">
+    <li menuId="clostOther"  s-click="MainTabContextmenu.closeOthers()">
         <span>关闭其他</span>
     </li>
-    <li menuId="closeAll" s="click" s-click-action="MainTabContextmenu.closeAll()">
+    <li menuId="closeAll"  s-click="MainTabContextmenu.closeAll()">
         <span>关闭所有</span>
     </li>
     <li class="s-ui-contextmenu-line"></li>
-    <li menuId="refresh" s="click" s-click-action="MainTabContextmenu.refreshTarget()">
+    <li menuId="refresh"  s-click="MainTabContextmenu.refreshTarget()">
         <span>刷新</span>
     </li>
 </ul>
 
 <ul id="mainContextmenu" s="contextmenu" class="s-ui-contextmenu">
-    <li menuId="showSource" s="click" s-click-action="MainContextmenu.showSourceHtml(e)">
+    <li menuId="showSource"  s-click="MainContextmenu.showSourceHtml(arguments[0])">
         <span>查看源码</span>
     </li>
     <li class="s-ui-contextmenu-line"></li>
-    <li menuId="copyright" s="click" s-click-action="MainContextmenu.showCopyright()"><span>版权声明</span></li>
+    <li menuId="copyright"  s-click="MainContextmenu.showCopyright()"><span>版权声明</span></li>
 </ul>
 
 <script type="text/javascript">
@@ -225,7 +213,7 @@
         }
     };
 
-    S.on("window.document.ready", function () {
+    S.on("s-ready", function () {
         MenuPanel.loadMenu();
     });
 
@@ -417,11 +405,11 @@
             tabWindow.smart.on("close", function () {
                 that.destroy();
                 MainTab.activeTop();
-            }).on("loading", function () {
+            }).on("s-loading", function () {
                 $("i", that.node).hide();
                 $("loadi", that.node).remove();
                 $("a", that.node).prepend(loadIcon);
-            }).on("load", function () {
+            }).on("s-ready", function () {
                 loadIcon.remove();
                 $("i", that.node).show();
             });
@@ -526,15 +514,14 @@
         }
     };
 
-    this.on("window.document.ready", function () {
-//        MainContextmenu.bindTarget($("body"));
+    this.on("s-ready", function () {
+        MainContextmenu.bindTarget($("body"));
     });
 
     function showTabWindowById(id) {
         var tabWindow = TabWindow.mapping[id];
         !tabWindow.made && tabWindow.make();
         tabWindow.show();
-        SecondaryTabPanel.activeTab(id);
     }
 
     function TabWindow(data, mainTab) {
@@ -568,7 +555,7 @@
         },
         make: function () {
             this.made = true;
-            this.smart.make();
+            this.smart.render();
             TabWindow.container.append(this.node);
             if (!this.data.url) return $.Deferred().resolve(this.smart);
             return this.smart.load.apply(this.smart, [this.data.url].concat(this.data.args));
@@ -631,7 +618,7 @@
         hideAjaxActiveTip();
     });
     //处理bottom的url问题，mainWindow的底部位置
-    S.S("#mainBottom").on("window.document.ready", function () {
+    S.S("#mainBottom").on("s-ready", function () {
         var node = S.N("#mainBottom");
         S.N("#mainWindow").css("bottom", node.height());
     })

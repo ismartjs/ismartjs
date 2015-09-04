@@ -6,19 +6,23 @@
     var token = 0;
     var TABLE_FN_KEY = "_TPL_FN_";
     Smart.widgetExtend({
-        id: "tpl",
-        options: "template"
+        id: "tpl"
     }, {
         onPrepare: function(){
-            var tplText = this.options.template || this.S.node.html();
+            this.cache = {};
+            var tplText;
+            var plainTextNode = this.S.node.find(" > script[type='text/plain']");
+            if(plainTextNode.size() > 0){
+                tplText = plainTextNode.html();
+            } else {
+                tplText = this.S.node.html();
+            }
             this.S.node.empty();
-            //处理脚本定义中的 lt,gt lt 处理成 <, gt处理成 >。
-            //tplText = tplText.replace(/\slt\s/gi,"<").replace(/\sgt\s/gi, ">");
             var fn;
-            var fn_map = this.S.scopeValue("s-tpl-fn_map");
+            var fn_map = this.S.contextValue("s-tpl-fn_map");
             if(!fn_map){
                 fn_map = {};
-                this.S.scopeValue("s-tpl-fn_map", fn_map);
+                this.S.contextValue("s-tpl-fn_map", fn_map);
             }
             if(tplText in fn_map){
                 fn = fn_map[tplText]

@@ -24,7 +24,6 @@
                     return;
                 }
                 that.S.hide();
-                e.stopPropagation();
             });
             $(document).click(function(e){
                 that.S.hide();

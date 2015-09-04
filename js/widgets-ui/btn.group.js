@@ -3,11 +3,11 @@
  */
 (function ($) {
     var mark_class = "s-btnGroup-active";
-    var active_class_def_attr = Smart.optionAttrName('btnGroup', 'active-class');
+    var active_class_def_attr = Smart.optionAttrName('btnGroup', 'activeClass');
     var actived_attr = Smart.optionAttrName('btnGroup', 'active');
     Smart.widgetExtend({
         id: "btnGroup",
-        options: "active-class"
+        options: "activeClass"
     }, {
         onPrepare: function () {
             var that = this;
@@ -15,17 +15,21 @@
                 var btn = $(this);
                 if(btn.hasClass(mark_class)) return;
                 var lastBtn = btn.siblings("."+mark_class);
-                lastBtn.size() && lastBtn.removeClass(that._getBtnActiveClass(lastBtn)).removeClass(mark_class);
+                lastBtn.size() && lastBtn.removeClass(this.options['activeClass']).removeClass(mark_class);
                 btn.addClass(mark_class).addClass(that._getBtnActiveClass(btn));
                 e.stopPropagation();
             });
-            this.cache.initActivedNode = $(" > *["+actived_attr+"] ", this.S.node).click();
+            this.initActivedNode = $(" > *["+actived_attr+"] ", this.S.node).click();
         },
         _getBtnActiveClass: function(btn){
-            return btn.attr(active_class_def_attr) || this.options['active-class'];
+            return btn.attr(active_class_def_attr) || this.options['activeClass'];
         },
         onReset: function () {
-            this.cache.initActivedNode.click();
+            this.initActivedNode.click();
+        }
+    },{
+        reset: function(){
+            this.widget.btnGroup.initActivedNode.click();
         }
     });
 })(jQuery);

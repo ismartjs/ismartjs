@@ -18,15 +18,15 @@
 
     var LEVELS = {
         success: {
-            style: "s-class",
+            style: "successClass",
             key: "success"
         },
         warning: {
-            style: "w-class",
+            style: "warningClass",
             key: "warning"
         },
         error: {
-            style: "e-class",
+            style: "errorClass",
             key: "error"
         }
     };
@@ -34,13 +34,13 @@
     //验证控件
     Smart.widgetExtend({
         id: "valid",
-        options: "ctx:msg,ctx:show,ctx:resetShow,s-class,e-class,w-class,blur,ctx:validators,ctx:after",
+        options: "ctx:msg,ctx:show,ctx:resetShow,successClass,errorClass,warningClass,blur,ctx:validators,ctx:after",
         defaultOptions: {
             msg: DEFAULT_MSG,
             blur: "true",
-            's-class': "has-success",
-            'e-class': "has-error",
-            'w-class': "has-warning",
+            'successClass': "has-success",
+            'errorClass': "has-error",
+            'warningClass': "has-warning",
             'show': function (node, msg, level) {
                 level = level || LEVELS.error;
                 var item = node.closest(ITEM_ROLE_SELECTOR);
@@ -48,13 +48,13 @@
                 if (node.data(NODE_ORIGINAL_VALID_MSG_KEY) == undefined) {
                     node.data(NODE_ORIGINAL_VALID_MSG_KEY, msgNode.html());
                 }
-                item.removeClass(this.widget.valid.options['s-class'] + " " + this.widget.valid.options['e-class'] + " " + this.widget.valid.options['w-class']);
+                item.removeClass(this.widget.valid.options['successClass'] + " " + this.widget.valid.options['errorClass'] + " " + this.widget.valid.options['warningClass']);
                 item.addClass(this.widget.valid.options[level.style]);
                 var msgNode = $(MSG_ROLE_SELECTOR, item);
                 if (msgNode.size() > 0) {
                     $(MSG_ROLE_SELECTOR, item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
                 } else {
-                    if (level.style == "s-class") {
+                    if (level.style == "successClass") {
                         node.tooltip('destroy');
                         return;
                     }
@@ -85,7 +85,7 @@
                 var item = node.closest(ITEM_ROLE_SELECTOR);
                 node.tooltip('destroy');
                 $(MSG_ROLE_SELECTOR, item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
-                item.removeClass(this.widget.valid.options['s-class'] + " " + this.widget.valid.options['e-class'] + " " + this.widget.valid.options['w-class']);
+                item.removeClass(this.widget.valid.options['successClass'] + " " + this.widget.valid.options['errorClass'] + " " + this.widget.valid.options['warningClass']);
             }
         },
         addValidators: addValidators,//添加新的验证器
@@ -93,6 +93,7 @@
 
     }, {
         onPrepare: function () {
+            this.cache = {};
             if (this.options.blur === "true") {
                 var that = this;
                 this.S.node.delegate(VALID_NODE_SELECTOR, "blur", function () {
@@ -452,9 +453,9 @@
     addValidators([
         {
             id: "require",
-            valid: function (flag) {
+            valid: function (flag, emptyValue) {
                 flag = flag == undefined ? true : flag;
-                if (flag && Smart.isEmpty(this.value)) {
+                if (flag && (Smart.isEmpty(this.value) || this.value == emptyValue)) {
                     return 0;
                 }
                 if (!flag && Smart.isEmpty(this.value)) {

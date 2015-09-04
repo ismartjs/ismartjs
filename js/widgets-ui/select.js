@@ -4,27 +4,28 @@
 (function ($) {
     Smart.widgetExtend({
         id: "select",
-        options: "form,ctx:title,ctx:value,ctx:build-done,ctx:build-data",
+        options: "form,ctx:title,ctx:value",
         defaultOptions: {
             form: "id:name,title"
         }
     }, {
         onPrepare: function () {
+            this.cache = {};
             var originalOptions = this.S.node.children();
             this.cache.originalOptions = originalOptions;
             this.options.form = this.options.form.split(":");
             this.options.form[1] = this.options.form[1].split(",");
             this.cache.dataMap = {};
-            if(this.options['build-data']){
-                this.S.build(this.options['build-data']);
-            }
         }
     }, {
-        buildSetter: function (datas) {
+        build: function (datas) {
             datas = datas || [];
             if (!$.isArray(datas)) {
-                Smart.error("构建select选项所需的数据必须是数组");
-                return;
+                var _datas = datas;
+                datas = [];
+                $.each(_datas, function(key, value){
+                    datas.push({title: value, id: key})
+                });
             }
             this.widget.select.cache.dataMap = {};
             this.node.empty();
@@ -32,7 +33,6 @@
             for (var i in datas) {
                 this.node.append(this._createOption(datas[i]));
             }
-            this.widget.select.options['build-done'] && this.widget.select.options['build-done'].call(this);
         },
         _createOption: function (data) {
 

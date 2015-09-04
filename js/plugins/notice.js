@@ -18,7 +18,7 @@
             color: "alert alert-danger"
         }
     };
-    var DEFAULT_LEVEL = ALERT_LEVEL.warning;
+    var DEFAULT_LEVEL = ALERT_LEVEL.info;
 
     var aTime = 200;
 
@@ -30,6 +30,7 @@
             var noticeTpl = Smart.UI.template("notice");
             var noticeLevel = ALERT_LEVEL[level] || DEFAULT_LEVEL;
             $("*[s-ui-notice-role='message']", noticeTpl).html(msg);
+            $(".s-ui-notice-sign", noticeTpl).addClass(noticeLevel.sign);
             noticeTpl.addClass(noticeLevel.color)
                 .css({
                     "z-index": Smart.UI.zIndex(),
@@ -41,7 +42,6 @@
                     noticeTpl.css({"animation": "s-ui-notice-bounce 0.15s cubic-bezier(0.51, 0.18, 1, 1)"});
                 }, aTime);
             }, 10);
-
 
             var removeTimeout = 0;
 

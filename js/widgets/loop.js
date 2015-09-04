@@ -12,13 +12,14 @@
     //loop控件，可以用该控件来构建列表，grid。
     Smart.widgetExtend({
         id: "loop",
-        options: "type,tree-c,tree-indent-width,tree-indent-str",
+        options: "type,childrenKey,indentWidth,indentPre",
         defaultOptions: {
-            'tree-c': "children",
+            'childrenKey': "children",
             indent: 20
         }
     }, {
         onPrepare: function(){
+            this.cache = {};
             var emptyRow = getRoleNode("empty", this.S.node);
             var loopRow = getRoleNode("row", this.S.node);
             var prepareRow = getRoleNode("prepare", this.S.node);
@@ -35,8 +36,8 @@
             var row = this._getRow().show();
             if(indentNum){
                 var indentNode = row.find('*[s-loop-tree-role="indent"]');
-                if(this.widget.loop.options['tree-indent-str']){
-                    var str = this.widget.loop.options['tree-indent-str'];
+                if(this.widget.loop.options['indentPre']){
+                    var str = this.widget.loop.options['indentPre'];
                     for(var i = 1; i < indentNum; i++){
                         str += str;
                     }
@@ -46,17 +47,13 @@
                 }
 
             }
+            var that = this;
             var rowSmart = Smart.of(row);
-            rowSmart.on("smart-made", function(){
+            rowSmart.render().done(function(){
                 rowSmart.data(data);
+                that.node.append(rowSmart.node);
+                that.trigger("row-add", [row, data, indentNum, mode]);
             });
-            var that = this
-//            setTimeout(function(){
-//                that[(mode || "append")+"Node"](row);
-//                that.trigger("row-add", [row, data, indentNum, mode]);
-//            },0)
-            that[(mode || "append")+"Node"](row);
-            that.trigger("row-add", [row, data, indentNum, mode]);
         },
         addRows: function(datas, indentNum, mode){
             indentNum = indentNum == undefined ? 0 : indentNum;
@@ -64,7 +61,7 @@
                 this.addRow(datas[i], indentNum, mode);
                 //如果是tree的方式
                 if(this.widget.loop.options.type == "tree"){
-                    var children = datas[i][this.widget.loop.options['tree-c']];
+                    var children = datas[i][this.widget.loop.options['childrenKey']];
                     if(children && children.length){
                         this.addRows(children, indentNum + 1, mode);
                     }
@@ -87,7 +84,6 @@
                 this._addEmptyRow();
                 return;
             }
-            this.reset();
             var that = this;
             setTimeout(function(){
                 that.addRows(datas);
@@ -106,12 +102,12 @@
         options: "ctx:render"
     }, null, {
         dataSetter: function(data){
-            this.widget.row.cache.data = data;
+            this.widget.row.cache_data = data;
             this.inherited([data]);
             this.widget.row.options.render && this.widget.row.options.render.call(this, this.node);
         },
         dataGetter: function(){
-            return this.widget.row.cache.data;
+            return this.widget.row.cache_data;
         }
     });
 })(jQuery);

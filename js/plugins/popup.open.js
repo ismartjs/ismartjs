@@ -74,7 +74,7 @@
             });
             dialog.modal('hide');
             e.deferred = eDeferred.promise();
-        }).on("load", function(){
+        }).on("s-loaded", function(){
             titleNode.html(nodeSmart.meta.title || DIALOG_DEFAULT_TITLE);
             if(nodeSmart.meta.btns){
                 $.each(nodeSmart.meta.btns, function(i, btn){

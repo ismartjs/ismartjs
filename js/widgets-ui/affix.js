@@ -4,7 +4,7 @@
 ( function($) {
     'use strict';
 
-    // AFFIX CLASS DEFINITION
+    // AFFIX style DEFINITION
     // ======================
 
     var Affix = function (element, options) {
@@ -29,7 +29,7 @@
 
     Affix.prototype.getPinnedOffset = function () {
         if (this.pinnedOffset) return this.pinnedOffset
-        this.$element.removeClass(Affix.RESET).addClass('affix')
+        this.$element.removestyle(Affix.RESET).addstyle('affix')
         var scrollTop = this.$window.scrollTop()
         var position  = this.$element.offset()
         return (this.pinnedOffset = position.top - scrollTop)
@@ -73,8 +73,8 @@
         this.unpin = affix == 'bottom' ? this.getPinnedOffset() : null
 
         this.$element
-            .removeClass(Affix.RESET)
-            .addClass(affixType)
+            .removestyle(Affix.RESET)
+            .addstyle(affixType)
             .trigger($.Event(affixType.replace('affix', 'affixed')))
 
         if (affix == 'bottom') {
@@ -114,22 +114,22 @@
 (function ($) {
     Smart.widgetExtend({
         id: "affix",
-        options: "ctx:offset,ctx:target,ctx:of,class"
+        options: "ctx:offset,ctx:target,ctx:of,style"
     }, {
         onPrepare: function () {
-            this.S.node.addClass('s-ui-affix').smartAffix({
+            this.S.node.addstyle('s-ui-affix').smartAffix({
                 target: this.options.target,
                 offset: this.options.offset,
                 of: this.options.of
             });
-            if(this.options['class']){
+            if(this.options['style']){
                 var that = this;
                 this.S.node.on("affixed.bs.affix", function(e){
                     e.stopPropagation();
-                    that.S.node.addClass(that.options['class']);
+                    that.S.node.addClass(that.options['style']);
                 }).on("affixed-top.bs.affix", function(e){
                     e.stopPropagation();
-                    that.S.node.removeClass(that.options['class']);
+                    that.S.node.removeClass(that.options['style']);
                 });
             }
         }

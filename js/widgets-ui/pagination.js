@@ -55,40 +55,33 @@
     //分页控件
     Smart.widgetExtend({
         id: "pagination",
-        options: "pagekey,pskey,totalkey,showsize,start-p,end-n,disabled-c,active-c,pre,next,action",
+        options: "pagekey,pageSizeKey,totalKey,showSize,startText,nextText,disabledClass,activeClass,pre,next,action",
         defaultOptions: {
             'pagekey': "page",
-            'pskey': "pageSize",
-            'totalkey': "total",
-            "showsize": 11,
-            "start-p": "&laquo;",
-            "end-n": "&raquo;",
+            'pageSizeKey': "pageSize",
+            'totalKey': "total",
+            "showSize": 11,
+            "startText": "&laquo;",
+            "nextText": "&raquo;",
             "pre": "‹",
             "next": "›",
-            "disabled-c": "disabled",
-            "active-c": "active"
+            "disabledClass": "disabled",
+            "activeClass": "active"
         }
     }, {
         onPrepare: function(){
-            if(this.options['action']){
-                if(!$.isFunction(this.options['action'])){
-                    var script = this.options['action'];
-                    var action = this.S.action(script);
-                    this.options['action'] = action;
-                }
-            }
         }
 
     }, {
         dataSetter: function (data) {
             var pi = paging(data[this.widget.pagination.options['pagekey']],
-                data[this.widget.pagination.options['pskey']],
-                data[this.widget.pagination.options['totalkey']],
-                data[this.widget.pagination.options['showsize']]);
+                data[this.widget.pagination.options['pageSizeKey']],
+                data[this.widget.pagination.options['totalKey']],
+                data[this.widget.pagination.options['showSize']]);
             this.node.empty();
-            var startPreLi = this._createLi(this.widget.pagination.options['start-p']);
+            var startPreLi = this._createLi(this.widget.pagination.options['startText']);
             if (pi.startPrePage <= 0) {
-                startPreLi.addClass(this.widget.pagination.options['disabled-c']);
+                startPreLi.addClass(this.widget.pagination.options['disabledClass']);
             } else {
                 startPreLi.click(function () {
                     that._triggerPage(pi.startPrePage);
@@ -97,7 +90,7 @@
             this.node.append(startPreLi);
             var preLi = this._createLi(this.widget.pagination.options.pre);
             if (pi.prePage <= 0) {
-                preLi.addClass(this.widget.pagination.options['disabled-c']);
+                preLi.addClass(this.widget.pagination.options['disabledClass']);
             } else {
                 preLi.click(function () {
                     that._triggerPage(pi.prePage);
@@ -109,7 +102,7 @@
                 (function (i) {
                     var pageLi = that._createLi(i);
                     if (i == pi.page) {
-                        pageLi.addClass(that.widget.pagination.options['active-c']);
+                        pageLi.addClass(that.widget.pagination.options['activeClass']);
                     }
                     pageLi.click(function () {
                         that._triggerPage(i);
@@ -119,16 +112,16 @@
             }
             var nextLi = this._createLi(this.widget.pagination.options.next);
             if (pi.nextPage <= 0) {
-                nextLi.addClass(this.widget.pagination.options['disabled-c']);
+                nextLi.addClass(this.widget.pagination.options['disabledClass']);
             } else {
                 nextLi.click(function () {
                     that._triggerPage(pi.nextPage);
                 });
             }
             this.node.append(nextLi);
-            var endNextLi = this._createLi(this.widget.pagination.options['end-n']);
+            var endNextLi = this._createLi(this.widget.pagination.options['nextText']);
             if (pi.endNextPage <= pi.endPage) {
-                endNextLi.addClass(this.widget.pagination.options['disabled-c']);
+                endNextLi.addClass(this.widget.pagination.options['disabledClass']);
             } else {
                 endNextLi.click(function () {
                     that._triggerPage(pi.endNextPage);
@@ -149,7 +142,7 @@
             return li;
         },
         getPage: function(){
-            return this.node.find("li." + this.widget.pagination.options['active-c']).attr("_page");
+            return this.node.find("li." + this.widget.pagination.options['activeClass']).attr("_page");
         }
     });
 })(jQuery);

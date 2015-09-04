@@ -491,7 +491,7 @@ ul.s-ui-contextmenu li.disabled:hover > span {
 
 .s-ui-notice .close {
     float: right;
-    font-size: 40px;
+    font-size: 38px;
     font-weight: normal;
     position: absolute;
     right: 7px;
@@ -500,7 +500,15 @@ ul.s-ui-contextmenu li.disabled:hover > span {
 
 .s-ui-notice .s-ui-notice-msg {
     margin-right: 36px;
+    margin-left: 28px;
     word-break: break-all;
+}
+
+.s-ui-notice .s-ui-notice-sign{
+    position: absolute;
+    font-size: 24px;
+    top: 12px;
+    left: 12px;
 }
 
 .icon-unfold:before {

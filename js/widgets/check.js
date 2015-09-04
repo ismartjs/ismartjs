@@ -12,12 +12,12 @@
     //选中控件
     Smart.widgetExtend({
         id: "check",
-        options: "i-checked-class, turn, multiple, ctx:checkall-h, h-checked-class, path",
+        options: "checkedStyle, turn, multiple, ctx:checkallHandler, handlerCheckStyle, path",
         defaultOptions: {
             "turn": "on",
-            "i-checked-class": "warning",
+            "checkedStyle": "warning",
             multiple: true,
-            "h-checked-class": "",
+            "handlerCheckStyle": "",
             "path": "false"
         }
     }, {
@@ -31,19 +31,19 @@
             });
 
             var checkallHandles = [];
-            this.cache.checkallHandles = checkallHandles;
+            this.checkallHandles = checkallHandles;
             var innerCheckallHandle = $("*[s-check-role='checkall-h']", this.S.node);
 
             if (innerCheckallHandle.size() > 0) {
                 checkallHandles.push(innerCheckallHandle);
-                this.S.node.delegate("*[s-check-role='checkall-h']", "click", function (e) {
+                this.S.node.delegate("*[s-check-role='checkall-h']", "change", function (e) {
                     that.S._toggleCheckAll($(this));
                     e.stopPropagation();
                 });
             }
-            if (this.options['checkall-h']) {
-                checkallHandles.push(this.options['checkall-h']);
-                this.options['checkall-h'].click(function (e) {
+            if (this.options['checkallHandler']) {
+                checkallHandles.push(this.options['checkallHandler']);
+                this.options['checkallHandler'].click(function (e) {
                     that.S._toggleCheckAll($(this));
                     e.stopPropagation();
                 });
@@ -51,16 +51,17 @@
 
             this.S.node.delegate(CHECK_ITEM_SELECTOR, "unchecked", function (e) {
                 innerCheckallHandle.size() && that.S._uncheckHandle(innerCheckallHandle);
-                that.options['checkall-h'] && that.S._uncheckHandle(that.options['checkall-h']);
-                that.options['checkall-h'] && that.options['checkall-h'].prop("checked", false);
+                that.options['checkallHandler'] && that.S._uncheckHandle(that.options['checkallHandler']);
+                that.options['checkallHandler'] && that.options['checkallHandler'].prop("checked", false);
                 e.stopPropagation();
             });
         },
-        onRefresh: function () {
-            this.S.uncheckAll()
-        },
         onReset: function () {
-            this.S.uncheckAll()
+            this.S.uncheckAll();
+
+        },
+        onClean: function(){
+            this.onReset();
         }
     }, {
         turn: function (type) {
@@ -73,12 +74,12 @@
         },
         _toggleCheckAll: function (node) {
             var flag;
-            if (node.hasClass(CHECKED_CLASS)) {
+            if (!node.prop("checked")) {
                 flag = false;
-                node.removeClass(this.widget.check.options['h-checked-class']).removeClass(CHECKED_CLASS);
+                node.removeClass(this.widget.check.options['handlerCheckStyle']).removeClass(CHECKED_CLASS);
             } else {
                 flag = true;
-                node.addClass(this.widget.check.options['h-checked-class']).addClass(CHECKED_CLASS);
+                node.addClass(this.widget.check.options['handlerCheckStyle']).addClass(CHECKED_CLASS);
             }
             flag ? this.checkAll() : this.uncheckAll();
         },
@@ -97,20 +98,20 @@
             });
         },
         _checkHandlesByFlag: function (flag) {
-            var checkallHandles = this.widget.check.cache.checkallHandles;
+            var checkallHandles = this.widget.check.checkallHandles;
             var that = this;
             $.each(checkallHandles, function () {
                 flag ? that._checkHandle($(this)) : that._uncheckHandle($(this));
             });
         },
         _checkHandle: function (node) {
-            node.addClass(this.widget.check.options['h-checked-class']);
+            node.addClass(this.widget.check.options['handlerCheckStyle']);
             if (node.is(":checkbox")) {
                 node.prop("checked", true);
             }
         },
         _uncheckHandle: function (node) {
-            node.removeClass(this.widget.check.options['h-checked-class']);
+            node.removeClass(this.widget.check.options['handlerCheckStyle']);
             if (node.is(":checkbox")) {
                 node.prop("checked", false);
             }
@@ -140,7 +141,7 @@
                     return;
                 }
             }
-            var checkedClass = this.widget.check.options['i-checked-class'];
+            var checkedClass = this.widget.check.options['checkedStyle'];
             if (node.hasClass(checkedClass)) {
                 this._uncheck(node);
             } else {
@@ -148,7 +149,7 @@
             }
         },
         _check: function (node) {
-            if (node.hasClass(this.widget.check.options['i-checked-class'])) {
+            if (node.hasClass(this.widget.check.options['checkedStyle'])) {
                 return;
             }
             //如果是单选，则需要把其他的item取消选中
@@ -172,7 +173,7 @@
             });
         },
         _uncheck: function (node) {
-            if (!node.hasClass(this.widget.check.options['i-checked-class'])) {
+            if (!node.hasClass(this.widget.check.options['checkedStyle'])) {
                 return;
             }
             this._uncheckNode(node);
@@ -217,11 +218,11 @@
             if (node.attr(CHECKED_ATTR) || $(CHECK_ROW_IG_SELECTOR, node).size() > 0 || node.attr(CHECK_ROW_IG_SELECTOR)) {
                 return;
             }
-            node.attr(CHECKED_ATTR, true).addClass(this.widget.check.options['i-checked-class']).addClass(CHECKED_CLASS).trigger("checked");
+            node.attr(CHECKED_ATTR, true).addClass(this.widget.check.options['checkedStyle']).addClass(CHECKED_CLASS).trigger("checked");
 
             var handler = $(CHECK_ITEM_HANDLER_SELECTOR, node);
             if (handler.size() == 0) return;
-            handler.addClass(this.widget.check.options['h-checked-class']).addClass(CHECKED_CLASS);
+            handler.addClass(this.widget.check.options['handlerCheckStyle']).addClass(CHECKED_CLASS);
             if (handler.is(":checkbox")) {
                 setTimeout(function () {
                     if (!handler.prop("checked")) handler.prop("checked", true);
@@ -232,10 +233,10 @@
             if (!node.attr(CHECKED_ATTR)) {
                 return;
             }
-            node.removeAttr(CHECKED_ATTR).removeClass(this.widget.check.options['i-checked-class']).removeClass(CHECKED_CLASS).trigger("unchecked");
+            node.removeAttr(CHECKED_ATTR).removeClass(this.widget.check.options['checkedStyle']).removeClass(CHECKED_CLASS).trigger("unchecked");
             var handler = $(CHECK_ITEM_HANDLER_SELECTOR, node);
             if (handler.size() == 0) return;
-            handler.removeClass(this.widget.check.options['h-checked-class']).removeClass(CHECKED_CLASS);
+            handler.removeClass(this.widget.check.options['handlerCheckStyle']).removeClass(CHECKED_CLASS);
             if (handler.is(":checkbox")) {
                 setTimeout(function () {
                     if (handler.prop("checked")) handler.prop("checked", false);
