@@ -62,7 +62,6 @@
         scripts.push("(function(){");
         scripts.push("    return function(){");
         if (meta.args) { //如果有参数定义，那么参数的值是
-            var windowOpenArgsVar = "__WINDOW_OPEN_ARGS_VAR__";
             //传递进来的加载参数对象是第二个参数。
             $.each(meta.args, function (i, arg) {
                 var argSeg = arg.split(":");
@@ -125,7 +124,24 @@
         this.node.empty().append(this._WNODE);
         undelegateEvent(this);
         var scriptFn = this.context(scripts.join("\n"));
-        var context = scriptFn.call(this, loadArgs);
+        //处理url后面的queryString，也把后面的queryString作为loadArgs
+        var scriptArgs = {};
+        var queryString = "";
+        if(href.indexOf("#") != -1){
+            queryString = href.substring(href.indexOf("?")+1, href.indexOf("#"));
+        } else {
+            queryString = href.substring(href.indexOf("?")+1);
+        }
+        if(queryString != ""){
+            $.each(queryString.split("&"), function(i, kv){
+                var tmps = kv.split("=");
+                if(tmps.length > 1){
+                    scriptArgs[tmps[0]] = tmps[1];
+                }
+            });
+        }
+        $.extend(scriptArgs, loadArgs || {});
+        var context = scriptFn.call(this, scriptArgs);
         this.CONTEXT = context;
         //绑定浏览器事件，click等
         delegateEvent(this);

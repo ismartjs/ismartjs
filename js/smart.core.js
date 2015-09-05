@@ -220,6 +220,29 @@
             }
             return _datas;
         },
+        //数据适配
+        adaptData: function(data, adapter){
+            var rs;
+            if($.isFunction(data)){
+                rs = data();
+            }
+            function adapt(_data){
+                if($.isFunction(adapter)){
+                    return adapter(_data);
+                }
+                return _data[adapter];
+            }
+            var deferred = $.Deferred();
+            if(Smart.isDeferred(rs)){
+                rs.done(function(_rs){
+                    deferred.resolve(adapt(_rs));
+                }).fail(function(){
+                    deferred.reject();
+                })
+            } else {
+                return adapt(rs);
+            }
+        },
         walkTree: (function () {
             function _walkTree(tree, walker, childrenKey) {
                 childrenKey = childrenKey || "children";
