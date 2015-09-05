@@ -232,13 +232,14 @@
                 }
                 return _data[adapter];
             }
-            var deferred = $.Deferred();
             if(Smart.isDeferred(rs)){
+                var deferred = $.Deferred();
                 rs.done(function(_rs){
                     deferred.resolve(adapt(_rs));
                 }).fail(function(){
                     deferred.reject();
-                })
+                });
+                return deferred;
             } else {
                 return adapt(rs);
             }
