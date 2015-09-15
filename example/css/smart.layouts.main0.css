@@ -1,0 +1,614 @@
+.topbar {
+    position: relative;
+    z-index: 200;
+    clear: both;
+    height: 50px;
+    background: #09C;
+    -font-size: 12px;
+    box-sizing: content-box;
+    width: 100%;
+}
+
+.topbar a:hover {
+    text-decoration: none;
+}
+
+.topbar .logo {
+    float: left;
+    padding: 0;
+    overflow: hidden;
+    background: #0087b4;
+}
+
+.topbar .logo .logo-text {
+    display: block;
+    float: left;
+    padding: 0 7px;
+    height: 50px;
+    color: #FFF;
+    vertical-align: middle;
+    line-height: 0;
+    text-align: center;
+}
+
+.topbar .logo .logo-text em {
+    display: inline-block;
+    line-height: 50px;
+    vertical-align: middle;
+    font-style: normal;
+    cursor: pointer;
+}
+
+.topbar .topbar-nav {
+    float: left;
+    padding-left: 0px;
+}
+
+.topbar .topbar-nav .topbar-nav-menu:hover {
+    display: block;
+    float: left;
+    position: relative;
+    z-index: 10;
+    height: 50px;
+    background: #008fbf;
+}
+
+.topbar .topbar-nav-menu a:hover {
+    text-decoration: none;
+}
+
+.topbar .topbar-nav-menu.open:hover {
+    opacity: 1;
+}
+
+.topbar .topbar-nav-menu > a {
+    position: relative;
+    display: block;
+    float: left;
+    height: 50px;
+    -font-size: 12px;
+    color: #FFF;
+    overflow: hidden;
+    border-right: 1px solid #008FBF;
+    border-left: 1px solid #00A7DF;
+    cursor: pointer;
+    padding: 0 15px;
+    line-height: 50px;
+    text-decoration: none !important;
+}
+
+.topbar .dropdown > a {
+    position: relative;
+    z-index: 2;
+    display: block;
+    float: left;
+    height: 50px;
+
+    text-align: center;
+    -font-size: 12px;
+    color: #FFF;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.topbar .dropdown .dropdown-menu {
+    z-index: 1;
+    font-size: 12px;
+    border-radius: 0;
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.topbar .dropdown .dropdown-menu {
+    width: 100%;
+    min-width: 0px;
+    border: none;
+    margin-top: 1px;
+}
+
+.topbar .dropdown .dropdown-menu-btn{
+    height: 40px;
+    border-bottom: 1px solid #eaedf1;
+}
+
+.topbar .dropdown .dropdown-menu-btn a {
+    line-height: 40px;
+    padding-left: 10px;
+}
+
+.topbar .topbar-nav-menu > a em {
+    font-style: normal;
+    cursor: pointer;
+}
+
+.topbar .topbar-nav-menu > a .caret {
+    border-top: 5px solid #fff;
+    margin-left: 0;
+    transition: transform .2s ease-out;
+}
+
+.topbar .topbar-nav-menu a{
+    padding: 0px 14px 0px 20px;
+}
+
+
+.topbar .topbar-nav-menu.open {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.topbar .topbar-nav-menu.open > a {
+
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #fff;
+    background: #FFF;
+    color: #000;
+    line-height: 50px;
+    position: relative;
+    z-index: 2;
+}
+
+.topbar a.main-menu-arrow {
+    padding: 0 5px;
+}
+
+.topbar a.main-menu-arrow.arrow-right {
+    border-left: 1px solid #464444;
+    border-right: 0;
+}
+
+.topbar .topbar-nav-menu.open > a .caret {
+    border-top: 5px solid #000;
+    transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+}
+
+.topbar .topbar-nav-menu .dropdown-menu ul {
+    padding: 10px 5px;
+}
+
+.topbar .topbar-nav-menu .dropdown-menu ul:before,
+.topbar .topbar-nav-menu .dropdown-menu ul:after {
+    content: " ";
+    display: table;
+}
+
+.topbar .topbar-nav .topbar-nav-menu .dropdown-menu ul:after {
+    clear: both;
+}
+
+.main-view {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+    bottom: 0;
+}
+
+.main-left-sidebar {
+    width: 180px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #293038;
+    z-index: 100;
+}
+
+.main-left-sidebar .sidebar-fold {
+    height: 30px;
+    background: #394555;
+    color: #aeb9c2;
+    text-align: right;
+    line-height: 30px !important;
+    font-size: 24px;
+    user-select: none;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    padding-left: 10px;
+    position: absolute;
+    top: 5px;
+    right: 0;
+    left: 0;
+}
+
+.main-left-sidebar .sidebar-menu-panel{
+    position: absolute;
+    top: 40px;
+    bottom: 0px;
+    left: 0;
+    right: -20px;
+    padding-right: 20px;
+    overflow: overlay;
+    overflow-x: hidden;
+}
+
+.main-left-sidebar .sidebar-nav .sidebar-title {
+    height: 40px;
+    background: #22282e;
+    color: #fff;
+    line-height: 40px;
+    position: relative;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+.main-left-sidebar .sidebar-nav.menu-close > ul{
+    height: 0px !important;
+    overflow: hidden;
+}
+
+.main-left-sidebar .sidebar-nav .sidebar-title:hover {
+    background: #516071;
+}
+
+.main-left-sidebar .sidebar-nav .sidebar-title-icon {
+    display: inline-block;
+    margin: -4px 8px 0 9px;
+    vertical-align: middle;
+    transition: transform 0.12s;
+    -o-transition: -o-transform 0.12s;
+    -ms-transition: -ms-transform 0.12s;
+    -moz-transition: -moz-transform 0.12s;
+    -webkit-transition: -webkit-transform 0.12s;
+}
+
+.main-left-sidebar .sidebar-nav .sidebar-manage {
+    vertical-align: middle;
+    position: absolute;
+    height: 40px;
+    width: 30px;
+    right: 0;
+}
+
+.main-left-sidebar .sidebar-nav .sidebar-manage .caret{
+    transition: transform 0.12s;
+    -o-transition: -o-transform 0.12s;
+    -ms-transition: -ms-transform 0.12s;
+    -moz-transition: -moz-transform 0.12s;
+    -webkit-transition: -webkit-transform 0.12s;
+}
+
+.main-left-sidebar .sidebar-nav.menu-close .sidebar-manage .caret{
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+}
+
+.main-left-sidebar .sidebar-nav .nav-item {
+    position: relative;
+    border-top: 1px solid #2F3740;
+    border-bottom: 1px solid #242A30;
+}
+
+
+.main-left-sidebar .sidebar-nav li a {
+    display: block;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    overflow: hidden;
+}
+
+.main-left-sidebar .sidebar-nav  li.active a {
+    background: #0099cc;
+}
+
+.main-left-sidebar .sidebar-nav li a:hover {
+    background: #37424f;
+}
+
+.main-left-sidebar .sidebar-nav .nav-icon {
+    width: 50px;
+    text-align: center;
+    font-size: 16px;
+    float: left;
+    color: #aeb9c2;
+    height: 40px;
+}
+
+.main-left-sidebar .sidebar-nav .nav-title {
+    float: left;
+    overflow: hidden;
+    color: #fff;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.main-right-panel {
+    background: #fff;
+    position: absolute;
+    left: 180px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 110;
+}
+
+.window-tabs {
+    position: relative;
+    display: flex;
+    -float: left;
+    height: 45px;
+    -font-size: 12px;
+    color: #FFF;
+    overflow: hidden;
+    line-height: 35px;
+    padding: 10px 15px 0 15px;
+    background: #EAEDF1;
+    box-shadow: -3px -1px 3px #999 inset;
+}
+
+.window-tabs li {
+    float: left;
+    position: relative;
+    height: 35px;
+    width: 140px;
+    box-shadow: 1px 1px 3px #888;
+}
+
+.window-tabs li.ui-sortable-placeholder {
+    width: 140px;
+    height: 35px;
+}
+
+.window-tabs li a span {
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+.window-tabs li a {
+    color: #333;
+    height: 35px;
+    line-height: 35px;
+    padding: 0 8px;
+    display: block;
+    background: #A5A5A5;
+    opacity: 0.7;
+    -width: 130px;
+    width: 100%;
+    text-decoration: none;
+}
+
+.window-tabs li.active a {
+    background: #FFF;
+    color: #000;
+    opacity: 1;
+}
+
+.window-tabs li a:hover {
+    opacity: 1;
+}
+
+.window-tabs li.closeable a {
+    padding-right: 22px;
+    padding-left: 8px;
+}
+
+.window-tabs li.closeable > div {
+    height: 25px;
+    width: 24px;
+    cursor: pointer;
+    position: absolute;
+    right: 3px;
+    opacity: .6;
+    font-size: 19px;
+    top: 5px;
+    line-height: 24px;
+    text-align: center;
+    transition: transform 0.3s;
+    -o-transition: -o-transform 0.3s;
+    -ms-transition: -ms-transform 0.3s;
+    -moz-transition: -moz-transform 0.3s;
+    -webkit-transition: -webkit-transform 0.3s;
+}
+
+.window-tabs li.closeable > div:hover{
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+}
+
+.window-tabs li.active > div {
+    color: #000;
+    font-weight: bold;
+}
+
+.window-tabs li.closeable > div:hover {
+    opacity: 1;
+}
+
+/**
+    ajax 活跃提示
+*/
+.ajax-active-tip {
+    position: absolute;
+    z-index: 100000;
+    padding: 5px 20px 5px 10px;
+    right: 8px;
+    top: 56px;
+    font-size: 14px;
+    min-width: 200px;
+    border-radius: 0;
+}
+
+.main-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.main-window {
+    position: absolute;
+    top: 50px;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+.main-window > .navbar {
+    font: 12px/18px "\5FAE\8F6F\96C5\9ED1", Tahoma, "\5B8B\4F53";
+    color: #666666;
+    word-wrap: break-word;
+    height: 56px;
+    border: none;
+    border-bottom: 1px solid #dddddd;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+    position: relative;
+    box-sizing: content-box;
+    margin-bottom: 0px;
+    background-color: #fff;
+    border-radius: 0 !important;
+    display: none;
+}
+
+.main-window > .navbar .navbar-title {
+    float: left;
+    line-height: 56px;
+    padding: 0 40px 0 14px;
+    font-size: 18px;
+    color: #999999;
+}
+
+.main-window .window-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.main-window .window-container > div {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    padding: 15px;
+    padding-top: 25px;
+    overflow: auto;
+}
+
+.main-window .window-container.navbar-on {
+    top: 57px;
+}
+
+.text-warning {
+    color: #F90 !important;
+}
+
+.navbar-nav {
+    padding-left: 10px;
+}
+
+.navbar-nav li {
+    float: left;
+    display: inline;
+    margin: 0 20px;
+    height: 56px;
+    font-size: 14px;
+    line-height: 56px;
+    padding: 0 2px;
+    color: #333333;
+    cursor: pointer;
+}
+
+.navbar-nav li.active {
+    height: 56px;
+    color: #ff4902;
+    border-bottom: 2px solid #ff4902;
+}
+
+.main-sidebar {
+    z-index: 100;
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    top: 80px;
+    right: 45px;
+}
+
+.main-sidebar.margin-navbar {
+    top: 137px;
+}
+
+.main-sidebar .nav > li > a {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #999;
+    padding: 4px 20px;
+}
+
+.main-sidebar .nav > li > a:hover, .main-sidebar .nav > li > a:focus, .main-sidebar .nav > li > a.active {
+    padding-left: 19px;
+    color: #563d7c;
+    text-decoration: none;
+    background-color: transparent;
+    border-left: 1px solid #563d7c;
+}
+
+.main-window .window-container > div.padding-sidebar {
+    padding-right: 300px;
+}
+
+.topbar .topbar-right .topbar-right-menu > * {
+    float: left;
+}
+
+.topbar .topbar-right > div {
+    float: left;
+}
+
+.topbar .dropdown.open .s-ui-topbar-btn .caret {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg)
+}
+
+.topbar .s-ui-topbar-user {
+    height: 50px;
+    line-height: 50px;
+}
+
+.topbar .s-ui-topbar-btn {
+    height: 50px;
+    display: inline-block;
+    background-color: #2a2e31;
+    text-decoration: none;
+    text-align: center;
+    color: #fff;
+    line-height: 50px;
+    -o-transition: all 0.3s;
+    -ms-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    -webkit-transition: all 0.3s;
+    border-width: 0 1px 0 1px;
+    border-color: #000 #2B2B2B #000 #464444;
+    border-style: solid;
+}
+
+.topbar .s-ui-topbar-btn {
+    font-size: 14px;
+    text-align: center;
+    white-space: nowrap;
+    padding: 0 15px;
+}
+
+.topbar .s-ui-topbar-btn:hover {
+    background-color: #585e65;
+}

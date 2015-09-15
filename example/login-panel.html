@@ -1,8 +1,5 @@
 <meta title="用户登录" width="500px" />
-<form role="form"
-      id="loginForm"
-      s="valid,submit"
-      method="get" style="padding: 20px;" action="/login">
+<form role="form" id="loginForm" s="valid,form" s-form="{done:submitDone, action:loginAction}" method="post" style="padding: 20px;" >
     <div class="form-group" s-valid-role="item">
         <div class="input-group input-group-lg">
             <span class="input-group-addon"><span class="fa fa-user"></span></span>
@@ -16,9 +13,35 @@
         </div>
     </div>
     <div class="form-group">
-        <input type="button" value="登 录" s="click" s-click-action="S.close(true)" class="btn btn-lg btn-success" style="width: 100%" />
+        <input type="submit" value="登 录" class="btn btn-lg btn-success" style="width: 100%" />
     </div>
 </form>
 <script>
+    function submitDone(rs) {
+        if(rs == -1){
+            S.alert("您输入的用户名不存在").done(function(){
+                S.N("#account").focus();
+            });
 
+        } else if(rs == -2){
+            S.alert("您输入的密码不正确").done(function(){
+                S.N("#password").focus();
+            });
+
+        } else if(rs == -3){
+            S.alert("该账号已经被冻结，无法使用").done(function(){
+                S.N("#account").focus();
+            });
+        } else {
+            S.close(rs);
+        }
+    }
+
+    function loginAction(){
+        var deferred = $.Deferred();
+        setTimeout(function(){
+            deferred.resolve(true);
+        }, 1000);
+        return deferred;
+    }
 </script>

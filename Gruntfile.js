@@ -15,8 +15,9 @@ module.exports = function (grunt) {
             options: {
                 banner: '/*! <%= pkg.name %> version:<%=pkg.version%> <%= grunt.template.today("yyyy-mm-dd") %> ' +
                     '<%= pkg.website %> Email:<%= pkg.email %> QQ: <%= pkg.QQ %>*/\n',
-                sourceMap:function(path) { return path.substring(path.lastIndexOf("/")+1).replace('.js',".map")},
-                sourceMapRoot: "./dest/js/"
+                sourceMap:function(path) { return path.replace('.js',".map")},
+                sourceMapRoot:"../../",
+                sourceMappingURL: function(path) { return path.replace('.js',".map")}
             },
             "ismart": {
                 files: {
@@ -31,8 +32,7 @@ module.exports = function (grunt) {
                     {expand: true,
                         src: [
                         "js/**", "index.html", "home.html", "boot.html", "login-panel.html", "main-bottom.html",
-                            "main.html", "topbar-left.html", "login-panel-dist.html","boot-dist.html",
-                            "topbar-right.html", "css/**", "images/**",
+                            "main.html", "topbar-left.html", "topbar-right.html", "css/**", "images/**",
                             "bootstrap3/**","font-awesome/**","layouts/**"
                         ], dest: 'example'},
                     {src:"json/menu-example.json",dest:"example/json/menu.json"},

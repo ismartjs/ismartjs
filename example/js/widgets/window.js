@@ -2,7 +2,7 @@
  * Created by Administrator on 2014/6/11.
  */
 (function ($) {
-    var SCRIPT_RE = /<script((?:.|\s)*?)>((?:.|\s)*?)<\/script>/gim;
+    var SCRIPT_RE = /<script(\s+.*['"]text\/javascript['"][^\w>]*|\s*?)>((?:.|\s)*?)<\/script>/gim;
     var META_RE = /<meta(.*?)\/>/gim;
     var META_ITEM_RE = /(\S+)=(['"])([^\2]*?)\2/gi;
 
@@ -62,14 +62,13 @@
         scripts.push("(function(){");
         scripts.push("    return function(){");
         if (meta.args) { //如果有参数定义，那么参数的值是
-            var windowOpenArgsVar = "__WINDOW_OPEN_ARGS_VAR__";
             //传递进来的加载参数对象是第二个参数。
             $.each(meta.args, function (i, arg) {
                 var argSeg = arg.split(":");
                 var argStr = "var " + argSeg[0] + " = arguments[0]['" + argSeg[0] + "'];\n";
                 metaScripts.push("var " + argSeg[0] + " = arguments[1]['" + argSeg[0] + "'];");
-                if(argSeg.length == 2){
-                    var tmpStr =  argSeg[0] + " = " +argSeg[0] + " !==undefined ? " + argSeg[0] + " : " + argSeg[1] + ";";
+                if (argSeg.length == 2) {
+                    var tmpStr = argSeg[0] + " = " + argSeg[0] + " !==undefined ? " + argSeg[0] + " : " + argSeg[1] + ";";
                     argStr += tmpStr + "\n";
                     metaScripts.push(tmpStr);
                 }
@@ -123,17 +122,31 @@
         });
 
         this.node.empty().append(this._WNODE);
-        var scriptFn = eval(scripts.join("\n"));
-        var context = scriptFn.call(this, loadArgs);
-        this.setContext(context);
-
-        var that = this;
-        this.on("window.document.ready", function(e){e.stopPropagation()});
-        this.makeChildren().done(function(){
-            that.trigger("window.document.ready");
-            //处理自动焦点的元素
-            that.node.find("*[s-window-role='focus']:first").focus();
-        });
+        undelegateEvent(this);
+        var scriptFn = this.context(scripts.join("\n"));
+        //处理url后面的queryString，也把后面的queryString作为loadArgs
+        var scriptArgs = {};
+        var queryString = "";
+        if(href.indexOf("#") != -1){
+            queryString = href.substring(href.indexOf("?")+1, href.indexOf("#"));
+        } else {
+            queryString = href.substring(href.indexOf("?")+1);
+        }
+        if(queryString != ""){
+            $.each(queryString.split("&"), function(i, kv){
+                var tmps = kv.split("=");
+                if(tmps.length > 1){
+                    scriptArgs[tmps[0]] = tmps[1];
+                }
+            });
+        }
+        $.extend(scriptArgs, loadArgs || {});
+        var context = scriptFn.call(this, scriptArgs);
+        this.CONTEXT = context;
+        //绑定浏览器事件，click等
+        delegateEvent(this);
+        //处理自动焦点的元素
+        that.node.find("*[s-window-role='focus']:first").focus();
 
         //处理锚点滚动
         if (href.indexOf("#") != -1) {
@@ -141,6 +154,54 @@
             this.scrollTo(anchor);
         }
     };
+
+    var EVENT_MAP = {
+        "s-click": 'click',
+        "s-change": 'change',
+        "s-focus": 'focus',
+        "s-blur": 'blur',
+        "s-dblclick": 'dblclick',
+        "s-mouseover": 'mouseover',
+        "s-mousemove": "mousemove",
+        "s-mouseout": "mouseout"
+    };
+
+    function undelegateEvent(smart) {
+        smart.node.undelegate();
+    }
+
+    function delegateEvent(smart) {
+        $.each(EVENT_MAP, function (key, val) {
+            smart.node.delegate("*[" + key + "]", val, function (e) {
+                var node = $(e.currentTarget);
+                var delegateTarget = node.data("_window_delegateTarget_");
+                if(!delegateTarget){
+                    delegateTarget = e.delegateTarget;
+                    node.data("_window_delegateTarget_", delegateTarget);
+                }
+                if(smart.node[0] != delegateTarget){
+                    return;
+                }
+                var evtKey = "__SMART__EVENT__" + key;
+                var action = node.data(evtKey);
+                if (!action) {
+                    var evtScript = node.attr(key);
+                    action = smart.action(evtScript);
+                    node.data(evtKey, action);
+                }
+                var result = action.call(Smart.of(node), e);
+                if (result == null)
+                    return;
+                if (Smart.isDeferred(result)) {//说明这个是deferred对象
+                    Smart.disableNode(node);
+                    result.always(function () {
+                        Smart.disableNode(node, false);
+                    });
+                }
+                return result;
+            });
+        });
+    }
 
     var CURRENT_WINDOW_ID = 0;
 
@@ -154,8 +215,8 @@
         options: "href,args"
     }, {
         onPrepare: function () {
+            this.cache = {};
             this.S._WINDOW_ID = "_w_" + (CURRENT_WINDOW_ID++);
-            this.S.setValueScope({});
             this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
             this.cache[EVENT_ON_CACHE] = [];
             this.location = {
@@ -166,48 +227,63 @@
                 this.S.node.attr("id", this.S._WINDOW_ID);
             }
         },
-        onReady: function () {
+        onBuild: function () {
             var deferred = $.Deferred();
+            var that = this;
             if (this.location.href) {
-                this.S.load.apply(this.S, [this.location.href].concat(this.location.args || [])).always(function () {
-                    deferred.resolve()
+                this.S._load.apply(this.S, [this.location.href].concat(this.location.args || [])).done(function () {
+                    deferred.resolve();
+                }).fail(function () {
+                    deferred.reject();
                 });
                 return deferred.promise();
             } else {
+                that.S.trigger("s-loaded");
                 return deferred.resolve();
             }
         },
-        onRefresh: function(){
-            this._clean();
-            this.S.node.html("正在刷新");
-            this.onReady();
-        },
-        _clean: function(){
+        _clean: function () {
             this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
             this.S._offEvent();
             this.S.node.empty();
-            this.S.setValueScope({});
         },
-        onDestroy: function(){
-            this.onReset()
+        onDestroy: function () {
+            this.onClean();
         },
-        onReset: function(){
+        onClean: function () {
             this._clean();
-            this.S.node.empty();
         }
     }, {
-        _offEvent: function(){
+        _offEvent: function () {
             var that = this;
             $.each(this.widget.window.cache[EVENT_ON_CACHE], function (i, paramAry) {
                 that.off.apply(that, paramAry);
             });
             this.widget.window.cache[EVENT_ON_CACHE] = [];
         },
-        load: function (href, loadArgs) {
-            this.reset();
+        refresh: function () {
+            return this.load(this.widget.window.location.href, this.widget.window.location.args)
+        },
+        load: function () {
+            var that = this;
+            var deferred = $.Deferred();
+            this._load.apply(this, Smart.SLICE.call(arguments)).done(function () {
+                that.renderChildren().done(function () {
+                    that.trigger("s-ready");
+                    deferred.resolve(that);
+                }).fail(function () {
+                    deferred.reject();
+                })
+            }).fail(function(){
+                deferred.reject();
+            });
+            return deferred;
+        },
+        _load: function (href, loadArgs) {
+            this.clean();
             this.widget.window.cache["loadState"] = true;//是否已经加载
             this._offEvent();
-            this.trigger("loading");
+            this.trigger("s-loading");
             var deferred = $.Deferred();
             var args = $.makeArray(arguments);
             this.widget.window.location.args = loadArgs;
@@ -217,17 +293,19 @@
                 var result = parseHtml(html);
                 var scriptSrcs = result.scriptSrcs;
                 Smart.loadFiles(scriptSrcs, href).done(function () {
-                    process.apply(that, [result].concat(args));
-                    //当页面存在锚点的时候，页面滚动的时候，监听锚点的位置，并触发事件。
-                    that._listenAnchorPos();
+
                 }).fail(function () {
                     Smart.error(href + "的依赖处理失败");
                 }).always(function () {
-                    that.trigger("load");
-                    deferred.resolve(that);
+                    process.apply(that, [result].concat(args));
+                    that.trigger("s-loaded");
+                    //当页面存在锚点的时候，页面滚动的时候，监听锚点的位置，并触发事件。
+                    that._listenAnchorPos();
+                    deferred.resolve();
                 });
+
             }).fail(function () {
-                that.trigger("load");
+                deferred.reject();
             });
             return deferred;
         },
@@ -394,6 +472,15 @@
                 this.widget.window.cache[EVENT_ON_CACHE].push([events, selector, fn]);
             }
             return this.inherited([events, selector, fn]);
+        },
+        action: function (script) {
+            var script_body = [];
+            script_body.push("(function(){");
+            script_body.push("      return function(){");
+            script_body.push("          " + script);
+            script_body.push("      }")
+            script_body.push("})()");
+            return this.context(script_body.join("\n"));
         }
     });
 

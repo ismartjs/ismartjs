@@ -1,14 +1,23 @@
-.login-window{
-    position: fixed; top: 0; right: 0; left: 0; bottom: 0; display: none; background: url('../images/login-bg.jpg') 100% 100%;
+.login-window {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    display: none;
+    background: url('../images/login-bg.jpg');
+    background-size: 100% 100%;
 }
-.login-window .modal-content{
+
+.login-window .modal-content {
     transition: all .5s cubic-bezier(0.34, 1.21, 0.4, 1);
     -moz-transition: all .5s cubic-bezier(0.34, 1.21, 0.4, 1);
     -webkit-transition: all .5s cubic-bezier(0.34, 1.21, 0.4, 1);
     -o-transition: all .5s cubic-bezier(0.34, 1.21, 0.4, 1);
     -ms-transition: all .5s cubic-bezier(0.34, 1.21, 0.4, 1);
-    opacity: .7;
+    opacity: .9;
 }
-.login-window .modal-content:hover{
+
+.login-window .modal-content:hover {
     opacity: .95;
 }

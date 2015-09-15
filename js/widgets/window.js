@@ -58,7 +58,6 @@
         //处理模板
         var meta = result.meta;
         var argsScripts = [];
-        var metaScripts = [];
         scripts.push("(function(){");
         scripts.push("    return function(){");
         if (meta.args) { //如果有参数定义，那么参数的值是
@@ -66,17 +65,16 @@
             $.each(meta.args, function (i, arg) {
                 var argSeg = arg.split(":");
                 var argStr = "var " + argSeg[0] + " = arguments[0]['" + argSeg[0] + "'];\n";
-                metaScripts.push("var " + argSeg[0] + " = arguments[1]['" + argSeg[0] + "'];");
                 if (argSeg.length == 2) {
                     var tmpStr = argSeg[0] + " = " + argSeg[0] + " !==undefined ? " + argSeg[0] + " : " + argSeg[1] + ";";
                     argStr += tmpStr + "\n";
-                    metaScripts.push(tmpStr);
                 }
                 argsScripts.push(argStr);
                 scripts.push(argStr);
             });
         }
         scripts.push("var S = this;");
+        scripts.push("var " + Smart.VALUE_CONTEXT +" = {};");
         scripts.push(scriptTexts.join("\n"));
         scripts.push("			return function(key){");
         scripts.push("				try{");
@@ -108,19 +106,7 @@
             var id = $(this).attr("id");
             $(this).attr("id", that.trueId(id)).attr("_id_", id);
         });
-        this.meta = meta;
-        var metaScript = metaScripts.join("\n");
-        metaScript += "\n  try{\n return eval(arguments[0]);\n}catch(e){\nreturn null}";
-        var metaScript = new Function(metaScript);
-        $.each(meta, function (key, val) {
-            if (key == 'args') {
-                return;
-            }
-            meta[key] = val.replace(META_VALUE_RE, function ($0, $1) {
-                return metaScript.apply(this, [$1, loadArgs]);
-            });
-        });
-
+        this.meta = {};
         this.node.empty().append(this._WNODE);
         undelegateEvent(this);
         var scriptFn = this.context(scripts.join("\n"));
@@ -143,6 +129,19 @@
         $.extend(scriptArgs, loadArgs || {});
         var context = scriptFn.call(this, scriptArgs);
         this.CONTEXT = context;
+        $.each(meta, function (key, val) {
+            if (key == 'args') {
+                return;
+            }
+            meta[key] = val.replace(META_VALUE_RE, function ($0, $1) {
+                return that.context($1);
+            });
+        });
+        $.each(meta, function(key, val){
+            if(!(key in that.meta)){
+                that.meta[key] = val;
+            }
+        });
         //绑定浏览器事件，click等
         delegateEvent(this);
         //处理自动焦点的元素
@@ -409,14 +408,16 @@
             //触发beforeClose监听事件。
             var that = this;
             var args = arguments;
-            that.widget.window.cache = {};
-            var deferred = $.Deferred();
-            deferred.done(function () {
-                that.node.remove();
-            });
-            var event = $.Event("close", {deferred: deferred});
-            that.trigger(event, Smart.SLICE.call(args));
-            event.deferred['resolve'] && event.deferred.resolve();
+            setTimeout(function(){
+                that.widget.window.cache = {};
+                var deferred = $.Deferred();
+                deferred.done(function () {
+                    that.node.remove();
+                });
+                var event = $.Event("close", {deferred: deferred});
+                that.trigger(event, Smart.SLICE.call(args));
+                event.deferred['resolve'] && event.deferred.resolve();
+            },1);
         },
         closeWithConfirm: function () {
             var that = this;

@@ -12,7 +12,7 @@
          * */
         DEFAULT_CONTEXT: function () {
 
-            var valueContext = {};
+            var __SMART_VALUE_CONTEXT__ = {};
 
             try {
                 return eval(arguments[0]);
@@ -69,6 +69,7 @@
      * */
     Smart.extend({
         DEFINE_KEY: CONST.SMART_ATTR_KEY,
+        VALUE_CONTEXT: "__SMART_VALUE_CONTEXT__",
         isSmart: function (smart) {
             if (smart == undefined) {
                 return false;
@@ -558,7 +559,7 @@
          * 在context中定义一个 valueContext对象。
          * */
         contextValue: function (key, value) {
-            var valueContext = this.context("valueContext");
+            var valueContext = this.context(Smart.VALUE_CONTEXT);
             if (arguments.length == 1) {
                 return valueContext[key];
             } else {

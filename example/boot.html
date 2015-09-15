@@ -9,7 +9,7 @@
         <div class="modal-body" s-ui-dialog-role="body" id="loginPanel" s="window"></div>
     </div>
 </div>
-<script type="text/javascript">
+<script type="text/javascript" >
     var Page = {};
     var href = window.location.href;
     var hash;
@@ -28,10 +28,10 @@
         handleAjaxError: function (e, errorTip, errorMsg, xhr) {
             if (xhr.status == 403) {
                 e.stopPropagation();
-                if(e.retryRequest){
+                if (e.retryRequest) {
                     loginRetryCallbacks.push(e.retryRequest);
                 }
-                if(loginProcessStatus == 1) {
+                if (loginProcessStatus == 1) {
                     return;
                 }
                 //登陆超时
@@ -39,7 +39,7 @@
                 S.popupOpen('login-panel.html').done(function (status) {
                     loginProcessStatus = 0;
                     if (status) {
-                        $.each(loginRetryCallbacks, function(i, callback){
+                        $.each(loginRetryCallbacks, function (i, callback) {
                             callback();
                         })
                         loginRetryCallbacks = [];
@@ -61,31 +61,38 @@
     var mainWindow = S.S("#mainWindow");
     var loginPanel = S.S("#loginPanel");
     var loginDiv = S.N("#loginDiv");
-    S.on("window.document.ready", function () {
+
+    S.on("s-ready", function () {
+
+        loginPanel.load('login-panel.html');
+        loginDiv.show();
+        loginPanel.node.on("close", function (e, rs) {
+            if (rs) {
+                window.CURRENT_MANAGER = rs;
+                mainWindow.load('layouts/main0.html', Page);
+                loginDiv.remove();
+            }
+        });
+
+        return;
         /**
          * 这里可以通过check登陆状态，判断加载主界面还是加载登陆页面
          * */
-//        S.get("/login/check").done(function (flag) {
-//            if (flag) {
-//                mainWindow.load('main.html', Page);
-//                loginDiv.remove();
-//            } else {
-//                loginPanel.load('login-panel.html');
-//                loginDiv.show();
-//                loginPanel.node.on("close", function (e, status) {
-//                    if (status) {
-//                        mainWindow.load('main.html', Page);
-//                        loginDiv.remove();
-//                    }
-//                });
-//            }
-//        });
-        loginPanel.load('login-panel.html');
-        loginDiv.show();
-        loginPanel.node.on("close", function (e, status) {
-            if (status) {
-                mainWindow.load('main.html', Page);
+        S.get("/login/check").done(function (rs) {
+            if (rs) {
+                window.CURRENT_MANAGER = rs;
+                mainWindow.load('layouts/main0.html', Page);
                 loginDiv.remove();
+            } else {
+                loginPanel.load('login-panel.html');
+                loginDiv.show();
+                loginPanel.node.on("close", function (e, rs) {
+                    if (rs) {
+                        window.CURRENT_MANAGER = rs;
+                        mainWindow.load('layouts/main0.html', Page);
+                        loginDiv.remove();
+                    }
+                });
             }
         });
     })

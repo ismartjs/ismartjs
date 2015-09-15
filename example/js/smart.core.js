@@ -1,45 +1,51 @@
 /**
- * Created by Administrator on 2014/6/10.
+ * Created by Administrator on 2015/8/29.
  */
 
 (function ($) {
 
-    var SMART_NODE_CACHE_KEY = "_SMART_";
+    //声明一些常量
 
-    var SMART_ATTR_KEY = "s";
+    var CONST = {
+        /**
+         * 所有Smart控件默认的上下文环境，该上下文环境是当前的window作用域
+         * */
+        DEFAULT_CONTEXT: function () {
 
-    var LIFE_STAGE = {
-        initial: "initial",
-        prepared: "prepared",
-        building: "building",
-        build: "build",
-        running: "running",
-        run: "run",
-        made: "made"
+            var valueContext = {};
+
+            try {
+                return eval(arguments[0]);
+            } catch (e) {
+                Smart.error(e);
+                return null;
+            }
+        },
+        SMART_NODE_CACHE_KEY: "__SMART__",
+        SMART_ATTR_KEY: "s",//smart控件声明的属性
+        DEFAULT_STOPPED_EVENT: ["s-ready", "s-loaded", 's-loading', 's-data', 's-build']
     };
 
-    //控件生命周期的事件禁止冒泡
-    var STOP_PROPAGATION_EVENT = ["smart-made", "load", "loading",
-        "close", "smart-refresh", "smart-data", "smart-reset"];
 
-    var NODE_ATTR_PREFIX = "s";
-
-    var Smart = window.Smart = function (node) {
+    window.Smart = function Smart(node) {
         this.node = node || $();
-        this.node.data(SMART_NODE_CACHE_KEY, this);
+        this.node.data(CONST.SMART_NODE_CACHE_KEY, this);
         this.widgets = [];
         this.widget = {};
-        this.scope
+        if (this.isWindow()) {
+            this.CONTEXT = CONST.DEFAULT_CONTEXT;
+        }
         var that = this;
-        $.each(STOP_PROPAGATION_EVENT, function (i, evt) {
+        $.each(CONST.DEFAULT_STOPPED_EVENT, function (i, evt) {
             that.on(evt, function (e) {
                 e.stopPropagation();
             });
         });
     };
 
-    Smart.defineKey = SMART_ATTR_KEY;
-
+    /**
+     * Smart静态方法
+     * */
     Smart.extend = function (obj, obj1) {
         if (arguments.length == 1) {
             obj1 = obj;
@@ -57,11 +63,27 @@
             });
         }
     };
-    var SLICE = Array.prototype.slice;
-    var TO_STRING = Object.prototype.toString;
 
-    //ui-utils
+    /**
+     * Smart元素操作方法扩展
+     * */
     Smart.extend({
+        DEFINE_KEY: CONST.SMART_ATTR_KEY,
+        isSmart: function (smart) {
+            if (smart == undefined) {
+                return false;
+            }
+            if (smart.constructor == Smart) {
+                return true;
+            }
+            return false;
+        },
+        isWidgetNode: function (node) {
+            return node && node.attr(CONST.SMART_ATTR_KEY) !== undefined;
+        },
+        /**
+         * 使元素可用不可用
+         * */
         disableNode: function (btnNode, flag) {
             if (flag == null) flag = true;
             if (flag) {
@@ -82,91 +104,6 @@
                     });
                 }
             });
-        }
-    });
-    //utils
-    Smart.extend({
-        SLICE: SLICE,
-        TO_STRING: TO_STRING,
-        noop: function () {
-        },
-        uniqueId: function () {
-            return "SMART_" + new Date().getTime();
-        },
-        removeArrayElement: function (el, array) {
-            var i = $.inArray(el, array);
-            if (i == -1)
-                return array;
-            return array.slice(0, i).concat(array.splice(i + 1));
-        },
-        equalArray: function (ary1, ary2) {
-            if (ary1.length == 0 && ary2.length == 0) {
-                return true;
-            }
-            if (ary1.length != ary2.length) {
-                return false;
-            }
-            for (var i in ary1) {
-                if (ary1[i] != ary2[i]) {
-                    return false;
-                }
-            }
-            return true;
-        },
-        newFn: function (args, script, namespace) {
-            if (namespace) {
-
-                return eval("(function(){" +
-                "   return function(){with(){" + script + "}}" +
-                "})()")
-            }
-            return new Function(args, script)
-        },
-        isEmpty: function (val) {
-            if (val == null) {
-                return true;
-            }
-            if (TO_STRING.call(val) == "[object String]") {
-                return $.trim(val).length == 0;
-            }
-            if (TO_STRING.call(val) == '[object Array]') {
-                return val.length == 0;
-            }
-            return false;
-        },
-        isSmart: function (smart) {
-            if (smart == undefined) {
-                return false;
-            }
-            if (smart.constructor && smart.constructor == Smart) {
-                return true;
-            }
-            return false;
-        },
-        isWidgetNode: function (node) {
-            return node && node.attr(SMART_ATTR_KEY) !== undefined;
-        },
-        isDeferred: function (obj) {
-            return obj && "done" in obj && $.isFunction(obj.done);
-        },
-        map: function (datas, key) {
-            var _datas = [];
-            for (var i = 0; i < datas.length; i++) {
-                var d = datas[i];
-                if ($.isFunction(key)) {
-                    _datas.push(key(d));
-                } else if (TO_STRING.call(key) == '[object String]') {
-                    _datas.push(d[key]);
-                }
-            }
-            return _datas;
-        },
-        deferredListen: function (defer, listenDefer) {
-            listenDefer.done(function () {
-                defer.resolve.apply(defer, $.makeArray(arguments));
-            }).fail(function () {
-                defer.reject.apply(defer, $.makeArray(arguments));
-            })
         },
         serializeToObject: function (form) {
             if (!form.is("form")) {
@@ -213,36 +150,116 @@
             });
             return formData;
         },
-        httpSuccess: function (xhr) {
-            try {
-                return !xhr.status && location.protocol === "file:" ||
-                        // Opera returns 0 when status is 304
-                    ( xhr.status >= 200 && xhr.status < 300 ) ||
-                    xhr.status === 304 || xhr.status === 1223 || xhr.status === 0;
-            } catch (e) {
-            }
+        optionAttrName: function (id, name) {
+            return CONST.SMART_ATTR_KEY + "-" + id + "-" + name;
+        }
+    });
 
+    /**
+     * Smart工具方法扩展
+     * */
+    Smart.extend({
+        SLICE: Array.prototype.slice,
+        TO_STRING: Object.prototype.toString,
+        noop: function () {
+        },
+        uniqueId: function () {
+            return "SMART_" + new Date().getTime();
+        },
+        removeArrayElement: function (el, array) {
+            var i = $.inArray(el, array);
+            if (i == -1)
+                return array;
+            return array.slice(0, i).concat(array.splice(i + 1));
+        },
+        equalArray: function (ary1, ary2) {
+            if (ary1.length == 0 && ary2.length == 0) {
+                return true;
+            }
+            if (ary1.length != ary2.length) {
+                return false;
+            }
+            for (var i in ary1) {
+                if (ary1[i] != ary2[i]) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        isEmpty: function (val) {
+            if (val == null) {
+                return true;
+            }
+            if (Smart.TO_STRING.call(val) == "[object String]") {
+                return $.trim(val).length == 0;
+            }
+            if (Smart.TO_STRING.call(val) == '[object Array]') {
+                return val.length == 0;
+            }
             return false;
         },
-        walkTree: (function(){
-            function _walkTree(tree, walker, childrenKey){
+        isDeferred: function (obj) {
+            return obj && "done" in obj && $.isFunction(obj.done);
+        },
+        deferredChain: function (defer, listenDefer) {
+            listenDefer.done(function () {
+                defer.resolve.apply(defer, $.makeArray(arguments));
+            }).fail(function () {
+                defer.reject.apply(defer, $.makeArray(arguments));
+            });
+        },
+        map: function (datas, key) {
+            var _datas = [];
+            for (var i = 0; i < datas.length; i++) {
+                var d = datas[i];
+                if ($.isFunction(key)) {
+                    _datas.push(key(d));
+                } else if (Smart.TO_STRING.call(key) == '[object String]') {
+                    _datas.push(d[key]);
+                }
+            }
+            return _datas;
+        },
+        //数据适配
+        adaptData: function(data, adapter){
+            var rs;
+            if($.isFunction(data)){
+                rs = data();
+            }
+            function adapt(_data){
+                if($.isFunction(adapter)){
+                    return adapter(_data);
+                }
+                return _data[adapter];
+            }
+            if(Smart.isDeferred(rs)){
+                var deferred = $.Deferred();
+                rs.done(function(_rs){
+                    deferred.resolve(adapt(_rs));
+                }).fail(function(){
+                    deferred.reject();
+                });
+                return deferred;
+            } else {
+                return adapt(rs);
+            }
+        },
+        walkTree: (function () {
+            function _walkTree(tree, walker, childrenKey) {
                 childrenKey = childrenKey || "children";
-                if(!$.isArray(tree)){
+                if (!$.isArray(tree)) {
                     tree = [tree];
                 }
-                $.each(tree, function(i, node){
+                $.each(tree, function (i, node) {
                     walker(node);
-                    if(node[childrenKey]){
+                    if (node[childrenKey]) {
                         _walkTree(node[childrenKey], walker, childrenKey);
                     }
                 });
             }
+
             return _walkTree;
         })(),
-        //获取配置的属性名。
-        optionAttrName: function (id, name) {
-            return NODE_ATTR_PREFIX + "-" + id + "-" + name;
-        },
         //参数的fns为异步方法的数组，该方法都接受一个deferred的参数，该方法会依次执行，
         // 在上一个方法的deferred resolved的时候。如果一个方法的deferred没有被resolve，则不会执行下一个方法。
         //当所有方法执行完成时，才会触发deferredQueue的done。
@@ -285,40 +302,6 @@
             callFn(0);
             return deferred.promise();
         },
-        pick: function (node) {
-            var smart = Smart.of();
-            node.each(function () {
-                var n = $(this);
-                if (Smart.isWidgetNode(n)) {
-                    smart.add(n);
-                } else {
-                    smart.add(Smart.of(n).children());
-                }
-            });
-            return smart;
-        },
-        of: function (node) {
-            if (Smart.isSmart(node)) {
-                return node;
-            }
-            if (node === undefined || node.size() == 0) {
-                return new Smart();
-            }
-            if (node.size() > 1) {
-                var smart = Smart.of();
-                $.each(node, function (i, n) {
-                    smart.add($(n));
-                });
-                return smart;
-            }
-            var smart = node.data(SMART_NODE_CACHE_KEY);
-            if (smart) {
-                return smart;
-            }
-            smart = new Smart(node);
-            node.data(SMART_NODE_CACHE_KEY, smart);
-            return smart;
-        },
         realPath: (function () {
             //路径处理，摘自seajs
             var DIRNAME_RE = /[^?#]*\//
@@ -358,6 +341,7 @@
             }
         })()
     });
+
     (function () {
         var console = window.console || {
                 info: Smart.noop,
@@ -377,7 +361,54 @@
             }
         });
     })();
-    //扩展Smart prototype
+
+    /**
+     * Smart对象操作的静态方法
+     * */
+    Smart.extend({
+        /**
+         * 挑选出Smart控件
+         * */
+        pick: function (node) {
+            var smart = Smart.of();
+            node.each(function () {
+                var n = $(this);
+                if (Smart.isWidgetNode(n)) {
+                    smart.add(n);
+                } else {
+                    smart.add(Smart.of(n).children());
+                }
+            });
+            return smart;
+        },
+        of: function (node) {
+            if (Smart.isSmart(node)) {
+                return node;
+            }
+            if (node === undefined || node.size() == 0) {
+                return new Smart();
+            }
+            if (node.size() > 1) {
+                var smart = Smart.of();
+                $.each(node, function (i, n) {
+                    smart.add($(n));
+                });
+                return smart;
+            }
+            var smart = node.data(CONST.SMART_NODE_CACHE_KEY);
+            if (smart) {
+                return smart;
+            }
+            smart = new Smart(node);
+            node.data(CONST.SMART_NODE_CACHE_KEY, smart);
+            return smart;
+        }
+    });
+
+
+    /**
+     * 扩展Smart对象的实例方法
+     * */
     Smart.extend(Smart.prototype, {
         extend: function (api) {
             return $.extend(this, api);
@@ -389,7 +420,7 @@
             });
         },
         parent: function () {
-            var p = this.node.parent().closest("[" + SMART_ATTR_KEY + "]");
+            var p = this.node.parent().closest("[" + CONST.SMART_ATTR_KEY + "]");
             if (p.size() == 0)
                 p = Smart.of($(window));
             return Smart.of(p);
@@ -404,7 +435,7 @@
             return check(this);
         },
         isWidget: function (wId) {
-            var s = this.node.attr(SMART_ATTR_KEY);
+            var s = this.node.attr(CONST.SMART_ATTR_KEY);
             if (!s) return false;
             var wIds = s.split(",");
             for (var i = 0; i < wIds.length; i++) {
@@ -462,9 +493,10 @@
             if (children.size() == 0)
                 return Smart.of();
             var smart = Smart.of();
+            var that = this;
             $.map(children, function (child) {
                 child = $(child);
-                if (child.attr(SMART_ATTR_KEY) !== undefined) {
+                if (child.attr(CONST.SMART_ATTR_KEY) !== undefined) {
                     smart.add(child);
                 } else {
                     //排除掉某些表单元素
@@ -499,7 +531,7 @@
                     node = $(node);
                 }
                 this.node[mode || "append"](node);
-                Smart.pick(node).make();
+                Smart.pick(node).render();
                 return this;
             } catch (e) {
                 this.node[mode || "append"](node);
@@ -508,52 +540,32 @@
         }
     });
 
-    var getContextSmart = function (smart) {
-        if (smart.hasContext || smart.isWindow()) {
-            return smart;
-        }
-        if ("_context_smart_" in this) {
-            return smart._context_smart_;
-        }
-        var contextSmart = getContextSmart(smart.parent());
-        smart._setContextSmart(contextSmart);
-        return contextSmart;
-    };
-
     Smart.extend(Smart.prototype, {
-        setContext: function (context) {
-            this.hasContext = true;
-            this._context = context;
-            return this;
-        },
-        setValueScope: function(valueScope){
-            this._valueScope = valueScope;
-        },
-        scopeValue: function (key, value) {
-            var contextSmart = getContextSmart(this);
-            if (arguments.length == 0) {
-                return contextSmart._valueScope;
+        _getContext: function () {
+            if (!this.CONTEXT) {
+                this.CONTEXT = this.parent()._getContext();
             }
-            if (value === undefined) {
-                return contextSmart._valueScope[key];
-            }
-            contextSmart._valueScope[key] = value;
-            return contextSmart._valueScope;
+            return this.CONTEXT;
         },
-        _setContextSmart: function (smart) {
-            this.node.each(function () {
-                Smart.of($(this))._context_smart_ = smart;
-            });
-            return this;
-        },
+        /**
+         * 从当前的上下文中获取数据
+         * */
         context: function (key, that) {
-            var contextSmart = getContextSmart(this);
-            if (contextSmart.isWindow()) {
-                return window[key];
-            }
-            return contextSmart._context.call(that || this, key);
+            return this._getContext().call(that || this, key);
         },
-        _action: function (script) {
+        /**
+         * 有些控件需要在当前的context环境下保存一些数据，那么就需要当前的context闭包中需要一个对象来存取数据，那么就规定，所有实现自己context的控件都需要
+         * 在context中定义一个 valueContext对象。
+         * */
+        contextValue: function (key, value) {
+            var valueContext = this.context("valueContext");
+            if (arguments.length == 1) {
+                return valueContext[key];
+            } else {
+                valueContext[key] = value;
+            }
+        },
+        action: function (script) {
             var script_body = [];
             script_body.push("(function(){");
             script_body.push("      return function(){");
@@ -561,428 +573,8 @@
             script_body.push("      }")
             script_body.push("})()");
             return this.context(script_body.join("\n"));
-        },
-        action: (function () {
-            var getActionSmart = function (smart) {
-                if (smart._action) {
-                    return smart;
-                }
-                var parent = smart.parent();
-                if (parent == null || parent.isWindow()) {
-                    return null;
-                }
-                return getActionSmart(parent);
-            };
-            return function (script) {
-                var actionSmart = getActionSmart(this);
-                var script_body = [];
-                script_body.push(script);
-                if (actionSmart == null) {
-                    var window_body = [];
-                    window_body.push("(function(){");
-                    window_body.push("      return function(){");
-                    window_body.push("          " + script_body.join("\n"));
-                    window_body.push("      }")
-                    window_body.push("})()");
-                    return eval(window_body);
-                } else {
-                    return actionSmart._action(script_body.join("\n"));
-                }
-            }
-        })()
+        }
     });
-
-    //class 继承
-    Smart.Class = function (constructor, superClass, prototype, staticMethod) {
-        var SUPER;
-        if (!$.isFunction(superClass)) {
-            staticMethod = prototype;
-            prototype = superClass;
-            superClass = constructor;
-            constructor = superClass;
-        } else {
-            SUPER = function () {
-                superClass.apply(this, Array.prototype.slice.call(arguments));
-            };
-        }
-
-        var obj = function () {
-            SUPER && (this.SUPER = SUPER);
-            constructor.apply(this, Array.prototype.slice.call(arguments));
-        };
-
-        var inheritedFnMap = {};
-
-        obj.prototype = {
-            inherited: function () {
-                var caller = arguments.callee.caller;
-                if (!caller in inheritedFnMap) {
-                    console.error("该方法没有super方法");
-                    throw "该方法没有super方法";
-                }
-                var superFn = inheritedFnMap[caller];
-                return superFn.apply(this, Array.prototype.slice.call(arguments));
-            }
-        };
-
-        //设置prototype
-        Smart.extend(obj.prototype, superClass.prototype);
-        for (var key in prototype) {
-            var fn = prototype[key];
-            if (key in obj.prototype) {
-                inheritedFnMap[fn] = obj.prototype[key];
-            }
-            obj.prototype[key] = fn;
-        }
-
-        //处理静态方法
-        Smart.extend(obj, superClass);
-        Smart.extend(obj, staticMethod);
-
-        return obj;
-
-    };
-
-    //控件
-    (function () {
-
-        function SmartWidget(smart, meta) {
-            this.options = {};
-            this.S = smart;
-            this.meta = meta;
-            this.cache = {};//缓存的数据
-        }
-
-        SmartWidget.prototype = {
-            onPrepare: Smart.noop,//控件准备
-            onDestroy: Smart.noop,//刷新控件
-            onRender: Smart.noop,
-            onReady: Smart.noop,
-            onReset: Smart.noop,//重置控件
-            onRefresh: Smart.noop
-        };
-
-        Smart.extend(SmartWidget.prototype, {
-            optionName: function (key) {
-                return Smart.optionAttrName(this.meta.id, key);
-            },
-            optionValue: function (node, key) {
-                return node.attr(this.optionName(key));
-            },
-            processOptions: function () {
-                if (this.meta.options && this.meta.options.length) {
-                    //组装 widget定义时的options属性，根据options属性从node上读取属性值
-                    var options = this.meta.options;
-                    var optionsNames;
-                    var optionDefault = undefined;
-                    if (TO_STRING.call(options) === "[object Array]") {
-                        optionsNames = $.trim(options[0]).split(",");
-                        if (options.length > 1) {
-                            optionDefault = options[1];
-                        }
-                    } else {
-                        optionsNames = $.trim(options).split(",");
-                    }
-                    var optionValues = {};
-                    for (var i in optionsNames) {
-                        var key = $.trim(optionsNames[i]);
-                        //如果key是以ctx:开头的，则说明key的值是根据该属性值从context中去取
-                        var keyCtx = false;
-                        if (/^ctx:.*$/.test(key)) {
-                            key = key.substring(4);
-                            keyCtx = true;
-                        }
-                        var valueCtx = false;
-                        //根据option获取配置的属性，为 data-控件id-option
-                        var value = this.optionValue(this.S.node, key);
-                        if (/^ctx:.*$/.test(value)) {
-                            value = value.substring(4);
-                            valueCtx = true;
-                        }
-                        if (keyCtx || valueCtx) {
-                            //这里的context不能从自身去查找，要从自身的parent去查找，因为自身所处的环境就是在parent中的
-                            optionValues[key] = this.S.parent().context(value, this.S);
-                        } else {
-                            optionValues[key] = value;
-                        }
-
-                    }
-                    if (optionDefault && TO_STRING.call(optionDefault) === '[object Object]') {
-                        optionValues = $.extend(optionDefault, optionValues);
-                    }
-                    //mixin options与widget.defaultOptions
-                    var tmpOptions = {};
-                    if (this.meta.defaultOptions) {
-                        $.extend(tmpOptions, this.meta.defaultOptions); //复制widget.defaultOptions
-                    }
-                    $.extend(tmpOptions, optionValues);
-                    this.options = tmpOptions;
-                }
-            }
-        });
-
-        var SMART_WIDGET_MAPPING = {};
-
-        Smart.widgetExtend = function (meta, Widget, api) {
-            if (TO_STRING.call(meta) == "[object String]") {
-                meta = {id: meta}
-            }
-
-            var _Widget = Smart.Class(SmartWidget, Widget);
-            _Widget.meta = meta;
-            _Widget.api = api;
-            SMART_WIDGET_MAPPING[meta.id] = _Widget;
-        };
-
-        //扩展widget meta的defaultOptions
-        Smart.widgetOptionsExtend = function (id, options) {
-            var Widget = SMART_WIDGET_MAPPING[id];
-            if (Widget) {
-                Widget.meta.defaultOptions = $.extend(Widget.meta.defaultOptions || {}, options);
-            }
-        };
-
-        //最基本的控件。
-        Smart.widgetExtend({
-            id: "smart",
-            options: "key, data, null"
-        }, {
-            onRender: function () {
-                if (this.options.data != undefined) {
-                    this.S.data(this.options.data)
-                }
-            }
-        }, {
-            //控件的获取dataGetter的方法，只有主要控件才需要实现该方法。
-            dataGetter: function () {
-                if ("_smart_data_" in this) return this._smart_data_;
-                return this.widget.smart.options.data;
-            },
-            dataSetter: function (data) {
-                var dataType = $.type(data);
-                if (dataType == "boolean" || dataType == "number" || dataType == "string" || data == undefined) {
-                    //如果没有子元素
-                    if (this.node.is("input[type='text'],input[type='hidden'],select,textarea," +
-                        "input[type='password'],input[type='email'],input[type='number']")) {
-                        data = data == undefined ? '' : data;
-                        this.node.val(data + '');
-                        return;
-                    } else if (this.node.is("input[type='radio']")) {
-                        data = data == undefined ? '' : data;
-                        if (data + "" == this.node.val()) {
-                            this.node.prop("checked", true);
-                        }
-                        return;
-                    }
-                    this.node.html(data);
-                    return;
-                }
-                if (dataType == "array") {
-                    if (this.node.is("input[type='checkbox']")) {
-                        var val = this.node.val();
-                        if ($.inArray(val, data) != -1) {
-                            this.node.prop("checked", true);
-                            return;
-                        } else {
-                            return false;
-                        }
-                    }
-                    return false;
-                }
-            },
-            data: function () {
-                if (arguments.length == 0) {
-                    return this.dataGetter ? this.dataGetter.apply(this, SLICE.call(arguments)) : undefined;
-                }
-                if (!this.isMade()) {
-                    var that = this;
-                    var args = arguments;
-                    this.onMade(function () {
-                        that.data.apply(that, $.makeArray(args));
-                    });
-                    return;
-                }
-                this._smart_data_ = arguments.length == 1 && arguments[0];
-                var args = SLICE.call(arguments);
-                var dataKey = this.widget.smart.options['key'];
-                var value = args;
-                if (dataKey) {
-                    var data = args[0];
-                    var fn_flag = (dataKey.indexOf(".") != -1 || /^.+\(.*\).*$/.test(dataKey)) ? true : false;
-                    value = [data == undefined ? null : fn_flag ? eval("data." + dataKey) : data[dataKey]];
-                }
-                value = (value == null ? [this.widget.smart.options['null']] : value);
-                if (this.dataSetter.apply(this, value) !== false) {
-                    this.trigger("smart-data");
-                }
-            },
-            /**
-             * build的时候，需要初始化赋值。
-             * */
-            build: function () {
-                this.buildSetter.apply(this, $.makeArray(arguments));
-                this.trigger("smart-change");
-            },
-            buildSetter: Smart.noop,
-            refresh: function () {
-                var deferreds = []
-                var args = $.makeArray(arguments);
-                $.each(this.widgets, function (i, widget) {
-                    deferreds.push(function () {
-                        return widget.onRefresh.apply(widget, args);
-                    })
-                });
-                var that = this;
-                return Smart.deferredQueue(deferreds).done(function () {
-                    that.trigger("smart-refresh", args);
-                });
-            },
-            destroy: function () {
-                $.each(this.widgets, function (i, widget) {
-                    widget.onDestroy();
-                });
-            },
-            //重置控件
-            reset: function () {
-                $.each(this.widgets, function (i, widget) {
-                    widget.onReset();
-                });
-                this.trigger("smart-reset");
-            }
-        });
-
-        function processApis(smart, apis) {
-            smart._inherited_api_map = {};
-
-            for (var i in apis) {
-                var api = apis[i];
-                for (var key in api) {
-                    if (key in smart) {
-                        smart._inherited_api_map[api[key]] = smart[key];
-                    }
-                    smart[key] = api[key];
-                }
-            }
-
-            //调用super的同方法
-            smart.inherited = function (args) {
-                var caller = arguments.callee.caller;
-                var superFn = smart._inherited_api_map[caller];
-                return superFn.apply(this, args);
-            }
-        }
-
-        var makeSmart = function (smart) {
-
-            var deferred = $.Deferred();
-
-            var node = smart.node;
-            var wIds = node.attr(SMART_ATTR_KEY);
-            if (wIds == undefined) {
-                return smart.makeChildren();
-            }
-            if (wIds == "") {
-                wIds = "smart";
-            }
-            wIds = wIds.replace(/ /g, "");
-            wIds = wIds.split(",");
-            if (wIds[0] != "smart") {
-                wIds.unshift("smart");
-            }
-
-            var widgetApis = [];
-
-            $.each(wIds, function (i, wId) {
-                var Widget = SMART_WIDGET_MAPPING[wId];
-                if (!Widget) return;
-                widgetApis.push(Widget.api);
-                smart._addWidget(new Widget(smart, Widget.meta))
-            });
-
-            //merge api
-            processApis(smart, widgetApis);
-
-            var deferreds = [];
-
-            $.each(smart.widgets, function (i, widget) {
-                deferreds.push(function () {
-                    widget.processOptions();
-                    widget.onPrepare();
-                })
-            });
-
-            $.each(smart.widgets, function (i, widget) {
-                deferreds.push(function () {
-                    return widget.onRender();
-                })
-            });
-
-            //构建完成后，开始make子元素
-            deferreds.push(function () {
-                return smart.makeChildren();
-            });
-
-            //子元素made成功后，开始运行控件
-            $.each(smart.widgets, function (i, widget) {
-                deferreds.push(function () {
-                    return widget.onReady();
-                });
-            });
-
-            Smart.deferredQueue(deferreds).always(function () {
-                smart.lifeStage = LIFE_STAGE.made;
-                smart.trigger("smart-made");
-                deferred.resolve();
-            });
-
-            return deferred.promise();
-        };
-        Smart.prototype.makeChildren = function () {
-            var children = this.children();
-            if (children.size() == 0) {
-                return $.Deferred().resolve();
-            }
-            var deferredFns = [];
-            children.each(function () {
-                var that = this;
-                deferredFns.push(function () {
-                    return that.make();
-                });
-            });
-
-            return Smart.deferredQueue(deferredFns);
-        };
-        Smart.prototype._addWidget = function (widget) {
-            this.widgets.push(widget);
-            this.widget[widget.meta.id] = widget;
-        };
-        Smart.prototype.make = function () {
-            try {
-                if (this.lifeStage == LIFE_STAGE.made) {
-                    Smart.warn("该控件已经创建过了！");
-                    return $.Deferred().resolve();
-                }
-                var length = this.size();
-                if (length == 0) {
-                    return $.Deferred().resolve();
-                }
-                if (length > 1) {
-                    var dFns = [];
-                    this.each(function () {
-                        var that = this;
-                        dFns.push(function () {
-                            return that.make();
-                        });
-                    });
-                    return Smart.deferredQueue(dFns);
-                }
-                return makeSmart(Smart.of(this.node));
-            } catch (e) {
-                throw e;
-//                Smart.error("make Smart error: " + e);
-            }
-        }
-    })();
 
     //ui扩展
     Smart.extend(Smart.prototype, {
@@ -1006,26 +598,6 @@
             return this;
         }
     });
-
-    //生命周期事件接口,这些事件都不是冒泡事件
-    (function () {
-        Smart.extend(Smart.prototype, {
-            isMade: function () {
-                return this.lifeStage == LIFE_STAGE.made
-            },
-            onMade: function (fn) {
-                var that = this;
-                if (this.lifeStage == LIFE_STAGE.made) {
-                    fn.call(that);
-                }
-                this.on("smart-made", function () {
-                    fn.apply(that, SLICE.call(arguments));
-                });
-                return this;
-            }
-        })
-    })();
-
     //AJAX扩展
     (function () {
 
@@ -1050,7 +622,7 @@
 
         $.each(['get', 'post', 'put', 'remove', 'update'], function (i, method) {
             Smart.prototype[method] = function (url, data, type, cfg, ajaxSetting) {
-                if (TO_STRING.call(type) == "[object Object]") {
+                if (Smart.TO_STRING.call(type) == "[object Object]") {
                     ajaxSetting = cfg;
                     cfg = type;
                     type = null;
@@ -1066,12 +638,13 @@
                 if (!cfg.silent) {
                     this.trigger("smart-ajaxStart", [cfg.startTip]);
                 }
+
                 var _this = this;
-                //处理url
-                var thisData = this.data();
+
                 url = url.replace(URL_PLACEHOLDER_REGEX, function ($1, $2) {
-                    return (thisData && $2 in thisData) ? thisData[$2] : _this.context($2);
+                    return _this.context($2);
                 });
+
                 var ajaxOptions = {
                     url: url,
                     type: method,
@@ -1084,9 +657,11 @@
                     ajaxOptions.processData = false;
                 }
                 $.extend(ajaxOptions, ajaxSetting || {});
+
+
                 function doRequest() {
                     $.ajax(ajaxOptions).done(function (result) {
-                        deferred.resolve.apply(deferred, SLICE.call(arguments));
+                        deferred.resolve.apply(deferred, Smart.SLICE.call(arguments));
                         if (!cfg.silent) {
                             _this.trigger("smart-ajaxSuccess", [cfg.successTip, result]);
                         }
@@ -1099,14 +674,13 @@
                             if (event.isPropagationStopped()) {
                                 return;
                             }
-                            deferred.reject.apply(deferred, SLICE.call(arguments));
+                            deferred.reject.apply(deferred, Smart.SLICE.call(arguments));
                         } else {
-                            deferred.reject.apply(deferred, SLICE.call(arguments));
+                            deferred.reject.apply(deferred, Smart.SLICE.call(arguments));
                         }
 
 
                     }).always(function () {
-//                    deferred.always.apply(deferred, SLICE.call(arguments));
                         if (!cfg.silent) {
                             _this.trigger("smart-ajaxComplete");
                         }
@@ -1218,4 +792,448 @@
             return deferred;
         }
     })();
-})(jQuery);
+
+    /**
+     * Smart 控件渲染相关
+     * */
+
+        //class 继承
+    Smart.Class = function (constructor, superClass, prototype, staticMethod) {
+        var SUPER;
+        if (!$.isFunction(superClass)) {
+            staticMethod = prototype;
+            prototype = superClass;
+            superClass = constructor;
+            constructor = superClass;
+        } else {
+            SUPER = function () {
+                superClass.apply(this, Array.prototype.slice.call(arguments));
+            };
+        }
+
+        var obj = function () {
+            SUPER && (this.SUPER = SUPER);
+            constructor.apply(this, Array.prototype.slice.call(arguments));
+        };
+
+        var inheritedFnMap = {};
+
+        obj.prototype = {
+            inherited: function () {
+                var caller = arguments.callee.caller;
+                if (!caller in inheritedFnMap) {
+                    console.error("该方法没有super方法");
+                    throw "该方法没有super方法";
+                }
+                var superFn = inheritedFnMap[caller];
+                return superFn.apply(this, Array.prototype.slice.call(arguments));
+            }
+        };
+
+        //设置prototype
+        Smart.extend(obj.prototype, superClass.prototype);
+        for (var key in prototype) {
+            var fn = prototype[key];
+            if (key in obj.prototype) {
+                inheritedFnMap[fn] = obj.prototype[key];
+            }
+            obj.prototype[key] = fn;
+        }
+
+        //处理静态方法
+        Smart.extend(obj, superClass);
+        Smart.extend(obj, staticMethod);
+
+        return obj;
+
+    };
+
+    //Smart控件相关
+    (function () {
+
+        //控件扩展
+
+        Smart.extend(Smart.prototype, {
+            isRendered: function () {
+                return this.lifeStage == SmartWidget.LIFE_STAGE.RENDERED
+            },
+            onRendered: function (fn) {
+                var that = this;
+                if (this.lifeStage == SmartWidget.LIFE_STAGE.RENDERED) {
+                    fn.call(that);
+                }
+                this.on("s-rendered", function () {
+                    fn.apply(that, Smart.SLICE.call(arguments));
+                });
+                return this;
+            },
+            render: function () {
+                if (this.lifeStage == SmartWidget.LIFE_STAGE.RENDERED) {
+                    Smart.warn("该控件已经创建过了！");
+                    return $.Deferred().resolve();
+                }
+                var length = this.size();
+                if (length == 0) {
+                    return $.Deferred().resolve();
+                }
+                if (length > 1) {
+                    var dFns = [];
+                    this.each(function () {
+                        var that = this;
+                        dFns.push(function () {
+                            return that.render();
+                        });
+                    });
+                    return Smart.deferredQueue(dFns);
+                }
+                return renderSmart(Smart.of(this.node));
+            },
+
+            renderChildren: function () {
+                var children = this.children();
+                if (children.size() == 0) {
+                    return $.Deferred().resolve();
+                }
+                var deferredFns = [];
+                children.each(function () {
+                    var that = this;
+                    deferredFns.push(function () {
+                        return that.render();
+                    });
+                });
+
+                return Smart.deferredQueue(deferredFns);
+            },
+            _addWidget: function (widget) {
+                this.widgets.push(widget);
+                this.widget[widget.meta.id] = widget;
+            }
+        })
+
+        function SmartWidget(smart, meta) {
+            this.options = {};
+            this.S = smart;
+            this.meta = meta;
+        };
+
+        SmartWidget.prototype = {
+            onPrepare: Smart.noop,//控件准备
+            onBuild: Smart.noop,//构建控件
+            onReady: Smart.noop,//控件准备完成
+            onDestroy: Smart.noop,//销毁控件
+            onClean: Smart.noop//重置控件
+        };
+
+        Smart.extend(SmartWidget, {
+            LIFE_STAGE: {
+                RENDERED: "RENDERED"
+            }
+        })
+
+        Smart.extend(SmartWidget.prototype, {
+            optionName: function (key) {
+                return Smart.optionAttrName(this.meta.id, key);
+            },
+            optionValue: function (node, key) {
+                return node.attr(this.optionName(key));
+            },
+            processOptions: function () {
+
+                var optionAttr = CONST.SMART_ATTR_KEY + "-" + this.meta.id;
+                var optionStr = this.S.node.attr(optionAttr);
+                //mixin options与widget.defaultOptions
+                var tmpOptions = {};
+                if (this.meta.defaultOptions) {
+                    $.extend(tmpOptions, this.meta.defaultOptions); //复制widget.defaultOptions
+                }
+                if (optionStr) {
+                    if (/^\{.+}$/g.test(optionStr)) {
+                        //如果是json的字符串，则需要加（）号
+                        optionStr = "(" + optionStr + ")";
+                    }
+                    var optionValues = this.S.context(optionStr);
+                    $.extend(tmpOptions, optionValues);
+                }
+                this.options = tmpOptions;
+            }
+        });
+
+        var SMART_WIDGET_MAPPING = {};
+
+        Smart.widgetExtend = function (meta, Widget, api) {
+            if (Smart.TO_STRING.call(meta) == "[object String]") {
+                meta = {id: meta}
+            }
+
+            var _Widget = Smart.Class(SmartWidget, Widget);
+            _Widget.meta = meta;
+            _Widget.api = api;
+            SMART_WIDGET_MAPPING[meta.id] = _Widget;
+        };
+
+        /**
+         * 默认扩展的api，当一个元素被声明成为smart，将自动获取如下的API
+         * */
+        var DEFAULT_EXTEND_API = {
+            /**
+             * 获取控件的数据需要实现的方法
+             * */
+            dataGetter: function () {
+                return this.__SMART__DATA__;
+            }
+            ,
+            dataSetter: function (data) {
+                var dataType = $.type(data);
+                if (dataType == "boolean" || dataType == "number" || dataType == "string" || data == undefined) {
+                    //如果没有子元素
+                    if (this.node.is("input[type='text'],input[type='hidden'],select,textarea," +
+                            "input[type='password'],input[type='email'],input[type='number']")) {
+                        data = data == undefined ? '' : data;
+                        this.node.val(data + '');
+                        return;
+                    } else if (this.node.is("input[type='radio']")) {
+                        data = data == undefined ? '' : data;
+                        if (data + "" == this.node.val()) {
+                            this.node.prop("checked", true);
+                        }
+                        return;
+                    }
+                    this.node.html(data);
+                    return;
+                }
+                if (dataType == "array") {
+                    if (this.node.is("input[type='checkbox']")) {
+                        var val = this.node.val();
+                        if ($.inArray(val, data) != -1) {
+                            this.node.prop("checked", true);
+                            return;
+                        } else {
+                            return false;
+                        }
+                    }
+                    return false;
+                }
+            }
+            ,
+            data: function () {
+                if (arguments.length == 0) {
+                    return this.dataGetter ? this.dataGetter.apply(this, Smart.SLICE.call(arguments)) : undefined;
+                }
+                var args = Smart.SLICE.call(arguments);
+                var value = args;
+                var dataFilter = this.node.attr("s-data-filter");
+                if (dataFilter != null) {
+                    dataFilter = this.context(dataFilter);
+                    if (!$.isFunction(dataFilter)) {
+                        var data = args[0];
+                        var fn_flag = (dataFilter.indexOf(".") != -1 || /^.+\(.*\).*$/.test(dataFilter)) ? true : false;
+                        value = [data == undefined ? null : fn_flag ? eval("data." + dataFilter) : data[dataFilter]];
+                    } else {
+                        value = dataFilter(value);
+                    }
+                }
+                value = (value == null ? [this.widget.smart.options['null']] : value);
+                if(arguments.length == 1){
+                    this.__SMART__DATA__  = value[0];
+                } else {
+                    this.__SMART__DATA__  = value;
+                }
+
+                this.dataSetter.apply(this, value);
+                this.trigger("s-data");
+            },
+            _executeBuild: function () {
+                var buildAttrStr = this.node.attr("s-build");
+                if (buildAttrStr == undefined) {
+                    return;
+                }
+                var buildData = this.context(buildAttrStr);
+                var that = this;
+                if (Smart.isDeferred(buildData)) {
+                    var deferred = $.Deferred();
+                    buildData.done(function (data) {
+                        that.build(data);
+                        deferred.resolve();
+                    }).fail(function () {
+                        deferred.reject();
+                    })
+                    return deferred;
+                } else {
+                    this.build(buildData);
+                }
+            }
+            ,
+            _executeData: function () {
+                var dataAttrStr = this.node.attr("s-data");
+                if (dataAttrStr == undefined) {
+                    return;
+                }
+                /**
+                 * 该属性只会触发一次，当再次执行的时候将会被忽略掉。
+                 * */
+                var dataLazy = this.node.attr("s-data-lazy");
+                if(dataLazy != undefined){
+                    dataLazy = this.context(dataLazy);
+                    if($.isFunction(dataLazy)){
+                        dataLazy = dataLazy();
+                    }
+                    if(dataLazy == true){
+                        return;
+                    }
+                    this.node.removeAttr("s-data-lazy");
+                }
+                var dataValue = this.context(dataAttrStr);
+                var that = this;
+                if ($.isPlainObject(dataValue) && Smart.isDeferred(dataValue)) {
+                    var deferred = $.Deferred();
+                    dataValue.done(function (data) {
+                        that.data(data);
+                        deferred.resolve();
+                    }).fail(function () {
+                        deferred.reject();
+                    })
+                    return deferred;
+                } else {
+                    this.data(dataValue);
+                }
+            }
+            ,
+            _executeReady: function () {
+                $.each(this.widgets, function (i, widget) {
+                    widget.onReady();
+                });
+                this.trigger("s-ready");
+            }
+            ,
+            destroy: function () {
+                $.each(this.widgets, function (i, widget) {
+                    widget.onDestroy();
+                });
+                this.widgets = {};
+                this.node.remove();
+            }
+            ,
+            refresh: function () {
+                var that = this;
+                this.clean();//先清理。
+
+                var deferreds = [];
+
+                $.each(this.widgets, function (i, widget) {
+                    deferreds.push(function () {
+                        return widget.onBuild();
+                    });
+                });
+
+                //build控件
+                deferreds.push(function () {
+                    return that._executeBuild();
+                });
+
+                deferreds.push(function () {
+                    return that._executeData();
+                });
+
+                return Smart.deferredQueue(deferreds);
+            }
+            ,
+            clean: function () {
+                $.each(this.widgets, function (i, widget) {
+                    widget.onClean();
+                });
+            }
+
+        };
+
+        function processApis(smart, apis) {
+            smart._inherited_api_map = {};
+            apis.unshift(DEFAULT_EXTEND_API);
+            for (var i in apis) {
+                var api = apis[i];
+                for (var key in api) {
+                    if (key in smart) {
+                        smart._inherited_api_map[api[key]] = smart[key];
+                    }
+                    smart[key] = api[key];
+                }
+            }
+
+            //调用super的同方法
+            smart.inherited = function (args) {
+                var caller = arguments.callee.caller;
+                var superFn = smart._inherited_api_map[caller];
+                return superFn.apply(this, args);
+            }
+        };
+
+        /**
+         * 渲染控件
+         * */
+        function renderSmart(smart) {
+            var node = smart.node;
+            var wIds = node.attr(CONST.SMART_ATTR_KEY);
+            if (wIds == undefined) {
+                return smart.renderChildren();
+            }
+
+            wIds = wIds.replace(/ /g, "");
+            wIds = wIds.split(",");
+
+            var widgetApis = [];
+
+            $.each(wIds, function (i, wId) {
+                var Widget = SMART_WIDGET_MAPPING[wId];
+                if (!Widget) return;
+                widgetApis.push(Widget.api);
+                smart._addWidget(new Widget(smart, Widget.meta))
+            });
+
+            //merge api
+            processApis(smart, widgetApis);
+
+            $.each(smart.widgets, function (i, widget) {
+                widget.processOptions();
+            });
+
+            $.each(smart.widgets, function (i, widget) {
+                widget.onPrepare();
+            });
+
+            var deferreds = [];
+
+            $.each(smart.widgets, function (i, widget) {
+                deferreds.push(function () {
+                    return widget.onBuild();
+                });
+            });
+
+            //build控件
+            deferreds.push(function () {
+                return smart._executeBuild();
+            });
+
+            deferreds.push(function () {
+                return smart.renderChildren();
+            });
+
+            deferreds.push(function () {
+                return smart._executeData();
+            });
+
+            deferreds.push(function () {
+                //子元素render成功后，开始运行控件
+                smart._executeReady();
+            });
+
+            return Smart.deferredQueue(deferreds).fail(function () {
+            }).done(function () {
+                smart.lifeStage = SmartWidget.LIFE_STAGE.RENDERED;
+                smart.trigger("s-rendered");
+            }).promise();
+
+        }
+
+    })();
+
+})
+(jQuery);
