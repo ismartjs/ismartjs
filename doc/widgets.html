@@ -1,0 +1,20 @@
+<meta title="UI控件" closeable="false"/>
+<h2>UI控件</h2>
+<p class="lead">iSmart Js控件提供了便捷的方式进行UI开发</p>
+<div id="widgetsPanel">
+</div>
+<script type="text/javascript">
+    var widgetPages = [
+        "popover"
+    ];
+    var widgetsPanel = S.N("#widgetsPanel")
+    S.on('s-ready', function () {
+        $.each(widgetPages, function (i, widgetPage) {
+            var windowNode = $("<div s='window'></div>");
+            widgetsPanel.append(windowNode);
+            var smart = Smart.of(windowNode);
+            smart.render();
+            smart.load("doc/widgets/" + widgetPage + ".html");
+        });
+    });
+</script>

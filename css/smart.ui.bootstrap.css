@@ -59,26 +59,6 @@ span.label {
     font-weight: normal
 }
 
-.text-size-16 {
-    font-size: 16px !important
-}
-
-.text-size-24 {
-    font-size: 24px !important
-}
-
-.text-size-32 {
-    font-size: 32px !important
-}
-
-.text-size-48 {
-    font-size: 48px !important
-}
-
-.text-size-64 {
-    font-size: 64px !important
-}
-
 .btn {
     font-size: 12px;
     border-radius: 0px;
@@ -518,4 +498,16 @@ code {
     background: #fcf8e2;
     color: #9d7437;
     padding: 10px 12px;
+}
+
+.panel {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+
+.popover {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
 }

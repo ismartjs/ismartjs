@@ -13,11 +13,11 @@
             var that = this;
             this.S.node.delegate(" > * ", "click", function(e){
                 var btn = $(this);
-                if(btn.hasClass(mark_class)) return;
+                if(btn.hasClass(mark_class))
+                    return;
                 var lastBtn = btn.siblings("."+mark_class);
-                lastBtn.size() && lastBtn.removeClass(this.options['activeClass']).removeClass(mark_class);
+                lastBtn.size() && lastBtn.removeClass(that.options['activeClass']).removeClass(mark_class);
                 btn.addClass(mark_class).addClass(that._getBtnActiveClass(btn));
-                e.stopPropagation();
             });
             this.initActivedNode = $(" > *["+actived_attr+"] ", this.S.node).click();
         },

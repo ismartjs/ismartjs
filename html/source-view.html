@@ -1,0 +1,20 @@
+<meta title="源码" args="url"/>
+<script type="text/javascript" src="../syntaxhighlighter/js/shCore.js"></script>
+<script type="text/javascript" src="../syntaxhighlighter/js/shAutoloader.js"></script>
+<script type="text/javascript" src="../syntaxhighlighter/js/shBrushJScript.js"></script>
+<script type="text/javascript" src="../syntaxhighlighter/js/shBrushXml.js"></script>
+<link href="../syntaxhighlighter/css/shCore.css" rel="stylesheet" type="text/css"/>
+<link href="../syntaxhighlighter/css/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+<div id="sourceCode" style="position:absolute; top: 0; right: 0; left: 0;bottom: 0"></div>
+<script type="text/javascript">
+    if (!url) return;
+    S.get(url, null, 'html').done(function (rs) {
+        var sourceCodeNode = S.N("#sourceCode");
+        var code = rs.replace(/</gi, "&lt;").replace(/>/gi, "&gt;");
+        var brush = new SyntaxHighlighter.brushes["Xml"]();
+        brush.init({ toolbar: false });
+        sourceCodeNode.append($(brush.getHtml(code))
+                .attr("style", "position: absolute !important; top:0; left:0; right:0; bottom:0;"));
+
+    });
+</script>

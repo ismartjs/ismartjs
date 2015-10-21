@@ -1,0 +1,40 @@
+<meta title="弹出框(popover)"/>
+<h3 >定义</h3>
+<p><code>s='popover'</code></p>
+<h3 >参数</h3>
+<p>参数定义参考bootstrap的<code>弹出框（popover）插件</code></p>
+<h3 >示例与源码</h3>
+<div class="bs-example text-center" s="sh" s-sh="{phase:'source'}" id="shSource" >
+    <button type="button" class="btn btn-default" s="popover"
+            data-placement="left"
+            title="左侧"
+            data-container="body"
+            data-content="我会显示在左侧，iSmart Js">
+        Popover on 左侧
+    </button>
+
+    <button type="button" class="btn btn-default" s="popover"
+            data-placement="top"
+            data-container="body"
+            title="Dismissible popover"
+            data-content="我会显示在顶部，iSmart Js">
+        Popover on 顶部
+    </button>
+
+    <button type="button" class="btn btn-default" s="popover"
+            data-placement="bottom"
+            data-container="body"
+            title="Dismissible popover"
+            data-content="我会显示在底部，iSmart Js">
+        Popover on 底部
+    </button>
+
+    <button type="button" class="btn btn-default" s="popover"
+            data-placement="right"
+            data-container="body"
+            title="Dismissible popover"
+            data-content="我会显示在右侧，iSmart Js">
+        Popover on 右侧
+    </button>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource')}"></div>

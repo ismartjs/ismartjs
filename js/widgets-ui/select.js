@@ -18,7 +18,7 @@
             this.cache.dataMap = {};
         }
     }, {
-        build: function (datas) {
+        buildSetter: function (datas) {
             datas = datas || [];
             if (!$.isArray(datas)) {
                 var _datas = datas;

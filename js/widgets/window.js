@@ -74,7 +74,7 @@
             });
         }
         scripts.push("var S = this;");
-        scripts.push("var " + Smart.VALUE_CONTEXT +" = {};");
+        scripts.push("var " + Smart.VALUE_CONTEXT + " = {};");
         scripts.push(scriptTexts.join("\n"));
         scripts.push("			return function(key){");
         scripts.push("				try{");
@@ -113,15 +113,15 @@
         //处理url后面的queryString，也把后面的queryString作为loadArgs
         var scriptArgs = {};
         var queryString = "";
-        if(href.indexOf("#") != -1){
-            queryString = href.substring(href.indexOf("?")+1, href.indexOf("#"));
+        if (href.indexOf("#") != -1) {
+            queryString = href.substring(href.indexOf("?") + 1, href.indexOf("#"));
         } else {
-            queryString = href.substring(href.indexOf("?")+1);
+            queryString = href.substring(href.indexOf("?") + 1);
         }
-        if(queryString != ""){
-            $.each(queryString.split("&"), function(i, kv){
+        if (queryString != "") {
+            $.each(queryString.split("&"), function (i, kv) {
                 var tmps = kv.split("=");
-                if(tmps.length > 1){
+                if (tmps.length > 1) {
                     scriptArgs[tmps[0]] = tmps[1];
                 }
             });
@@ -137,21 +137,23 @@
                 return that.context($1);
             });
         });
-        $.each(meta, function(key, val){
-            if(!(key in that.meta)){
+        $.each(meta, function (key, val) {
+            if (!(key in that.meta)) {
                 that.meta[key] = val;
             }
         });
         //绑定浏览器事件，click等
         delegateEvent(this);
         //处理自动焦点的元素
-        that.node.find("*[s-window-role='focus']:first").focus();
+        this.node.find("*[s-window-role='focus']:first").focus();
 
-        //处理锚点滚动
-        if (href.indexOf("#") != -1) {
-            var anchor = href.substring(href.indexOf("#"));
-            this.scrollTo(anchor);
-        }
+        this.on("s-ready", function(){
+            //处理锚点滚动
+            if (href.indexOf("#") != -1) {
+                var anchor = href.substring(href.indexOf("#"));
+                this.scrollTo(anchor);
+            }
+        });
     };
 
     var EVENT_MAP = {
@@ -174,11 +176,11 @@
             smart.node.delegate("*[" + key + "]", val, function (e) {
                 var node = $(e.currentTarget);
                 var delegateTarget = node.data("_window_delegateTarget_");
-                if(!delegateTarget){
+                if (!delegateTarget) {
                     delegateTarget = e.delegateTarget;
                     node.data("_window_delegateTarget_", delegateTarget);
                 }
-                if(smart.node[0] != delegateTarget){
+                if (smart.node[0] != delegateTarget) {
                     return;
                 }
                 var evtKey = "__SMART__EVENT__" + key;
@@ -273,7 +275,7 @@
                 }).fail(function () {
                     deferred.reject();
                 })
-            }).fail(function(){
+            }).fail(function () {
                 deferred.reject();
             });
             return deferred;
@@ -408,7 +410,7 @@
             //触发beforeClose监听事件。
             var that = this;
             var args = arguments;
-            setTimeout(function(){
+            setTimeout(function () {
                 that.widget.window.cache = {};
                 var deferred = $.Deferred();
                 deferred.done(function () {
@@ -417,7 +419,7 @@
                 var event = $.Event("close", {deferred: deferred});
                 that.trigger(event, Smart.SLICE.call(args));
                 event.deferred['resolve'] && event.deferred.resolve();
-            },1);
+            }, 1);
         },
         closeWithConfirm: function () {
             var that = this;

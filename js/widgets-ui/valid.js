@@ -5,7 +5,7 @@
     var VALID_NODE_ERROR_ATTR = Smart.optionAttrName("valid", "error");
     var VALID_NODE_LABEL_ATTR = Smart.optionAttrName("valid", "label");
     var VALID_NODE_WARNING_ATTR = Smart.optionAttrName("valid", "warning");
-    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not('disabled'),*[" + VALID_NODE_WARNING_ATTR + "]:not('disabled')";
+    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not(:disabled),*[" + VALID_NODE_WARNING_ATTR + "]:not(:disabled)";
     var VALID_NODE_ID_ATTR = Smart.optionAttrName("valid", 'id');
     var VALID_NODE_SHOW_ATTR = Smart.optionAttrName("valid", 'show');
     var VALID_NODE_RESET_SHOW_ATTR = Smart.optionAttrName("valid", 'resetShow');
@@ -41,6 +41,7 @@
             'successClass': "has-success",
             'errorClass': "has-error",
             'warningClass': "has-warning",
+            notice: null,
             'show': function (node, msg, level) {
                 level = level || LEVELS.error;
                 var item = node.closest(ITEM_ROLE_SELECTOR);
@@ -58,27 +59,39 @@
                         node.tooltip('destroy');
                         return;
                     }
+                    function clearTo() {
+                        var tooltipHideTimeout = node.data("tooltip_hide_timeout");
+                        if (tooltipHideTimeout) {
+                            clearTimeout(tooltipHideTimeout);
+                            node.removeData("tooltip_hide_timeout");
+                        }
+                    }
+
+                    function destroyTooltip() {
+                        var hideTimeout = setTimeout(function () {
+                            node.tooltip('destroy');
+                            node.removeData("tooltip_hide_timeout");
+                        }, 3000);
+                        node.data("tooltip_hide_timeout", hideTimeout);
+                    }
+
+                    if (node.data("tooltip_hide_timeout")) {
+                        clearTo();
+                        destroyTooltip();
+                        return;
+                    }
                     node.tooltip({
                         container: node.parent(),
                         title: msg,
-                        trigger: "focus",
+                        trigger: "manual",
                         delay: {"show": 200, "hide": 300}
                     });
                     //this.notice(msg);
                     setTimeout(function () {
                         node.tooltip('show');
+                        clearTo();
                     }, 1);
-                    var tooltipHideTimeout = node.data("tooltip_hide_timeout");
-                    if (tooltipHideTimeout) {
-                        clearTimeout(tooltipHideTimeout);
-                        node.removeData("tooltip_hide_timeout")
-                    }
-                    node.on("shown.bs.tooltip", function () {
-                        var hideTimeout = setTimeout(function () {
-                            node.tooltip('destroy');
-                        }, 3000);
-                        node.data("tooltip_hide_timeout", hideTimeout);
-                    });
+                    node.on("shown.bs.tooltip", destroyTooltip);
                 }
             },
             'resetShow': function (node) {
@@ -128,10 +141,11 @@
             var deferreds = [];
             var that = this;
             this.widget.valid.cache.validedNodes = [];
+            var notice = this.widget.valid.options.notice;
             validNodes.each(function () {
                 var node = $(this);
                 deferreds.push(function () {
-                    return that.validateNode(node);
+                    return that.validateNode(node, notice);
                 });
             });
             if (this.widget.valid.options.after) {
@@ -156,7 +170,7 @@
             }
             (resetShow || this.widget.valid.options.resetShow).call(this, node);
         },
-        validateNode: function (node) {
+        validateNode: function (node, notice) {
             var id = node.attr(VALID_NODE_ID_ATTR);
             this.widget.valid.cache.validedNodes.push(node);
             var defMsg = this.widget.valid.options.msg[id] || {};
@@ -193,7 +207,11 @@
                             deferred.resolve();
                         }).fail(function (result, _level) {
                             level = _level || LEVELS.error;
-                            (show || that.widget.valid.options.show).call(that, node, result || defMsg[level.key + "Msg"] || "", level);
+                            result = result || defMsg[level.key + "Msg"] || "";
+                            (show || that.widget.valid.options.show).call(that, node, result, level);
+                            if (notice) {
+                                notice(node, result, level.key);
+                            }
                             deferred.reject();
                         });
                     return deferred;
@@ -220,7 +238,11 @@
                 });
             }
             deferreds.push(function () {
-                (show || that.widget.valid.options.show).call(that, node, defMsg[level.key + "Msg"] || msg || "", level);
+                msg = defMsg[level.key + "Msg"] || msg || "";
+                (show || that.widget.valid.options.show).call(that, node, msg, level);
+                if (notice) {
+                    notice(node, msg, level.key);
+                }
             });
             return Smart.deferredQueue(deferreds);
         }

@@ -1,0 +1,169 @@
+<meta title="表单" />
+<h3>描述</h3>
+<p class="lead">表单控件的作用是将表单的数据进行ajax提交或者提交表单数据到方法，该方法可以是同步或者异步的。</p>
+<h3>定义</h3>
+<code>s="form"</code>
+<h3>参数</h3>
+<hr />
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+       <th>参数名</th>
+       <th>类型</th>
+       <th>默认值</th>
+       <th>说明</th>
+    </tr>
+    <tr>
+        <td>action</td>
+        <td>String | Function</td>
+        <td></td>
+        <td>
+            <ul>
+                <li>1、定义原生的表单action属性，如 <code>&lt;form action='ajax url' ...&gt;</code></li>
+                <li>2、定义控件参数，如<code>s-form="{action:'ajax url'}"</code>，已可以将参数定义为当前闭包环境中的方法（该方法可以是同步或者异步方法），
+                    如<code>s-form='{action: function(){...}}'</code>
+                </li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>method</td>
+        <td>String</td>
+        <td><code>post</code></td>
+        <td>提交表单时使用的http方法，该值亦可以使用表单原生method的属性进行定义</td>
+    </tr>
+    <tr>
+        <td>enctype</td>
+        <td>String</td>
+        <td><code>application/x-www-form-urlencoded</code></td>
+        <td>该值亦可以使用表单原生enctype的属性进行定义</td>
+    </tr>
+    <tr>
+        <td>done</td>
+        <td>Function</td>
+        <td></td>
+        <td>当表单提交成功时执行的方法，该方法的参数是提交表单时后台接口返回的值</td>
+    </tr>
+    <tr>
+        <td>fail</td>
+        <td>Function</td>
+        <td></td>
+        <td>当表单提交失败时执行的方法，该方法的参数是ajax执行失败时的回掉参数</td>
+    </tr>
+    <tr>
+        <td>always</td>
+        <td>Function</td>
+        <td></td>
+        <td>当表单完成时执行的方法，不论成功或者失败该方法都会被执行</td>
+    </tr>
+</table>
+<h3>API</h3>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>方法名</th>
+        <th>返回值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>submit</td>
+        <td><code>Deferred</code></td>
+        <td>
+            提交表单，该方法返回一个deferred对象。
+        </td>
+    </tr>
+</table>
+<h3>示例与源码</h3>
+<hr />
+<h4>1. 提交数据到后台</h4>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource" >
+    <form s="form" action="doc/form" class="form-horizontal" style="width: 600px;">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">账号</label>
+            <div class="col-sm-10">
+                <input type="text" name="account" class="form-control" placeholder="账号">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">密码</label>
+            <div class="col-sm-10">
+                <input type="text" name="password" class="form-control" placeholder="密码">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                <input type="submit" class="btn btn-primary" value="提交" />
+            </div>
+        </div>
+    </form>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource')}"></div>
+<h4>2. 提交数据到异步方法以及使用<code>submit</code>方法提交表单</h4>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource1" >
+    <form id="form" s="form" s-form="{action:formAsyncAction}" class="form-horizontal" style="width: 600px;">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">账号</label>
+            <div class="col-sm-10">
+                <input type="text" name="account" class="form-control" placeholder="账号">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">密码</label>
+            <div class="col-sm-10">
+                <input type="text" name="password" class="form-control" placeholder="密码">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                <!-- 当提交按钮声明为 type="submit" 的时候，会自动提交表单，否则则需要显式的调用api去提交表单-->
+                <input type="submit" class="btn btn-primary" value="使用submit按钮提交" />
+                <input type="button" class="btn btn-info" s-click="return submitForm()" value="使用API提交" />
+            </div>
+        </div>
+    </form>
+    <script type="text/plain" s-sh-role="javascript">
+
+        function formAsyncAction(data){
+            //如果是异步方法，必须返回一个deferred对象，同步方法则直接返回值即可
+            return S.post("doc/form", data);
+        }
+
+        function submitForm(){
+            //使用form控件的api submit方法提交表单。
+            return S.S("#form").submit();
+        }
+
+    </script>
+    <script type="text/javascript">
+        function formAsyncAction(data){
+            //如果是异步方法，必须返回一个deferred对象
+            return S.post("doc/form", data);
+        }
+        function submitForm(){
+            return S.S("#form").submit();
+        }
+    </script>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource1'), brush: 'JScript'}"></div>
+<h4>3. 表单验证</h4>
+<p class="lead">使用<a href="javascript:;"><code  s-click="S.open('valid.html')" >valid</code></a> 控件可以实现表单的验证通过后再提交数据。</p>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource2" >
+    <form s="form,valid" s-form="{action:'doc/form'}" class="form-horizontal" style="width: 600px;">
+        <div class="form-group" s-valid-role="item">
+            <label class="col-sm-2 control-label">账号</label>
+            <div class="col-sm-10">
+                <input type="text" name="account" s-valid-error="require()" class="form-control" placeholder="账号">
+            </div>
+        </div>
+        <div class="form-group"  s-valid-role="item">
+            <label class="col-sm-2 control-label">密码</label>
+            <div class="col-sm-10">
+                <input type="text" name="password" s-valid-error="require(),len(6,12)" class="form-control" placeholder="密码（长度不能小于6且不能大于12）">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                <input type="submit" class="btn btn-primary" value="提交" />
+            </div>
+        </div>
+    </form>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource2')}"></div>

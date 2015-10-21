@@ -55,16 +55,16 @@
     //分页控件
     Smart.widgetExtend({
         id: "pagination",
-        options: "pagekey,pageSizeKey,totalKey,showSize,startText,nextText,disabledClass,activeClass,pre,next,action",
+        options: "pagekey,pageSizeKey,totalKey,showSize,startText,endText,disabledClass,activeClass,preText,nextText,action",
         defaultOptions: {
             'pagekey': "page",
             'pageSizeKey': "pageSize",
             'totalKey': "total",
             "showSize": 11,
             "startText": "&laquo;",
-            "nextText": "&raquo;",
-            "pre": "‹",
-            "next": "›",
+            "endText": "&raquo;",
+            "preText": "‹",
+            "nextText": "›",
             "disabledClass": "disabled",
             "activeClass": "active"
         }
@@ -88,7 +88,7 @@
                 });
             }
             this.node.append(startPreLi);
-            var preLi = this._createLi(this.widget.pagination.options.pre);
+            var preLi = this._createLi(this.widget.pagination.options.preText);
             if (pi.prePage <= 0) {
                 preLi.addClass(this.widget.pagination.options['disabledClass']);
             } else {
@@ -110,7 +110,7 @@
                     that.node.append(pageLi);
                 })(i);
             }
-            var nextLi = this._createLi(this.widget.pagination.options.next);
+            var nextLi = this._createLi(this.widget.pagination.options.nextText);
             if (pi.nextPage <= 0) {
                 nextLi.addClass(this.widget.pagination.options['disabledClass']);
             } else {
@@ -119,7 +119,7 @@
                 });
             }
             this.node.append(nextLi);
-            var endNextLi = this._createLi(this.widget.pagination.options['nextText']);
+            var endNextLi = this._createLi(this.widget.pagination.options['endText']);
             if (pi.endNextPage <= pi.endPage) {
                 endNextLi.addClass(this.widget.pagination.options['disabledClass']);
             } else {

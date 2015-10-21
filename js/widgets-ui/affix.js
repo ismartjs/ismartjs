@@ -1,7 +1,7 @@
 /**
  * Created by Administrator on 2015/1/8.
  */
-( function($) {
+(function ($) {
     'use strict';
 
     // AFFIX style DEFINITION
@@ -11,11 +11,11 @@
         this.options = $.extend({}, Affix.DEFAULTS, options)
         this.$window = $(options.of || window)
             .on('scroll.bs.affix.data-api', $.proxy(this.checkPosition, this))
-            .on('click.bs.affix.data-api',  $.proxy(this.checkPositionWithEventLoop, this))
+            .on('click.bs.affix.data-api', $.proxy(this.checkPositionWithEventLoop, this))
 
-        this.$element     = $(element)
-        this.affixed      =
-            this.unpin        =
+        this.$element = $(element)
+        this.affixed =
+            this.unpin =
                 this.pinnedOffset = null
 
         this.checkPosition()
@@ -29,9 +29,9 @@
 
     Affix.prototype.getPinnedOffset = function () {
         if (this.pinnedOffset) return this.pinnedOffset
-        this.$element.removestyle(Affix.RESET).addstyle('affix')
+        this.$element.removeClass(Affix.RESET).addClass('affix')
         var scrollTop = this.$window.scrollTop()
-        var position  = this.$element.offset()
+        var position = this.$element.offset()
         return (this.pinnedOffset = position.top - scrollTop)
     }
 
@@ -43,27 +43,27 @@
         if (!this.$element.is(':visible')) return
 
         var scrollHeight = $(document).height()
-        var scrollTop    = this.$window.scrollTop()
-        var position     = this.$element.offset()
-        var offset       = this.options.offset
-        var offsetTop    = offset.top
+        var scrollTop = this.$window.scrollTop()
+        var position = this.$element.offset()
+        var offset = this.options.offset
+        var offsetTop = offset.top
         var offsetBottom = offset.bottom
 
         if (this.affixed == 'top') position.top += scrollTop
 
         if (typeof offset != 'object')         offsetBottom = offsetTop = offset
-        if (typeof offsetTop == 'function')    offsetTop    = offset.top(this.$element)
+        if (typeof offsetTop == 'function')    offsetTop = offset.top(this.$element)
         if (typeof offsetBottom == 'function') offsetBottom = offset.bottom(this.$element)
 
-        var affix = this.unpin   != null && (scrollTop + this.unpin <= position.top) ? false :
+        var affix = this.unpin != null && (scrollTop + this.unpin <= position.top) ? false :
             offsetBottom != null && (position.top + this.$element.height() >= scrollHeight - offsetBottom) ? 'bottom' :
-                offsetTop    != null && (scrollTop <= offsetTop) ? 'top' : false
+                offsetTop != null && (scrollTop <= offsetTop) ? 'top' : false
 
         if (this.affixed === affix) return
         if (this.unpin) this.$element.css('top', '')
 
         var affixType = 'affix' + (affix ? '-' + affix : '')
-        var e         = $.Event(affixType + '.bs.affix')
+        var e = $.Event(affixType + '.bs.affix')
 
         this.$element.trigger(e)
 
@@ -73,12 +73,12 @@
         this.unpin = affix == 'bottom' ? this.getPinnedOffset() : null
 
         this.$element
-            .removestyle(Affix.RESET)
-            .addstyle(affixType)
+            .removeClass(Affix.RESET)
+            .addClass(affixType)
             .trigger($.Event(affixType.replace('affix', 'affixed')))
 
         if (affix == 'bottom') {
-            this.$element.offset({ top: scrollHeight - offsetBottom - this.$element.height() })
+            this.$element.offset({top: scrollHeight - offsetBottom - this.$element.height()})
         }
     }
 
@@ -90,8 +90,8 @@
 
     $.fn.smartAffix = function (option) {
         return this.each(function () {
-            var $this   = $(this)
-            var data    = $this.data('bs.affix')
+            var $this = $(this)
+            var data = $this.data('bs.affix')
             var options = typeof option == 'object' && option
 
             if (!data) $this.data('bs.affix', (data = new Affix(this, options)))
@@ -117,17 +117,17 @@
         options: "ctx:offset,ctx:target,ctx:of,style"
     }, {
         onPrepare: function () {
-            this.S.node.addstyle('s-ui-affix').smartAffix({
+            this.S.node.addClass('s-ui-affix').smartAffix({
                 target: this.options.target,
                 offset: this.options.offset,
                 of: this.options.of
             });
-            if(this.options['style']){
+            if (this.options['style']) {
                 var that = this;
-                this.S.node.on("affixed.bs.affix", function(e){
+                this.S.node.on("affixed.bs.affix", function (e) {
                     e.stopPropagation();
                     that.S.node.addClass(that.options['style']);
-                }).on("affixed-top.bs.affix", function(e){
+                }).on("affixed-top.bs.affix", function (e) {
                     e.stopPropagation();
                     that.S.node.removeClass(that.options['style']);
                 });

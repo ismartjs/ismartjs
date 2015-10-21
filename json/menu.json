@@ -1,33 +1,107 @@
 [
-    {
-        "id": "dashboard",
-        "title": "首页",
-        "url": "home.html",
-        "icon": "glyphicon glyphicon-home",
-        "open": "true",
-        "closeable": false
-    },
-    {
-        "id": "widget",
-        "title": "控件与插件",
-        "icon": "glyphicon glyphicon-cog",
-        "open": "true",
-        "children": [
-            {"id":"allWidgets", "title": "控件", "url": "widget/index.html"},
-            {"id":"allPlugins", "title": "插件", "url": "plugin/index.html"},
-            {"id":"howToCreateWidget", "title": "开发新控件", "url": "widget/howto-create.html"}
-        ]
-    },
-    {
-        "id": "ui",
-        "title": "iSmart UI",
-        "open": "true",
-        "url": "ui.html"
-    },
-    {
-        "id": "api",
-        "title": "iSmart API",
-        "open": "true",
-        "url": "api.html"
-    }
+  {
+    "id": "dashboard",
+    "title": "简介",
+    "url": "doc/index.html",
+    "icon": "glyphicon glyphicon-home",
+    "open": "true"
+  },
+  {
+    "id": "DEMO",
+    "title": "DEMOS",
+    "children": [
+      {
+        "id": "demo_grid",
+        "title": "Grid",
+        "url": "doc/demo/grid.html"
+      }
+    ]
+  },
+  {
+    "id": "WIDGETS",
+    "title": "功能控件",
+    "children": [
+      {
+        "id": "WIDGETS_DATA",
+        "title": "基础控件",
+        "url": "doc/widgets/data.html"
+      },
+      {
+        "id": "WIDGETS_WINDOW",
+        "title": "window",
+        "url": "doc/widgets/window.html"
+      },
+      {
+        "id": "WIDGETS_TPL",
+        "title": "模板",
+        "url": "doc/widgets/tpl.html"
+      },
+      {
+        "id": "WIDGETS_nda",
+        "title": "Name适配(nda)",
+        "url": "doc/widgets/nda.html"
+      },
+      {
+        "id": "WIDGETS_datac",
+        "title": "子控件赋值(datac)",
+        "url": "doc/widgets/datac.html"
+      },
+      {
+        "id": "WIDGETS_LOOP",
+        "title": "列表",
+        "url": "doc/widgets/loop.html"
+      }
+    ]
+  },
+  {
+    "id": "UI_WIDGETS",
+    "title": "UI控件",
+    "children": [
+      {
+        "id": "UI_WIDGETS_FORM",
+        "title": "表单",
+        "url": "doc/widgets/form.html"
+      },
+      {
+        "id": "UI_WIDGETS_VALID",
+        "title": "表单验证",
+        "url": "doc/widgets/valid.html"
+      },
+      {
+        "id": "UI_WIDGETS_PAGINATION",
+        "title": "分页",
+        "url": "doc/widgets/pagination.html"
+      },
+      {
+        "id": "UI_WIDGETS_TOOLTIP",
+        "title": "工具提示(tooltip)",
+        "url": "doc/widgets/tooltip.html"
+      },
+      {
+        "id": "UI_WIDGETS_SELECT",
+        "title": "下拉列表(select)",
+        "url": "doc/widgets/select.html"
+      },
+      {
+        "id": "UI_WIDGETS_DATETIMEPICKER",
+        "title": "日期选择器",
+        "url": "doc/widgets/datetimepicker.html"
+      },
+      {
+        "id": "UI_WIDGETS_CONTEXTMENU",
+        "title": "右键菜单",
+        "url": "doc/widgets/contextmenu.html"
+      },
+      {
+        "id": "UI_WIDGETS_AFFIX",
+        "title": "affix",
+        "url": "doc/widgets/affix.html"
+      },
+      {
+        "id": "UI_WIDGETS_POPOVER",
+        "title": "弹出框(popover)",
+        "url": "doc/widgets/popover.html"
+      }
+    ]
+  }
 ]

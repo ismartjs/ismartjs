@@ -32,7 +32,7 @@
         empty: function(){
             this.node.empty();
         },
-        addRow: function(data, indentNum, mode){
+        addRow: function(data, mode, indentNum){
             var row = this._getRow().show();
             if(indentNum){
                 var indentNode = row.find('*[s-loop-tree-role="indent"]');
@@ -49,21 +49,21 @@
             }
             var that = this;
             var rowSmart = Smart.of(row);
+            this.node[mode || 'append'](rowSmart.node);
             rowSmart.render().done(function(){
                 rowSmart.data(data);
-                that.node.append(rowSmart.node);
-                that.trigger("row-add", [row, data, indentNum, mode]);
+                that.trigger("row-add", [row, data, mode, indentNum]);
             });
         },
-        addRows: function(datas, indentNum, mode){
+        addRows: function(datas, mode, indentNum){
             indentNum = indentNum == undefined ? 0 : indentNum;
             for(var i = 0; i < datas.length; i++){
-                this.addRow(datas[i], indentNum, mode);
+                this.addRow(datas[i], mode, indentNum);
                 //如果是tree的方式
                 if(this.widget.loop.options.type == "tree"){
                     var children = datas[i][this.widget.loop.options['childrenKey']];
                     if(children && children.length){
-                        this.addRows(children, indentNum + 1, mode);
+                        this.addRows(children, mode, indentNum + 1);
                     }
                 }
             }
@@ -75,7 +75,7 @@
         _addEmptyRow: function(){
             var emptyRow = this.widget.loop.cache.emptyRow;
             if(emptyRow){
-                this.node.append(emptyRow.clone());
+                this.node.append(emptyRow.clone().show());
             }
         },
         setRows: function(datas){
@@ -85,16 +85,22 @@
                 return;
             }
             var that = this;
+            var deferred = $.Deferred();
             setTimeout(function(){
                 that.addRows(datas);
-            }, 0);
+                deferred.resolve();
+            }, 10);
+            return deferred;
         },
         dataSetter: function(data){
+            if(data == null){
+                data = [];
+            }
             if(!$.isArray(data)){
                 Smart.error("loop控件接受的赋值参数必须是数组");
                 return;
             }
-            this.setRows(data);
+            return this.setRows(data);
         }
     });
     Smart.widgetExtend({

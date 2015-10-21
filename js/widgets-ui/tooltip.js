@@ -3,7 +3,7 @@
         id: "tooltip"
     }, {
         onPrepare: function () {
-            this.S.node.tooltip()
+            this.S.node.tooltip(this.options)
         }
     });
 })(jQuery);

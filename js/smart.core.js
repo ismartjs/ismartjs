@@ -23,7 +23,7 @@
         },
         SMART_NODE_CACHE_KEY: "__SMART__",
         SMART_ATTR_KEY: "s",//smart控件声明的属性
-        DEFAULT_STOPPED_EVENT: ["s-ready", "s-loaded", 's-loading', 's-data', 's-build']
+        DEFAULT_STOPPED_EVENT: ["s-ready", "s-prepared", "s-rendered", "s-loaded", 's-loading', 's-data', 's-build']
     };
 
 
@@ -209,6 +209,18 @@
                 defer.reject.apply(defer, $.makeArray(arguments));
             });
         },
+        proxyDeferred: function (deferred) {
+            var _deferred = $.Deferred();
+            if (Smart.isDeferred(deferred)) {
+                deferred.done(function () {
+                    _deferred.resolve.apply(_deferred, $.makeArray(arguments));
+                }).fail(function () {
+                    _deferred.reject.apply(_deferred, $.makeArray(arguments));
+                });
+                return _deferred;
+            }
+            return _deferred.resolve();
+        },
         map: function (datas, key) {
             var _datas = [];
             for (var i = 0; i < datas.length; i++) {
@@ -222,22 +234,25 @@
             return _datas;
         },
         //数据适配
-        adaptData: function(data, adapter){
+        adaptData: function (data, adapter) {
             var rs;
-            if($.isFunction(data)){
+            if ($.isFunction(data)) {
                 rs = data();
+            } else {
+                rs = data;
             }
-            function adapt(_data){
-                if($.isFunction(adapter)){
+            function adapt(_data) {
+                if ($.isFunction(adapter)) {
                     return adapter(_data);
                 }
                 return _data[adapter];
             }
-            if(Smart.isDeferred(rs)){
+
+            if (Smart.isDeferred(rs)) {
                 var deferred = $.Deferred();
-                rs.done(function(_rs){
+                rs.done(function (_rs) {
                     deferred.resolve(adapt(_rs));
-                }).fail(function(){
+                }).fail(function () {
                     deferred.reject();
                 });
                 return deferred;
@@ -245,6 +260,20 @@
                 return adapt(rs);
             }
         },
+        encodeHtml: (function () {
+            var REGEX_HTML_ENCODE = /"|&|'|<|>|[\x00-\x20]|[\x7F-\xFF]|[\u0100-\u2700]/g;
+            return function (s) {
+                return (typeof s != "string") ? s :
+                    s.replace(REGEX_HTML_ENCODE,
+                        function ($0) {
+                            var c = $0.charCodeAt(0), r = ["&#"];
+                            c = (c == 0x20) ? 0xA0 : c;
+                            r.push(c);
+                            r.push(";");
+                            return r.join("");
+                        });
+            }
+        })(),
         walkTree: (function () {
             function _walkTree(tree, walker, childrenKey) {
                 childrenKey = childrenKey || "children";
@@ -552,6 +581,10 @@
          * 从当前的上下文中获取数据
          * */
         context: function (key, that) {
+            if (/^\s*\{.+}\s*$/g.test(key)) {
+                //如果是json的字符串，则需要加（）号
+                key = "(" + key + ")";
+            }
             return this._getContext().call(that || this, key);
         },
         /**
@@ -948,10 +981,6 @@
                     $.extend(tmpOptions, this.meta.defaultOptions); //复制widget.defaultOptions
                 }
                 if (optionStr) {
-                    if (/^\{.+}$/g.test(optionStr)) {
-                        //如果是json的字符串，则需要加（）号
-                        optionStr = "(" + optionStr + ")";
-                    }
                     var optionValues = this.S.context(optionStr);
                     $.extend(tmpOptions, optionValues);
                 }
@@ -1014,8 +1043,7 @@
                     }
                     return false;
                 }
-            }
-            ,
+            },
             data: function () {
                 if (arguments.length == 0) {
                     return this.dataGetter ? this.dataGetter.apply(this, Smart.SLICE.call(arguments)) : undefined;
@@ -1030,18 +1058,53 @@
                         var fn_flag = (dataFilter.indexOf(".") != -1 || /^.+\(.*\).*$/.test(dataFilter)) ? true : false;
                         value = [data == undefined ? null : fn_flag ? eval("data." + dataFilter) : data[dataFilter]];
                     } else {
-                        value = dataFilter(value);
+                        value = dataFilter.apply(null, value);
                     }
                 }
                 value = (value == null ? [this.widget.smart.options['null']] : value);
-                if(arguments.length == 1){
-                    this.__SMART__DATA__  = value[0];
+                if (arguments.length == 1) {
+                    this.__SMART__DATA__ = value[0];
                 } else {
-                    this.__SMART__DATA__  = value;
+                    this.__SMART__DATA__ = value;
                 }
+                var that = this;
+                return Smart.proxyDeferred(this.dataSetter.apply(this, value)).done(function () {
+                    that.trigger("s-data");
+                });
+            },
+            build: function () {
+                if (arguments.length == 0) {
+                    return this.buildGetter ? this.buildGetter.apply(this, Smart.SLICE.call(arguments)) : undefined;
+                }
+                var args = Smart.SLICE.call(arguments);
+                var value = args;
+                var buildFilter = this.node.attr("s-build-filter");
+                if (buildFilter != null) {
+                    buildFilter = this.context(buildFilter);
+                    if (!$.isFunction(buildFilter)) {
+                        var data = args[0];
+                        var fn_flag = (buildFilter.indexOf(".") != -1 || /^.+\(.*\).*$/.test(buildFilter)) ? true : false;
+                        value = [data == undefined ? null : fn_flag ? eval("data." + buildFilter) : data[buildFilter]];
+                    } else {
+                        value = buildFilter(value);
+                    }
+                }
+                value = (value == null ? [this.widget.smart.options['null']] : value);
+                if (arguments.length == 1) {
+                    this.__SMART_BUILD_DATA__ = value[0];
+                } else {
+                    this.__SMART_BUILD_DATA__ = value;
+                }
+                var that = this;
+                return Smart.proxyDeferred(this.buildSetter.apply(this, value)).done(function () {
+                    that.trigger("s-build");
+                });
+            },
+            buildGetter: function () {
+                return this.__SMART_BUILD_DATA__;
+            },
+            buildSetter: function () {
 
-                this.dataSetter.apply(this, value);
-                this.trigger("s-data");
             },
             _executeBuild: function () {
                 var buildAttrStr = this.node.attr("s-build");
@@ -1049,19 +1112,27 @@
                     return;
                 }
                 var buildData = this.context(buildAttrStr);
-                var that = this;
+                var deferred = $.Deferred();
                 if (Smart.isDeferred(buildData)) {
-                    var deferred = $.Deferred();
+                    var that = this;
                     buildData.done(function (data) {
-                        that.build(data);
+                        Smart.proxyDeferred(that.build(data)).done(function () {
+                            deferred.resolve();
+                        }).fail(function () {
+                            deferred.reject();
+                        })
+                    }).fail(function () {
+                        deferred.reject();
+                    })
+                } else {
+                    var deferred = $.Deferred();
+                    Smart.proxyDeferred(this.build(buildData)).done(function () {
                         deferred.resolve();
                     }).fail(function () {
                         deferred.reject();
                     })
-                    return deferred;
-                } else {
-                    this.build(buildData);
                 }
+                return deferred;
             }
             ,
             _executeData: function () {
@@ -1073,30 +1144,37 @@
                  * 该属性只会触发一次，当再次执行的时候将会被忽略掉。
                  * */
                 var dataLazy = this.node.attr("s-data-lazy");
-                if(dataLazy != undefined){
+                if (dataLazy != undefined) {
                     dataLazy = this.context(dataLazy);
-                    if($.isFunction(dataLazy)){
+                    if ($.isFunction(dataLazy)) {
                         dataLazy = dataLazy();
                     }
-                    if(dataLazy == true){
+                    if (dataLazy == true) {
                         return;
                     }
                     this.node.removeAttr("s-data-lazy");
                 }
                 var dataValue = this.context(dataAttrStr);
-                var that = this;
+                var deferred = $.Deferred();
                 if ($.isPlainObject(dataValue) && Smart.isDeferred(dataValue)) {
-                    var deferred = $.Deferred();
+                    var that = this;
                     dataValue.done(function (data) {
-                        that.data(data);
+                        Smart.proxyDeferred(that.data(data)).done(function () {
+                            deferred.resolve();
+                        }).fail(function () {
+                            deferred.reject();
+                        })
+                    }).fail(function () {
+                        deferred.reject();
+                    })
+                } else {
+                    Smart.proxyDeferred(this.data(dataValue)).done(function () {
                         deferred.resolve();
                     }).fail(function () {
                         deferred.reject();
                     })
-                    return deferred;
-                } else {
-                    this.data(dataValue);
                 }
+                return deferred;
             }
             ,
             _executeReady: function () {
@@ -1199,6 +1277,8 @@
             $.each(smart.widgets, function (i, widget) {
                 widget.onPrepare();
             });
+
+            smart.trigger("s-prepared");
 
             var deferreds = [];
 

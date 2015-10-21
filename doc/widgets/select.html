@@ -1,0 +1,112 @@
+<meta title="下拉列表(select)"/>
+<h3>定义</h3>
+<p><code>s='select'</code></p>
+<h3>接受的数据格式</h3>
+<hr/>
+<p class="lead">该控件可以接受<code>key:value</code>和<code>array</code>两种数据格式用于构建下拉列表</p>
+<h3>参数</h3>
+<hr/>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>form</td>
+        <td>String</td>
+        <td><code>id:name,title</code></td>
+        <td>
+            当接受构建的数据格式是数组的时候，默认情况下将对数组的每一项读取其<code>id</code>的值作为<code>option</code>的value，
+            对数组的每一项读取其<code>name</code>或者<code>title</code>（当name属性不存在时）的值作为<code>option</code>的文字显示。
+            您可以自定义该值，用于适配构建数据，如：<code>companyId:companyName</code>
+        </td>
+    </tr>
+    <tr>
+        <td>title</td>
+        <td>Function</td>
+        <td></td>
+        <td>该方法用于自定义title的显示</td>
+    </tr>
+    <tr>
+        <td>value</td>
+        <td>Function</td>
+        <td></td>
+        <td>该方法用于自定义value的值</td>
+    </tr>
+</table>
+<p class="lead">
+    通过<code>s-build</code>属性来指定select构建下拉列表所需的数据，该属性的值可以是<span class="text-success">数组</span>、
+    <span class="text-success">对象(key:value)</span>、<span class="text-success">Function(同步或者异步均可)</span>
+</p>
+<h3>示例与源码</h3>
+<hr/>
+<h4>通过数组变量来构建下拉列表</h4>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource">
+    <form class="form-inline">
+        <select s="select" s-build="selectBuildData" class="form-control">
+            <option value="">默认分类</option>
+        </select>
+    </form>
+    <script type="text/plain" s-sh-role="javascript">
+        var selectBuildData = [
+            {id: "1", name: "笔记本"},
+            {id: "2", name: "台式机"},
+            {id: "3", name: "打印机"},
+            {id: "4", name: "手机"}
+        ]
+    </script>
+    <script type="text/javascript">
+        var selectBuildData = [
+            {id: "1", name: "笔记本"},
+            {id: "2", name: "台式机"},
+            {id: "3", name: "打印机"},
+            {id: "4", name: "手机"}
+        ]
+    </script>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource'), brush: 'JScript'}"></div>
+<h4>通过Map来构建下拉列表</h4>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource1">
+    <form class="form-inline">
+        <select s="select" s-build="selectBuildMapData" class="form-control">
+            <option value="">默认分类</option>
+        </select>
+    </form>
+    <script type="text/plain" s-sh-role="javascript">
+        var selectBuildMapData = {
+            "1": "笔记本",
+            "2": "台式机",
+            "3": "打印机",
+            "4": "手机"
+        };
+    </script>
+    <script type="text/javascript">
+        var selectBuildMapData = {
+            "1": "笔记本",
+            "2": "台式机",
+            "3": "打印机",
+            "4": "手机"
+        };
+    </script>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource1'), brush:'JScript'}"></div>
+<h4>通过异步方法来构建下拉列表</h4>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource2">
+    <form class="form-inline">
+        <select s="select" s-build="S.get('json/select.json')" class="form-control">
+            <option value="">编程语言</option>
+        </select>
+    </form>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource2'), brush:'JScript'}"></div>
+<h4><code>select.json</code>的返回值为：</h4>
+<div class="highlight" s="sh" s-sh="{brush:'JScript'}">
+    [
+        {"id": "java", "name": "JAVA"},
+        {"id": "c++", "name": "C++"},
+        {"id": "php", "name": "PHP"},
+        {"id": ".net", "name": ".NET"}
+    ]
+</div>

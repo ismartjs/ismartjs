@@ -7,15 +7,16 @@
         id:"form",
         options: "ctx:action,ctx:done,ctx:fail,ctx:always",
         defaultOptions:{
-            method: "post"
+            method: "post",
+            enctype: "application/x-www-form-urlencoded"
         }
     }, {
         onPrepare: function(){
             var that = this;
             this.options.action =  this.S.node.attr("action") || this.options.action;
-            this.options.method = this.S.node.attr("method") || this.options.method || "post";
-            this.options.enctype = this.S.node.attr("enctype") || this.options.enctype || "application/x-www-form-urlencoded";
-            var submitBtn = this.S.node.find(":submit")
+            this.options.method = this.S.node.attr("method") || this.options.method;
+            this.options.enctype = this.S.node.attr("enctype") || this.options.enctype;
+            var submitBtn = this.S.node.find(":submit");
             this.S.node[0].onsubmit = function(e){
                 e.stopPropagation();
                 try{

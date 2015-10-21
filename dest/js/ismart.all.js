@@ -140,7 +140,7 @@
          * */
         DEFAULT_CONTEXT: function () {
 
-            var valueContext = {};
+            var __SMART_VALUE_CONTEXT__ = {};
 
             try {
                 return eval(arguments[0]);
@@ -197,6 +197,7 @@
      * */
     Smart.extend({
         DEFINE_KEY: CONST.SMART_ATTR_KEY,
+        VALUE_CONTEXT: "__SMART_VALUE_CONTEXT__",
         isSmart: function (smart) {
             if (smart == undefined) {
                 return false;
@@ -686,7 +687,7 @@
          * 在context中定义一个 valueContext对象。
          * */
         contextValue: function (key, value) {
-            var valueContext = this.context("valueContext");
+            var valueContext = this.context(Smart.VALUE_CONTEXT);
             if (arguments.length == 1) {
                 return valueContext[key];
             } else {
@@ -1365,65 +1366,6 @@
 
 })
 (jQuery);;/**
- * Created by Administrator on 2014/7/11.
- */
-(function () {
-    Smart.widgetExtend({
-        id: "cds",
-        /**
-         * s:check控件的smart对象，key:数据的key，confirmMsg:确认消息，errorMsg:错误警告消息，r:是否刷新
-         * dk: 将使用该值作为 选取的数据 的 key
-         * */
-        options: "ctx:cs,ck,dk,confirmMsg,errorMsg,r,confirm",
-        defaultOptions: {
-            "confirmMsg": "确认进行此操作吗？",
-            "errorMsg": "请选择你要操作的数据？",
-            confirm: true,
-            r: "true",
-            ck: "id"//获取选择数据的key
-        }
-    }, {
-        onPrepare: function () {
-            var that = this;
-            this.S.on("submit-done", function(e){
-                if(that.options['r'] == "true"){
-                    that.options['cs'].refresh();
-                }
-            });
-        }
-    }, {
-        getSubmitData: function (deferred) {
-            if (this.widget.cds.options.dk) {
-                var data = this.widget.cds.options.cs.getCheckedData(this.widget.cds.options.ck);
-                if (Smart.isEmpty(data)) {
-                    if (this.widget.cds.options['errorMsg']) {
-                        this.alert(this.widget.cds.options['errorMsg']);
-                    }
-                    return deferred.reject();
-                }
-                var that = this;
-                function resolve() {
-                    var obj = {};
-                    obj[that.widget.cds.options.dk] = data;
-                    deferred.resolve(obj);
-                }
-                if(this.widget.cds.options["confirm"]){
-                    this.confirm(this.widget.cds.options['confirmMsg'], {sign:"warning"}).done(function(){
-                        resolve();
-                    }).fail(function(){
-                        deferred.reject();
-                    });
-                } else {
-                    resolve();
-                }
-
-            } else {
-                this.alert("没有配置dk参数");
-                deferred.reject();
-            }
-        }
-    });
-})();;/**
  * Created by Administrator on 2014/6/27.
  */
 (function ($) {
@@ -1670,62 +1612,6 @@
         }
     });
 })(jQuery);;/**
- * Created by Administrator on 2014/7/11.
- */
-(function(){
-    /**
-     * grid数据删除控件
-     * */
-    Smart.widgetExtend({
-        id: "dataSubmit",
-        options: "ctx:data,url,type,listener",
-        defaultOptions: {
-            "type": "post"
-        }
-    },{
-        onPrepare: function(){
-            var that = this;
-            Smart.clickDeferred(this.S.node, $.proxy(this.S.submit, this.S));
-            this.S.on("submit-done", function(e){
-                e.stopPropagation();
-                that.options.listener && that.options.listener.done
-                && that.options.listener.done.apply(null, Smart.SLICE.call(arguments, 1));
-            });
-            this.S.on("submit-fail", function(e){
-                e.stopPropagation();
-                that.options.listener && that.options.listener.fail
-                && that.options.listener.fail.apply(null, Smart.SLICE.call(arguments, 1));
-            });
-        }
-    },{
-        getSubmitData: function(deferred){
-            var data = this.widget.dataSubmit.options['data'];
-            if(!$.isFunction(data)){
-                deferred.resolve(data);
-            } else {
-                deferred.resolve(data());
-            }
-        },
-        submit: function(){
-            var that = this;
-            var deferred = $.Deferred();
-            this.getSubmitData(deferred);
-            var submitDeferred = $.Deferred();
-            deferred.done(function(data){
-                that[that.widget.dataSubmit.options.type](that.widget.dataSubmit.options.url, data).done(function(){
-                    that.trigger.apply(that, ["submit-done"].concat($.makeArray(arguments)))
-                    submitDeferred.resolve();
-                }).fail(function(){
-                    that.trigger.apply(that, ["submit-fail"].concat($.makeArray(arguments)))
-                    submitDeferred.reject();
-                });
-            }).fail(function(){
-                submitDeferred.reject();
-            });
-            return submitDeferred;
-        }
-    });
-})();;/**
  * Created by Administrator on 2014/6/21.
  */
 (function(){
@@ -2122,7 +2008,6 @@
         //处理模板
         var meta = result.meta;
         var argsScripts = [];
-        var metaScripts = [];
         scripts.push("(function(){");
         scripts.push("    return function(){");
         if (meta.args) { //如果有参数定义，那么参数的值是
@@ -2130,17 +2015,16 @@
             $.each(meta.args, function (i, arg) {
                 var argSeg = arg.split(":");
                 var argStr = "var " + argSeg[0] + " = arguments[0]['" + argSeg[0] + "'];\n";
-                metaScripts.push("var " + argSeg[0] + " = arguments[1]['" + argSeg[0] + "'];");
                 if (argSeg.length == 2) {
                     var tmpStr = argSeg[0] + " = " + argSeg[0] + " !==undefined ? " + argSeg[0] + " : " + argSeg[1] + ";";
                     argStr += tmpStr + "\n";
-                    metaScripts.push(tmpStr);
                 }
                 argsScripts.push(argStr);
                 scripts.push(argStr);
             });
         }
         scripts.push("var S = this;");
+        scripts.push("var " + Smart.VALUE_CONTEXT +" = {};");
         scripts.push(scriptTexts.join("\n"));
         scripts.push("			return function(key){");
         scripts.push("				try{");
@@ -2172,19 +2056,7 @@
             var id = $(this).attr("id");
             $(this).attr("id", that.trueId(id)).attr("_id_", id);
         });
-        this.meta = meta;
-        var metaScript = metaScripts.join("\n");
-        metaScript += "\n  try{\n return eval(arguments[0]);\n}catch(e){\nreturn null}";
-        var metaScript = new Function(metaScript);
-        $.each(meta, function (key, val) {
-            if (key == 'args') {
-                return;
-            }
-            meta[key] = val.replace(META_VALUE_RE, function ($0, $1) {
-                return metaScript.apply(this, [$1, loadArgs]);
-            });
-        });
-
+        this.meta = {};
         this.node.empty().append(this._WNODE);
         undelegateEvent(this);
         var scriptFn = this.context(scripts.join("\n"));
@@ -2207,6 +2079,19 @@
         $.extend(scriptArgs, loadArgs || {});
         var context = scriptFn.call(this, scriptArgs);
         this.CONTEXT = context;
+        $.each(meta, function (key, val) {
+            if (key == 'args') {
+                return;
+            }
+            meta[key] = val.replace(META_VALUE_RE, function ($0, $1) {
+                return that.context($1);
+            });
+        });
+        $.each(meta, function(key, val){
+            if(!(key in that.meta)){
+                that.meta[key] = val;
+            }
+        });
         //绑定浏览器事件，click等
         delegateEvent(this);
         //处理自动焦点的元素
@@ -2473,14 +2358,16 @@
             //触发beforeClose监听事件。
             var that = this;
             var args = arguments;
-            that.widget.window.cache = {};
-            var deferred = $.Deferred();
-            deferred.done(function () {
-                that.node.remove();
-            });
-            var event = $.Event("close", {deferred: deferred});
-            that.trigger(event, Smart.SLICE.call(args));
-            event.deferred['resolve'] && event.deferred.resolve();
+            setTimeout(function(){
+                that.widget.window.cache = {};
+                var deferred = $.Deferred();
+                deferred.done(function () {
+                    that.node.remove();
+                });
+                var event = $.Event("close", {deferred: deferred});
+                that.trigger(event, Smart.SLICE.call(args));
+                event.deferred['resolve'] && event.deferred.resolve();
+            },1);
         },
         closeWithConfirm: function () {
             var that = this;
@@ -3311,6 +3198,20 @@
     });
 })(jQuery);
 ;/**
+ * Created by nana on 2015/9/17.
+ */
+(function ($) {
+    Smart.widgetExtend({
+        id: "popover",
+        defaultOptions: {
+            trigger: "hover"
+        }
+    }, {
+        onPrepare: function () {
+            this.S.node.popover(this.options)
+        }
+    });
+})(jQuery);;/**
  * Created by Administrator on 2014/6/28.
  */
 (function ($) {

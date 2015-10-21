@@ -1,0 +1,112 @@
+<meta title="分页"/>
+<h3>定义</h3>
+<code>s="pagination"</code>
+<h3>参数</h3>
+<hr />
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>action</td>
+        <td>Function</td>
+        <td></td>
+        <td>分页项点击时的方法，该方法的<code>this</code>引用指向分页的页数，如当点击第2页的时候，该方法的this对象值就是2</td>
+    </tr>
+    <tr>
+        <td>preText</td>
+        <td>String</td>
+        <td><code>&lt;</code></td>
+        <td>上一页按钮的显示文字</td>
+    </tr>
+    <tr>
+        <td>nextText</td>
+        <td>String</td>
+        <td><code>&gt;</code></td>
+        <td>下一页按钮的显示文字</td>
+    </tr>
+    <tr>
+        <td>startText</td>
+        <td>String</td>
+        <td><code>&laquo;</code></td>
+        <td>前一页的按钮的显示文字</td>
+    </tr>
+    <tr>
+        <td>endText</td>
+        <td>String</td>
+        <td><code>&raquo;</code></td>
+        <td>后一页的按钮的显示文字</td>
+    </tr>
+    <tr>
+        <td>disabledClass</td>
+        <td>String</td>
+        <td><code>disabled</code></td>
+        <td>按钮禁用状态的class</td>
+    </tr>
+    <tr>
+        <td>activeClass</td>
+        <td>String</td>
+        <td><code>active</code></td>
+        <td>按钮激活状态的class</td>
+    </tr>
+    <tr>
+        <td>pageKey</td>
+        <td>String</td>
+        <td><code>page</code></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>pageSizeKey</td>
+        <td>String</td>
+        <td><code>pageSize</code></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>totalKey</td>
+        <td>String</td>
+        <td><code>total</code></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>showSize</td>
+        <td>int</td>
+        <td><code>11</code></td>
+        <td>显示的总页数</td>
+    </tr>
+</table>
+<h3>示例与源码</h3>
+<hr />
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource">
+    <ul s="pagination" id="pagination"
+        s-pagination="{action:function(){pagingData.page=this;S.S('#pagination').refresh();}}"
+        s-data="pagingData"
+        class="pagination pagination-sm">
+    </ul>
+    <script type="text/plain" s-sh-role="javascript">
+        var pagingData = {
+            total: 323,
+            pageSize: 10,
+            page: 6
+        };
+    </script>
+    <script type="text/javascript">
+        var pagingData = {
+            total: 323,
+            pageSize: 10,
+            page: 6
+        };
+    </script>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource')}"></div>
+<h3>分页控件接受的JSON数据格式</h3>
+<hr />
+<div class="highlight" s="sh" s-sh="{brush:'JScript'}">
+    {
+        "total": 323,
+        "pageSize": 10,
+        "page": 1
+    }
+</div>

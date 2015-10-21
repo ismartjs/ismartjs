@@ -48,8 +48,9 @@
             });
         }
     },{
-        bindTarget: function(node){
+        bindTarget: function(node, options){
             var that = this;
+            options && (this.widget.contextmenu.options = options);
             node.bind("contextmenu", function(e){
                 that.show(e, $(this));
                 return false;

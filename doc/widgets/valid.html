@@ -1,0 +1,354 @@
+<meta title="表单验证"/>
+<h3>描述</h3>
+<p class="lead">通过声明式的验证规则去验证输入的正确与否，表单验证规则内置了许多现成的验证规则，另外你也可以自己去扩展验证规则。</p>
+<h3>定义</h3>
+<code>s="valid"</code>
+<h3>参数</h3>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>show</td>
+        <td><code>Function(node, msg, level)</code></td>
+        <td></td>
+        <td>
+            验证结果提示。默认已经实现，不需要自己实现，如果需要自定义提示，可覆盖此方法
+        </td>
+    </tr>
+    <tr>
+        <td>notice</td>
+        <td><code>Function(node, msg, level)</code></td>
+        <td><code>null</code></td>
+        <td>
+            消息通知，表单的验证结果会通过该方法进行通知。<code>node</code>为当前验证的表单域，<code>msg</code>为验证提示，
+            <code>level</code>为验证结果的级别，分别为<code>success,error,warning</code>，同<code>show</code>不同的是，该方法是作为全局性通知来使用。
+        </td>
+    </tr>
+    <tr>
+        <td>blur</td>
+        <td>boolean</td>
+        <td><code>true</code></td>
+        <td>是否<code>blur</code>事件触发验证</td>
+    </tr>
+</table>
+<hr />
+<h3>一个典型的表单验证，与<code>form</code>控件进行结合</h3>
+<div class="bs-example" id="shSource2" s="sh" s-sh="{phase:'source'}">
+    <form s="form,valid" id="form" action="doc/form" s-valid="{notice: validNotice}" class="form-horizontal" style="width: 600px;">
+        <div class="form-group" s-valid-role="item">
+            <label class="col-sm-2">账号：</label>
+            <div class="col-sm-10">
+                <input type="text" s-valid-error="require()" s-valid-label="账号" name="account" class="form-control"
+                       placeholder="不能为空"/>
+            </div>
+        </div>
+        <div class="form-group" s-valid-role="item">
+            <label class="col-sm-2">密码：</label>
+            <div class="col-sm-10">
+                <input type="password" s-valid-error="require(),len(6,12)" s-valid-label="密码" s-valid-id="password" name="password" class="form-control"
+                       placeholder="不能为空（长度不能小于6且不能大于12）"/>
+            </div>
+        </div>
+        <div class="form-group" s-valid-role="item">
+            <label class="col-sm-2">确认密码：</label>
+            <div class="col-sm-10">
+                <input type="password" s-valid-error="require(),len(6,12),eq('password')" s-valid-label="确认密码" name="rePassword" class="form-control"
+                       placeholder="不能为空，必须与密码输入一致"/>
+            </div>
+        </div>
+        <div class="form-group" >
+            <div class="col-sm-10 col-sm-offset-2">
+                <input type="submit" class="btn btn-primary" value="Submit按钮自动验证提交" />
+                <input type="button" s-click="return submitForm()" class="btn btn-info" value="form api验证提交" />
+                <input type="button" s-click="return validateForm()" class="btn btn-success" value="手动验证表单" />
+            </div>
+        </div>
+    </form>
+    <script type="text/plain" s-sh-role="javascript">
+        function validateForm(){
+            return S.S("#form").validate().done(function(){
+                S.notice("表单验证通过", "success");
+            }).fail(function(){
+                S.notice("表单验证失败", "danger");
+            })
+        }
+
+        function validNotice(node, msg, level){
+            if(level == "error"){
+                S.notice(msg, "danger");
+            }
+        }
+
+        function submitForm(){
+            return S.S("#form").submit();
+        }
+    </script>
+    <script type="text/javascript">
+        function validateForm(){
+            return S.S("#form").validate().done(function(){
+                S.notice("表单验证通过", "success");
+            }).fail(function(){
+                S.notice("表单验证失败", "danger");
+            })
+        }
+
+        function validNotice(node, msg, level){
+            if(level == "error"){
+                S.notice(msg, "danger");
+            }
+        }
+
+        function submitForm(){
+            return S.S("#form").submit();
+        }
+    </script>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource2'), brush:'JScript'}"></div>
+<div class="bs-callout-info bs-callout">
+    当控件声明为<code>s="form,valid"</code>时，<code>form</code>控件会自动混入<code>valid</code>的控件，而不需要显式的调用<code>valid</code>控件的api去验证表单，<code>form</code>控件会自动做验证。
+</div>
+<h3>定义验证项</h3>
+<hr/>
+<p class="lead">通过在表单域上配置验证项，可以定义该表单域的验证规则</p>
+<div class="bs-example" id="shSource" s="sh" s-sh="{phase:'source'}">
+    <form s="valid" class="form-horizontal" style="width: 600px;">
+        <input type="text" s-valid-error="require()" name="fieldName" class="form-control" placeholder="不能为空"/>
+    </form>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource')}"></div>
+
+<h4>验证项的个性配置</h4>
+<p class="lead">可以定制验证项的验证提示等</p>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>配置项</th>
+        <th>类型</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td><code>s-valid-error</code></td>
+        <td>String</td>
+        <td>
+            不能为空，验证项的错误验证规则，当该规则验证不通过时就会中断验证继而验证失败，可以声明多个规则，用英文逗号(<code>,</code>)隔开。如：
+            <code>&lt;input type='text' s-valid-error='require(),min(10)' /&gt;</code>
+        </td>
+    </tr>
+    <tr>
+        <td>s-valid-warning</td>
+        <td>String</td>
+        <td>
+            验证项的警告验证规则，当该规则验证不通过时仅仅会显示警告信息，不会中断验证，可适用于一些特殊的场景，如：密码强度的验证。
+        </td>
+    </tr>
+    <tr>
+        <td>s-valid-label</td>
+        <td>String</td>
+        <td>
+            验证项的标签，用于标明验证结果，如<code>XXX不能为空</code>
+        </td>
+    </tr>
+    <tr>
+        <td>s-valid-id</td>
+        <td>String</td>
+        <td>
+            验证项的验证id
+        </td>
+    </tr>
+    <tr>
+        <td>s-valid-show</td>
+        <td>Function</td>
+        <td>
+            用于显示验证结果，如果该项没有配置，则使用全局的show方法。
+        </td>
+    </tr>
+    <tr>
+        <td>s-valid-resetShow</td>
+        <td>Function</td>
+        <td>
+            用于重置验证结果的展示，如果该项配有配置，则使用全局的resetShow方法。
+        </td>
+    </tr>
+    <tr>
+        <td>s-valid-blur-ig</td>
+        <td>String</td>
+        <td>
+            当该值为true的时候，表单域的blur事件不会触发验证。
+        </td>
+    </tr>
+</table>
+<h4>使用<code>s-valid-role="item"</code>定义验证项</h4>
+<p class="lead">默认的验证结果会通过bootstrap的<code>tooltip</code>显示在表单域上面，如果我们想要把结果显示在某个dom元素内，那么就需要通过该属性去定义一个验证项，
+    该验证项的验证结果会显示在该元素相应的子元素上。如错误结果显示在<code>.s-valid-feedback-error</code>元素里，表单的构成可以参考<code>bootstrap</code>的表单，示例如下</p>
+<div class="bs-example" id="shSource1" s="sh" s-sh="{phase:'source'}">
+    <form s="valid" class="form-horizontal" style="width: 600px;">
+        <div class="form-group has-feedback" s-valid-role="item">
+            <label class="col-sm-2">账号：</label>
+
+            <div class="col-sm-10">
+                <input type="text" s-valid-error="require()" s-valid-label="账号" name="name" class="form-control"
+                       placeholder="不能为空"/>
+                <span s-valid-role="msg" class="help-block"></span>
+                <span class="fa fa-check form-control-feedback s-valid-feedback-success"></span>
+                <span class="fa fa-exclamation-triangle form-control-feedback s-valid-feedback-warning"></span>
+                <span class="fa fa-close form-control-feedback s-valid-feedback-error"></span>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource1')}"></div>
+<h3>api</h3>
+<hr/>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>api名称</th>
+        <th>参数</th>
+        <th>返回值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td><code>validate()</code></td>
+        <td></td>
+        <td><code>Deferred</code></td>
+        <td>
+            调用该方法验证所有的输入项
+        </td>
+    </tr>
+    <tr>
+        <td><code>resetValidate()</code></td>
+        <td></td>
+        <td></td>
+        <td>
+            重置验证项，可以清空验证项的验证结果显示等。
+        </td>
+    </tr>
+</table>
+<h3>验证规则</h3>
+<p class="lead">验证控件内置了多个现成的验证规则，基本可以覆盖90%以上的验证需求。</p>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>验证规则</th>
+        <th>参数</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>require(true|false)</td>
+        <td><code>true|false</code></td>
+        <td>
+            非空验证，参数默认为<code>true</code>，当参数为<code>false</code>时表明可以为空
+        </td>
+    </tr>
+    <tr>
+        <td>remote(url)</td>
+        <td>String</td>
+        <td>
+            该验证规则会去远程请求url去验证，常用场景为：用户账号远程验证等。示例如：<code>&lt;input type="text" name="account"
+            s-valid-error="require(),remote('/account/check')" /&gt;</code>
+
+            <p>远程验证接口返回值可以是 <code>0|1</code>，当返回<code>0</code>时验证失败，当返回<code>1</code>时验证成功，也可以是json对象，
+                格式为<code>{code:0|1, msg:msg}</code>，当<code>code</code>为<code>0</code>时验证失败，<code>msg</code>则作为错误提示显示出来，当为<code>1</code>时，验证成功。
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>email()</td>
+        <td></td>
+        <td>
+            email验证规则
+        </td>
+    </tr>
+    <tr>
+        <td>regex(regex)</td>
+        <td>正则表达式</td>
+        <td>
+            正则表达式验证，参数为正则表达式，如：<code>regex(/^\d+$/gi)</code>
+        </td>
+    </tr>
+    <tr>
+        <td>checked()</td>
+        <td></td>
+        <td>
+            选中验证，当该元素选中的时候通过验证，可用在强制同意协议的场景。
+        </td>
+    </tr>
+    <tr>
+        <td>len(minLength[, maxLength])</td>
+        <td>minLength: int, maxLength: int</td>
+        <td>
+            字符串长度验证，<code>maxLength</code>可为空，当<code>maxLength</code>为空的时候，则验证长度必须是<code>minLength</code>。
+        </td>
+    </tr>
+    <tr>
+        <td>range(min,max)</td>
+        <td></td>
+        <td>
+            范围验证，<code>min,max</code>可以为任何可以进行范围比较的类型，如数字型<code>range(1,100)</code>，字符型<code>range('A','Z')</code>等
+        </td>
+    </tr>
+    <tr>
+        <td>min(value)</td>
+        <td></td>
+        <td>
+            最小验证，<code>value</code>可以为任何可以进行比较的类型，如数字型<code>min(150)</code>，字符型<code>min('M')</code>等
+        </td>
+    </tr>
+    <tr>
+        <td>word</td>
+        <td></td>
+        <td>
+            验证是否是是字母、数字、下划线、中划线的组合。
+        </td>
+    </tr>
+    <tr>
+        <td>words</td>
+        <td></td>
+        <td>
+            验证是否是是字母、数字、下划线、中划线,空格的组合。
+        </td>
+    </tr>
+    <tr>
+        <td>non_char(chars)</td>
+        <td>String</td>
+        <td>
+            输入的字符串中不能包含参数中的任意字符
+        </td>
+    </tr>
+    <tr>
+        <td>eq(validId)</td>
+        <td>String</td>
+        <td>
+            判断当前两个输入项的值是否一致，validId为参考的验证项的id，用<code>s-valid-id</code>来定义的值。可用在密码输入确认的场景中。
+        </td>
+    </tr>
+    <tr>
+        <td>number()</td>
+        <td></td>
+        <td>
+            数字验证，输入的值只能是正确的数字
+        </td>
+    </tr>
+    <tr>
+        <td>ip()</td>
+        <td></td>
+        <td>
+            ip地址验证
+        </td>
+    </tr>
+    <tr>
+        <td>checkboxRequire()</td>
+        <td></td>
+        <td>
+            验证当前元素下的checkbox至少有一个被选中
+        </td>
+    </tr>
+    <tr>
+        <td>url()</td>
+        <td></td>
+        <td>
+            url验证，可以是<code>https|http|ftp|rtsp|mms</code>这几种类型
+        </td>
+    </tr>
+</table>

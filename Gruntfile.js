@@ -7,17 +7,22 @@ module.exports = function (grunt) {
                 separator: ';'
             },
             'smart-all': {
-                src: ["js/smart.template.js", "js/smart.core.js", "js/widgets/*.js","js/smart.ui.js", "js/widgets-ui/*.js", "js/plugins/*.js"],
+                src: ["js/smart.template.js", "js/smart.core.js", "js/widgets/*.js",
+                    "js/smart.ui.js", "js/widgets-ui/*.js", "js/plugins/*.js", "js/utils/*.js"],
                 dest: 'dest/js/ismart.all.js'
             }
         },
         uglify: {
             options: {
                 banner: '/*! <%= pkg.name %> version:<%=pkg.version%> <%= grunt.template.today("yyyy-mm-dd") %> ' +
-                    '<%= pkg.website %> Email:<%= pkg.email %> QQ: <%= pkg.QQ %>*/\n',
-                sourceMap:function(path) { return path.replace('.js',".map")},
-                sourceMapRoot:"../../",
-                sourceMappingURL: function(path) { return path.replace('.js',".map")}
+                '<%= pkg.website %> Email:<%= pkg.email %> QQ: <%= pkg.QQ %>*/\n',
+                sourceMap: function (path) {
+                    return path.replace('.js', ".map")
+                },
+                sourceMapRoot: "../../",
+                sourceMappingURL: function (path) {
+                    return path.replace('.js', ".map")
+                }
             },
             "ismart": {
                 files: {
@@ -25,30 +30,36 @@ module.exports = function (grunt) {
                 }
             }
         },
-        clean: ["dest","example"],
+        clean: ["dest"],
         copy: {
-            example: {
-                files: [
-                    {expand: true,
-                        src: [
-                        "js/**", "index.html", "home.html", "boot.html", "login-panel.html", "main-bottom.html",
-                            "main.html", "topbar-left.html", "topbar-right.html", "css/**", "images/**",
-                            "bootstrap3/**","font-awesome/**","layouts/**"
-                        ], dest: 'example'},
-                    {src:"json/menu-example.json",dest:"example/json/menu.json"},
-                    {src:"ui-template.html",dest:"example/ui-template.html"}
-                ]
-            },
             dest: {
                 files: [
-                    {src:'ui-template.html',dest:"dest/"}
+                    {
+                        expand: true,
+                        src: [
+                            "index.html", "home.html", "boot.html",
+                            "html/login-panel.html",
+                            "html/main-bottom.html",
+                            "html/topbar-left.html",
+                            "html/topbar-right.html",
+                            "images/**", "bootstrap3/**", "font-awesome/**",
+                            "layouts/**", "ui-template.html","css/smart.custom.css"
+                        ], dest: 'dest'
+                    },
+                    {src: "json/menu-example.json", dest: "dest/json/menu.json"},
                 ]
             }
         },
         cssmin: {
             combine: {
                 files: {
-                    'dest/css/ismart.ui.min.css': 'css/*.css'
+                    'dest/css/ismart.ui.min.css': [
+                        'css/bootstrap-datetimepicker.min.css',
+                        'css/smart.layouts.main0.css',
+                        'css/smart.main.css',
+                        'css/smart.ui.bootstrap.css',
+                        'css/smart.ui.css'
+                    ]
                 }
             }
         }
@@ -62,5 +73,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
 
     // 注册任务
-    grunt.registerTask('default', ['clean', 'concat', 'copy', 'cssmin','uglify']);
+    grunt.registerTask('default', ['clean', 'concat', 'copy', 'cssmin', 'uglify']);
 };

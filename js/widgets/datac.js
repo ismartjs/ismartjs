@@ -10,14 +10,19 @@
             var args = Smart.SLICE.call(arguments);
             var igAttr = this.widget.datac.optionName("ig");
             var fnAttr = this.widget.datac.optionName("fn");
+            var deferreds = [];
             this.children().each(function(){
-                var ig = this.node.attr(igAttr);
-                if(ig == "true" || ig == ""){
-                    return;
-                }
-                var fn = this.node.attr(fnAttr) || "data";
-                this[fn].apply(this, args);
+                var that = this;
+                deferreds.push(function(){
+                    var ig = that.node.attr(igAttr);
+                    if(ig == "true" || ig == ""){
+                        return;
+                    }
+                    var fn = that.node.attr(fnAttr) || "data";
+                    return that[fn].apply(that, args);
+                })
             });
+            return Smart.deferredQueue(deferreds);
         }
     });
 })();
