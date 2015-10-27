@@ -1,0 +1,64 @@
+<meta title="日期时间选择器" icon="fa fa-calendar" />
+<h3>描述</h3>
+<p class="lead">该控件扩展自bootstrap的datetimepicker控件，github地址为<a href="https://github.com/smalot/bootstrap-datetimepicker" target="_blank">https://github.com/smalot/bootstrap-datetimepicker</a> </p>
+<h3>定义</h3>
+<p><code>s='datetimepicker'</code></p>
+<h3>参数</h3>
+<p>参数配置可参考<a href="https://github.com/smalot/bootstrap-datetimepicker" target="_blank">https://github.com/smalot/bootstrap-datetimepicker</a>， 通过<code>s-datetimepicker</code>属性来配置参数。</p>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>默认参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>format</td>
+        <td>String</td>
+        <td><code>yyyy-mm-dd</code></td>
+        <td>日期的格式</td>
+    </tr>
+    <tr>
+        <td>autoclose</td>
+        <td>boolean</td>
+        <td><code>true</code></td>
+        <td>当日期选择后是否关闭</td>
+    </tr>
+    <tr>
+        <td>language</td>
+        <td>String</td>
+        <td><code>zh-CN</code></td>
+        <td>语言</td>
+    </tr>
+    <tr>
+        <td>minView</td>
+        <td>String</td>
+        <td><code>month</code></td>
+        <td>日期时间选择器所能够提供的最精确的时间选择视图。</td>
+    </tr>
+    <tr>
+        <td>todayHighlight</td>
+        <td>boolean</td>
+        <td><code>true</code></td>
+        <td>是否高亮显示当前日期</td>
+    </tr>
+</table>
+<h3>示例与源码</h3>
+<hr/>
+<h4>一个默认的日期框</h4>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource">
+    <form class="form-inline">
+        <input type="text" class="form-control" s="datetimepicker" style="width: 200px;" />
+    </form>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource'), brush: 'JScript'}"></div>
+<h4>带时间选择的日期选择器</h4>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource1">
+    <form class="form-inline">
+        <input type="text" class="form-control" s="datetimepicker" s-datetimepicker="{minView:'hour', format:'yyyy-mm-dd hh:ii', pickerPosition:'top-left'}" style="width: 200px;" />
+    </form>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource1'), brush: 'JScript'}"></div>
+<h3>更多示例</h3>
+<p>更多示例请参考<a href="https://github.com/smalot/bootstrap-datetimepicker" target="_blank">https://github.com/smalot/bootstrap-datetimepicker</a></p>
+<div style="padding-bottom: 100px;"></div>

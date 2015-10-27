@@ -110,3 +110,36 @@
         {"id": ".net", "name": ".NET"}
     ]
 </div>
+<h3>级联</h3>
+<p class="lead">开发过程中，经常会用到select的级联选择，比如省市区的选择，我们可以使用基础控件的<code>s-change</code>事件和<code>refresh()</code>方法实现select的级联操作。</p>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource3">
+    <form class="form-inline">
+        <select s="select" id="province"
+                s-build="S.get('rest/regions/0')"
+                s-change="S.S('#city').refresh().done(function(){S.N('#city').change()})"
+                class="form-control">
+            <option value="-1">选择省份</option>
+        </select>
+        <select s="select" id="city"
+                s-build="S.get('rest/regions/' + S.N('#province').val())"
+                s-change="S.S('#district').refresh()"
+                class="form-control">
+            <option value="-1">选择城市</option>
+        </select>
+        <select s="select" id="district"
+                s-build="S.get('rest/regions/' + S.N('#city').val())"  class="form-control">
+            <option value="-1">选择城市</option>
+        </select>
+    </form>
+    <script type="text/plain" s-sh-role="javascript">
+        S.on("s-ready", function(){
+            S.N("#province").change();
+        })
+    </script>
+    <script type="text/javascript">
+        S.on("s-ready", function(){
+            S.N("#province").change();
+        })
+    </script>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource3'), brush:'JScript'}"></div>

@@ -75,7 +75,7 @@
 <hr />
 <h4>1. 提交数据到后台</h4>
 <div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource" >
-    <form s="form" action="doc/form" class="form-horizontal" style="width: 600px;">
+    <form s="form" action="rest/form" s-form="{done: formSubmitDone}" method="post" class="form-horizontal" style="width: 600px;">
         <div class="form-group">
             <label class="col-sm-2 control-label">账号</label>
             <div class="col-sm-10">
@@ -94,11 +94,26 @@
             </div>
         </div>
     </form>
+    <script type="text/plain" s-sh-role="javascript">
+
+        function formSubmitDone(rs){
+            S.alert("数据提交成功，提交的数据为：" + JSON.stringify(rs));
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        function formSubmitDone(rs){
+            S.alert("数据提交成功，提交的数据为：" + JSON.stringify(rs));
+        }
+
+    </script>
 </div>
 <div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource')}"></div>
 <h4>2. 提交数据到异步方法以及使用<code>submit</code>方法提交表单</h4>
 <div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource1" >
-    <form id="form" s="form" s-form="{action:formAsyncAction}" class="form-horizontal" style="width: 600px;">
+    <form id="form" s="form" s-form="{action:formAsyncAction, done: formSubmitDone}" class="form-horizontal" style="width: 600px;">
         <div class="form-group">
             <label class="col-sm-2 control-label">账号</label>
             <div class="col-sm-10">
@@ -135,18 +150,23 @@
     <script type="text/javascript">
         function formAsyncAction(data){
             //如果是异步方法，必须返回一个deferred对象
-            return S.post("doc/form", data);
+            return S.post("rest/form", data);
         }
         function submitForm(){
             return S.S("#form").submit();
         }
+
+        function formSubmitDone(rs){
+            S.alert("数据提交成功，提交的数据为：" + JSON.stringify(rs));
+        }
+
     </script>
 </div>
 <div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource1'), brush: 'JScript'}"></div>
 <h4>3. 表单验证</h4>
 <p class="lead">使用<a href="javascript:;"><code  s-click="S.open('valid.html')" >valid</code></a> 控件可以实现表单的验证通过后再提交数据。</p>
 <div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource2" >
-    <form s="form,valid" s-form="{action:'doc/form'}" class="form-horizontal" style="width: 600px;">
+    <form s="form,valid" s-form="{action:'rest/form', done: formSubmitDone}" class="form-horizontal" style="width: 600px;">
         <div class="form-group" s-valid-role="item">
             <label class="col-sm-2 control-label">账号</label>
             <div class="col-sm-10">

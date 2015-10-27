@@ -9,20 +9,12 @@
             format: "yyyy-mm-dd",
             autoclose: true,
             language: 'zh-CN',
-            showMeridian: 'day',
             minView: 'month',
             todayHighlight: true
         }
     }, {
         onPrepare: function () {
-            var config = this.options.config || {};
-            var that = this;
-            $.each(['format','autoclose','todayHighlight','minView','language','maxView','startView'], function(i, v){
-               if(config[v] == undefined){
-                   config[v] = that.options[v];
-               }
-            });
-            this.S.node.datetimepicker(config);
+            this.S.node.datetimepicker(this.options);
         }
     });
 })(jQuery);

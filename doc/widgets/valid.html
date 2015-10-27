@@ -38,7 +38,7 @@
 <hr />
 <h3>一个典型的表单验证，与<code>form</code>控件进行结合</h3>
 <div class="bs-example" id="shSource2" s="sh" s-sh="{phase:'source'}">
-    <form s="form,valid" id="form" action="doc/form" s-valid="{notice: validNotice}" class="form-horizontal" style="width: 600px;">
+    <form s="form,valid" id="form" action="rest/form" s-form="{done: formSubmitDone}" s-valid="{notice: validNotice}" class="form-horizontal" style="width: 600px;">
         <div class="form-group" s-valid-role="item">
             <label class="col-sm-2">账号：</label>
             <div class="col-sm-10">
@@ -86,6 +86,10 @@
         function submitForm(){
             return S.S("#form").submit();
         }
+
+        function formSubmitDone(rs){
+            S.alert("数据提交成功，提交的数据为：" + JSON.stringify(rs));
+        }
     </script>
     <script type="text/javascript">
         function validateForm(){
@@ -104,6 +108,10 @@
 
         function submitForm(){
             return S.S("#form").submit();
+        }
+
+        function formSubmitDone(rs){
+            S.alert("数据提交成功，提交的数据为：" + JSON.stringify(rs));
         }
     </script>
 </div>

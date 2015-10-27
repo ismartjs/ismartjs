@@ -1,9 +1,11 @@
 {
     "name": "iSmartjs",
     "website": "http://www.ismartjs.com",
-    "email": "daigua1028@gmail.com",
+    "email": "175309744@qq.com",
     "QQ": "175309744",
     "version": "1.0.0",
+    "author": "ling",
+    "license": "",
     "devDependencies": {
         "grunt": "~0.4.2",
         "grunt-contrib-jshint": "~0.6.3",
