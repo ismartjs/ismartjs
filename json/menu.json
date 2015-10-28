@@ -103,5 +103,16 @@
         "url": "doc/widgets/popover.html"
       }
     ]
+  },
+  {
+    "id": "UI_STYLE",
+    "title": "UI样式",
+    "children": [
+      {
+        "id": "UI_FORM_ELEMENTS",
+        "title": "表单元素",
+        "url": "doc/widgets/form-elements.html"
+      }
+    ]
   }
 ]

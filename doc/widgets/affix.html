@@ -1,0 +1,66 @@
+<meta title="Affix" />
+<h3>定义</h3>
+<code>s="affix"</code>
+<h3>参数</h3>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>target</td>
+        <td><code>jQuery</code></td>
+        <td><code>window</code></td>
+        <td>
+            监听滚动的元素，默认为<code>window</code>元素。
+        </td>
+    </tr>
+    <tr>
+        <td>offset</td>
+        <td><code>jQuery</code></td>
+        <td><code>window</code></td>
+        <td>
+            Pixels to offset from screen when calculating position of scroll. If a single number is provided, the offset will be applied in both top and bottom directions. To provide a unique, bottom and top offset just provide an object offset: { top: 10 } or offset: { top: 10, bottom: 5 }. Use a function when you need to dynamically calculate an offset.
+        </td>
+    </tr>
+    <tr>
+        <td>affixClass</td>
+        <td><code>String</code></td>
+        <td><code>s-ui-affix-bar</code></td>
+        <td>
+            当元素affix的时候，该class将会被添加到元素上。
+        </td>
+    </tr>
+</table>
+<h3>示例</h3>
+<div s="sh" s-sh="{phase:'source'}" id="shSource" >
+    <div s="affix"
+         s-affix="{target: S.node}"
+         id="searcher"
+         class="clearfix s-ui-grid-action">
+        <form class="form-inline" id="orderSearchForm" s="form,valid"
+              s-form="{action:function(){}}">
+            <div class="inline-block" s-valid-role="item">
+                <input type="text" class="form-control" placeholder="订单编号" s-valid-error="require(false),number()"
+                       style="width:200px;" name="tid"/>
+            </div>
+            <input type="text" class="form-control" placeholder="买家账号" style="width:200px;" name="buyerNick"/>
+            订单日期：<input type="text" class="form-control" placeholder="开始时间" style="width:150px;" id="startCreated"
+                        name="startCreated" s="datetimepicker"/>
+            - <input type="text" class="form-control" placeholder="结束时间" style="width:150px;" id="endCreated"
+                     name="endCreated" s="datetimepicker"/>
+            <select class="form-control" s="select" name="proxy">
+                <option value="">订单状态</option>
+                <option value="false">等待发货</option>
+                <option value="true">等待收货</option>
+            </select>
+            <input type="submit" class="btn btn-primary" value="查找"/>
+        </form>
+    </div>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource'), brush:'JScript'}"></div>
+<h3>应用场景</h3>
+<p class="lead">可用在列表页面的顶部查询栏，可以在页面滚动的时候affix到页面的顶部，以便修改查询条件重新查询。</p>
+<div style="height: 2000px;"></div>

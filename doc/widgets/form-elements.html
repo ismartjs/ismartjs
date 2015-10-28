@@ -1,0 +1,26 @@
+<meta title="表单元素样式" />
+<h3>Checkbox</h3>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="checkbox" >
+    <label class="control-label"><input type="checkbox" class="s-ui-checkbox" /> 选项1</label>
+    <label class="control-label"><input type="checkbox" class="s-ui-checkbox" /> 选项2</label>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#checkbox')}"></div>
+<h3>Checkbox Switch</h3>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="switch" >
+    <label class="control-label">
+        是否启动：
+        <label class="s-ui-checkbox-switch">
+            <input type="checkbox" name="checkbox"  />
+            <span class="s-ui-checkbox-indicator"></span>
+        </label>
+    </label>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#switch')}"></div>
+<h3>Radio</h3>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="radio" >
+    <form>
+        <label class="control-label"><input type="radio" name="radio" class="s-ui-radio" /> 选项1</label>
+        <label class="control-label"><input type="radio" name="radio" class="s-ui-radio" /> 选项2</label>
+    </form>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#radio')}"></div>

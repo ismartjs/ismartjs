@@ -1,0 +1,198 @@
+<meta title="右键菜单" />
+<h3>定义</h3>
+<code>s="contextmenu"</code>
+<h3>参数</h3>
+<hr />
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>target</td>
+        <td>jQuery</td>
+        <td></td>
+        <td>右键菜单的点击目标</td>
+    </tr>
+    <tr>
+        <td>delegate</td>
+        <td>String</td>
+        <td></td>
+        <td>
+            通过target代理子元素的右键菜单，该值为正确的<code>css</code>选择器，比如通过<code>table</code>代理<code>tr</code>元素的右键菜单。
+        </td>
+    </tr>
+    <tr>
+        <td>filter</td>
+        <td>Function(menuId, menuNode) : boolean</td>
+        <td></td>
+        <td>
+            右键菜单的过滤器，参数为<code>menuId</code>，即右键的菜单项的<code>menuId</code>属性值，如<code>&lt;li menuId='close' /&gt;</code>，
+            当返回值为<code>false</code>的时候，该菜单将会被<code>disabled</code>，<code>menuNode</code>为右键菜单项的<code>jQuery</code>对象。
+        </td>
+    </tr>
+</table>
+<h3>获取当前的右键点击对象</h3>
+<p>通过<code>Smart.UI.contextmenu.target</code>全局属性变量获取当前的右键点击对象，该对象是一个<code>Smart</code>对象。</p>
+<h3>示例与源码</h3>
+<hr />
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource" >
+    <input type="button" class="btn btn-primary" value="右键点击我" id="button1" />
+    <ul s="contextmenu" s-contextmenu="{target: S.N('#button1')}"
+        class="s-ui-contextmenu">
+        <li s-click="setButton('btn-lg')">
+            <span>设为大按钮</span>
+        </li>
+        <li s-click="setButton('btn-sm')">
+            <span>设为小按钮</span>
+        </li>
+        <li s-click="setButton('')">
+            <span>设为中按钮</span>
+        </li>
+    </ul>
+    <script type="text/plain" s-sh-role="javascript">
+        function setButton(clazz){
+            var target = Smart.UI.contextmenu.target;
+            target.node.removeClass("btn-lg btn-sm").addClass(clazz);
+        }
+    </script>
+    <script type="text/javascript">
+        function setButton(clazz){
+            var target = Smart.UI.contextmenu.target;
+            target.node.removeClass("btn-lg btn-sm").addClass(clazz);
+        }
+    </script>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource'), brush:'JScript'}"></div>
+<h4>使用<code>filter</code>过滤菜单项</h4>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource1" >
+    <input type="button" class="btn btn-primary" value="该按钮可变大" id="button2" />
+    <input type="button" class="btn btn-success large-disable" value="该按钮不可变大" id="button3" />
+    <ul s="contextmenu" s-contextmenu="{target: S.N('#button2,#button3'), filter: btnMenuFilter}"
+        class="s-ui-contextmenu">
+        <li menuId="large" s-click="setButton('btn-lg')">
+            <span>设为大按钮</span>
+        </li>
+        <li menuId="sm" s-click="setButton('btn-sm')">
+            <span>设为小按钮</span>
+        </li>
+        <li s-click="setButton('')">
+            <span>设为中按钮</span>
+        </li>
+    </ul>
+    <script type="text/plain" s-sh-role="javascript">
+        function setButton(clazz){
+            var target = Smart.UI.contextmenu.target;
+            target.node.removeClass("btn-lg btn-sm").addClass(clazz);
+        }
+
+        function btnMenuFilter(menuId){
+            if(menuId == 'large'){
+                if(Smart.UI.contextmenu.target.node.hasClass('large-disable')){
+                    return false;
+                }
+            }
+        }
+    </script>
+    <script type="text/javascript">
+
+        function btnMenuFilter(menuId){
+            if(menuId == 'large'){
+                if(Smart.UI.contextmenu.target.node.hasClass('large-disable')){
+                    return false;
+                }
+            }
+        }
+    </script>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource1'), brush:'JScript'}"></div>
+<h4>使用<code>delegate</code>绑定右键菜单，<small>通过table代理tr的右键菜单</small></h4>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource2" >
+
+    <table class="table table-bordered" id="table">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Username</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th >1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+        </tr>
+        <tr>
+            <th >2</th>
+            <td>Jacob</td>
+            <td>Thornton</td>
+            <td>@fat</td>
+        </tr>
+        <tr>
+            <th >3</th>
+            <td>Larry</td>
+            <td>the Bird</td>
+            <td>@twitter</td>
+        </tr>
+        </tbody>
+    </table>
+    <ul s="contextmenu" s-contextmenu="{target: S.N('#table'), delegate:'tr', filter: btnMenuFilter}"
+        class="s-ui-contextmenu">
+        <li menuId="large" s-click="highlightTr(true)">
+            <span>高亮显示</span>
+        </li>
+        <li menuId="sm" s-click="highlightTr(false)">
+            <span>取消高亮</span>
+        </li>
+    </ul>
+
+    <script type="text/plain" s-sh-role="javascript">
+        function highlightTr(flag){
+            if(flag){
+                Smart.UI.contextmenu.target.node.addClass("success");
+            } else {
+                Smart.UI.contextmenu.target.node.removeClass("success");
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function highlightTr(flag){
+            if(flag){
+                Smart.UI.contextmenu.target.node.addClass("success");
+            } else {
+                Smart.UI.contextmenu.target.node.removeClass("success");
+            }
+        }
+    </script>
+
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource2'), brush:'JScript'}"></div>
+<hr />
+<h3>右键菜单的样式</h3>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource3" >
+
+    <ul class="s-ui-contextmenu" style="display: block;">
+        <li menuId="close" >
+            <span>关闭</span>
+        </li>
+        <li class="s-ui-contextmenu-line"></li>
+        <li menuId="clostOther" >
+            <span>关闭其他</span>
+        </li>
+        <li menuId="closeAll" >
+            <span>关闭所有</span>
+        </li>
+        <li class="s-ui-contextmenu-line"></li>
+        <li menuId="refresh" >
+            <span>刷新</span>
+        </li>
+    </ul>
+
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource3'), brush:'JScript'}"></div>

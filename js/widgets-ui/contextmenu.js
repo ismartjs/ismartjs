@@ -12,7 +12,7 @@
 
     Smart.widgetExtend({
         id: "contextmenu",
-        options: "ctx:target,ctx:filter"
+        options: "ctx:target,ctx:filter,delegate"
     },{
         onPrepare: function(){
             var target = this.options['target'];
@@ -51,10 +51,18 @@
         bindTarget: function(node, options){
             var that = this;
             options && (this.widget.contextmenu.options = options);
-            node.bind("contextmenu", function(e){
-                that.show(e, $(this));
-                return false;
-            });
+            if(this.widget.contextmenu.options.delegate){
+                node.delegate(this.widget.contextmenu.options.delegate, "contextmenu", function(e){
+                    that.show(e, $(e.currentTarget));
+                    return false;
+                })
+            } else {
+                node.bind("contextmenu", function(e){
+                    that.show(e, $(this));
+                    return false;
+                });
+            }
+
         },
         show: function(e, el){
             if(CURRENT_SHOWN_CONTEXTMENU && CURRENT_SHOWN_CONTEXTMENU != this){

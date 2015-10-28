@@ -9,7 +9,7 @@
 
     var Affix = function (element, options) {
         this.options = $.extend({}, Affix.DEFAULTS, options)
-        this.$window = $(options.of || window)
+        this.$window = $(this.options.target)
             .on('scroll.bs.affix.data-api', $.proxy(this.checkPosition, this))
             .on('click.bs.affix.data-api', $.proxy(this.checkPositionWithEventLoop, this))
 
@@ -24,7 +24,8 @@
     Affix.RESET = 'affix affix-top affix-bottom'
 
     Affix.DEFAULTS = {
-        offset: 0
+        offset: 0,
+        target: window
     }
 
     Affix.prototype.getPinnedOffset = function () {
@@ -114,22 +115,32 @@
 (function ($) {
     Smart.widgetExtend({
         id: "affix",
-        options: "ctx:offset,ctx:target,ctx:of,style"
+        options: "ctx:offset,ctx:target,affixClass",
+        defaultOptions: {
+            affixClass: 's-ui-affix-bar'
+        }
     }, {
         onPrepare: function () {
+            var that = this;
             this.S.node.addClass('s-ui-affix').smartAffix({
-                target: this.options.target,
-                offset: this.options.offset,
-                of: this.options.of
+                offset: this.options.offset || (that.S.node.offset().top - that.options.target.offset().top),
+                target: this.options.target
             });
-            if (this.options['style']) {
+            this.S.node.on("affix.bs.affix", function (e) {
+                var node = $(e.currentTarget);
+                var offset = that.options.target.offset();
+                node.css({
+                    top: offset.top
+                });
+            });
+            if (this.options['affixClass']) {
                 var that = this;
                 this.S.node.on("affixed.bs.affix", function (e) {
                     e.stopPropagation();
-                    that.S.node.addClass(that.options['style']);
+                    that.S.node.addClass(that.options['affixClass']);
                 }).on("affixed-top.bs.affix", function (e) {
                     e.stopPropagation();
-                    that.S.node.removeClass(that.options['style']);
+                    that.S.node.removeClass(that.options['affixClass']);
                 });
             }
         }
