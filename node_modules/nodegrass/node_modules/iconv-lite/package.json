@@ -1,0 +1,71 @@
+{
+  "name": "iconv-lite",
+  "description": "Convert character encodings in pure javascript.",
+  "version": "0.2.5",
+  "keywords": [
+    "iconv",
+    "convert",
+    "charset"
+  ],
+  "author": {
+    "name": "Alexander Shtuchkin",
+    "email": "ashtuchkin@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "jenkinv",
+      "url": "https://github.com/jenkinv"
+    },
+    {
+      "name": "Adamansky Anton",
+      "url": "https://github.com/adamansky"
+    },
+    {
+      "name": "George Stagas",
+      "url": "https://github.com/stagas"
+    },
+    {
+      "name": "Mike D Pilsbury",
+      "url": "https://github.com/pekim"
+    }
+  ],
+  "homepage": "https://github.com/ashtuchkin/iconv-lite",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ashtuchkin/iconv-lite.git"
+  },
+  "engines": {
+    "node": ">=0.4.0"
+  },
+  "scripts": {
+    "test": "vows --spec"
+  },
+  "devDependencies": {
+    "vows": "",
+    "iconv": "1.1"
+  },
+  "_id": "iconv-lite@0.2.5",
+  "dist": {
+    "shasum": "e9f2155037f4afd000c095b1d5ad8831c4c5eacc",
+    "tarball": "http://registry.npmjs.org/iconv-lite/-/iconv-lite-0.2.5.tgz"
+  },
+  "_npmVersion": "1.1.49",
+  "_npmUser": {
+    "name": "ashtuchkin",
+    "email": "ashtuchkin@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "ashtuchkin",
+      "email": "ashtuchkin@gmail.com"
+    }
+  ],
+  "directories": {},
+  "_shasum": "e9f2155037f4afd000c095b1d5ad8831c4c5eacc",
+  "_resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.2.5.tgz",
+  "_from": "iconv-lite@0.2.5",
+  "bugs": {
+    "url": "https://github.com/ashtuchkin/iconv-lite/issues"
+  },
+  "readme": "ERROR: No README data found!"
+}

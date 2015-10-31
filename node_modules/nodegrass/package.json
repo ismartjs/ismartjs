@@ -1,0 +1,50 @@
+{
+  "name": "nodegrass",
+  "version": "0.0.3",
+  "description": "nodegrass is a easy tool to process client request for Node.js",
+  "auther": "sk-scottkiss <skkmvp@hotmail.com>",
+  "contributors": [
+    {
+      "name": "XadillaX",
+      "email": "admin@xcoder.in"
+    }
+  ],
+  "keywords": [
+    "request",
+    "nodegrass",
+    "http",
+    "https"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/scottkiss/nodegrass.git"
+  },
+  "dependencies": {
+    "iconv-lite": "0.2.5"
+  },
+  "main": "index",
+  "engines": {
+    "node": ">= 0.4.1"
+  },
+  "readme": "# nodegrass.js - a tool for client request",
+  "_id": "nodegrass@0.0.3",
+  "license": "MIT",
+  "dist": {
+    "shasum": "18c599933204a3e120ce6c20cd594bf368ca0482",
+    "tarball": "http://registry.npmjs.org/nodegrass/-/nodegrass-0.0.3.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "scottkiss",
+      "email": "skkmvp@hotmail.com"
+    }
+  ],
+  "directories": {},
+  "_shasum": "18c599933204a3e120ce6c20cd594bf368ca0482",
+  "_resolved": "https://registry.npmjs.org/nodegrass/-/nodegrass-0.0.3.tgz",
+  "_from": "nodegrass@*",
+  "bugs": {
+    "url": "https://github.com/scottkiss/nodegrass/issues"
+  },
+  "homepage": "https://github.com/scottkiss/nodegrass#readme"
+}
