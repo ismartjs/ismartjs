@@ -1,8 +1,8 @@
 <meta title="模板(tpl)" />
-<h3>定义</h3>
+<h2>定义</h2>
 <code>s="tpl"</code>
 <p class="lead">模块控件提供了模板输出的功能，可以通过该控件构建非常复杂的页面结构，可以说是一个万能的控件</p>
-<h3>语法</h3>
+<h2>语法</h2>
 <p class="lead">模板语言使用标准的js语法，脚本通过<code>{%</code>，<code>%}</code>进行声明。</p>
 <div class="bs-example" s="sh" s-sh="{phase:'source'}" id="tplSource">
     <input type="button" class="btn btn-sm btn-info" value="设为INFO级别" s-click="S.S('#tpl').data({level:'info', tip:'欢迎使用ismartjs，info级别'})" />
@@ -20,3 +20,18 @@
 <div class="alert alert-warning lead">
     模板脚本中的<code>this</code>引用指向模板控件的赋值对象。
 </div>
+<h2>使用<code>text/plain</code>定义模板</h2>
+<p class="lead">在某些情况下，我们需要使用<code>&lt;script type='text/plain'</code>来定义模板，因为有些时候需要在html标签上面输出某些属性，那么就不能把模板脚本写在html标签中，会被浏览器当成属性去解析，造成模板解析错误，这个时候就可以使用这种方法去处理</p>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="tplSource1">
+    <input type="button" class="btn btn-sm btn-info" value="设为INFO级别" s-click="S.S('#tpl2').data({level:'info', tip:'欢迎使用ismartjs，info级别'})" />
+    <input type="button" class="btn btn-sm btn-warning" value="设为WARNING级别" s-click="S.S('#tpl2').data({level:'warning', tip:'欢迎使用ismartjs，warning级别'})" />
+
+    <div id="tpl2" s="tpl" s-data="{level:'warning', tip:'欢迎使用ismartjs'}" style="margin-top: 10px;">
+        <script type="text/plain">
+            <div {%if(this.level == 'warning'){%} class="alert alert-warning"{%} else {%} class="alert alert-info"{%}%}>{%=this.tip%}</div>
+        </script>
+    </div>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode:S.N('#tplSource1')}"></div>
+<h2>模板变量输出</h2>
+<p class="lead">模板变量输出可以使用<code>{%=var1%}</code>输出，也可以使用<code>{% out.print(var1); %}</code>来进行输出。<code>out</code>变量为模板脚本中的默认变量。</p>

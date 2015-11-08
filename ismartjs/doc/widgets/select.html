@@ -1,10 +1,10 @@
 <meta title="下拉列表(select)"/>
-<h3>定义</h3>
+<h2>定义</h2>
 <p><code>s='select'</code></p>
-<h3>接受的数据格式</h3>
+<h2>接受的数据格式</h2>
 <hr/>
 <p class="lead">该控件可以接受<code>key:value</code>和<code>array</code>两种数据格式用于构建下拉列表</p>
-<h3>参数</h3>
+<h2>参数</h2>
 <hr/>
 <table class="table table-bordered table-striped bs-param-table">
     <tr>
@@ -40,7 +40,7 @@
     通过<code>s-build</code>属性来指定select构建下拉列表所需的数据，该属性的值可以是<span class="text-success">数组</span>、
     <span class="text-success">对象(key:value)</span>、<span class="text-success">Function(同步或者异步均可)</span>
 </p>
-<h3>示例与源码</h3>
+<h2>示例与源码</h2>
 <hr/>
 <h4>通过数组变量来构建下拉列表</h4>
 <div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource">
@@ -110,7 +110,7 @@
         {"id": ".net", "name": ".NET"}
     ]
 </div>
-<h3 id="cascade">级联</h3>
+<h3 id="cascade">级联</h2>
 <p class="lead">开发过程中，经常会用到select的级联选择，比如省市区的选择，我们可以使用基础控件的<code>s-change</code>事件和<code>refresh()</code>方法实现select的级联操作。</p>
 <div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource3">
     <form class="form-inline">

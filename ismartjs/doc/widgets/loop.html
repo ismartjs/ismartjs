@@ -2,9 +2,9 @@
 <p class="lead">
     <code>loop</code>控件可用于构建列表类的显示，比如<code>grid</code>，用于把数据进行循环输出。
 </p>
-<h3>定义</h3>
+<h2>定义</h2>
 <code>s="loop"</code>
-<h3>API</h3>
+<h2>API</h2>
 <table class="table table-bordered table-striped bs-param-table">
     <tr>
         <th>方法名</th>
@@ -47,7 +47,7 @@
         </td>
     </tr>
 </table>
-<h3>示例</h3>
+<h2>示例</h2>
 <div class="bs-example" s="sh" s-sh="{phase:'source'}" id="loopSource">
     <div style="height: 300px; overflow: auto;">
         <form class="form-inline" id="provinceSearchForm" s="form" s-form="{action: function(){S.S('#provinceLoop').refresh();}}">
@@ -92,9 +92,9 @@
     </div>
 </div>
 <div class="highlight" s="sh" s-sh="{sourceNode:S.N('#loopSource')}"></div>
-<h3>定义行</h3>
+<h2>定义行</h2>
 <p class="lead">使用<code>s-loop-role="row" s="row"</code>来定义loop控件的行，我们从定义中可以看出，loop控件的行是一个名为<code>row</code>的控件，这个定义默认是必须的。</p>
-<h3>辅助行</h3>
+<h2>辅助行</h2>
 <p class="lead">辅助行提供了诸如空数据提示<code>s-loop-role="empty"</code>、数据加载提示<code>s-loop-role="loading"</code>，准备加载提示信息，当数据加载时显示数据加载提示，当数据为空时，显示空数据提示。可以操作上面的例子查看效果。</p>
 <h4>获取行数据</h4>
 <p class="lead">我们可以通过<code>row</code>控件的<code>data()</code>方法获取行数据，在上述例子中，我们使用<code>s-click="S.alert(JSON.stringify(this.parent().data()));"</code>获取行数据，在<code>s-click</code>的方法中，

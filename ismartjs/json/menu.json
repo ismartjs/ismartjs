@@ -3,7 +3,7 @@
     "id": "dashboard",
     "title": "简介",
     "url": "doc/index.html",
-    "icon": "glyphicon glyphicon-home",
+    "icon": "fa fa-home",
     "open": "true"
   },
   {

@@ -1,9 +1,9 @@
 <meta title="表单验证"/>
-<h3>描述</h3>
+<h2>描述</h2>
 <p class="lead">通过声明式的验证规则去验证输入的正确与否，表单验证规则内置了许多现成的验证规则，另外你也可以自己去扩展验证规则。</p>
-<h3>定义</h3>
+<h2>定义</h2>
 <code>s="valid"</code>
-<h3>参数</h3>
+<h2>参数</h2>
 <table class="table table-bordered table-striped bs-param-table">
     <tr>
         <th>参数名</th>
@@ -36,7 +36,7 @@
     </tr>
 </table>
 <hr />
-<h3>一个典型的表单验证，与<code>form</code>控件进行结合</h3>
+<h2>一个典型的表单验证，与<code>form</code>控件进行结合</h2>
 <div class="bs-example" id="shSource2" s="sh" s-sh="{phase:'source'}">
     <form s="form,valid" id="form" action="rest/form" s-form="{done: formSubmitDone}" s-valid="{notice: validNotice}" class="form-horizontal" style="width: 600px;">
         <div class="form-group" s-valid-role="item">
@@ -119,7 +119,7 @@
 <div class="bs-callout-info bs-callout">
     当控件声明为<code>s="form,valid"</code>时，<code>form</code>控件会自动混入<code>valid</code>的控件，而不需要显式的调用<code>valid</code>控件的api去验证表单，<code>form</code>控件会自动做验证。
 </div>
-<h3>定义验证项</h3>
+<h2>定义验证项</h2>
 <hr/>
 <p class="lead">通过在表单域上配置验证项，可以定义该表单域的验证规则</p>
 <div class="bs-example" id="shSource" s="sh" s-sh="{phase:'source'}">
@@ -208,7 +208,7 @@
     </form>
 </div>
 <div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource1')}"></div>
-<h3>api</h3>
+<h2>api</h2>
 <hr/>
 <table class="table table-bordered table-striped bs-param-table">
     <tr>
@@ -234,7 +234,7 @@
         </td>
     </tr>
 </table>
-<h3>验证规则</h3>
+<h2>验证规则</h2>
 <p class="lead">验证控件内置了多个现成的验证规则，基本可以覆盖90%以上的验证需求。</p>
 <table class="table table-bordered table-striped bs-param-table">
     <tr>

@@ -5,7 +5,7 @@
         <div s="window" s-window="{href:Main.topbarRightUrl}"></div>
     </div>
 </div>
-<div class="main-view">
+<div class="main-view" id="mainView">
     <div class="main-left-sidebar">
         <div class="sidebar-fold"></div>
         <div id="menuPanel" s="tpl" class="sidebar-menu-panel">
@@ -64,7 +64,7 @@
 <!--ajax操作提示-->
 <div class="alert alert-warning ajax-active-tip " role="alert" id="ajaxActiveTip"></div>
 
-<div class="main-bottom" id="mainBottom" s="window" s-window-href="{Main.bottomUrl}"></div>
+<div class="main-bottom" id="mainBottom" s="window" ></div>
 
 <ul id="mainTabContextmenu" s="contextmenu" s-contextmenu="{filter: MainTabContextmenu.filter}"
     class="s-ui-contextmenu">
@@ -93,6 +93,75 @@
 </ul>
 
 <script type="text/javascript">
+
+    //默认参数配置
+    var loginProcessStatus = 0;
+    var loginRetryCallbacks = [];
+    Main = $.extend({
+        menuUrl: null, //需要您来定义
+        defaultTabIcon: "fa fa-file",
+        defaultMenuIcon: "",
+        topbarRightUrl: "html/topbar-right.html",
+        topbarLeftUrl: "html/topbar-left.html",
+        bottomUrl: null,
+        loginPanel: "html/login-panel.html",
+        tabActiveRefresh: true,
+        init: function(){
+            var that = this;
+            $(window).on("popstate", function(e){
+                var state = history.state;
+                if(state !== undefined){
+                    var tab = MainTab.findSingleTabByUrl(state.moduleUrl);
+                    if(tab){
+                        tab.active(false);
+                    } else {
+                        that.open($.Deferred(), state.moduleUrl, state.moduleArgs, false);
+                    }
+                } else {
+
+                }
+            });
+        },
+        handleAjaxError: function (e, errorTip, errorMsg, xhr) {
+            if (xhr.status == 403) {
+                e.stopPropagation();
+                if (e.retryRequest) {
+                    loginRetryCallbacks.push(e.retryRequest);
+                }
+                if (loginProcessStatus == 1) {
+                    return;
+                }
+                //登陆超时
+                loginProcessStatus = 1;
+                S.popupOpen(Main.loginPanel).done(function (status) {
+                    loginProcessStatus = 0;
+                    if (status) {
+                        $.each(loginRetryCallbacks, function (i, callback) {
+                            callback();
+                        })
+                        loginRetryCallbacks = [];
+                    }
+                })
+                return;
+            }
+            S.notice($.trim(errorMsg), "danger");
+        },
+        historyListener: {
+            onPush: function (tab) {
+                history.pushState({moduleUrl:tab.data.url, moduleArgs: tab.data.args}, null , "#" + tab.data.url);
+            },
+            onGet: function () {
+                var href = window.location.href;
+                var hash;
+                if (href.indexOf("#") != -1) {
+                    hash = href.substring(href.indexOf("#") + 1);
+                }
+                return hash;
+            }
+        }
+    }, Main || {});
+
+    Main.init.call(S);
 
     //侧边栏子菜单打开合并
     S.N("#menuPanel").delegate(".sidebar-title", "click", function (e) {
@@ -147,11 +216,14 @@
         e.stopPropagation();
     });
 
-    var openUrl = function (deferred, url, args) {
+    var openUrl = S.open = function (deferred, url, args, pushStateFlag) {
         //在已经打开的选项卡中，根据url获取选项卡，判断其上面是否有single=true的属性，如果有，则直接把该选项卡打开，而不是打开新的页面
+        if(pushStateFlag === undefined){
+            pushStateFlag = true;
+        }
         var tab = MainTab.findSingleTabByUrl(url);
         if (tab) {
-            tab.active();
+            tab.active(pushStateFlag);
             if(Main.tabActiveRefresh){
                 tab.tabWindows[0].smart.refresh();
             }
@@ -165,7 +237,7 @@
             deferred: deferred,
             args: args
         };
-        new MainTab(data).add().active();
+        new MainTab(data).add().active(pushStateFlag);
     };
 
     //菜单面板
@@ -175,6 +247,7 @@
         loadMenu: function () {
             var menuUrl = Main.menuUrl;
             if (Smart.isEmpty(menuUrl)) {
+                S.alert("请先定义menuUrl");
                 return;
             }
             var that = this;
@@ -219,7 +292,7 @@
                         var menu = urlMapping[hash];
                         new MainTab(menu).add().active();
                     } else {
-                        openUrl(null, hash);
+                        openUrl(null, hash, null);
                     }
                 } else {
                     openMainTab && openMainTab.active();
@@ -279,7 +352,7 @@
     };
     MainTab.activeTop = function () {
         var topTab = MainTab.TabStack.getTop();
-        topTab && topTab.active();
+        topTab && !topTab.isTop() && topTab.active();
     };
 
     MainTab.closeMainTabs = function (mainTabs) {
@@ -319,8 +392,9 @@
             var closeSpan = $("<div>×</div>");
             this.node.addClass("closeable").append(closeSpan);
             var that = this;
-            this.closeHandle = closeSpan.click(function () {
+            this.closeHandle = closeSpan.click(function (e) {
                 that.close();
+                e.stopPropagation();
             });
         },
         _removeCloseHandle: function () {
@@ -350,9 +424,12 @@
         refresh: function () {
             this.currentTabWindow.refresh();
         },
-        active: function () {
+        active: function (pushStateFlag) {
             if (MainTab.currentTab == this) {
                 return;
+            }
+            if(pushStateFlag === undefined){
+                pushStateFlag = true;
             }
             var menuUrl = this.data.url;
             var sidebarMenuNode = $("li[menuurl='" + menuUrl + "']", S.N("#menuPanel"));
@@ -367,25 +444,25 @@
             MainTab.currentTab = this;
             this.node.addClass("active");
             MainTab.TabStack.pushTop(this);
-            this.showTabWindow();
+            this.showTabWindow(pushStateFlag);
             return this;
+        },
+        isTop: function(){
+            return this.node.hasClass("active");
         },
         fallow: function () {
             this.node.removeClass("active");
-            if (!Smart.isEmpty(this.data.children)) {
-                SecondaryTabPanel.hide();
-            }
             return this;
         },
         destroy: function () {
             this.node.remove();
             MainTab.TabStack.remove(this);
         },
-        showTabWindow: function () {
+        showTabWindow: function (pushStateFlag) {
             if (!this.currentTabWindow.made) {
                 this.makeTabWindow(this.currentTabWindow);
             }
-            this.currentTabWindow.show();
+            this.currentTabWindow.show(pushStateFlag);
             return this;
         },
         makeTabWindow: function (tabWindow) {
@@ -554,14 +631,16 @@
     };
     TabWindow.mapping = {};
     TabWindow.prototype = {
-        show: function () {
+        show: function (pushStateFlag) {
             if (TabWindow.currentTabWindow) {
                 TabWindow.currentTabWindow.hide();
             }
             TabWindow.currentTabWindow = this;
             this.mainTab.currentTabWindow = this;
             this.node.fadeIn();
-            if (this.data.url) Main.historyListener.onPush(this.data.url);
+            if (this.data.url && pushStateFlag){
+                Main.historyListener.onPush(this.mainTab);
+            }
         },
         hide: function () {
             this.node.hide();
@@ -631,8 +710,14 @@
         hideAjaxActiveTip();
     });
     //处理bottom的url问题，mainWindow的底部位置
-    S.S("#mainBottom").on("s-ready", function () {
-        var node = S.N("#mainBottom");
-        S.N("#mainWindow").css("bottom", node.height());
-    })
+    if(Main.bottomUrl){
+        S.on("s-ready", function(){
+            S.S("#mainBottom").load(Main.bottomUrl).done(function(){
+                var node = S.N("#mainBottom");
+                S.N("#mainView").css("bottom", node.height());
+            });
+        });
+    } else {
+        S.N("#mainBottom").remove();
+    }
 </script>

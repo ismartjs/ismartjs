@@ -11,53 +11,8 @@
 </div>
 <script type="text/javascript" >
     var Page = {};
-    var href = window.location.href;
-    var hash;
-    if (href.indexOf("#") != -1) {
-        hash = href.substring(href.indexOf("#") + 1);
-    }
-    var loginProcessStatus = 0;
-    var loginRetryCallbacks = [];
     Page.Main = {
-        menuUrl: "json/menu.json",
-        defaultTabIcon: "glyphicon glyphicon-file",
-        defaultMenuIcon: "",
-        topbarRightUrl: "html/topbar-right.html",
-        topbarLeftUrl: "html/topbar-left.html",
-        bottomUrl: "html/main-bottom.html",
-        tabActiveRefresh: true,
-        handleAjaxError: function (e, errorTip, errorMsg, xhr) {
-            if (xhr.status == 403) {
-                e.stopPropagation();
-                if (e.retryRequest) {
-                    loginRetryCallbacks.push(e.retryRequest);
-                }
-                if (loginProcessStatus == 1) {
-                    return;
-                }
-                //登陆超时
-                loginProcessStatus = 1;
-                S.popupOpen('html/login-panel.html').done(function (status) {
-                    loginProcessStatus = 0;
-                    if (status) {
-                        $.each(loginRetryCallbacks, function (i, callback) {
-                            callback();
-                        })
-                        loginRetryCallbacks = [];
-                    }
-                })
-                return;
-            }
-            S.notice($.trim(errorMsg), "danger");
-        },
-        historyListener: {
-            onPush: function (url) {
-                history.replaceState(null, null, "#" + url);
-            },
-            onGet: function () {
-                return hash;
-            }
-        }
+        menuUrl: "json/menu.json"
     };
     var mainWindow = S.S("#mainWindow");
     var loginPanel = S.S("#loginPanel");

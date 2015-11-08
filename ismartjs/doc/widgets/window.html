@@ -2,9 +2,9 @@
 <p class="lead">
     <code>window</code>是整个ismartjs的核心控件，用于加载模块化的html页面，在加载页面的过程中，会解析页面，将页面中的脚本进行闭包封装，从而使得不同页面之间的变量相对安全，不会形成变量污染。
 </p>
-<h3>定义</h3>
+<h2>定义</h2>
 <code>s="window"</code>
-<h3>参数</h3>
+<h2>参数</h2>
 <table class="table table-bordered table-striped bs-param-table">
     <tr>
         <th>参数名</th>
@@ -29,7 +29,7 @@
         </td>
     </tr>
 </table>
-<h3>API</h3>
+<h2>API</h2>
 <hr/>
 <table class="table table-bordered table-striped bs-param-table">
     <tr>
@@ -120,7 +120,7 @@
         </td>
     </tr>
 </table>
-<h3>鼠标事件定义</h3>
+<h2>鼠标事件定义</h2>
 <p class="lead">
     模块化页面的html标签中的鼠标事件不能使用浏览器原生的事件进行定义，那样无法使得事件代码在当前的闭包中运行，window控件提供了另外的定义方式进行鼠标事件声明。目前window控件提供了如下的事件定义：
 </p>
@@ -180,7 +180,7 @@
 <h4>鼠标事件中的this引用</h4>
 <p class="lead">通过上述属性定义的鼠标事件中，<code>this</code>引用都指向当前事件元素的Smart对象，我们可以通过this引用获取到当前事件的对象。
     如：<code>&lt;input type='button' class='btn' value="点击我" s-click="this.node.toggleClass('btn-success')" /&gt;</code> <input type='button' class='btn btn-default' value="点击我" s-click="this.node.toggleClass('btn-success')" /></p>
-<h3>模块化页面</h3>
+<h2>模块化页面</h2>
 <p class="lead"><code>ismartjs</code>与其他RIA开发框架不同的是，<code>ismartjs</code>将开发过程中的所有view通过模块化页面来定义，这些模块化页面在需要的时候通过<code
         >window</code>控件来加载进来，所有模块页面都由<code>meta</code>、<code>js脚本</code>、<code>html</code>组成。</p>
 <table class="table table-bordered table-striped bs-param-table">
@@ -215,7 +215,7 @@
         </td>
     </tr>
 </table>
-<h3>模块页面示例，加载<code>window0.html</code> </h3>
+<h2>模块页面示例，加载<code>window0.html</code> </h2>
 <div  id="window0" class="bs-example" s="sh" s-sh="{phase:'source'}">
     <div s="window" s-window="{href:'doc/widgets/window0.html', args: {arg1:'hello', arg2: 'ismartjs'}}" id="window0Page"></div>
 </div>
@@ -225,11 +225,11 @@
     <h4>window0.html页面源码为：</h4>
     <div s="sh" s-sh="{brush:'JScript'}" s-data="Smart.deferDelegate(S.get('doc/widgets/window0.html', null, 'text'), Smart.encodeHtml)"></div>
 </div>
-<h3>页面传参和<code>meta</code>中的<code>args</code>定义</h3>
+<h2>页面传参和<code>meta</code>中的<code>args</code>定义</h2>
 <p class="lead"><code>args</code>定义了当前页面载入时需要传入的参数，该参数作为当前页面闭包脚本中默认的变量来使用。如window0.html页面的<code>meta</code>中定义了
     <code>args="arg1,arg2"</code>两个参数，那么页面的脚本中就有两个预定的变量<code>arg1</code>、<code>arg2</code>，我们通过<code>s-window="{href:'doc/widgets/window0.html', args: {arg1:'hello', arg2: 'ismartjs'}}"</code>传入参数，
     或者通过API调用<code>load('doc/widgets/window0.html', {arg1: 'hello', arg2:'ismartjs'})</code>、<code>S.open('doc/widgets/window0.html', {arg1: 'hello', arg2:'ismartjs'})</code>，
     <code>S.popupOpen('doc/widgets/window0.html', {arg1: 'hello', arg2:'ismartjs'})</code>打开页面来传入参数。</p>
-<h3>页面JS脚本</h3>
+<h2>页面JS脚本</h2>
 <p class="lead">页面js脚本定义了该页面的动作行为，页面脚本中有一个非常重要的预定变量<code>S</code>，该变量代表当前的页面的<code>Smart</code>对象，该对象扩展自<code>window</code>控件，除了拥有<cdoe>Smart</cdoe>默认的API之外，也拥有了<code>window</code>
 控件扩展的api，我们可以通过<code>S</code>变量来操作当前页面。</p>

@@ -1,16 +1,16 @@
 <meta title="基础控件" />
-<h3>定义</h3>
+<h2>定义</h2>
 <code>s</code>
 <p class="lead">
     定义基础控件的时候只需要定义一个<code>s</code>属性即可，如<code> &lt;span s &gt;&lt;/span&gt;</code>，基础控件是一切其他控件的基础，当元素的属性中有<code>s</code>属性的时候，该元素即获得了基础控件的一系列的api，其他控件通过基础控件提供的标准api和生命周期进行协调工作。
 </p>
-<h3>控件的组合定义</h3>
+<h2>控件的组合定义</h2>
 <code>s="s1[,s2[,..]]"</code>
 <p class="lead"><code>ismartjs</code>提供了许多有用的控件，如：<code>loop</code>控件用来构建列表，<code>tpl</code>控件用来进行模板输出，<code>check</code>控件用来提供选择功能，<code>window</code>控件用来加载模块页面，
     我们可以为一个元素声明多个控件，那么这个元素就具有多个控件提供的功能，比如<code>s="loop,check"</code>，元素即可获得列表输出和行选择功能。</p>
-<h3>控件的参数定义</h3>
+<h2>控件的参数定义</h2>
 <p class="lead">如果我们声明一个控件为列表控件<code>s="form"</code>，那么我们就可以通过属性<code>s-form="{...}"</code>来定义控件的参数，多个控件定义如：<code>s="loop,check" s-loop="{...}" s-check="{...}"</code></p>
-<h3>API</h3>
+<h2>API</h2>
 <table class="table table-bordered table-striped bs-param-table">
     <tr>
         <th>方法名</th>
@@ -53,7 +53,7 @@
         </td>
     </tr>
 </table>
-<h3>生命周期</h3>
+<h2>生命周期</h2>
 <p class="lead">
     控件的生命周期有如下：<code>prepare</code>，<code>build</code>，<code>data</code>，<code>ready</code>，<code>refresh</code>，<code>destroy</code>这5个阶段。
 </p>
@@ -106,7 +106,7 @@
         </td>
     </tr>
 </table>
-<h3>控件的基本属性定义</h3>
+<h2>控件的基本属性定义</h2>
 <table class="table table-bordered table-striped bs-param-table">
     <tr>
         <th>属性名</th>
@@ -147,7 +147,7 @@
         </td>
     </tr>
 </table>
-<h3>控件的事件</h3>
+<h2>控件的事件</h2>
 <table class="table table-bordered table-striped bs-param-table">
     <tr>
         <th>事件名</th>
