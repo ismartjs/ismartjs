@@ -9,6 +9,7 @@
         defaultOptions: {
             phase: "render",
             sourceNode: null,
+            source: null,
             brush: "Xml",
             brushOption: {toolbar: false, 'html-script': true}
         }
@@ -36,7 +37,13 @@
                 var source;
                 if (this.options.sourceNode) {
                     source = this.options.sourceNode.data(SOURCE_KEY) || this.options.sourceNode.html();
-                } else {
+                } else if(this.options.source){
+                    source = this.options.source;
+                    if($.isFunction(source)){
+                        source = source();
+                    }
+                }
+                else {
                     source = this.S.node.html();
                 }
                 //var code = source.replace(/</gi, "&lt;").replace(/>/gi, "&gt;");

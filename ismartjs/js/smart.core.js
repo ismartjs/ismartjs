@@ -233,6 +233,19 @@
             }
             return _datas;
         },
+        deferDelegate: function(rs, fn, ref){
+            if (Smart.isDeferred(rs)) {
+                var deferred = $.Deferred();
+                rs.done(function (_rs) {
+                    deferred.resolve(fn.call(ref, _rs));
+                }).fail(function () {
+                    deferred.reject();
+                });
+                return deferred;
+            } else {
+                return fn.call(ref, rs);
+            }
+        },
         //数据适配
         adaptData: function (data, adapter) {
             var rs;
@@ -248,18 +261,38 @@
                 return _data[adapter];
             }
 
-            if (Smart.isDeferred(rs)) {
-                var deferred = $.Deferred();
-                rs.done(function (_rs) {
-                    deferred.resolve(adapt(_rs));
-                }).fail(function () {
-                    deferred.reject();
-                });
-                return deferred;
-            } else {
-                return adapt(rs);
-            }
+            return Smart.deferDelegate(rs, adapt);
         },
+        /**
+         * 清理json反序列化后的引用问题，该问题可能来自于fastjson序列化后的json。
+         * */
+        cleanJsonRef: (function(){
+
+            function clean($$, obj, parent){
+                if(arguments.length == 1){
+                    obj = $$;
+                }
+                $.each(obj, function(key, val){
+                    if(!$.isPlainObject(val) && !$.isArray(val)){
+                        return;
+                    }
+                    if(val.hasOwnProperty('$ref')){
+                        if(val['$ref'] == '..'){
+                            obj[key] = parent;
+                            return;
+                        }
+                        obj[key] = eval("$" + val['$ref']);
+                    } else {
+                        clean($$, val, obj);
+                    }
+                })
+                return obj;
+            }
+
+            return function(obj){
+                return Smart.deferDelegate(obj, clean);
+            }
+        })(),
         encodeHtml: (function () {
             var REGEX_HTML_ENCODE = /"|&|'|<|>|[\x00-\x20]|[\x7F-\xFF]|[\u0100-\u2700]/g;
             return function (s) {
@@ -953,6 +986,7 @@
         SmartWidget.prototype = {
             onPrepare: Smart.noop,//控件准备
             onBuild: Smart.noop,//构建控件
+            onData: Smart.noop,//控件赋值事件
             onReady: Smart.noop,//控件准备完成
             onDestroy: Smart.noop,//销毁控件
             onClean: Smart.noop//重置控件
@@ -1209,6 +1243,12 @@
                     return that._executeBuild();
                 });
 
+                $.each(this.widgets, function (i, widget) {
+                    deferreds.push(function () {
+                        return widget.onData();
+                    });
+                });
+
                 deferreds.push(function () {
                     return that._executeData();
                 });
@@ -1295,6 +1335,12 @@
 
             deferreds.push(function () {
                 return smart.renderChildren();
+            });
+
+            $.each(smart.widgets, function (i, widget) {
+                deferreds.push(function () {
+                    return widget.onData();
+                });
             });
 
             deferreds.push(function () {

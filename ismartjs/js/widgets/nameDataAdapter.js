@@ -8,6 +8,10 @@
         onPrepare: function(){
             this.S.node.find("*[name]").each(function(){
                 var nameNode = $(this);
+                var ig = nameNode.attr('s-nda-ig');
+                if(ig && ($.trim(ig) == "" || $.trim(ig) == 'true')){
+                    return;
+                }
                 if(!Smart.isWidgetNode(nameNode)){
                     //如果不是控件
                     //则把它声明成为一个基本控件

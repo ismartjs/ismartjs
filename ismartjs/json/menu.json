@@ -24,7 +24,7 @@
       {
         "id": "WIDGETS_DATA",
         "title": "基础控件",
-        "url": "doc/widgets/data.html"
+        "url": "doc/widgets/widget.html"
       },
       {
         "id": "WIDGETS_WINDOW",
@@ -32,8 +32,13 @@
         "url": "doc/widgets/window.html"
       },
       {
+        "id": "WIDGETS_LOOP",
+        "title": "列表(loop)",
+        "url": "doc/widgets/loop.html"
+      },
+      {
         "id": "WIDGETS_TPL",
-        "title": "模板",
+        "title": "模板(tpl)",
         "url": "doc/widgets/tpl.html"
       },
       {
@@ -45,11 +50,6 @@
         "id": "WIDGETS_datac",
         "title": "子控件赋值(datac)",
         "url": "doc/widgets/datac.html"
-      },
-      {
-        "id": "WIDGETS_LOOP",
-        "title": "列表",
-        "url": "doc/widgets/loop.html"
       }
     ]
   },

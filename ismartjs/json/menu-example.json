@@ -1,0 +1,9 @@
+[
+  {
+    "id": "dashboard",
+    "title": "仪表盘",
+    "url": "html/dashboard.html",
+    "icon": "fa fa-home",
+    "open": "true"
+  }
+]

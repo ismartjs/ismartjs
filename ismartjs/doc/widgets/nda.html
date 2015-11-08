@@ -1,0 +1,53 @@
+<meta title="name适配(nda)插件" />
+<p class="lead">
+    该控件用于把当前元素的子元素中拥有<code>name</code>属性的元素适配成控件，并且将<code>name</code>的值适配成赋值过滤参数。如：<code
+>&lt;input type='text' name='account' /&gt;</code>适配成<code>&lt;input type='text' name='account' <strong class="text-success">s s-data-filter="'account'"</strong> /&gt;</code>
+</p>
+<h3>声明</h3>
+<code>s="nda"</code>
+<h3>忽略适配</h3>
+<p class="lead">在元素上我们声明<code>s-nda-ig</code>、或者<code>s-nda-ig="true"</code>属性即可忽略适配。</p>
+<h3>适用场景</h3>
+<p class="lead">当我们为form进行绑定数据的时候，可以不用在每个表单域上声明属性过滤，通过<code>nda</code>控件就可以批量设定，再结合<code>datac</code>（子控件赋值）控件为每一个表单域进行赋值。</p>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="ndaSource">
+    <form s="form,nda,datac" s-data="{account:'ismartjs', password:'ismartjs'}" action="rest/form" s-form="{done: formSubmitDone}" method="post" class="form-horizontal" style="width: 600px;">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">账号</label>
+            <div class="col-sm-10">
+                <input type="text" name="account" class="form-control" placeholder="账号">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">密码</label>
+            <div class="col-sm-10">
+                <input type="password" name="password" class="form-control" placeholder="密码">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                <input type="submit" class="btn btn-primary" value="提交" />
+            </div>
+        </div>
+    </form>
+    <script type="text/plain" s-sh-role="javascript">
+
+        function formSubmitDone(rs){
+            S.alert("数据提交成功，提交的数据为：" + JSON.stringify(rs));
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        function formSubmitDone(rs){
+            S.alert("数据提交成功，提交的数据为：" + JSON.stringify(rs));
+        }
+
+    </script>
+</div>
+<div class="highlight" >
+    <h4>适配前的源码</h4>
+    <div s="sh" s-sh="{sourceNode:S.N('#ndaSource')}"></div>
+    <h4>适配后的源码</h4>
+    <div s="sh" s-sh="{source: S.N('#ndaSource').html()}"></div>
+</div>

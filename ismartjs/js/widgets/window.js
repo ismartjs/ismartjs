@@ -147,11 +147,11 @@
         //处理自动焦点的元素
         this.node.find("*[s-window-role='focus']:first").focus();
 
-        this.on("s-ready", function(){
+        this.on("s-ready", function () {
             //处理锚点滚动
             if (href.indexOf("#") != -1) {
                 var anchor = href.substring(href.indexOf("#"));
-                this.scrollTo(anchor);
+                that.scrollTo(anchor);
             }
         });
     };
@@ -164,7 +164,8 @@
         "s-dblclick": 'dblclick',
         "s-mouseover": 'mouseover',
         "s-mousemove": "mousemove",
-        "s-mouseout": "mouseout"
+        "s-mouseout": "mouseout",
+        "s-mouseleave": "mouseleave"
     };
 
     function undelegateEvent(smart) {
@@ -243,18 +244,18 @@
                 return deferred.resolve();
             }
         },
-        _clean: function () {
-            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
-            this.S._offEvent();
-            this.S.node.empty();
-        },
         onDestroy: function () {
             this.onClean();
         },
         onClean: function () {
-            this._clean();
+            this.S._clean();
         }
     }, {
+        _clean: function () {
+            this.widget.window.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+            this._offEvent();
+            this.node.empty();
+        },
         _offEvent: function () {
             var that = this;
             $.each(this.widget.window.cache[EVENT_ON_CACHE], function (i, paramAry) {
@@ -263,7 +264,13 @@
             this.widget.window.cache[EVENT_ON_CACHE] = [];
         },
         refresh: function () {
-            return this.load(this.widget.window.location.href, this.widget.window.location.args)
+            var that = this;
+            var deferred = $.Deferred();
+            this.preClose().done(function () {
+                that.clean();
+                Smart.deferredChain(deferred, that.load(that.widget.window.location.href, that.widget.window.location.args));
+            })
+            return deferred.promise();
         },
         load: function () {
             var that = this;
@@ -411,9 +418,10 @@
             var that = this;
             var args = arguments;
             setTimeout(function () {
-                that.widget.window.cache = {};
                 var deferred = $.Deferred();
                 deferred.done(function () {
+                    that._clean();
+                    that.widget.window.cache = {};
                     that.node.remove();
                 });
                 var event = $.Event("close", {deferred: deferred});

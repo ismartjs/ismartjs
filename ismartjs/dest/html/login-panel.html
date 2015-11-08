@@ -3,13 +3,13 @@
     <div class="form-group" s-valid-role="item">
         <div class="input-group input-group-lg">
             <span class="input-group-addon"><span class="fa fa-user"></span></span>
-            <input type="text" name="account" id="account" class="form-control" placeholder="输入用户名" s-valid-error="require()">
+            <input value="admin" type="text" name="account" id="account" class="form-control" placeholder="输入用户名" s-valid-error="require()">
         </div>
     </div>
     <div class="form-group" s-valid-role="item">
         <div class="input-group input-group-lg">
             <span class="input-group-addon"><span class="fa fa-lock"></span></span>
-            <input type="password" name="password" id="password" class="form-control" placeholder="输入密码" s-valid-error="require()" >
+            <input value="admin" type="password" name="password" id="password" class="form-control" placeholder="输入密码" s-valid-error="require()" >
         </div>
     </div>
     <div class="form-group">
@@ -41,7 +41,7 @@
         var deferred = $.Deferred();
         setTimeout(function(){
             deferred.resolve(true);
-        }, 1000);
+        }, 300);
         return deferred;
     }
 </script>

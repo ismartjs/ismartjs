@@ -1,2 +1,53 @@
-<meta title="简介" closeable="false" />
-<h2 class="page-header">iSmart Js简介</h2>
+<meta title="简介" closeable="false" width="900px"/>
+<div style="padding: 20px;">
+    <h1 class="text-center text-success">
+        舒适的、简化的、友好的、全栈式的Javascript RIA开发框架
+    </h1>
+    <p class="lead text-info" style="padding: 20px 50px;">iSmartJs提供了一个完整的RIA开发的解决方案，这些解决方案使得您在进行RIA开发的过程中关注业务实现，而不需要关注一系列的技术实现。使用iSmartJs可以在极大程度上减少javascript代码编写，从而很大程度上减少bug产生率和提高开发效率。</p>
+    <h3>iSmartJs的特点</h3>
+    <hr />
+    <h4>1、模块化页面</h4>
+    <blockquote class="text-size-16 ">
+        iSmartJs提供了一个模块化页面的加载机制，这些模块化页面可能是用户管理页面、商品管理页面等，这些页面可以在需要的时候动态加载进来。
+        <p class="text-warning">
+            加载模块页面的时候，会对页面进行闭包封装处理，使得模块页面的脚本在一个独立的闭包域中，这样使得多个模块页面之间不用考虑变量名的唯一性，不用担心多个模块页面之间的变量污染。
+        </p>
+        <p>模块页面定义请参考<input type="button" class="btn btn-success btn-sm" value="window控件" s-click="S.open('widgets/window.html')" /> </p>
+    </blockquote>
+    <h4>2、控件组合</h4>
+    <blockquote class="text-size-16 ">
+        <p class="text-warning">
+            iSmartJs提供了一个小巧、精妙的核心用于组合控件，多个控件可以组合使用，使得元素拥有更为强大的功能，如我们可以使用<code
+                >loop</code>、<code>check</code>、<code>pagination</code>控件组合出<code>Grid</code>，并且该Grid拥有行选择功能。
+            并且基本上所有的控件显示都可以自定义，满足控件显示多样化的需求。
+        </p>
+    </blockquote>
+    <h4>3、无缝使用其他js框架</h4>
+    <blockquote class="text-size-16 ">
+        <p class="text-warning">
+            iSmartJs基于<code>bootstrap</code>和<code>jQuery</code>，可以无缝使用jQuery其他的插件，如<code>ztree</code>插件来构建树。
+        </p>
+    </blockquote>
+    <h4>4、友好的UI与页面交互</h4>
+    <blockquote class=" text-size-16 ">
+        <p>您现在看到页面是iSmartJs默认提供的布局，目前iSmartJs只提供了一个布局，另外的布局在规划设计中，两外您也可以定制自己的布局。iSmartJs亦提供了如下的UI细节实现：</p>
+        <ol class="text-warning">
+            <li><strong>ajax动作提示</strong>：在进行ajax操作的时候右上角会有ajax的动作提示，您可以通过打开新页面来观察一下。</li>
+            <li><strong>警告框</strong>：iSmartJs提供了更为友好的警告框弹出提示，<input type="button" class="btn btn-sm btn-success" value="演示一下" s-click="S.alert('感谢您使用iSmartJs')" /> </li>
+            <li><strong>页面通知</strong>：<input type="button" class="btn btn-sm btn-success" value="演示一下" s-click="S.notice('感谢您使用iSmartJs', 'success')" />，页面通知提供了<code>danger</code>，
+                <code>warning</code>，<code>success</code>，<code>info</code>级别的显示。</li>
+            <li><strong>弹出页面</strong>：我们会经常需要通过弹出层加载一个页面，如分类选择页面，商品编辑页面等，iSmartJs提供了一个这样的机制，通过这样的机制我们可以轻松写出很多可复用性的页面，在不同的地方调用。<input type="button" class="btn btn-sm btn-success" value="演示一下" s-click="S.popupOpen('doc/index.html')" /></li>
+        </ol>
+        还有更多的细节请关注iSmartJs插件和控件。
+    </blockquote>
+    <h3>快速入门</h3>
+    <hr />
+    <h4>iSmartJs的文件结构</h4>
+    <ol>
+        <li><code>index.html</code></li>
+        <li><code>boot.html</code></li>
+        <li><code>login-panel.html</code></li>
+        <li><code>layouts/main0.html</code></li>
+        <li><code>menu.json</code></li>
+    </ol>
+</div>

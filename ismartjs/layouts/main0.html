@@ -123,6 +123,9 @@
         if (tabNode.size() > 0) {
             var tab = tabNode.data("tab");
             tab.active();
+            if(Main.tabActiveRefresh){
+                tab.tabWindows[0].smart.refresh();
+            }
             return;
         }
         new MainTab(menu).add().active();
@@ -149,6 +152,9 @@
         var tab = MainTab.findSingleTabByUrl(url);
         if (tab) {
             tab.active();
+            if(Main.tabActiveRefresh){
+                tab.tabWindows[0].smart.refresh();
+            }
             return;
         }
         //根据当前控件的url处理 打开的url的真实路径。
@@ -330,13 +336,6 @@
 
             function closeTabWindow(i) {
                 if (i >= that.tabWindows.length) {
-                    //如果拥有2级菜单的话，这里需要处理activeTop,没有2级菜单的在监听TabWindow的close事件中已经处理了activeTop了
-                    if (!Smart.isEmpty(that.data.children)) {
-                        that.destroy();
-                        MainTab.activeTop();
-                        SecondaryTabPanel.hide();
-                    }
-
                     return deferred.resolve();
                 }
                 var tabWindow = that.tabWindows[i];

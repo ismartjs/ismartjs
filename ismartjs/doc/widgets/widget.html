@@ -1,0 +1,189 @@
+<meta title="基础控件" />
+<h3>定义</h3>
+<code>s</code>
+<p class="lead">
+    定义基础控件的时候只需要定义一个<code>s</code>属性即可，如<code> &lt;span s &gt;&lt;/span&gt;</code>，基础控件是一切其他控件的基础，当元素的属性中有<code>s</code>属性的时候，该元素即获得了基础控件的一系列的api，其他控件通过基础控件提供的标准api和生命周期进行协调工作。
+</p>
+<h3>控件的组合定义</h3>
+<code>s="s1[,s2[,..]]"</code>
+<p class="lead"><code>ismartjs</code>提供了许多有用的控件，如：<code>loop</code>控件用来构建列表，<code>tpl</code>控件用来进行模板输出，<code>check</code>控件用来提供选择功能，<code>window</code>控件用来加载模块页面，
+    我们可以为一个元素声明多个控件，那么这个元素就具有多个控件提供的功能，比如<code>s="loop,check"</code>，元素即可获得列表输出和行选择功能。</p>
+<h3>控件的参数定义</h3>
+<p class="lead">如果我们声明一个控件为列表控件<code>s="form"</code>，那么我们就可以通过属性<code>s-form="{...}"</code>来定义控件的参数，多个控件定义如：<code>s="loop,check" s-loop="{...}" s-check="{...}"</code></p>
+<h3>API</h3>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>方法名</th>
+        <th>返回值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>build<span class="text-info">(obj | Deferred)</span></td>
+        <td><code>Deferred</code></td>
+        <td>
+            该方法用于构建控件，比如<code>select</code>控件的选项构建，该方法可以接受一个<code>Deferred</code>或者<code>object</code>参数，返回一个<code>Deferred</code>对象。
+        </td>
+    </tr>
+    <tr>
+        <td>data<span class="text-info">(obj | Deferred)</span></td>
+        <td><code>Deferred</code></td>
+        <td>
+            该方法用于赋值控件，该方法可以接受一个<code>Deferred</code>或者<code>object</code>参数，返回一个<code>Deferred</code>对象。
+        </td>
+    </tr>
+    <tr>
+        <td>refresh<span class="text-info">()</span></td>
+        <td><code>Deferred</code></td>
+        <td>
+            该方法用于刷新重建控件，返回一个<code>Deferred</code>对象，该方法是最常用的一个方法，比如<code>loop</code>的刷新或者<code>window</code>控件的刷新都可以直接调用该方法进行操作，<code>select</code>控件的级联操作也是运用了该方法，<a href="javascript:;" s-click="S.open('select.html#cascade')">点击查看</a>
+        </td>
+    </tr>
+    <tr>
+        <td>destroy<span class="text-info">()</span></td>
+        <td></td>
+        <td>
+            该方法用于销毁控件
+        </td>
+    </tr>
+    <tr>
+        <td>clean<span class="text-info">()</span></td>
+        <td></td>
+        <td>
+            该方法用于清理控件
+        </td>
+    </tr>
+</table>
+<h3>生命周期</h3>
+<p class="lead">
+    控件的生命周期有如下：<code>prepare</code>，<code>build</code>，<code>data</code>，<code>ready</code>，<code>refresh</code>，<code>destroy</code>这5个阶段。
+</p>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>阶段</th>
+        <th>异步</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>prepare</td>
+        <td>同步</td>
+        <td>
+            控件准备阶段
+        </td>
+    </tr>
+    <tr>
+        <td>build</td>
+        <td>异步</td>
+        <td>
+            控件的构建阶段，该阶段会使用控件元素上定义的<code>s-build</code>属性去构建控件，该属性参考下面的描述。
+        </td>
+    </tr>
+    <tr>
+        <td>data</td>
+        <td>异步</td>
+        <td>
+            控件的赋值阶段，该阶段会使用控件元素上定义的<code>s-data</code>属性去为控件赋值，该属性参考下面的描述。
+        </td>
+    </tr>
+    <tr>
+        <td>ready</td>
+        <td>同步</td>
+        <td>
+            控件构建和赋值完毕后调用的阶段，该阶段会触发控件元素的<code>s-ready</code>事件。
+        </td>
+    </tr>
+    <tr>
+        <td>refresh</td>
+        <td>异步</td>
+        <td>
+            控件的刷新阶段
+        </td>
+    </tr>
+    <tr>
+        <td>destroy</td>
+        <td>同步</td>
+        <td>
+            控件的销毁阶段
+        </td>
+    </tr>
+</table>
+<h3>控件的基本属性定义</h3>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>属性名</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>s-build</td>
+        <td>
+            该属性用于构建控件，作用于控件的<code>build</code>阶段，该属性可接受异步参数，如<code>s-build="S.get('/rest/select.json')"</code>通过ajax读取远程数据进行构建下拉列表控件，
+            亦可以接受当前页面闭包作用域中的变量，如<code>s-build='selectOptionsData'</code>，当前闭包作用域中有该变量的定义<code>var selectOptionsData = [{id:"java", name:"JAVA"},{id:"php", name:"PHP"}]</code>
+        </td>
+    </tr>
+    <tr>
+        <td>s-data</td>
+        <td>
+            该属性用于赋值控件，作用于控件的<code>data</code>阶段，该属性可接受异步参数，如<code>s-data="S.get('/rest/users')"</code>通过ajax读取远程数据进行控件赋值，
+            亦可以接受当前页面闭包作用域中的变量，如<code>s-build='userList'</code>，当前闭包作用域中有该变量的定义<code>var userList = [{id:"1", name:"张三"},{id:"2", name:"李四"}]</code>
+        </td>
+    </tr>
+    <tr>
+        <td>s-data-filter</td>
+        <td>
+            该属性用于过滤适配赋值，比如当前有个变量为<code>var userPaging = {page:1, pageSize:10, results:[...]}</code>，
+            如果当前控件只需要<code>userPaging.results</code>的值，那么就可以定义为如：<code>s="loop" s-data="userPaging" s-data-filter="'results'"</code>即可。
+            <code>s-data-filter</code>属性值是变量定义，所以定义为字符串的时需要加引号。该属性值亦可以定义为<code>function</code>，作为赋值的过滤器，返回值为方法的<code>apply</code>调用方式的调用参数，
+            上述<code>s-data-filter="'results'"</code>也可定义为<code>s-data-filter="userPagingFilter"</code>，userPagingFilter的方法定义为：
+            <div style="margin-top: 5px;" s="sh" s-sh="{brush:'JScript'}">
+                function userPagingFilter(userPaging){
+                    return [userPaging.results];
+                }
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>s-data-lazy</td>
+        <td>
+            在某些情况下，需要延迟赋值控件，则声明该参数值为<code>true</code>，或者声明该属性值为当前页面闭包中的<code>function</code>变量，该方法变量的执行结果作为判定条件，该属性值只会触发一次，当再次赋值时将会被忽略掉。
+        </td>
+    </tr>
+</table>
+<h3>控件的事件</h3>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>事件名</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>s-prepared</td>
+        <td>
+            当控件准备完成时，触发该事件
+        </td>
+    </tr>
+    <tr>
+        <td>s-build</td>
+        <td>
+            当控件构建完成时，触发该事件
+        </td>
+    </tr>
+    <tr>
+        <td>s-data</td>
+        <td>
+            当控件赋值完成时，触发该事件
+        </td>
+    </tr>
+    <tr>
+        <td>s-ready</td>
+        <td>
+            当控件运行完成时，触发该事件
+        </td>
+    </tr>
+    <tr>
+        <td>s-rendered</td>
+        <td>
+            当控件渲染完成时，触发该事件
+        </td>
+    </tr>
+</table>
+<p class="alert alert-warning">
+    上述所有的事件定义都会被默认阻止事件冒泡。
+</p>

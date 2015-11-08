@@ -36,17 +36,20 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
-                        src: [
-                            "index.html", "home.html", "boot.html",
+                        src: ["home.html", "boot.html",
                             "html/login-panel.html",
                             "html/main-bottom.html",
                             "html/topbar-left.html",
                             "html/topbar-right.html",
+                            "html/dashboard.html",
                             "images/**", "bootstrap3/**", "font-awesome/**",
-                            "layouts/**", "ui-template.html","css/smart.custom.css"
+                            "layouts/**", "ui-template.html","css/smart.custom.css",
+                            "js/smart-main.js","js/bootstrap-datetimepicker.min.js",
+                            "js/bootstrap-datetimepicker.zh-CN.js","js/jquery-2.1.1.min.js","js/jquery-ui-1.10.4.custom.min.js"
                         ], dest: 'dest'
                     },
                     {src: "json/menu-example.json", dest: "dest/json/menu.json"},
+                    {src: "index-dest.html", dest: "dest/index.html"}
                 ]
             }
         },
@@ -56,7 +59,6 @@ module.exports = function (grunt) {
                     'dest/css/ismart.ui.min.css': [
                         'css/bootstrap-datetimepicker.min.css',
                         'css/smart.layouts.main0.css',
-                        'css/smart.main.css',
                         'css/smart.ui.bootstrap.css',
                         'css/smart.ui.css'
                     ]

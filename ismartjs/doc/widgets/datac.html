@@ -1,0 +1,45 @@
+<meta title="子控件赋值(datac)" />
+<p class="lead">当一个控件需要为多个子控件进行赋值的时候，就把它声明成为<code>datac</code>控件</p>
+<blockquote>
+    <p class="text-warning">ismartjs的控件的子控件不是dom结构上的第一层的子元素，而是控件级别上的第一层的子控件。</p>
+</blockquote>
+<p class="lead">只要我们在需要为子控件赋值的场景中都可以运用该控件，如form表单的数据绑定、loop控件的循环行中的子控件赋值。</p>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="ndaSource">
+    <form s="form,nda,datac" s-data="{account:'ismartjs', password:'ismartjs'}" action="rest/form" s-form="{done: formSubmitDone}" method="post" class="form-horizontal" style="width: 600px;">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">账号</label>
+            <div class="col-sm-10">
+                <input type="text" name="account" class="form-control" placeholder="账号">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">密码</label>
+            <div class="col-sm-10">
+                <input type="password" name="password" class="form-control" placeholder="密码">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                <input type="submit" class="btn btn-primary" value="提交" />
+            </div>
+        </div>
+    </form>
+    <script type="text/plain" s-sh-role="javascript">
+
+        function formSubmitDone(rs){
+            S.alert("数据提交成功，提交的数据为：" + JSON.stringify(rs));
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        function formSubmitDone(rs){
+            S.alert("数据提交成功，提交的数据为：" + JSON.stringify(rs));
+        }
+
+    </script>
+</div>
+<div class="highlight" >
+    <div s="sh" s-sh="{sourceNode:S.N('#ndaSource')}"></div>
+</div>

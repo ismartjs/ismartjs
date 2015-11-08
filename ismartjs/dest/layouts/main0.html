@@ -21,19 +21,31 @@
                     </span>
                     </div>
                 </div>
-                {%}%}
                 <ul class="s-ui-trans">
                     {% $.each(this.children || {}, function(i, c){ %}
                     <li class="nav-item " menuUrl="{%=c.url%}" menuId="{%=c.id%}"
                         s-click="openMenuById('{%=c.id%}')">
                         <a class="s-ui-trans" href="javascript:;">
-                            <div class="nav-icon s-ui-trans"><i class="{%=c.icon || 'glyphicon glyphicon-file' %}"></i>
+                            <div class="nav-icon s-ui-trans"><i class="{%=c.icon || 'fa fa-file-text-o' %}"></i>
                             </div>
                             <span class="nav-title ng-binding">{%=c.title%}</span>
                         </a>
                     </li>
                     {% }) %}
                 </ul>
+                {%} else {%}
+                <ul class="s-ui-trans">
+                    <li class="nav-item " menuUrl="{%=menu.url%}" menuId="{%=menu.id%}"
+                        s-click="openMenuById('{%=menu.id%}')">
+                        <a class="s-ui-trans" href="javascript:;">
+                            <div class="nav-icon s-ui-trans"><i
+                                    class="{%=menu.icon || 'fa fa-file-text-o' %}"></i>
+                            </div>
+                            <span class="nav-title ng-binding">{%=menu.title%}</span>
+                        </a>
+                    </li>
+                </ul>
+                {%}%}
             </div>
             {% }) %}
         </div>
@@ -54,29 +66,30 @@
 
 <div class="main-bottom" id="mainBottom" s="window" s-window-href="{Main.bottomUrl}"></div>
 
-<ul id="mainTabContextmenu" s="contextmenu" s-contextmenu-filter="MainTabContextmenu.filter" class="s-ui-contextmenu">
-    <li menuId="close"  s-click="MainTabContextmenu.closeTarget()">
+<ul id="mainTabContextmenu" s="contextmenu" s-contextmenu="{filter: MainTabContextmenu.filter}"
+    class="s-ui-contextmenu">
+    <li menuId="close" s-click="MainTabContextmenu.closeTarget()">
         <span>关闭</span>
     </li>
     <li class="s-ui-contextmenu-line"></li>
-    <li menuId="clostOther"  s-click="MainTabContextmenu.closeOthers()">
+    <li menuId="clostOther" s-click="MainTabContextmenu.closeOthers()">
         <span>关闭其他</span>
     </li>
-    <li menuId="closeAll"  s-click="MainTabContextmenu.closeAll()">
+    <li menuId="closeAll" s-click="MainTabContextmenu.closeAll()">
         <span>关闭所有</span>
     </li>
     <li class="s-ui-contextmenu-line"></li>
-    <li menuId="refresh"  s-click="MainTabContextmenu.refreshTarget()">
+    <li menuId="refresh" s-click="MainTabContextmenu.refreshTarget()">
         <span>刷新</span>
     </li>
 </ul>
 
 <ul id="mainContextmenu" s="contextmenu" class="s-ui-contextmenu">
-    <li menuId="showSource"  s-click="MainContextmenu.showSourceHtml(arguments[0])">
+    <li menuId="showSource" s-click="MainContextmenu.showSourceHtml(arguments[0])">
         <span>查看源码</span>
     </li>
     <li class="s-ui-contextmenu-line"></li>
-    <li menuId="copyright"  s-click="MainContextmenu.showCopyright()"><span>版权声明</span></li>
+    <li menuId="copyright" s-click="MainContextmenu.showCopyright()"><span>版权声明</span></li>
 </ul>
 
 <script type="text/javascript">
@@ -109,15 +122,18 @@
         var tabNode = $("li[menuurl='" + menu.url + "']", S.N("#mainTabContainer"));
         if (tabNode.size() > 0) {
             var tab = tabNode.data("tab");
-            if (tab.single) {
-                tab.active();
-                return;
+            tab.active();
+            if(Main.tabActiveRefresh){
+                tab.tabWindows[0].smart.refresh();
             }
+            return;
         }
         new MainTab(menu).add().active();
     }
 
-    S.on("open", function (e, url) {
+    S.N("#mainTabContainer").sortable({axis: "x"});
+
+    $("body").on("open", function (e, url) {
         if (/^menu:.+$/gi.test(url)) {
             openMenuById(url.substring(5));
         } else {
@@ -136,6 +152,9 @@
         var tab = MainTab.findSingleTabByUrl(url);
         if (tab) {
             tab.active();
+            if(Main.tabActiveRefresh){
+                tab.tabWindows[0].smart.refresh();
+            }
             return;
         }
         //根据当前控件的url处理 打开的url的真实路径。
@@ -317,13 +336,6 @@
 
             function closeTabWindow(i) {
                 if (i >= that.tabWindows.length) {
-                    //如果拥有2级菜单的话，这里需要处理activeTop,没有2级菜单的在监听TabWindow的close事件中已经处理了activeTop了
-                    if (!Smart.isEmpty(that.data.children)) {
-                        that.destroy();
-                        MainTab.activeTop();
-                        SecondaryTabPanel.hide();
-                    }
-
                     return deferred.resolve();
                 }
                 var tabWindow = that.tabWindows[i];
@@ -442,6 +454,8 @@
             if (meta.closeable === "true" || meta.closeable == undefined
                     || meta.closeable == "" || meta.closeable === true) {
                 this._addCloseHandle();
+            } else {
+                this.node.attr("closeable", "false");
             }
         }
     };
@@ -455,9 +469,7 @@
         filter: function (menuId) {
             if (menuId == "close") {
                 var target = Smart.UI.contextmenu.target;
-                var mainTab = target.node.data("mainTab");
-                var data = mainTab.data;
-                return data.open && data.closeable != false;
+                return !(target.node.attr("closeable") == 'false');
             }
         },
         closeTarget: function () {
@@ -478,8 +490,9 @@
         closeNodes: function (nodes) {
             var mainTabs = [];
             $.each(nodes, function () {
+                if ($(this).attr("closeable") == 'false')
+                    return;
                 var mainTab = $(this).data("mainTab");
-                if (mainTab.data.open && mainTab.data.closeable == false) return;
                 mainTabs.push(mainTab);
             });
             MainTab.closeMainTabs(mainTabs).done(function () {
@@ -515,7 +528,7 @@
     };
 
     this.on("s-ready", function () {
-        MainContextmenu.bindTarget($("body"));
+        //MainContextmenu.bindTarget($("body"));
     });
 
     function showTabWindowById(id) {

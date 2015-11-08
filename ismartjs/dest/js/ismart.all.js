@@ -151,7 +151,7 @@
         },
         SMART_NODE_CACHE_KEY: "__SMART__",
         SMART_ATTR_KEY: "s",//smart控件声明的属性
-        DEFAULT_STOPPED_EVENT: ["s-ready", "s-loaded", 's-loading', 's-data', 's-build']
+        DEFAULT_STOPPED_EVENT: ["s-ready", "s-prepared", "s-rendered", "s-loaded", 's-loading', 's-data', 's-build']
     };
 
 
@@ -337,6 +337,18 @@
                 defer.reject.apply(defer, $.makeArray(arguments));
             });
         },
+        proxyDeferred: function (deferred) {
+            var _deferred = $.Deferred();
+            if (Smart.isDeferred(deferred)) {
+                deferred.done(function () {
+                    _deferred.resolve.apply(_deferred, $.makeArray(arguments));
+                }).fail(function () {
+                    _deferred.reject.apply(_deferred, $.makeArray(arguments));
+                });
+                return _deferred;
+            }
+            return _deferred.resolve();
+        },
         map: function (datas, key) {
             var _datas = [];
             for (var i = 0; i < datas.length; i++) {
@@ -349,30 +361,80 @@
             }
             return _datas;
         },
-        //数据适配
-        adaptData: function(data, adapter){
-            var rs;
-            if($.isFunction(data)){
-                rs = data();
-            }
-            function adapt(_data){
-                if($.isFunction(adapter)){
-                    return adapter(_data);
-                }
-                return _data[adapter];
-            }
-            if(Smart.isDeferred(rs)){
+        deferDelegate: function(rs, fn, ref){
+            if (Smart.isDeferred(rs)) {
                 var deferred = $.Deferred();
-                rs.done(function(_rs){
-                    deferred.resolve(adapt(_rs));
-                }).fail(function(){
+                rs.done(function (_rs) {
+                    deferred.resolve(fn.call(ref, _rs));
+                }).fail(function () {
                     deferred.reject();
                 });
                 return deferred;
             } else {
-                return adapt(rs);
+                return fn.call(ref, rs);
             }
         },
+        //数据适配
+        adaptData: function (data, adapter) {
+            var rs;
+            if ($.isFunction(data)) {
+                rs = data();
+            } else {
+                rs = data;
+            }
+            function adapt(_data) {
+                if ($.isFunction(adapter)) {
+                    return adapter(_data);
+                }
+                return _data[adapter];
+            }
+
+            return Smart.deferDelegate(rs, adapt);
+        },
+        /**
+         * 清理json反序列化后的引用问题，该问题可能来自于fastjson序列化后的json。
+         * */
+        cleanJsonRef: (function(){
+
+            function clean($$, obj, parent){
+                if(arguments.length == 1){
+                    obj = $$;
+                }
+                $.each(obj, function(key, val){
+                    if(!$.isPlainObject(val) && !$.isArray(val)){
+                        return;
+                    }
+                    if(val.hasOwnProperty('$ref')){
+                        if(val['$ref'] == '..'){
+                            obj[key] = parent;
+                            return;
+                        }
+                        obj[key] = eval("$" + val['$ref']);
+                    } else {
+                        clean($$, val, obj);
+                    }
+                })
+                return obj;
+            }
+
+            return function(obj){
+                return Smart.deferDelegate(obj, clean);
+            }
+        })(),
+        encodeHtml: (function () {
+            var REGEX_HTML_ENCODE = /"|&|'|<|>|[\x00-\x20]|[\x7F-\xFF]|[\u0100-\u2700]/g;
+            return function (s) {
+                return (typeof s != "string") ? s :
+                    s.replace(REGEX_HTML_ENCODE,
+                        function ($0) {
+                            var c = $0.charCodeAt(0), r = ["&#"];
+                            c = (c == 0x20) ? 0xA0 : c;
+                            r.push(c);
+                            r.push(";");
+                            return r.join("");
+                        });
+            }
+        })(),
         walkTree: (function () {
             function _walkTree(tree, walker, childrenKey) {
                 childrenKey = childrenKey || "children";
@@ -680,6 +742,10 @@
          * 从当前的上下文中获取数据
          * */
         context: function (key, that) {
+            if (/^\s*\{.+}\s*$/g.test(key)) {
+                //如果是json的字符串，则需要加（）号
+                key = "(" + key + ")";
+            }
             return this._getContext().call(that || this, key);
         },
         /**
@@ -1048,6 +1114,7 @@
         SmartWidget.prototype = {
             onPrepare: Smart.noop,//控件准备
             onBuild: Smart.noop,//构建控件
+            onData: Smart.noop,//控件赋值事件
             onReady: Smart.noop,//控件准备完成
             onDestroy: Smart.noop,//销毁控件
             onClean: Smart.noop//重置控件
@@ -1076,10 +1143,6 @@
                     $.extend(tmpOptions, this.meta.defaultOptions); //复制widget.defaultOptions
                 }
                 if (optionStr) {
-                    if (/^\{.+}$/g.test(optionStr)) {
-                        //如果是json的字符串，则需要加（）号
-                        optionStr = "(" + optionStr + ")";
-                    }
                     var optionValues = this.S.context(optionStr);
                     $.extend(tmpOptions, optionValues);
                 }
@@ -1142,8 +1205,7 @@
                     }
                     return false;
                 }
-            }
-            ,
+            },
             data: function () {
                 if (arguments.length == 0) {
                     return this.dataGetter ? this.dataGetter.apply(this, Smart.SLICE.call(arguments)) : undefined;
@@ -1158,18 +1220,53 @@
                         var fn_flag = (dataFilter.indexOf(".") != -1 || /^.+\(.*\).*$/.test(dataFilter)) ? true : false;
                         value = [data == undefined ? null : fn_flag ? eval("data." + dataFilter) : data[dataFilter]];
                     } else {
-                        value = dataFilter(value);
+                        value = dataFilter.apply(null, value);
                     }
                 }
                 value = (value == null ? [this.widget.smart.options['null']] : value);
-                if(arguments.length == 1){
-                    this.__SMART__DATA__  = value[0];
+                if (arguments.length == 1) {
+                    this.__SMART__DATA__ = value[0];
                 } else {
-                    this.__SMART__DATA__  = value;
+                    this.__SMART__DATA__ = value;
                 }
+                var that = this;
+                return Smart.proxyDeferred(this.dataSetter.apply(this, value)).done(function () {
+                    that.trigger("s-data");
+                });
+            },
+            build: function () {
+                if (arguments.length == 0) {
+                    return this.buildGetter ? this.buildGetter.apply(this, Smart.SLICE.call(arguments)) : undefined;
+                }
+                var args = Smart.SLICE.call(arguments);
+                var value = args;
+                var buildFilter = this.node.attr("s-build-filter");
+                if (buildFilter != null) {
+                    buildFilter = this.context(buildFilter);
+                    if (!$.isFunction(buildFilter)) {
+                        var data = args[0];
+                        var fn_flag = (buildFilter.indexOf(".") != -1 || /^.+\(.*\).*$/.test(buildFilter)) ? true : false;
+                        value = [data == undefined ? null : fn_flag ? eval("data." + buildFilter) : data[buildFilter]];
+                    } else {
+                        value = buildFilter(value);
+                    }
+                }
+                value = (value == null ? [this.widget.smart.options['null']] : value);
+                if (arguments.length == 1) {
+                    this.__SMART_BUILD_DATA__ = value[0];
+                } else {
+                    this.__SMART_BUILD_DATA__ = value;
+                }
+                var that = this;
+                return Smart.proxyDeferred(this.buildSetter.apply(this, value)).done(function () {
+                    that.trigger("s-build");
+                });
+            },
+            buildGetter: function () {
+                return this.__SMART_BUILD_DATA__;
+            },
+            buildSetter: function () {
 
-                this.dataSetter.apply(this, value);
-                this.trigger("s-data");
             },
             _executeBuild: function () {
                 var buildAttrStr = this.node.attr("s-build");
@@ -1177,19 +1274,27 @@
                     return;
                 }
                 var buildData = this.context(buildAttrStr);
-                var that = this;
+                var deferred = $.Deferred();
                 if (Smart.isDeferred(buildData)) {
-                    var deferred = $.Deferred();
+                    var that = this;
                     buildData.done(function (data) {
-                        that.build(data);
+                        Smart.proxyDeferred(that.build(data)).done(function () {
+                            deferred.resolve();
+                        }).fail(function () {
+                            deferred.reject();
+                        })
+                    }).fail(function () {
+                        deferred.reject();
+                    })
+                } else {
+                    var deferred = $.Deferred();
+                    Smart.proxyDeferred(this.build(buildData)).done(function () {
                         deferred.resolve();
                     }).fail(function () {
                         deferred.reject();
                     })
-                    return deferred;
-                } else {
-                    this.build(buildData);
                 }
+                return deferred;
             }
             ,
             _executeData: function () {
@@ -1201,30 +1306,37 @@
                  * 该属性只会触发一次，当再次执行的时候将会被忽略掉。
                  * */
                 var dataLazy = this.node.attr("s-data-lazy");
-                if(dataLazy != undefined){
+                if (dataLazy != undefined) {
                     dataLazy = this.context(dataLazy);
-                    if($.isFunction(dataLazy)){
+                    if ($.isFunction(dataLazy)) {
                         dataLazy = dataLazy();
                     }
-                    if(dataLazy == true){
+                    if (dataLazy == true) {
                         return;
                     }
                     this.node.removeAttr("s-data-lazy");
                 }
                 var dataValue = this.context(dataAttrStr);
-                var that = this;
+                var deferred = $.Deferred();
                 if ($.isPlainObject(dataValue) && Smart.isDeferred(dataValue)) {
-                    var deferred = $.Deferred();
+                    var that = this;
                     dataValue.done(function (data) {
-                        that.data(data);
+                        Smart.proxyDeferred(that.data(data)).done(function () {
+                            deferred.resolve();
+                        }).fail(function () {
+                            deferred.reject();
+                        })
+                    }).fail(function () {
+                        deferred.reject();
+                    })
+                } else {
+                    Smart.proxyDeferred(this.data(dataValue)).done(function () {
                         deferred.resolve();
                     }).fail(function () {
                         deferred.reject();
                     })
-                    return deferred;
-                } else {
-                    this.data(dataValue);
                 }
+                return deferred;
             }
             ,
             _executeReady: function () {
@@ -1257,6 +1369,12 @@
                 //build控件
                 deferreds.push(function () {
                     return that._executeBuild();
+                });
+
+                $.each(this.widgets, function (i, widget) {
+                    deferreds.push(function () {
+                        return widget.onData();
+                    });
                 });
 
                 deferreds.push(function () {
@@ -1328,6 +1446,8 @@
                 widget.onPrepare();
             });
 
+            smart.trigger("s-prepared");
+
             var deferreds = [];
 
             $.each(smart.widgets, function (i, widget) {
@@ -1343,6 +1463,12 @@
 
             deferreds.push(function () {
                 return smart.renderChildren();
+            });
+
+            $.each(smart.widgets, function (i, widget) {
+                deferreds.push(function () {
+                    return widget.onData();
+                });
             });
 
             deferreds.push(function () {
@@ -1623,25 +1749,47 @@
             var args = Smart.SLICE.call(arguments);
             var igAttr = this.widget.datac.optionName("ig");
             var fnAttr = this.widget.datac.optionName("fn");
+            var deferreds = [];
             this.children().each(function(){
-                var ig = this.node.attr(igAttr);
-                if(ig == "true" || ig == ""){
-                    return;
-                }
-                var fn = this.node.attr(fnAttr) || "data";
-                this[fn].apply(this, args);
+                var that = this;
+                deferreds.push(function(){
+                    var ig = that.node.attr(igAttr);
+                    if(ig == "true" || ig == ""){
+                        return;
+                    }
+                    var fn = that.node.attr(fnAttr) || "data";
+                    return that[fn].apply(that, args);
+                })
             });
+            return Smart.deferredQueue(deferreds);
         }
     });
 })();;/**
+ * Created by nana on 2015/9/21.
+ */
+(function ($) {
+    Smart.widgetExtend({
+        id: "event"
+    }, {
+        onPrepare: function () {
+            var that = this;
+            $.each(this.options, function(evt, action){
+                that.S.node.on(evt, function(e){
+                    action.call(this, e);
+                });
+            });
+        }
+    });
+})(jQuery);
+;/**
  * Created by Administrator on 2014/6/26.
  */
-(function($){
+(function ($) {
 
     var roleAttr = Smart.optionAttrName("loop", "role");
 
-    function getRoleNode(val, node){
-        return $("*["+roleAttr+"='"+val+"']:first", node);
+    function getRoleNode(val, node) {
+        return $("*[" + roleAttr + "='" + val + "']:first", node);
     }
 
     //loop控件，可以用该控件来构建列表，grid。
@@ -1653,95 +1801,119 @@
             indent: 20
         }
     }, {
-        onPrepare: function(){
+        onPrepare: function () {
             this.cache = {};
             var emptyRow = getRoleNode("empty", this.S.node);
+            var loadingRow = getRoleNode("loading", this.S.node);
             var loopRow = getRoleNode("row", this.S.node);
             var prepareRow = getRoleNode("prepare", this.S.node);
             this.S.node.empty();
             prepareRow.size() && this.S.node.append(prepareRow);
-            this.cache.emptyRow = emptyRow;
-            this.cache.loopRow = loopRow;
+            emptyRow.size() && (this.cache.emptyRow = emptyRow);
+            prepareRow.size() && (this.cache.prepareRow = prepareRow);
+            loopRow.size() && (this.cache.loopRow = loopRow);
+            loadingRow.size() && (this.cache.loadingRow = loadingRow);
+        },
+        onData: function () {
+            if (this.cache.loadingRow) {
+                this.S.empty();
+                this.S.node.append(this.cache.loadingRow);
+            }
         }
-    },{
-        empty: function(){
+    }, {
+        empty: function () {
             this.node.empty();
         },
-        addRow: function(data, indentNum, mode){
+        hideAssistRows: function () {
+            this.widget.loop.cache.prepareRow && this.widget.loop.cache.prepareRow.is(':visible') && this.widget.loop.cache.prepareRow.remove();
+            this.widget.loop.cache.emptyRow && this.widget.loop.cache.emptyRow.is(':visible') && this.widget.loop.cache.emptyRow.remove();
+            this.widget.loop.cache.loadingRow && this.widget.loop.cache.loadingRow.is(':visible') && this.widget.loop.cache.loadingRow.remove();
+        },
+        addRow: function (data, mode, indentNum, igCheckAssistRow) {
             var row = this._getRow().show();
-            if(indentNum){
+            if (igCheckAssistRow) {
+                this.hideAssistRows();
+            }
+            if (indentNum) {
                 var indentNode = row.find('*[s-loop-tree-role="indent"]');
-                if(this.widget.loop.options['indentPre']){
+                if (this.widget.loop.options['indentPre']) {
                     var str = this.widget.loop.options['indentPre'];
-                    for(var i = 1; i < indentNum; i++){
+                    for (var i = 1; i < indentNum; i++) {
                         str += str;
                     }
                     indentNode.prepend(str);
-                } else if(indentNode.size() >= 0){
+                } else if (indentNode.size() >= 0) {
                     indentNode.css("text-indent", this.widget.loop.options.indent * indentNum + "px");
                 }
 
             }
             var that = this;
             var rowSmart = Smart.of(row);
-            rowSmart.render().done(function(){
+            this.node[mode || 'append'](rowSmart.node);
+            rowSmart.render().done(function () {
                 rowSmart.data(data);
-                that.node.append(rowSmart.node);
-                that.trigger("row-add", [row, data, indentNum, mode]);
+                that.trigger("row-add", [row, data, mode, indentNum]);
             });
         },
-        addRows: function(datas, indentNum, mode){
+        addRows: function (datas, mode, indentNum) {
+            this.hideAssistRows();
             indentNum = indentNum == undefined ? 0 : indentNum;
-            for(var i = 0; i < datas.length; i++){
-                this.addRow(datas[i], indentNum, mode);
+            for (var i = 0; i < datas.length; i++) {
+                this.addRow(datas[i], mode, indentNum, true);
                 //如果是tree的方式
-                if(this.widget.loop.options.type == "tree"){
+                if (this.widget.loop.options.type == "tree") {
                     var children = datas[i][this.widget.loop.options['childrenKey']];
-                    if(children && children.length){
-                        this.addRows(children, indentNum + 1, mode);
+                    if (children && children.length) {
+                        this.addRows(children, mode, indentNum + 1);
                     }
                 }
             }
         },
-        _getRow: function(){
+        _getRow: function () {
             var row = this.widget.loop.cache.loopRow.clone();
             return row;
         },
-        _addEmptyRow: function(){
+        _addEmptyRow: function () {
             var emptyRow = this.widget.loop.cache.emptyRow;
-            if(emptyRow){
-                this.node.append(emptyRow.clone());
+            if (emptyRow) {
+                this.node.append(emptyRow.show());
             }
         },
-        setRows: function(datas){
+        setRows: function (datas) {
             this.empty();
-            if(datas.length == 0){
+            if (datas.length == 0) {
                 this._addEmptyRow();
                 return;
             }
             var that = this;
-            setTimeout(function(){
+            var deferred = $.Deferred();
+            setTimeout(function () {
                 that.addRows(datas);
-            }, 0);
+                deferred.resolve();
+            }, 10);
+            return deferred;
         },
-        dataSetter: function(data){
-            if(!$.isArray(data)){
+        dataSetter: function (data) {
+            if (data == null) {
+                data = [];
+            }
+            if (!$.isArray(data)) {
                 Smart.error("loop控件接受的赋值参数必须是数组");
                 return;
             }
-            this.setRows(data);
+            return this.setRows(data);
         }
     });
     Smart.widgetExtend({
         id: "row",
         options: "ctx:render"
     }, null, {
-        dataSetter: function(data){
+        dataSetter: function (data) {
             this.widget.row.cache_data = data;
             this.inherited([data]);
             this.widget.row.options.render && this.widget.row.options.render.call(this, this.node);
         },
-        dataGetter: function(){
+        dataGetter: function () {
             return this.widget.row.cache_data;
         }
     });
@@ -1755,6 +1927,10 @@
         onPrepare: function(){
             this.S.node.find("*[name]").each(function(){
                 var nameNode = $(this);
+                var ig = nameNode.attr('s-nda-ig');
+                if(ig && ($.trim(ig) == "" || $.trim(ig) == 'true')){
+                    return;
+                }
                 if(!Smart.isWidgetNode(nameNode)){
                     //如果不是控件
                     //则把它声明成为一个基本控件
@@ -1766,126 +1942,6 @@
                 }
             });
         }
-    });
-})();;/**
- * Created by Administrator on 2014/6/21.
- */
-(function () {
-
-    Smart.widgetExtend({
-        id: "resource",
-        options: "src,ctx:form,ctx:adapter," +
-        "ctx:cascade,cascade-key,cascade-e,auto,switch,cascade-data,ctx:params," +
-        "ignore,fn,type",
-        defaultOptions: {
-            'auto': "on",
-            'fn': "data",
-            type: "json"
-        }
-    }, {
-        onPrepare: function () {
-            var that = this;
-            that.cache.params = {}
-        },
-        onRender: function () {
-            if (this.options.auto == "off") return $.Deferred().resolve();
-            if (this.options['cascade']) {
-                var that = this;
-                var cascade_timeout;
-                this.options['cascade'].on(this.options['cascade-e'] || 'smart-change change', function () {
-                    if(cascade_timeout){
-                        clearTimeout(cascade_timeout);
-                    }
-                    cascade_timeout = setTimeout(function(){
-                        cascade_timeout = null;
-                        that._cascadeLoad();
-                    }, 500);
-                });
-                if ('cascade-data' in this.options) {
-                    //如果cascade-data存在，则进行初始化调用
-                    return this._cascadeLoad(this.options['cascade-data']);
-                }
-                return $.Deferred().resolve();
-            }
-            return this._commonLoad();
-        },
-        onRefresh: function (params, flag) {
-            if(flag){
-                $.extend(this.cache.params, params|| {})
-            } else {
-                this.cache.params = params || {}
-            }
-            return this._load(this.cache.currentSrc || this.options.src);
-        },
-        _cascadeLoad: function (cascadeData) {
-            var cascade = this.options.cascade;
-            var val = cascadeData != undefined ? cascadeData : cascade.val();
-            if (val == this.options.ignore) {
-                this.S[this.options.fn]();
-                return $.Deferred().resolve();
-            }
-            var src = this.options['src'].replace("{val}", val);
-            if (this.options['cascade-key']) {
-                var params = {};
-                params[this.options['cascade-key']] = val;
-            }
-            return this._load(src, params);
-        },
-        _commonLoad: function () {
-            return this._load(this.options['src'], {});
-        },
-        _load: function (src, params) {
-            if('switch' in this.options && this.options.switch != null){
-                if($.isFunction(this.options.switch)){
-                    if(this.options.switch.call(this) == false){
-                        return $.Deferred().resolve();
-                    }
-                }
-                if(this.options.switch == false || this.options.switch == 'false'){
-                    return $.Deferred().resolve();
-                }
-            }
-            this.cache.currentSrc = src;
-            var deferred = $.Deferred();
-            if (src == undefined) {
-                return deferred.resolve();
-            }
-            var type = this.options.type;
-            if (/^.+:.+$/.test(src)) {
-                var idx = src.indexOf(":");
-                type = src.substring(0, idx);
-                src = src.substring(idx + 1);
-            }
-            var that = this;
-            var form = this.options["form"];
-            var adapter = this.options["adapter"];
-            params = params || {};
-            if (form) {
-                var formParam = Smart.serializeToObject(form);
-                $.extend(formParam, params);
-                params = formParam;
-            }
-            $.extend(params, this.cache.params);
-            if(this.options.params){
-                $.each(this.options.params, function(key, value){
-                    if(!(key in params)){
-                        params[key] = value;
-                    }
-                });
-            }
-            this.S.get(src, params, type).done(function (rs) {
-                if ($.isFunction(adapter)) {
-                    rs = adapter(rs);
-                }
-                that.S[that.options.fn](rs)
-                deferred.resolve();
-            }).fail(function () {
-                deferred.reject();
-            });
-            return deferred.promise();
-        }
-    }, {
-
     });
 })();;/**
  * Created by Administrator on 2014/6/21.
@@ -2024,7 +2080,7 @@
             });
         }
         scripts.push("var S = this;");
-        scripts.push("var " + Smart.VALUE_CONTEXT +" = {};");
+        scripts.push("var " + Smart.VALUE_CONTEXT + " = {};");
         scripts.push(scriptTexts.join("\n"));
         scripts.push("			return function(key){");
         scripts.push("				try{");
@@ -2063,15 +2119,15 @@
         //处理url后面的queryString，也把后面的queryString作为loadArgs
         var scriptArgs = {};
         var queryString = "";
-        if(href.indexOf("#") != -1){
-            queryString = href.substring(href.indexOf("?")+1, href.indexOf("#"));
+        if (href.indexOf("#") != -1) {
+            queryString = href.substring(href.indexOf("?") + 1, href.indexOf("#"));
         } else {
-            queryString = href.substring(href.indexOf("?")+1);
+            queryString = href.substring(href.indexOf("?") + 1);
         }
-        if(queryString != ""){
-            $.each(queryString.split("&"), function(i, kv){
+        if (queryString != "") {
+            $.each(queryString.split("&"), function (i, kv) {
                 var tmps = kv.split("=");
-                if(tmps.length > 1){
+                if (tmps.length > 1) {
                     scriptArgs[tmps[0]] = tmps[1];
                 }
             });
@@ -2087,21 +2143,23 @@
                 return that.context($1);
             });
         });
-        $.each(meta, function(key, val){
-            if(!(key in that.meta)){
+        $.each(meta, function (key, val) {
+            if (!(key in that.meta)) {
                 that.meta[key] = val;
             }
         });
         //绑定浏览器事件，click等
         delegateEvent(this);
         //处理自动焦点的元素
-        that.node.find("*[s-window-role='focus']:first").focus();
+        this.node.find("*[s-window-role='focus']:first").focus();
 
-        //处理锚点滚动
-        if (href.indexOf("#") != -1) {
-            var anchor = href.substring(href.indexOf("#"));
-            this.scrollTo(anchor);
-        }
+        this.on("s-ready", function () {
+            //处理锚点滚动
+            if (href.indexOf("#") != -1) {
+                var anchor = href.substring(href.indexOf("#"));
+                that.scrollTo(anchor);
+            }
+        });
     };
 
     var EVENT_MAP = {
@@ -2112,7 +2170,8 @@
         "s-dblclick": 'dblclick',
         "s-mouseover": 'mouseover',
         "s-mousemove": "mousemove",
-        "s-mouseout": "mouseout"
+        "s-mouseout": "mouseout",
+        "s-mouseleave": "mouseleave"
     };
 
     function undelegateEvent(smart) {
@@ -2124,11 +2183,11 @@
             smart.node.delegate("*[" + key + "]", val, function (e) {
                 var node = $(e.currentTarget);
                 var delegateTarget = node.data("_window_delegateTarget_");
-                if(!delegateTarget){
+                if (!delegateTarget) {
                     delegateTarget = e.delegateTarget;
                     node.data("_window_delegateTarget_", delegateTarget);
                 }
-                if(smart.node[0] != delegateTarget){
+                if (smart.node[0] != delegateTarget) {
                     return;
                 }
                 var evtKey = "__SMART__EVENT__" + key;
@@ -2191,18 +2250,18 @@
                 return deferred.resolve();
             }
         },
-        _clean: function () {
-            this.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
-            this.S._offEvent();
-            this.S.node.empty();
-        },
         onDestroy: function () {
             this.onClean();
         },
         onClean: function () {
-            this._clean();
+            this.S._clean();
         }
     }, {
+        _clean: function () {
+            this.widget.window.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
+            this._offEvent();
+            this.node.empty();
+        },
         _offEvent: function () {
             var that = this;
             $.each(this.widget.window.cache[EVENT_ON_CACHE], function (i, paramAry) {
@@ -2211,7 +2270,13 @@
             this.widget.window.cache[EVENT_ON_CACHE] = [];
         },
         refresh: function () {
-            return this.load(this.widget.window.location.href, this.widget.window.location.args)
+            var that = this;
+            var deferred = $.Deferred();
+            this.preClose().done(function () {
+                that.clean();
+                Smart.deferredChain(deferred, that.load(that.widget.window.location.href, that.widget.window.location.args));
+            })
+            return deferred.promise();
         },
         load: function () {
             var that = this;
@@ -2223,7 +2288,7 @@
                 }).fail(function () {
                     deferred.reject();
                 })
-            }).fail(function(){
+            }).fail(function () {
                 deferred.reject();
             });
             return deferred;
@@ -2358,16 +2423,17 @@
             //触发beforeClose监听事件。
             var that = this;
             var args = arguments;
-            setTimeout(function(){
-                that.widget.window.cache = {};
+            setTimeout(function () {
                 var deferred = $.Deferred();
                 deferred.done(function () {
+                    that._clean();
+                    that.widget.window.cache = {};
                     that.node.remove();
                 });
                 var event = $.Event("close", {deferred: deferred});
                 that.trigger(event, Smart.SLICE.call(args));
                 event.deferred['resolve'] && event.deferred.resolve();
-            },1);
+            }, 1);
         },
         closeWithConfirm: function () {
             var that = this;
@@ -2527,7 +2593,7 @@
 ;/**
  * Created by Administrator on 2015/1/8.
  */
-( function($) {
+(function ($) {
     'use strict';
 
     // AFFIX style DEFINITION
@@ -2535,13 +2601,13 @@
 
     var Affix = function (element, options) {
         this.options = $.extend({}, Affix.DEFAULTS, options)
-        this.$window = $(options.of || window)
+        this.$window = $(this.options.target)
             .on('scroll.bs.affix.data-api', $.proxy(this.checkPosition, this))
-            .on('click.bs.affix.data-api',  $.proxy(this.checkPositionWithEventLoop, this))
+            .on('click.bs.affix.data-api', $.proxy(this.checkPositionWithEventLoop, this))
 
-        this.$element     = $(element)
-        this.affixed      =
-            this.unpin        =
+        this.$element = $(element)
+        this.affixed =
+            this.unpin =
                 this.pinnedOffset = null
 
         this.checkPosition()
@@ -2550,14 +2616,15 @@
     Affix.RESET = 'affix affix-top affix-bottom'
 
     Affix.DEFAULTS = {
-        offset: 0
+        offset: 0,
+        target: window
     }
 
     Affix.prototype.getPinnedOffset = function () {
         if (this.pinnedOffset) return this.pinnedOffset
-        this.$element.removestyle(Affix.RESET).addstyle('affix')
+        this.$element.removeClass(Affix.RESET).addClass('affix')
         var scrollTop = this.$window.scrollTop()
-        var position  = this.$element.offset()
+        var position = this.$element.offset()
         return (this.pinnedOffset = position.top - scrollTop)
     }
 
@@ -2569,27 +2636,27 @@
         if (!this.$element.is(':visible')) return
 
         var scrollHeight = $(document).height()
-        var scrollTop    = this.$window.scrollTop()
-        var position     = this.$element.offset()
-        var offset       = this.options.offset
-        var offsetTop    = offset.top
+        var scrollTop = this.$window.scrollTop()
+        var position = this.$element.offset()
+        var offset = this.options.offset
+        var offsetTop = offset.top
         var offsetBottom = offset.bottom
 
         if (this.affixed == 'top') position.top += scrollTop
 
         if (typeof offset != 'object')         offsetBottom = offsetTop = offset
-        if (typeof offsetTop == 'function')    offsetTop    = offset.top(this.$element)
+        if (typeof offsetTop == 'function')    offsetTop = offset.top(this.$element)
         if (typeof offsetBottom == 'function') offsetBottom = offset.bottom(this.$element)
 
-        var affix = this.unpin   != null && (scrollTop + this.unpin <= position.top) ? false :
+        var affix = this.unpin != null && (scrollTop + this.unpin <= position.top) ? false :
             offsetBottom != null && (position.top + this.$element.height() >= scrollHeight - offsetBottom) ? 'bottom' :
-                offsetTop    != null && (scrollTop <= offsetTop) ? 'top' : false
+                offsetTop != null && (scrollTop <= offsetTop) ? 'top' : false
 
         if (this.affixed === affix) return
         if (this.unpin) this.$element.css('top', '')
 
         var affixType = 'affix' + (affix ? '-' + affix : '')
-        var e         = $.Event(affixType + '.bs.affix')
+        var e = $.Event(affixType + '.bs.affix')
 
         this.$element.trigger(e)
 
@@ -2599,12 +2666,12 @@
         this.unpin = affix == 'bottom' ? this.getPinnedOffset() : null
 
         this.$element
-            .removestyle(Affix.RESET)
-            .addstyle(affixType)
+            .removeClass(Affix.RESET)
+            .addClass(affixType)
             .trigger($.Event(affixType.replace('affix', 'affixed')))
 
         if (affix == 'bottom') {
-            this.$element.offset({ top: scrollHeight - offsetBottom - this.$element.height() })
+            this.$element.offset({top: scrollHeight - offsetBottom - this.$element.height()})
         }
     }
 
@@ -2616,8 +2683,8 @@
 
     $.fn.smartAffix = function (option) {
         return this.each(function () {
-            var $this   = $(this)
-            var data    = $this.data('bs.affix')
+            var $this = $(this)
+            var data = $this.data('bs.affix')
             var options = typeof option == 'object' && option
 
             if (!data) $this.data('bs.affix', (data = new Affix(this, options)))
@@ -2640,22 +2707,32 @@
 (function ($) {
     Smart.widgetExtend({
         id: "affix",
-        options: "ctx:offset,ctx:target,ctx:of,style"
+        options: "ctx:offset,ctx:target,affixClass",
+        defaultOptions: {
+            affixClass: 's-ui-affix-bar'
+        }
     }, {
         onPrepare: function () {
-            this.S.node.addstyle('s-ui-affix').smartAffix({
-                target: this.options.target,
-                offset: this.options.offset,
-                of: this.options.of
+            var that = this;
+            this.S.node.addClass('s-ui-affix').smartAffix({
+                offset: this.options.offset || (that.S.node.offset().top - that.options.target.offset().top),
+                target: this.options.target
             });
-            if(this.options['style']){
+            this.S.node.on("affix.bs.affix", function (e) {
+                var node = $(e.currentTarget);
+                var offset = that.options.target.offset();
+                node.css({
+                    top: offset.top
+                });
+            });
+            if (this.options['affixClass']) {
                 var that = this;
-                this.S.node.on("affixed.bs.affix", function(e){
+                this.S.node.on("affixed.bs.affix", function (e) {
                     e.stopPropagation();
-                    that.S.node.addClass(that.options['style']);
-                }).on("affixed-top.bs.affix", function(e){
+                    that.S.node.addClass(that.options['affixClass']);
+                }).on("affixed-top.bs.affix", function (e) {
                     e.stopPropagation();
-                    that.S.node.removeClass(that.options['style']);
+                    that.S.node.removeClass(that.options['affixClass']);
                 });
             }
         }
@@ -2676,11 +2753,11 @@
             var that = this;
             this.S.node.delegate(" > * ", "click", function(e){
                 var btn = $(this);
-                if(btn.hasClass(mark_class)) return;
+                if(btn.hasClass(mark_class))
+                    return;
                 var lastBtn = btn.siblings("."+mark_class);
-                lastBtn.size() && lastBtn.removeClass(this.options['activeClass']).removeClass(mark_class);
+                lastBtn.size() && lastBtn.removeClass(that.options['activeClass']).removeClass(mark_class);
                 btn.addClass(mark_class).addClass(that._getBtnActiveClass(btn));
-                e.stopPropagation();
             });
             this.initActivedNode = $(" > *["+actived_attr+"] ", this.S.node).click();
         },
@@ -2710,7 +2787,7 @@
 
     Smart.widgetExtend({
         id: "contextmenu",
-        options: "ctx:target,ctx:filter"
+        options: "ctx:target,ctx:filter,delegate"
     },{
         onPrepare: function(){
             var target = this.options['target'];
@@ -2746,12 +2823,21 @@
             });
         }
     },{
-        bindTarget: function(node){
+        bindTarget: function(node, options){
             var that = this;
-            node.bind("contextmenu", function(e){
-                that.show(e, $(this));
-                return false;
-            });
+            options && (this.widget.contextmenu.options = options);
+            if(this.widget.contextmenu.options.delegate){
+                node.delegate(this.widget.contextmenu.options.delegate, "contextmenu", function(e){
+                    that.show(e, $(e.currentTarget));
+                    return false;
+                })
+            } else {
+                node.bind("contextmenu", function(e){
+                    that.show(e, $(this));
+                    return false;
+                });
+            }
+
         },
         show: function(e, el){
             if(CURRENT_SHOWN_CONTEXTMENU && CURRENT_SHOWN_CONTEXTMENU != this){
@@ -2818,20 +2904,12 @@
             format: "yyyy-mm-dd",
             autoclose: true,
             language: 'zh-CN',
-            showMeridian: 'day',
             minView: 'month',
             todayHighlight: true
         }
     }, {
         onPrepare: function () {
-            var config = this.options.config || {};
-            var that = this;
-            $.each(['format','autoclose','todayHighlight','minView','language','maxView','startView'], function(i, v){
-               if(config[v] == undefined){
-                   config[v] = that.options[v];
-               }
-            });
-            this.S.node.datetimepicker(config);
+            this.S.node.datetimepicker(this.options);
         }
     });
 })(jQuery);
@@ -2955,65 +3033,76 @@
 })();/**
  * Created by Administrator on 2014/6/28.
  */
-(function($){
+(function ($) {
     //表单提交插件，作用于submit按钮，可以实现表单回车提交
     Smart.widgetExtend({
-        id:"form",
+        id: "form",
         options: "ctx:action,ctx:done,ctx:fail,ctx:always",
-        defaultOptions:{
-            method: "post"
+        defaultOptions: {
+            method: "post",
+            enctype: "application/x-www-form-urlencoded"
         }
     }, {
-        onPrepare: function(){
+        onPrepare: function () {
             var that = this;
-            this.options.action =  this.S.node.attr("action") || this.options.action;
-            this.options.method = this.S.node.attr("method") || this.options.method || "post";
-            this.options.enctype = this.S.node.attr("enctype") || this.options.enctype || "application/x-www-form-urlencoded";
-            var submitBtn = this.S.node.find(":submit")
-            this.S.node[0].onsubmit = function(e){
+            this.options.action = this.S.node.attr("action") || this.options.action;
+            this.options.method = this.S.node.attr("method") || this.options.method;
+            this.options.enctype = this.S.node.attr("enctype") || this.options.enctype;
+            var submitBtn = this.S.node.find(":submit");
+            this.S.node[0].onsubmit = function (e) {
                 e.stopPropagation();
-                try{
+                try {
                     Smart.disableNode(submitBtn);
-                    that.S.submit().always(function(){
+                    that.S.submit().always(function () {
                         Smart.disableNode(submitBtn, false);
                     });
-                } catch(e){
+                } catch (e) {
                     Smart.error(e);
                 }
                 return false;
             };
         }
-    },{
-        submit: function(){
+    }, {
+        submit: function () {
             var deferred = $.Deferred();
-            if(!('action' in this.widget.form.options)) {
+            if (!('action' in this.widget.form.options)) {
                 return deferred.resolve();
             }
             var that = this;
 
-            deferred.done(function(rs){
+            deferred.done(function (rs) {
                 that.widget.form.options.done && that.widget.form.options.done.call(that, rs);
-            }).fail(function(){
+            }).fail(function () {
                 that.widget.form.options.fail && that.widget.form.options.fail.apply(that, $.makeArray(arguments));
-            }).always(function(){
+            }).always(function () {
                 that.widget.form.options.always && that.widget.form.options.always.call(that);
             });
 
-            if($.isFunction(this.widget.form.options.action)){//如果定义了submit action，则直接执行该action
-                var actionSubmit = function(){
-                    var result = that.widget.form.options.action.call(that);
-                    if(Smart.isDeferred(result)){//说明是deferred对象
-                        result.done(function(rs){
+            function getSubmitData() {
+                switch (that.widget.form.options.enctype) {
+                    case "multipart/form-data" :
+                        return Smart.formData(that.node);
+                    case "application/x-www-form-urlencoded" :
+                    default:
+                        return Smart.serializeToObject(that.node);
+                }
+            }
+
+            if ($.isFunction(this.widget.form.options.action)) {//如果定义了submit action，则直接执行该action
+                var actionSubmit = function () {
+                    var result = that.widget.form.options.action.call(that, getSubmitData());
+                    if (Smart.isDeferred(result)) {//说明是deferred对象
+                        result.done(function (rs) {
                             deferred.resolve(rs);
-                        }).fail(function(){
+                        }).fail(function () {
                             deferred.reject.call(deferred, $.makeArray(arguments));
                         });
                     } else {
                         deferred.resolve(result);
                     }
                 };
-                if("validate" in this){
-                    this.validate().done(actionSubmit).fail(function(){
+                if ("validate" in this) {
+                    this.validate().done(actionSubmit).fail(function () {
                         deferred.reject();
                     });
                 } else {
@@ -3022,25 +3111,20 @@
 
                 return deferred;
             }
-            var submit = function(){
-                var data;
-                switch(that.widget.form.options.enctype){
-                    case "multipart/form-data" : data = Smart.formData(that.node); break;
-                    case "application/x-www-form-urlencoded" :
-                        data = Smart.serializeToObject(that.node); break;
-                }
-                that[that.widget.form.options.method](that.widget.form.options.action, data).done(function(rs){
+            var submit = function () {
+                var data = getSubmitData();
+                that[that.widget.form.options.method](that.widget.form.options.action, data).done(function (rs) {
                     deferred.resolve(rs);
-                }).fail(function(){
+                }).fail(function () {
                     deferred.reject.call(deferred, $.makeArray(arguments));
                 });
             };
 
             //证明该form是需要验证的
-            if("validate" in this){
-                this.validate().done(function(){
+            if ("validate" in this) {
+                this.validate().done(function () {
                     submit();
-                }).fail(function(){
+                }).fail(function () {
                     deferred.reject();
                 });
             } else {
@@ -3106,16 +3190,16 @@
     //分页控件
     Smart.widgetExtend({
         id: "pagination",
-        options: "pagekey,pageSizeKey,totalKey,showSize,startText,nextText,disabledClass,activeClass,pre,next,action",
+        options: "pagekey,pageSizeKey,totalKey,showSize,startText,endText,disabledClass,activeClass,preText,nextText,action",
         defaultOptions: {
             'pagekey': "page",
             'pageSizeKey': "pageSize",
             'totalKey': "total",
             "showSize": 11,
             "startText": "&laquo;",
-            "nextText": "&raquo;",
-            "pre": "‹",
-            "next": "›",
+            "endText": "&raquo;",
+            "preText": "‹",
+            "nextText": "›",
             "disabledClass": "disabled",
             "activeClass": "active"
         }
@@ -3139,7 +3223,7 @@
                 });
             }
             this.node.append(startPreLi);
-            var preLi = this._createLi(this.widget.pagination.options.pre);
+            var preLi = this._createLi(this.widget.pagination.options.preText);
             if (pi.prePage <= 0) {
                 preLi.addClass(this.widget.pagination.options['disabledClass']);
             } else {
@@ -3161,7 +3245,7 @@
                     that.node.append(pageLi);
                 })(i);
             }
-            var nextLi = this._createLi(this.widget.pagination.options.next);
+            var nextLi = this._createLi(this.widget.pagination.options.nextText);
             if (pi.nextPage <= 0) {
                 nextLi.addClass(this.widget.pagination.options['disabledClass']);
             } else {
@@ -3170,7 +3254,7 @@
                 });
             }
             this.node.append(nextLi);
-            var endNextLi = this._createLi(this.widget.pagination.options['nextText']);
+            var endNextLi = this._createLi(this.widget.pagination.options['endText']);
             if (pi.endNextPage <= pi.endPage) {
                 endNextLi.addClass(this.widget.pagination.options['disabledClass']);
             } else {
@@ -3204,11 +3288,11 @@
     Smart.widgetExtend({
         id: "popover",
         defaultOptions: {
-            trigger: "hover"
+            trigger: "focus"
         }
     }, {
         onPrepare: function () {
-            this.S.node.popover(this.options)
+            this.S.node.popover(this.options);
         }
     });
 })(jQuery);;/**
@@ -3231,7 +3315,7 @@
             this.cache.dataMap = {};
         }
     }, {
-        build: function (datas) {
+        buildSetter: function (datas) {
             datas = datas || [];
             if (!$.isArray(datas)) {
                 var _datas = datas;
@@ -3265,12 +3349,68 @@
             return this.widget.select.cache.dataMap[val];
         }
     });
-})(jQuery);;(function ($) {
+})(jQuery);;/**
+ * Created by nana on 2015/10/8.
+ */
+(function ($) {
+    //options phase
+    var SOURCE_KEY = "_SH_SOURCE_";
+    Smart.widgetExtend({
+        id: "sh",
+        defaultOptions: {
+            phase: "render",
+            sourceNode: null,
+            source: null,
+            brush: "Xml",
+            brushOption: {toolbar: false, 'html-script': true}
+        }
+    }, {
+        onPrepare: function () {
+            if (this.options.phase == "source") {
+                var html = $("<div></div>").append(this.S.node.html());
+                html.find("*[_id_]").each(function(){
+                    var node = $(this);
+                    node.attr("id", node.attr("_id_")).removeAttr("_id_");
+                });
+                html.find("*[s-sh-role]").each(function(){
+                   var node = $(this);
+                    if(node.attr("s-sh-role") == "javascript"){
+                        node.attr('type', "text/javascript");
+                    }
+                    node.removeAttr("s-sh-role");
+                });
+                this.S.node.data(SOURCE_KEY, html.html());
+                return;
+            }
+        },
+        onReady: function(){
+            if (this.options.phase == "render") {
+                var source;
+                if (this.options.sourceNode) {
+                    source = this.options.sourceNode.data(SOURCE_KEY) || this.options.sourceNode.html();
+                } else if(this.options.source){
+                    source = this.options.source;
+                    if($.isFunction(source)){
+                        source = source();
+                    }
+                }
+                else {
+                    source = this.S.node.html();
+                }
+                //var code = source.replace(/</gi, "&lt;").replace(/>/gi, "&gt;");
+                var brush = new SyntaxHighlighter.brushes[this.options.brush]();
+                brush.init(this.options.brushOption);
+                this.S.node.html(brush.getHtml(source));
+            }
+        }
+    });
+})(jQuery);
+;(function ($) {
     Smart.widgetExtend({
         id: "tooltip"
     }, {
         onPrepare: function () {
-            this.S.node.tooltip()
+            this.S.node.tooltip(this.options)
         }
     });
 })(jQuery);
@@ -3281,7 +3421,7 @@
     var VALID_NODE_ERROR_ATTR = Smart.optionAttrName("valid", "error");
     var VALID_NODE_LABEL_ATTR = Smart.optionAttrName("valid", "label");
     var VALID_NODE_WARNING_ATTR = Smart.optionAttrName("valid", "warning");
-    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not('disabled'),*[" + VALID_NODE_WARNING_ATTR + "]:not('disabled')";
+    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not(:disabled),*[" + VALID_NODE_WARNING_ATTR + "]:not(:disabled)";
     var VALID_NODE_ID_ATTR = Smart.optionAttrName("valid", 'id');
     var VALID_NODE_SHOW_ATTR = Smart.optionAttrName("valid", 'show');
     var VALID_NODE_RESET_SHOW_ATTR = Smart.optionAttrName("valid", 'resetShow');
@@ -3317,6 +3457,7 @@
             'successClass': "has-success",
             'errorClass': "has-error",
             'warningClass': "has-warning",
+            notice: null,
             'show': function (node, msg, level) {
                 level = level || LEVELS.error;
                 var item = node.closest(ITEM_ROLE_SELECTOR);
@@ -3334,27 +3475,39 @@
                         node.tooltip('destroy');
                         return;
                     }
+                    function clearTo() {
+                        var tooltipHideTimeout = node.data("tooltip_hide_timeout");
+                        if (tooltipHideTimeout) {
+                            clearTimeout(tooltipHideTimeout);
+                            node.removeData("tooltip_hide_timeout");
+                        }
+                    }
+
+                    function destroyTooltip() {
+                        var hideTimeout = setTimeout(function () {
+                            node.tooltip('destroy');
+                            node.removeData("tooltip_hide_timeout");
+                        }, 3000);
+                        node.data("tooltip_hide_timeout", hideTimeout);
+                    }
+
+                    if (node.data("tooltip_hide_timeout")) {
+                        clearTo();
+                        destroyTooltip();
+                        return;
+                    }
                     node.tooltip({
                         container: node.parent(),
                         title: msg,
-                        trigger: "focus",
+                        trigger: "manual",
                         delay: {"show": 200, "hide": 300}
                     });
                     //this.notice(msg);
                     setTimeout(function () {
                         node.tooltip('show');
+                        clearTo();
                     }, 1);
-                    var tooltipHideTimeout = node.data("tooltip_hide_timeout");
-                    if (tooltipHideTimeout) {
-                        clearTimeout(tooltipHideTimeout);
-                        node.removeData("tooltip_hide_timeout")
-                    }
-                    node.on("shown.bs.tooltip", function () {
-                        var hideTimeout = setTimeout(function () {
-                            node.tooltip('destroy');
-                        }, 3000);
-                        node.data("tooltip_hide_timeout", hideTimeout);
-                    });
+                    node.on("shown.bs.tooltip", destroyTooltip);
                 }
             },
             'resetShow': function (node) {
@@ -3404,10 +3557,11 @@
             var deferreds = [];
             var that = this;
             this.widget.valid.cache.validedNodes = [];
+            var notice = this.widget.valid.options.notice;
             validNodes.each(function () {
                 var node = $(this);
                 deferreds.push(function () {
-                    return that.validateNode(node);
+                    return that.validateNode(node, notice);
                 });
             });
             if (this.widget.valid.options.after) {
@@ -3432,7 +3586,7 @@
             }
             (resetShow || this.widget.valid.options.resetShow).call(this, node);
         },
-        validateNode: function (node) {
+        validateNode: function (node, notice) {
             var id = node.attr(VALID_NODE_ID_ATTR);
             this.widget.valid.cache.validedNodes.push(node);
             var defMsg = this.widget.valid.options.msg[id] || {};
@@ -3469,7 +3623,11 @@
                             deferred.resolve();
                         }).fail(function (result, _level) {
                             level = _level || LEVELS.error;
-                            (show || that.widget.valid.options.show).call(that, node, result || defMsg[level.key + "Msg"] || "", level);
+                            result = result || defMsg[level.key + "Msg"] || "";
+                            (show || that.widget.valid.options.show).call(that, node, result, level);
+                            if (notice) {
+                                notice(node, result, level.key);
+                            }
                             deferred.reject();
                         });
                     return deferred;
@@ -3496,7 +3654,11 @@
                 });
             }
             deferreds.push(function () {
-                (show || that.widget.valid.options.show).call(that, node, defMsg[level.key + "Msg"] || msg || "", level);
+                msg = defMsg[level.key + "Msg"] || msg || "";
+                (show || that.widget.valid.options.show).call(that, node, msg, level);
+                if (notice) {
+                    notice(node, msg, level.key);
+                }
             });
             return Smart.deferredQueue(deferreds);
         }
@@ -4041,66 +4203,6 @@
         }
     });
 })();;/**
- * Created by nana on 2015/8/31.
- */
-(function($){
-
-    Smart.extend({
-        "checkDataSubmit": function(options){
-            options = $.extend({
-                "confirmMsg": "确认进行此操作吗？",
-                "errorMsg": "请选择你要操作的数据？",
-                confirm: true,
-                dataKey: 'ids',
-                dataFilter: "id",
-                method: 'post',
-                url: null,
-                smart: null,
-                done: Smart.noop,
-                fail: Smart.noop
-            }, options || {});
-
-            var smart = options.smart;
-            var deferred = $.Deferred();
-            if(!smart){
-                alert("请配置Smart");
-                return deferred.reject();
-            }
-            if(Smart.isEmpty(options.url)){
-                alert("请配置url");
-                return deferred.reject();
-            }
-            var checkedData;
-            if($.isFunction(options.dataFilter)){
-                checkedData = filter(smart.getChecked());
-            } else {
-                checkedData = smart.getCheckedData(options.dataFilter);
-            }
-            if (Smart.isEmpty(checkedData)) {
-                smart.notice(options.errorMsg, "warning");
-                return deferred.reject();
-            }
-            function doSubmit(){
-                var data = {};
-                data[options.dataKey] = checkedData;
-                return smart[options.method](options.url, data).done(function(){
-                    options.done.apply(smart, $.makeArray(arguments));
-                }).fail(function(){
-                    options.fail.apply(smart, $.makeArray(arguments));
-                });
-            }
-            if(options.confirm){
-                smart.confirm(options.confirmMsg, {sign: "warning"}).done(function(){
-                    Smart.deferredChain(deferred, doSubmit());
-                });
-                return deferred;
-            } else {
-                return doSubmit();
-            }
-        }
-    })
-
-})(jQuery);;/**
  * Created by Administrator on 2014/6/26.
  */
 (function ($) {
@@ -4127,6 +4229,92 @@
 
     Smart.fn.extend({
         confirm: function (msg, option) {
+            var deferred = $.Deferred();
+            var dialog = Smart.UI.template("confirm");
+            var DEFAULT_OPTION = {title: "提示", sureBtnName: "确定", cancelBtnName: "取消", sign: "info"};
+            option = $.extend(DEFAULT_OPTION, option || {});
+            if ($.type(option) == "string") {
+                option = $.extend($.extend({}, DEFAULT_OPTION), {sign: option});
+            }
+            var confirmLevel = ALERT_LEVEL[option.sign] || DEFAULT_LEVEL;
+
+            $("*[s-ui-confirm-role='title']", dialog).html(option.title);
+            $("*[s-ui-confirm-role='message']", dialog).html(msg);
+            $("*[s-ui-confirm-role='sign']", dialog).addClass(confirmLevel.color).addClass(confirmLevel.sign);
+            var sureBtn = $("*[s-ui-confirm-role='sureBtn']", dialog).html(confirmLevel.sureBtnName);
+            var cancelBtn = $("*[s-ui-confirm-role='cancelBtn']", dialog).html(confirmLevel.cancelBtnName);
+            Smart.UI.backdrop();
+            var selectVal = 0;
+            sureBtn.click(function () {
+                selectVal = 1;
+                dialog.modal('hide');
+            });
+            cancelBtn.click(function () {
+                selectVal = 0;
+                dialog.modal('hide');
+            });
+            $(dialog).on("hide.bs.modal", function () {
+                Smart.UI.backdrop(false).done(function () {
+                    deferred[selectVal ? 'resolve' : 'reject']();
+                });
+            }).on("hidden.bs.modal", function () {
+                $(this).remove();
+            }).css('zIndex', Smart.UI.zIndex()).modal({
+                keyboard: false,
+                backdrop: false
+            });
+
+            return deferred;
+        }
+    });
+})(jQuery);;/**
+ * Created by Administrator on 2014/6/26.
+ */
+(function ($) {
+
+    var ALERT_LEVEL = {
+        warning: {
+            sign: "glyphicon glyphicon-exclamation-sign",
+            color: "text-warning"
+        },
+        info: {
+            sign: "glyphicon glyphicon-info-sign",
+            color: "text-info"
+        },
+        success: {
+            sign: "glyphicon glyphicon-ok-sign",
+            color: "text-success"
+        },
+        danger: {
+            sign: "glyphicon glyphicon-remove-sign",
+            color: "text-danger"
+        }
+    };
+    var DEFAULT_LEVEL = ALERT_LEVEL.warning;
+
+    var createBtn = function(btn){
+        var button = $('<button class="btn" type="button"></button>');
+        btn.id && button.attr("s-ui-dialog-btn-id", btn.id);
+        var text = (btn.icon ? "<i class='"+btn.icon+"'></i> " : "") + btn.name;
+        button.html(text);
+        btn.style && button.addClass(btn.style || "btn-default");
+        button.click(function(){
+            button.prop("disabled", true);
+            var rs = btn.click.call(this);
+            if(Smart.isDeferred(rs)){
+                rs.always(function(){
+                    button.prop("disabled", false);
+                })
+            } else {
+                button.prop("disabled", false);
+            }
+        });
+        btn.hidden && button.hide();
+        return button;
+    };
+
+    Smart.fn.extend({
+        dialog: function (msg, option) {
             var deferred = $.Deferred();
             var dialog = Smart.UI.template("confirm");
             var DEFAULT_OPTION = {title: "提示", sureBtnName: "确定", cancelBtnName: "取消", sign: "info"};
@@ -4443,4 +4631,121 @@
         }
     });
 
-})();
+})();;/**
+ * Created by nana on 2015/8/31.
+ */
+(function($){
+
+    Smart.extend({
+        "checkDataSubmit": function(options){
+            options = $.extend({
+                "confirmMsg": "确认进行此操作吗？",
+                "errorMsg": "请选择你要操作的数据？",
+                confirm: true,
+                dataKey: 'ids',
+                dataFilter: "id",
+                method: 'post',
+                url: null,
+                smart: null,
+                done: Smart.noop,
+                fail: Smart.noop
+            }, options || {});
+
+            var smart = options.smart;
+            var deferred = $.Deferred();
+            if(!smart){
+                alert("请配置Smart");
+                return deferred.reject();
+            }
+            if(Smart.isEmpty(options.url)){
+                alert("请配置url");
+                return deferred.reject();
+            }
+            var checkedData;
+            if($.isFunction(options.dataFilter)){
+                checkedData = filter(smart.getChecked());
+            } else {
+                checkedData = smart.getCheckedData(options.dataFilter);
+            }
+            if (Smart.isEmpty(checkedData)) {
+                smart.notice(options.errorMsg, "warning");
+                return deferred.reject();
+            }
+            function doSubmit(){
+                var data = {};
+                data[options.dataKey] = checkedData;
+                return smart[options.method](options.url, data).done(function(){
+                    options.done.apply(smart, $.makeArray(arguments));
+                }).fail(function(){
+                    options.fail.apply(smart, $.makeArray(arguments));
+                });
+            }
+            if(options.confirm){
+                smart.confirm(options.confirmMsg, {sign: "warning"}).done(function(){
+                    Smart.deferredChain(deferred, doSubmit());
+                });
+                return deferred;
+            } else {
+                return doSubmit();
+            }
+        }
+    })
+
+})(jQuery);;(function($){
+
+    Smart.extend({
+        "loading": function(options){
+
+            options = $.extend({
+                "node": null,
+                "thisRef": null,
+                "toggleClass": null,
+                "toggleText": null,
+                "action": $.noop(),
+            }, options || {});
+
+            if(!options.node){
+                Smart.error("错误的node设定");
+                return;
+            }
+            var node = $(options.node);
+            if(options.toggleClass){
+                options.node.addClass(options.toggleClass);
+            }
+            var _node_text;
+            if(options.toggleText){
+                if(node.is("input")){
+                    _node_text = node.val();
+                    node.val(options.toggleText);
+                } else {
+                    _node_text = node.html();
+                    node.html(options.toggleText);
+                }
+            }
+            function reset(){
+                if(options.toggleClass){
+                    node.removeClass(options.toggleClass);
+                }
+                if(options.toggleText){
+                    if(node.is("input")){
+                        node.val(_node_text);
+                    } else {
+                        node.html(_node_text);
+                    }
+                }
+            }
+            var deferred = options.action.call(options.thisRef);
+            if(Smart.isDeferred(deferred)){
+                deferred.always(function(){
+                    reset();
+                });
+            } else {
+                if(options.toggleClass){
+                    reset();
+                }
+            }
+            return deferred;
+        }
+    })
+
+})(jQuery);

@@ -1,0 +1,235 @@
+<meta title="window"/>
+<p class="lead">
+    <code>window</code>是整个ismartjs的核心控件，用于加载模块化的html页面，在加载页面的过程中，会解析页面，将页面中的脚本进行闭包封装，从而使得不同页面之间的变量相对安全，不会形成变量污染。
+</p>
+<h3>定义</h3>
+<code>s="window"</code>
+<h3>参数</h3>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>href</td>
+        <td>String</td>
+        <td></td>
+        <td>
+            <code>window</code>控件加载的url地址。
+        </td>
+    </tr>
+    <tr>
+        <td>args</td>
+        <td>Object</td>
+        <td></td>
+        <td>
+            <code>args</code>是模块页面的参数（<span class="text-danger">该参数并不是加载url传递的参数，而是渲染页面时传递的参数</span>），模块页面的定义请往下看。
+        </td>
+    </tr>
+</table>
+<h3>API</h3>
+<hr/>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>API名</th>
+        <th>返回值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>load(url, args)</td>
+        <td>Deferred</td>
+        <td>
+            将url的页面加载到当前的元素中，<code>args</code>是模块页面的参数（<span class="text-danger">该参数并不是加载url传递的参数，而是渲染页面时传递的参数</span>）
+        </td>
+    </tr>
+    <tr>
+        <td>refresh</td>
+        <td>Deferred</td>
+        <td>刷新当前<code>window</code>页面，调用该方法，会重新加载当前碎片页面</td>
+    </tr>
+    <tr>
+        <td>setMeta(key, value)</td>
+        <td></td>
+        <td>设置当前模块页面的meta信息，该方法会触发<code>meta</code>事件</td>
+    </tr>
+    <tr>
+        <td>scrollTo(selector)</td>
+        <td>Deferred</td>
+        <td>
+            滚动当前模块页面到<code>selector</code>的元素，selector是标准的css选择器。
+        </td>
+    </tr>
+    <tr>
+        <td>preClose()</td>
+        <td>Deferred</td>
+        <td>
+            预关闭当前碎片页面，该方法会监听当前碎片页面注册的页面关闭监听器，判断是否允许关闭页面。调用代码如<code>S.preClose().done(function(){S.close()})</code>
+        </td>
+    </tr>
+    <tr>
+        <td>open(url, args)</td>
+        <td>Deferred</td>
+        <td>
+            该方法触发一个<code>open</code>事件，以便layouts页面监听到该事件，从而打开相应的页面，调用代码如<code>S.open('window.html')</code>，<a
+                href="javascript:;" s-click="S.open('window.html?id=1')">点击我</a>
+        </td>
+    </tr>
+    <tr>
+        <td>close()</td>
+        <td></td>
+        <td>
+            关闭当前模块页面，<a
+                href="javascript:;" s-click="S.close()">关闭页面</a>
+        </td>
+    </tr>
+    <tr>
+        <td>closeWithConfirm()</td>
+        <td></td>
+        <td>
+            通过确认的方式关闭页面，调用该方法关闭页面的时候，会调用<code>preClose</code>方法进行确认关闭后再调用<code>close</code>方法。
+        </td>
+    </tr>
+    <tr>
+        <td>onBeforeClose(fn)</td>
+        <td></td>
+        <td>
+            注册页面关闭监听事件，当参数fn返回<code>Deferred</code>对象的时候，当该deferred对象<code>resolve</code>的时候，才会关闭页面。
+        </td>
+    </tr>
+    <tr>
+        <td>S(selector)</td>
+        <td>Smart</td>
+        <td>
+            根据css选择器<code>selector</code>获取当前碎片页面中的jQuery对象的Smart对象。
+        </td>
+    </tr>
+    <tr>
+        <td>N(selector)</td>
+        <td>jQuery</td>
+        <td>
+            根据css选择器<code>selector</code>获取当前碎片页面中的jQuery对象。
+        </td>
+    </tr>
+    <tr>
+        <td>action(script)</td>
+        <td></td>
+        <td>
+            将script脚本在当前闭包中进行运行，并返回运行后的值。
+        </td>
+    </tr>
+</table>
+<h3>鼠标事件定义</h3>
+<p class="lead">
+    模块化页面的html标签中的鼠标事件不能使用浏览器原生的事件进行定义，那样无法使得事件代码在当前的闭包中运行，window控件提供了另外的定义方式进行鼠标事件声明。目前window控件提供了如下的事件定义：
+</p>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>事件定义</th>
+        <td>说明</td>
+    </tr>
+    <tr>
+        <td>s-click</td>
+        <td>
+            鼠标点击事件，声明如<code>s-click='S.alert("hello iSmartJs")'</code>
+        </td>
+    </tr>
+    <tr>
+        <td>s-change</td>
+        <td>
+            change事件，声明如<code>s-change='S.alert("hello iSmartJs")'</code>
+        </td>
+    </tr>
+    <tr>
+        <td>s-focus</td>
+        <td>
+        </td>
+    </tr>
+    <tr>
+        <td>s-blur</td>
+        <td>
+        </td>
+    </tr>
+    <tr>
+        <td>s-dblclick</td>
+        <td>
+        </td>
+    </tr>
+    <tr>
+        <td>s-mouseover</td>
+        <td>
+        </td>
+    </tr>
+    <tr>
+        <td>s-mousemove</td>
+        <td>
+        </td>
+    </tr>
+    <tr>
+        <td>s-mouseout</td>
+        <td>
+        </td>
+    </tr>
+    <tr>
+        <td>s-mouseleave</td>
+        <td>
+        </td>
+    </tr>
+</table>
+<h4>鼠标事件中的this引用</h4>
+<p class="lead">通过上述属性定义的鼠标事件中，<code>this</code>引用都指向当前事件元素的Smart对象，我们可以通过this引用获取到当前事件的对象。
+    如：<code>&lt;input type='button' class='btn' value="点击我" s-click="this.node.toggleClass('btn-success')" /&gt;</code> <input type='button' class='btn btn-default' value="点击我" s-click="this.node.toggleClass('btn-success')" /></p>
+<h3>模块化页面</h3>
+<p class="lead"><code>ismartjs</code>与其他RIA开发框架不同的是，<code>ismartjs</code>将开发过程中的所有view通过模块化页面来定义，这些模块化页面在需要的时候通过<code
+        >window</code>控件来加载进来，所有模块页面都由<code>meta</code>、<code>js脚本</code>、<code>html</code>组成。</p>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>组成名称</th>
+        <td>说明</td>
+    </tr>
+    <tr>
+        <th>meta</th>
+        <td>
+            <code>meta</code>用于定义模块页面的元数据信息，定义如下：
+            <ul>
+                <li><code>title</code>：模块页面的标题</li>
+                <li><code>args</code>：模块页面的参数，该参数可以在页面脚本中直接通过变量名进行调用，多个参数通过<code>,</code>隔开,如：<code>&lt;meta args='arg1,arg2' &gt;</code></li>
+                <li><code>template</code>：该页面是否是模板页面，如果设置为<code>true</code>，那么会认为模块化页面整体上是一个模板页面，加载的时候会先进行模板解析输出。</li>
+                <li><code>width</code>：页面的宽度，在使用<code>S.popupOpen</code>方法打开时，该参数有效</li>
+                <li><code>single</code>：当前页面是否是单例，默认为<code>true</code>，当该值设置为<code>false</code>时，对于ismartjs框架可以打开多个相同的页面，否则只能打开单个的页面。</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <th>js脚本</th>
+        <td>
+            js脚本通过标准的<code>script</code>标签来进行定义，模块页面的js脚本其实封装在一个闭包当中，使得多个模块页面中的变量不会形成污染，保证了页面的独立性，并且使得在开发
+            模块页面过程中，不需要担心与其他页面的变量名进行冲突。
+        </td>
+    </tr>
+    <tr>
+        <th>html</th>
+        <td>
+            <code>html</code>定义模块页面的显示。
+        </td>
+    </tr>
+</table>
+<h3>模块页面示例，加载<code>window0.html</code> </h3>
+<div  id="window0" class="bs-example" s="sh" s-sh="{phase:'source'}">
+    <div s="window" s-window="{href:'doc/widgets/window0.html', args: {arg1:'hello', arg2: 'ismartjs'}}" id="window0Page"></div>
+</div>
+<div class="highlight" >
+    <h4>window控件定义为：</h4>
+    <div s="sh" s-sh="{sourceNode: S.N('#window0')}"></div>
+    <h4>window0.html页面源码为：</h4>
+    <div s="sh" s-sh="{brush:'JScript'}" s-data="Smart.deferDelegate(S.get('doc/widgets/window0.html', null, 'text'), Smart.encodeHtml)"></div>
+</div>
+<h3>页面传参和<code>meta</code>中的<code>args</code>定义</h3>
+<p class="lead"><code>args</code>定义了当前页面载入时需要传入的参数，该参数作为当前页面闭包脚本中默认的变量来使用。如window0.html页面的<code>meta</code>中定义了
+    <code>args="arg1,arg2"</code>两个参数，那么页面的脚本中就有两个预定的变量<code>arg1</code>、<code>arg2</code>，我们通过<code>s-window="{href:'doc/widgets/window0.html', args: {arg1:'hello', arg2: 'ismartjs'}}"</code>传入参数，
+    或者通过API调用<code>load('doc/widgets/window0.html', {arg1: 'hello', arg2:'ismartjs'})</code>、<code>S.open('doc/widgets/window0.html', {arg1: 'hello', arg2:'ismartjs'})</code>，
+    <code>S.popupOpen('doc/widgets/window0.html', {arg1: 'hello', arg2:'ismartjs'})</code>打开页面来传入参数。</p>
+<h3>页面JS脚本</h3>
+<p class="lead">页面js脚本定义了该页面的动作行为，页面脚本中有一个非常重要的预定变量<code>S</code>，该变量代表当前的页面的<code>Smart</code>对象，该对象扩展自<code>window</code>控件，除了拥有<cdoe>Smart</cdoe>默认的API之外，也拥有了<code>window</code>
+控件扩展的api，我们可以通过<code>S</code>变量来操作当前页面。</p>
