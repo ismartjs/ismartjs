@@ -1,0 +1,83 @@
+<meta title="弹出页面" />
+<h2>S.popupOpen(url, args)</h2>
+<p class="lead">弹出层打开模块页面</p>
+<h4>参数</h4>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>url</td>
+        <td>String</td>
+        <td></td>
+        <td>打开的模块页面的url</td>
+    </tr>
+    <tr>
+        <td>args</td>
+        <td>object</td>
+        <td></td>
+        <td>
+            传递给模块页面的参数
+        </td>
+    </tr>
+</table>
+<h4>示例</h4>
+<div  id="popupSource" class="bs-example" s="sh" s-sh="{phase:'source'}">
+    <input s-click="popupOpen()" type="button" class="btn btn-sm btn-success" value="打开页面" />
+    <script type="text/plain" s-sh-role="javascript">
+        function popupOpen(){
+            S.popupOpen('doc/api/popupOpen-example.html', {arg1: 'hello', arg2: 'iSmartJs'}).done(function(rs){
+                if(rs){
+                    S.alert("页面返回值为：" + JSON.stringify(rs));
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        function popupOpen(){
+            S.popupOpen('doc/api/popupOpen-example.html', {arg1: 'hello', arg2: 'iSmartJs'}).done(function(rs){
+                if(rs){
+                    S.alert("页面返回值为：" + JSON.stringify(rs));
+                }
+            });
+        }
+    </script>
+</div>
+<div class="highlight" >
+    <h4>window控件定义为：</h4>
+    <div s="sh" s-sh="{sourceNode: S.N('#popupSource'), brush: 'JScript'}"></div>
+    <h4>popupOpen-example.html页面源码为：</h4>
+    <div s="sh" s-sh="{brush:'JScript'}" s-data="Smart.deferDelegate(S.get('doc/api/popupOpen-example.html', null, 'text'), Smart.encodeHtml)"></div>
+</div>
+<h4>定义弹出页面的按钮</h4>
+<p class="lead">我们在打开模板页面的脚本里面定义<code>S.meta.btns</code>即可定义弹出页面的按钮，如上述示例的<code>popupOpen-example.html</code>页面所示，按钮定义格式为：</p>
+<div s="sh" s-sh="{brush:'JScript'}">
+    {
+    id: 'button id', //非必需
+    name: '按钮名称',
+    style: '按钮class',
+    click: function(){
+    //按钮点击时执行的动作
+    }
+    }
+</div>
+<blockquote class="text-warning">按钮<code>click</code>方法的<code>this</code>引用为当前点击按钮的jQuery对象。</blockquote>
+<h2>弹出页面的API</h2>
+<p class="lead">如果一个模块页面通过popupOpen打开，那么该页面的预定义变量<code>S</code>就可以获得如下API</p>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>API</th>
+        <th>返回值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>getButtonById</td>
+        <td><code>jQuery</code></td>
+        <td>
+            根据id获取按钮，返回按钮的jQuery对象。
+        </td>
+    </tr>
+</table>

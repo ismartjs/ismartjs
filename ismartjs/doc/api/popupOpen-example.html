@@ -1,0 +1,23 @@
+<meta title="欢迎使用iSmartJs" width="500px" args="arg1,arg2" />
+<div style="padding: 20px;">
+    <div class="alert alert-warning">欢迎使用iSmartJs, <span s s-data="arg1"></span> <span s s-data="arg2"></span></div>
+    <script type="text/javascript">
+
+        //这里定义弹出页面的按钮
+        S.meta.btns = [
+            {
+                name: "确定",
+                style: "btn btn-primary",
+                click: function(){
+                    S.close({tip: '这里是返回值'});
+                }
+            },
+            {
+                name: "关闭",
+                click: function(){
+                    S.close();
+                }
+            }
+        ];
+    </script>
+</div>

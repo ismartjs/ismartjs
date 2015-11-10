@@ -10,7 +10,7 @@
         <div class="sidebar-fold"></div>
         <div id="menuPanel" s="tpl" class="sidebar-menu-panel">
             {% $.each(this.menus, function(i, menu){ %}
-            <div class="sidebar-nav">
+            <div class="sidebar-nav {%if(this.open === false){out.print('menu-close');}%}">
                 {%if(menu.children && menu.children.length){%}
                 <div class="sidebar-title">
                     <div class="sidebar-title-inner"><span

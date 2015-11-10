@@ -178,7 +178,7 @@ dest/
                 "title": "",
                 "url": "", //menu加载的模块页面url
                 "icon": "", //menu的icon
-                "open": true | false, //是否默认打开，如果为true默认打开。
+                "open": true | false, //是否默认打开，如果为true默认打开，对于拥有children的菜单来说，当该值为false的时候，关闭显示子菜单列表。
                 "children": [ ... ] //子菜单，让子菜单不为空的时候，当前菜单的url定义无效。
             }
         ]
@@ -235,7 +235,7 @@ dest/
     <hr />
     <p class="lead">模块化页面的具体定义请参考<input type="button" class="btn btn-success btn-sm" value="window控件" s-click="S.open('widgets/window.html')" />，这里简要概述一下</p>
     <div s="sh">
-        &lt;meta title="..." width="..." single='true|false' /&gt;
+        &lt;meta title="..." width="..." single='true|false' args='...' /&gt;
         &lt;div&gt;
             ...
         &lt;/div&gt;

@@ -7,13 +7,38 @@
     "open": "true"
   },
   {
-    "id": "DEMO",
-    "title": "DEMOS",
+    "id": "API",
+    "title": "API",
     "children": [
       {
-        "id": "demo_grid",
-        "title": "Grid",
-        "url": "doc/demo/grid.html"
+        "id": "API_POPUPOPEN",
+        "title": "弹出页面",
+        "url": "doc/api/popupOpen.html"
+      },
+      {
+        "id": "API_UPLOAD",
+        "title": "文件上传",
+        "url": "doc/api/upload.html"
+      },
+      {
+        "id": "API_CORE",
+        "title": "核心API",
+        "url": "doc/api/core.html"
+      },
+      {
+        "id": "API_interaction",
+        "title": "交互API",
+        "url": "doc/api/interaction.html"
+      },
+      {
+        "id": "API_AJAX",
+        "title": "AJAX API",
+        "url": "doc/api/ajax.html"
+      },
+      {
+        "id": "API_UTILS",
+        "title": "utils API",
+        "url": "doc/api/utils.html"
       }
     ]
   },
@@ -50,6 +75,11 @@
         "id": "WIDGETS_datac",
         "title": "子控件赋值(datac)",
         "url": "doc/widgets/datac.html"
+      },
+      {
+        "id": "WIDGETS_check",
+        "title": "选择控件(check)",
+        "url": "doc/widgets/check.html"
       }
     ]
   },

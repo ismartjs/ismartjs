@@ -1,0 +1,161 @@
+<meta title="选择控件(check)" />
+<p class="lead"><code>check</code>控件提供了选项选择的功能，如Grid的行选择功能就可以使用该控件</p>
+<h2>声明</h2>
+<code>s="check"</code>
+<h2>参数</h2>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>turn</td>
+        <td>String</td>
+        <td>on</td>
+        <td>
+            是否开启选择，如果该参数为off则关闭选择功能。
+        </td>
+    </tr>
+    <tr>
+        <td>checkedStyle</td>
+        <td>String</td>
+        <td>warning</td>
+        <td>
+            当选项被选中的时候，为选项添加的class
+        </td>
+    </tr>
+    <tr>
+        <td>multiple</td>
+        <td>boolean</td>
+        <td>true</td>
+        <td>
+            是否开启多选，默认开启，当为false的时候，则为单选
+        </td>
+    </tr>
+    <tr>
+        <td>checkallHandler</td>
+        <td>jQuery</td>
+        <td></td>
+        <td>
+            全选的按钮，默认为空
+        </td>
+    </tr>
+    <tr>
+        <td>handlerCheckStyle</td>
+        <td>String</td>
+        <td></td>
+        <td>
+            行选择句柄被选中时添加的class
+        </td>
+    </tr>
+    <tr>
+        <td>path</td>
+        <td>boolean</td>
+        <td>false</td>
+        <td>
+            路径选择，当选项有父子路径的时候，该选项可用，如TreeGrid的父子选项的选择。
+        </td>
+    </tr>
+</table>
+<h2>API</h2>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>方法名</th>
+        <th>返回值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>turn('on'|'off')</td>
+        <td></td>
+        <td>
+            打开和关闭是选择功能。on是开启，off是关闭
+        </td>
+    </tr>
+    <tr>
+        <td>checkAll()</td>
+        <td></td>
+        <td>
+            全选
+        </td>
+    </tr>
+    <tr>
+        <td>uncheckAll()</td>
+        <td></td>
+        <td>
+            取消全选
+        </td>
+    </tr>
+    <tr>
+        <td>getChecked(type)</td>
+        <td>[]</td>
+        <td>
+            获取选择的行列表，如果参数type为<code>node</code>的时候，则返回选择行的jQuery对象列表，否则返回行的Smart对象列表。
+        </td>
+    </tr>
+    <tr>
+        <td>getCheckedData(field)</td>
+        <td>[]</td>
+        <td>
+            获取行选择的数据列表，如果field不为空时，返回每行数据的field属性值。
+        </td>
+    </tr>
+</table>
+<h2>定义选项</h2>
+<p class="lead">使用<code>s-check-role='i'</code>属性来定义选择控件的选项，当声明该元素的子元素中有<code>s-check-role="h"</code>属性的元素，那么点击该子元素才会选中该选项</p>
+<h2>定义全选按钮</h2>
+<p class="lead">在选择控件的子元素中拥有属性<code>s-check-role='checkall-h'</code>的子元素即为全选按钮。或者使用api来进行全选操作。</p>
+<h2>示例</h2>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="shSource" >
+    <div class="s-ui-grid-action">
+        <input type="button" class="btn btn-info btn-sm" value="获取选中数据" s-click="getCheckDatas()" />
+        <input type="button" class="btn btn-danger btn-sm" value="禁用选择" s-click='S.S("#provinceGrid").turn("off")' />
+        <input type="button" class="btn btn-success btn-sm" value="激活选择" s-click='S.S("#provinceGrid").turn("on")' />
+    </div>
+    <table s="check" id="provinceGrid" class="table table-striped table-hover" style="width: 100%;">
+        <thead>
+        <tr>
+            <th><input type="checkbox" s-check-role="checkall-h"/></th>
+            <th>ID</th>
+            <th style="width: 30%;">省份名</th>
+            <th style="width: 70%;">状态</th>
+        </tr>
+        </thead>
+        <tbody s="loop" s-data="Smart.deferDelegate(S.get('/rest/regions/0'), function(rs){return rs.slice(0, 10)})" id="provinceLoop">
+        <tr s-loop-role="row" s="datac,row" s-check-role="i">
+            <td><input type="checkbox" s-check-role="h"/></td>
+            <td s s-data-filter="'id'"></td>
+            <td s s-data-filter="'name'"></td>
+            <td s="tpl">
+                {%if(this.status == 'VALID'){%}
+                <span class="label label-success">可用</span>
+                {%} else {%}
+                <span class="label label-default">不可用</span>
+                {%}%}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <script type="text/plain" s-sh-role="javascript">
+        function getCheckDatas(){
+            var datas = S.S("#provinceGrid").getCheckedData();
+            if(datas.length == 0){
+                S.notice("您还没有选择省份，请先选择", 'danger');
+                return;
+            }
+            S.alert(JSON.stringify(datas));
+        }
+    </script>
+    <script type="text/javascript">
+        function getCheckDatas(){
+            var datas = S.S("#provinceGrid").getCheckedData();
+            if(datas.length == 0){
+                S.notice("您还没有选择省份，请先选择", 'danger');
+                return;
+            }
+            S.alert(JSON.stringify(datas));
+        }
+    </script>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource')}"></div>

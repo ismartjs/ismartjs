@@ -1,0 +1,126 @@
+<meta title="交互API"/>
+<h2>S.alert(msg, level, option)</h2>
+<hr/>
+<p class="lead">警告框，返回值为<code>Deferred</code>对象</p>
+<h4>参数</h4>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>msg</td>
+        <td>String</td>
+        <td>显示的信息</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>level</td>
+        <td>String</td>
+        <td><code>info</code></td>
+        <td>提示的级别，可选值为<code>info</code>，<code>warning</code>，<code>success</code>，<code>danger</code></td>
+    </tr>
+    <tr>
+        <td>option</td>
+        <td>Object</td>
+        <td>
+<pre>
+{
+    title: '提示',
+    btnName: '确定'
+}
+</pre>
+        </td>
+        <td>
+            <code>title</code>alert框的标题，<code>btnName</code>alert框的确定按钮的显示文字。
+        </td>
+    </tr>
+</table>
+<h4>示例</h4>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="alertSource">
+    <input type="button" class="btn btn-sm btn-info" value="info提示" s-click="S.alert('欢迎使用iSmartJs');"/>
+    <input type="button" class="btn btn-sm btn-warning" value="warning提示"
+           s-click="S.alert('欢迎使用iSmartJs', 'warning');"/>
+    <input type="button" class="btn btn-sm btn-danger" value="danger提示" s-click="S.alert('欢迎使用iSmartJs', 'danger');"/>
+    <input type="button" class="btn btn-sm btn-success" value="success提示"
+           s-click="S.alert('欢迎使用iSmartJs', 'success');"/>
+    <input type="button" class="btn btn-sm btn-info" value="回掉提示"
+           s-click="S.alert('欢迎使用iSmartJs', 'success').done(function(){S.notice('您关闭了alert')});"/>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#alertSource')}"></div>
+<h2>S.confirm(msg, option)</h2>
+<hr/>
+<p class="lead">确认框，返回值为<code>Deferred对象</code></p>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>msg</td>
+        <td>String</td>
+        <td></td>
+        <td>提示的消息</td>
+    </tr>
+    <tr>
+        <td>option</td>
+        <td>Object</td>
+        <td>
+<pre>
+{
+    title: "提示",
+    sureBtnName: "确定",
+    cancelBtnName: "取消",
+    sign: "info"
+}
+</pre>
+        </td>
+        <td><code>sign</code>的可选值为<code>info</code>，<code>warning</code>，<code>success</code>，<code>danger</code></td>
+    </tr>
+</table>
+<h4>示例</h4>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="confirmSource">
+    <input type="button" class="btn btn-sm btn-info" value="打开确认框"
+           s-click="S.confirm('欢迎使用iSmartJs').done(function(){S.notice('您点击了确定按钮')});"/>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#confirmSource')}"></div>
+<h2>S.notice(msg, level, holdTime)</h2>
+<p class="lead">信息通知</p>
+<h4>参数</h4>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>msg</td>
+        <td>String</td>
+        <td></td>
+        <td>提示的消息</td>
+    </tr>
+    <tr>
+        <td>level</td>
+        <td>String</td>
+        <td><code>info</code></td>
+        <td>提示的级别，可选值为<code>info</code>，<code>warning</code>，<code>success</code>，<code>danger</code></td>
+    </tr>
+    <tr>
+        <td>holdTime</td>
+        <td>int</td>
+        <td><code>3000</code></td>
+        <td>持续时间</td>
+    </tr>
+</table>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="noticeSource">
+    <input type="button" class="btn btn-sm btn-info" value="Info通知" s-click="S.notice('欢迎使用iSmartJs');"/>
+    <input type="button" class="btn btn-sm btn-success" value="Success通知" s-click="S.notice('欢迎使用iSmartJs', 'success');"/>
+    <input type="button" class="btn btn-sm btn-warning" value="Warning通知" s-click="S.notice('欢迎使用iSmartJs', 'warning');"/>
+    <input type="button" class="btn btn-sm btn-danger" value="Danger通知" s-click="S.notice('欢迎使用iSmartJs', 'danger');"/>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#noticeSource')}"></div>

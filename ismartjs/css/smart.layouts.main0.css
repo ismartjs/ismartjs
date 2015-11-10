@@ -230,11 +230,13 @@
 
 .main-left-sidebar .sidebar-nav .sidebar-title {
     height: 40px;
-    background: #22282e;
+    background: #3F464C;
     color: #fff;
     line-height: 40px;
     position: relative;
     cursor: pointer;
+    border-top: 1px solid #535454;
+    border-bottom: 1px solid #2E2F30;
     -webkit-user-select: none;
     -moz-user-select: none;
 }

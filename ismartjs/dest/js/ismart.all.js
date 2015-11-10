@@ -4153,19 +4153,19 @@
 })(jQuery);;(function(){
     var ALERT_LEVEL = {
         warning: {
-            sign: "glyphicon glyphicon-exclamation-sign",
+            sign: "fa fa-exclamation-triangle",
             color: "text-warning"
         },
         info: {
-            sign: "glyphicon glyphicon-info-sign",
+            sign: "fa fa-info-circle",
             color: "text-info"
         },
         success: {
-            sign: "glyphicon glyphicon-ok-sign",
+            sign: "fa fa-check-circle",
             color: "text-success"
         },
         danger: {
-            sign: "glyphicon glyphicon-remove-sign",
+            sign: "fa fa-times-circle",
             color: "text-danger"
         }
     };
@@ -4209,19 +4209,19 @@
 
     var ALERT_LEVEL = {
         warning: {
-            sign: "glyphicon glyphicon-exclamation-sign",
+            sign: "fa fa-exclamation-triangle",
             color: "text-warning"
         },
         info: {
-            sign: "glyphicon glyphicon-info-sign",
+            sign: "fa fa-info-circle",
             color: "text-info"
         },
         success: {
-            sign: "glyphicon glyphicon-ok-sign",
+            sign: "fa fa-check-circle",
             color: "text-success"
         },
         danger: {
-            sign: "glyphicon glyphicon-remove-sign",
+            sign: "fa fa-times-circle",
             color: "text-danger"
         }
     };
@@ -4274,19 +4274,19 @@
 
     var ALERT_LEVEL = {
         warning: {
-            sign: "glyphicon glyphicon-exclamation-sign",
+            sign: "fa fa-exclamation-triangle",
             color: "text-warning"
         },
         info: {
-            sign: "glyphicon glyphicon-info-sign",
+            sign: "fa fa-info-circle",
             color: "text-info"
         },
         success: {
-            sign: "glyphicon glyphicon-ok-sign",
+            sign: "fa fa-check-circle",
             color: "text-success"
         },
         danger: {
-            sign: "glyphicon glyphicon-remove-sign",
+            sign: "fa fa-times-circle",
             color: "text-danger"
         }
     };
@@ -4357,19 +4357,19 @@
 
     var ALERT_LEVEL = {
         warning: {
-            sign: "glyphicon glyphicon-exclamation-sign",
+            sign: "fa fa-exclamation-triangle",
             color: "alert alert-warning"
         },
         info: {
-            sign: "glyphicon glyphicon-info-sign",
+            sign: "fa fa-info-circle",
             color: "alert alert-info"
         },
         success: {
-            sign: "glyphicon glyphicon-ok-sign",
+            sign: "fa fa-check-circle",
             color: "alert alert-success"
         },
         danger: {
-            sign: "glyphicon glyphicon-remove-sign",
+            sign: "fa fa-times-circle",
             color: "alert alert-danger"
         }
     };

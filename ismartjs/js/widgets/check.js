@@ -9,10 +9,11 @@
     var CHECKED_ATTR = "s_check_checked";
     var CHECKED_CLASS = "s-ui-check-checked";
     var CHECK_ROW_IG_SELECTOR = "*[" + Smart.optionAttrName('check', 'ig') + "]";
+    var CHECK_DISABLE_ATTR = "s-check-role-disabled";
     //选中控件
     Smart.widgetExtend({
         id: "check",
-        options: "checkedStyle, turn, multiple, ctx:checkallHandler, handlerCheckStyle, path",
+        options: "checkedStyle,turn, multiple, ctx:checkallHandler, handlerCheckStyle, path",
         defaultOptions: {
             "turn": "on",
             "checkedStyle": "warning",
@@ -67,8 +68,12 @@
         turn: function (type) {
             this.widget.check.options.turn = type;
             if (type != "on") {
+                $(CHECK_ITEM_SELECTOR, this.node).attr(CHECK_DISABLE_ATTR, '');
+                $("*[s-check-role='checkall-h']", this.node).prop("disabled", true);
                 $(CHECK_ITEM_HANDLER_SELECTOR, this.node).prop("disabled", true);
             } else {
+                $(CHECK_ITEM_SELECTOR, this.node).removeAttr(CHECK_DISABLE_ATTR);
+                $("*[s-check-role='checkall-h']", this.node).prop("disabled", false);
                 $(CHECK_ITEM_HANDLER_SELECTOR, this.node).prop("disabled", false);
             }
         },
@@ -86,7 +91,7 @@
         checkAll: function () {
             this._checkHandlesByFlag(true);
             var that = this;
-            $(CHECK_ITEM_SELECTOR, this.node).each(function () {
+            $(CHECK_ITEM_SELECTOR+":not(["+CHECK_DISABLE_ATTR+"])", this.node).each(function () {
                 that._checkNode($(this));
             });
         },
