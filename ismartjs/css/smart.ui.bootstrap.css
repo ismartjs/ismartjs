@@ -425,6 +425,7 @@ select.input-sm, .input-sm {
 
 .modal {
     overflow-y: auto;
+    word-wrap: break-word;
 }
 
 .inline-block {

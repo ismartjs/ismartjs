@@ -1,0 +1,127 @@
+<meta title="文件上传"/>
+<h2>S.upload(url, node, uploadListener)</h2>
+<p class="lead">文件上传，该文件上传是通过ajax上传的</p>
+<h4>参数</h4>
+<table class="table table-bordered table-striped bs-param-table">
+    <tr>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <td>url</td>
+        <td>String</td>
+        <td></td>
+        <td>上传的url</td>
+    </tr>
+    <tr>
+        <td>node</td>
+        <td>jQuery</td>
+        <td></td>
+        <td>
+            文件域的jQuery对象或者form表单的jQuery对象。
+        </td>
+    </tr>
+    <tr>
+        <td>uploadListener</td>
+        <td>function</td>
+        <td></td>
+        <td>
+            文件上传的监听器，该监听器有默认实现。
+        </td>
+    </tr>
+</table>
+<h2>示例</h2>
+<div id="uploadSource" class="bs-example" s="sh" s-sh="{phase:'source'}">
+    <form class="form-inline">
+        <input type="file" name="file" class="form-control" id="file" s-change="uploadFile(this.node)"/>
+        <script type="text/plain" s-sh-role="javascript">
+            function uploadFile(node) {
+                S.upload('/rest/upload', node).done(function(rs){
+                    S.alert("文件上传信息：" + JSON.stringify(rs));
+                });
+            }
+        </script>
+        <script type="text/javascript">
+            function uploadFile(node) {
+                S.upload('/rest/upload', node).done(function(rs){
+                    S.alert("文件上传信息：" + JSON.stringify(rs));
+                });
+            }
+        </script>
+    </form>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#uploadSource'), brush: 'JScript'}"></div>
+<h2>自定义文件上传监听器</h2>
+<h4>文件上传监听器的格式为：</h4>
+<div s="sh" s-sh="{brush:'JScript'}">
+    {
+        onBegin: function(){
+            //准备上传
+        },
+        onProgress: function(percent, total, loaded){
+            //上传中
+        },
+        onDone: function(){
+            //上传完成
+        }
+    }
+</div>
+<h2>示例</h2>
+<div id="uploadSource0" class="bs-example" s="sh" s-sh="{phase:'source'}">
+    <form class="form-inline">
+        <div class="form-group">
+            <input type="file" name="file" class="form-control" s-change="uploadFile1(this.node)"/> <span class="label label-warning" id="percentNode" style="display: none"></span>
+        </div>
+        <script type="text/plain" s-sh-role="javascript">
+            var percentNode = S.N("#percentNode");
+            function uploadFile1(node) {
+                var listener = {
+                    onBegin: function(){
+                        percentNode.text("0%").show();
+                    },
+                    onProgress: function(percent, total, loaded){
+                        //上传中
+                        percentNode.text(percent + '%');
+                        if(percent == 100){
+                            percentNode.addClass('alert-success');
+                        }
+                    },
+                    onDone: function(){
+                        //上传完成
+                        S.notice('文件上传完成', 'success');
+                    }
+                };
+                S.upload('/rest/upload', node, listener).done(function(rs){
+                    S.alert("文件上传信息：" + JSON.stringify(rs));
+                });
+            }
+        </script>
+        <script type="text/javascript">
+            var percentNode = S.N("#percentNode");
+            function uploadFile1(node) {
+                var listener = {
+                    onBegin: function(){
+                        percentNode.text("0%").show();
+                    },
+                    onProgress: function(percent, total, loaded){
+                        //上传中
+                        percentNode.text(percent + '%');
+                        if(percent == 100){
+                            percentNode.addClass('alert-success');
+                        }
+                    },
+                    onDone: function(){
+                        //上传完成
+                        S.notice('文件上传完成', 'success');
+                    }
+                };
+                S.upload('/rest/upload', node, listener).done(function(rs){
+                    S.alert("文件上传信息：" + JSON.stringify(rs));
+                });
+            }
+        </script>
+    </form>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#uploadSource0'), brush: 'JScript'}"></div>

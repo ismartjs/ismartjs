@@ -14,6 +14,7 @@ express.appConfig(function (app, express) {
     app.set('view engine', 'html');
     app.set('views', './');
     app.use(bodyParser.urlencoded());
+    app.use(bodyParser());
     app.use(function (req, res, next) {
         var path = req.path;
         if (/^\/rest\/.+$/g.test(path)) {
