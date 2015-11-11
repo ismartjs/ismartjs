@@ -12,6 +12,12 @@ module.exports = function (app) {
             });
     });
 
+    app.get("/rest/region/:id", function (req, res) {
+        Region.getById(req.params.id).done(function (rs) {
+            res.send(rs);
+        });
+    });
+
     app.delete("/rest/region", function (req, res) {
         var ids = req.body.ids;
         var deferredFns = [];

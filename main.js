@@ -5,7 +5,7 @@ express.config({
 });
 
 var dao = require("./lib/db")(require("./db.config.js"));
-//require("./lib/model").dao(dao);
+require("./lib/model").dao(dao);
 
 var bodyParser = require('body-parser');
 
