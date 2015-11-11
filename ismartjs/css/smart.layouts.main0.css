@@ -95,9 +95,9 @@
     z-index: 1;
     font-size: 12px;
     border-radius: 0;
-    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .topbar .dropdown .dropdown-menu {
@@ -107,7 +107,7 @@
     margin-top: 1px;
 }
 
-.topbar .dropdown .dropdown-menu-btn{
+.topbar .dropdown .dropdown-menu-btn {
     height: 40px;
     border-bottom: 1px solid #eaedf1;
 }
@@ -128,10 +128,9 @@
     transition: transform .2s ease-out;
 }
 
-.topbar .topbar-nav-menu a{
+.topbar .topbar-nav-menu a {
     padding: 0px 14px 0px 20px;
 }
-
 
 .topbar .topbar-nav-menu.open {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
@@ -217,7 +216,7 @@
     left: 0;
 }
 
-.main-left-sidebar .sidebar-menu-panel{
+.main-left-sidebar .sidebar-menu-panel {
     position: absolute;
     top: 40px;
     bottom: 0px;
@@ -241,7 +240,7 @@
     -moz-user-select: none;
 }
 
-.main-left-sidebar .sidebar-nav.menu-close > ul{
+.main-left-sidebar .sidebar-nav.menu-close > ul {
     height: 0px !important;
     overflow: hidden;
 }
@@ -269,7 +268,7 @@
     right: 0;
 }
 
-.main-left-sidebar .sidebar-nav .sidebar-manage .caret{
+.main-left-sidebar .sidebar-nav .sidebar-manage .caret {
     transition: transform 0.12s;
     -o-transition: -o-transform 0.12s;
     -ms-transition: -ms-transform 0.12s;
@@ -277,7 +276,7 @@
     -webkit-transition: -webkit-transform 0.12s;
 }
 
-.main-left-sidebar .sidebar-nav.menu-close .sidebar-manage .caret{
+.main-left-sidebar .sidebar-nav.menu-close .sidebar-manage .caret {
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
@@ -291,7 +290,6 @@
     border-bottom: 1px solid #242A30;
 }
 
-
 .main-left-sidebar .sidebar-nav li a {
     display: block;
     width: 100%;
@@ -300,7 +298,7 @@
     overflow: hidden;
 }
 
-.main-left-sidebar .sidebar-nav  li.active a {
+.main-left-sidebar .sidebar-nav li.active a {
     background: #0099cc;
 }
 
@@ -355,7 +353,8 @@
     position: relative;
     height: 35px;
     width: 140px;
-    box-shadow: 1px 1px 3px #888;
+    box-shadow: -1px -1px 1px #999, 1px 0px 1px #999;
+    margin-right: 4px;
 }
 
 .window-tabs li.ui-sortable-placeholder {
@@ -414,7 +413,7 @@
     -webkit-transition: -webkit-transform 0.3s;
 }
 
-.window-tabs li.closeable > div:hover{
+.window-tabs li.closeable > div:hover {
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
