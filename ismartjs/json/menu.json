@@ -7,6 +7,11 @@
     "open": "true"
   },
   {
+    "id": "demo",
+    "title": "常用DEMO",
+    "url": "doc/demo/demo.html"
+  },
+  {
     "id": "API",
     "title": "API",
     "children": [
