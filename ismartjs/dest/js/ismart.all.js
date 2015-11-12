@@ -337,17 +337,12 @@
                 defer.reject.apply(defer, $.makeArray(arguments));
             });
         },
-        deferDelegate: function (deferred) {
-            var _deferred = $.Deferred();
-            if (Smart.isDeferred(deferred)) {
-                deferred.done(function () {
-                    _deferred.resolve.apply(_deferred, $.makeArray(arguments));
-                }).fail(function () {
-                    _deferred.reject.apply(_deferred, $.makeArray(arguments));
-                });
-                return _deferred;
+        deferDelegate: function (obj) {
+            if (Smart.isDeferred(obj)) {
+                return obj;
             }
-            return _deferred.resolve();
+            var _deferred = $.Deferred();
+            return _deferred.resolve(obj);
         },
         map: function (datas, key) {
             var _datas = [];
