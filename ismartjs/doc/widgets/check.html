@@ -122,7 +122,7 @@
             <th style="width: 70%;">状态</th>
         </tr>
         </thead>
-        <tbody s="loop" s-data="Smart.deferDelegate(S.get('/rest/regions/0'), function(rs){return rs.slice(0, 10)})" id="provinceLoop">
+        <tbody s="loop" s-data="Smart.dataTransfer(S.get('/rest/regions/0'), function(rs){return rs.slice(0, 10)})" id="provinceLoop">
         <tr s-loop-role="row" s="datac,row" s-check-role="i">
             <td><input type="checkbox" s-check-role="h"/></td>
             <td s s-data-filter="'id'"></td>

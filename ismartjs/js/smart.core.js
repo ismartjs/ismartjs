@@ -209,17 +209,12 @@
                 defer.reject.apply(defer, $.makeArray(arguments));
             });
         },
-        proxyDeferred: function (deferred) {
-            var _deferred = $.Deferred();
-            if (Smart.isDeferred(deferred)) {
-                deferred.done(function () {
-                    _deferred.resolve.apply(_deferred, $.makeArray(arguments));
-                }).fail(function () {
-                    _deferred.reject.apply(_deferred, $.makeArray(arguments));
-                });
-                return _deferred;
+        deferDelegate: function (obj) {
+            if (Smart.isDeferred(obj)) {
+                return obj;
             }
-            return _deferred.resolve();
+            var _deferred = $.Deferred();
+            return _deferred.resolve(obj);
         },
         map: function (datas, key) {
             var _datas = [];
@@ -233,7 +228,7 @@
             }
             return _datas;
         },
-        deferDelegate: function(rs, fn, ref){
+        dataTransfer: function(rs, fn, ref){
             if (Smart.isDeferred(rs)) {
                 var deferred = $.Deferred();
                 rs.done(function (_rs) {
@@ -261,7 +256,7 @@
                 return _data[adapter];
             }
 
-            return Smart.deferDelegate(rs, adapt);
+            return Smart.dataTransfer(rs, adapt);
         },
         /**
          * 清理json反序列化后的引用问题，该问题可能来自于fastjson序列化后的json。
@@ -290,7 +285,7 @@
             }
 
             return function(obj){
-                return Smart.deferDelegate(obj, clean);
+                return Smart.dataTransfer(obj, clean);
             }
         })(),
         encodeHtml: (function () {
@@ -556,7 +551,6 @@
             if (children.size() == 0)
                 return Smart.of();
             var smart = Smart.of();
-            var that = this;
             $.map(children, function (child) {
                 child = $(child);
                 if (child.attr(CONST.SMART_ATTR_KEY) !== undefined) {
@@ -1102,7 +1096,7 @@
                     this.__SMART__DATA__ = value;
                 }
                 var that = this;
-                return Smart.proxyDeferred(this.dataSetter.apply(this, value)).done(function () {
+                return Smart.deferDelegate(this.dataSetter.apply(this, value)).done(function () {
                     that.trigger("s-data");
                 });
             },
@@ -1130,7 +1124,7 @@
                     this.__SMART_BUILD_DATA__ = value;
                 }
                 var that = this;
-                return Smart.proxyDeferred(this.buildSetter.apply(this, value)).done(function () {
+                return Smart.deferDelegate(this.buildSetter.apply(this, value)).done(function () {
                     that.trigger("s-build");
                 });
             },
@@ -1150,7 +1144,7 @@
                 if (Smart.isDeferred(buildData)) {
                     var that = this;
                     buildData.done(function (data) {
-                        Smart.proxyDeferred(that.build(data)).done(function () {
+                        Smart.deferDelegate(that.build(data)).done(function () {
                             deferred.resolve();
                         }).fail(function () {
                             deferred.reject();
@@ -1160,7 +1154,7 @@
                     })
                 } else {
                     var deferred = $.Deferred();
-                    Smart.proxyDeferred(this.build(buildData)).done(function () {
+                    Smart.deferDelegate(this.build(buildData)).done(function () {
                         deferred.resolve();
                     }).fail(function () {
                         deferred.reject();
@@ -1193,7 +1187,7 @@
                 if ($.isPlainObject(dataValue) && Smart.isDeferred(dataValue)) {
                     var that = this;
                     dataValue.done(function (data) {
-                        Smart.proxyDeferred(that.data(data)).done(function () {
+                        Smart.deferDelegate(that.data(data)).done(function () {
                             deferred.resolve();
                         }).fail(function () {
                             deferred.reject();
@@ -1202,7 +1196,7 @@
                         deferred.reject();
                     })
                 } else {
-                    Smart.proxyDeferred(this.data(dataValue)).done(function () {
+                    Smart.deferDelegate(this.data(dataValue)).done(function () {
                         deferred.resolve();
                     }).fail(function () {
                         deferred.reject();

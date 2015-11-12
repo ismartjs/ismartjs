@@ -34,11 +34,6 @@
         "id": "API_AJAX",
         "title": "AJAX API",
         "url": "doc/api/ajax.html"
-      },
-      {
-        "id": "API_UTILS",
-        "title": "utils API",
-        "url": "doc/api/utils.html"
       }
     ]
   },

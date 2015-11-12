@@ -223,7 +223,7 @@
     <h4>window控件定义为：</h4>
     <div s="sh" s-sh="{sourceNode: S.N('#window0')}"></div>
     <h4>window0.html页面源码为：</h4>
-    <div s="sh" s-sh="{brush:'JScript'}" s-data="Smart.deferDelegate(S.get('doc/widgets/window0.html', null, 'text'), Smart.encodeHtml)"></div>
+    <div s="sh" s-sh="{brush:'JScript'}" s-data="Smart.dataTransfer(S.get('doc/widgets/window0.html', null, 'text'), Smart.encodeHtml)"></div>
 </div>
 <h2>页面传参和<code>meta</code>中的<code>args</code>定义</h2>
 <p class="lead"><code>args</code>定义了当前页面载入时需要传入的参数，该参数作为当前页面闭包脚本中默认的变量来使用。如window0.html页面的<code>meta</code>中定义了

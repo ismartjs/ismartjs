@@ -337,7 +337,7 @@
                 defer.reject.apply(defer, $.makeArray(arguments));
             });
         },
-        proxyDeferred: function (deferred) {
+        deferDelegate: function (deferred) {
             var _deferred = $.Deferred();
             if (Smart.isDeferred(deferred)) {
                 deferred.done(function () {
@@ -361,7 +361,7 @@
             }
             return _datas;
         },
-        deferDelegate: function(rs, fn, ref){
+        dataTransfer: function(rs, fn, ref){
             if (Smart.isDeferred(rs)) {
                 var deferred = $.Deferred();
                 rs.done(function (_rs) {
@@ -389,7 +389,7 @@
                 return _data[adapter];
             }
 
-            return Smart.deferDelegate(rs, adapt);
+            return Smart.dataTransfer(rs, adapt);
         },
         /**
          * 清理json反序列化后的引用问题，该问题可能来自于fastjson序列化后的json。
@@ -418,7 +418,7 @@
             }
 
             return function(obj){
-                return Smart.deferDelegate(obj, clean);
+                return Smart.dataTransfer(obj, clean);
             }
         })(),
         encodeHtml: (function () {
@@ -684,7 +684,6 @@
             if (children.size() == 0)
                 return Smart.of();
             var smart = Smart.of();
-            var that = this;
             $.map(children, function (child) {
                 child = $(child);
                 if (child.attr(CONST.SMART_ATTR_KEY) !== undefined) {
@@ -1230,7 +1229,7 @@
                     this.__SMART__DATA__ = value;
                 }
                 var that = this;
-                return Smart.proxyDeferred(this.dataSetter.apply(this, value)).done(function () {
+                return Smart.deferDelegate(this.dataSetter.apply(this, value)).done(function () {
                     that.trigger("s-data");
                 });
             },
@@ -1258,7 +1257,7 @@
                     this.__SMART_BUILD_DATA__ = value;
                 }
                 var that = this;
-                return Smart.proxyDeferred(this.buildSetter.apply(this, value)).done(function () {
+                return Smart.deferDelegate(this.buildSetter.apply(this, value)).done(function () {
                     that.trigger("s-build");
                 });
             },
@@ -1278,7 +1277,7 @@
                 if (Smart.isDeferred(buildData)) {
                     var that = this;
                     buildData.done(function (data) {
-                        Smart.proxyDeferred(that.build(data)).done(function () {
+                        Smart.deferDelegate(that.build(data)).done(function () {
                             deferred.resolve();
                         }).fail(function () {
                             deferred.reject();
@@ -1288,7 +1287,7 @@
                     })
                 } else {
                     var deferred = $.Deferred();
-                    Smart.proxyDeferred(this.build(buildData)).done(function () {
+                    Smart.deferDelegate(this.build(buildData)).done(function () {
                         deferred.resolve();
                     }).fail(function () {
                         deferred.reject();
@@ -1321,7 +1320,7 @@
                 if ($.isPlainObject(dataValue) && Smart.isDeferred(dataValue)) {
                     var that = this;
                     dataValue.done(function (data) {
-                        Smart.proxyDeferred(that.data(data)).done(function () {
+                        Smart.deferDelegate(that.data(data)).done(function () {
                             deferred.resolve();
                         }).fail(function () {
                             deferred.reject();
@@ -1330,7 +1329,7 @@
                         deferred.reject();
                     })
                 } else {
-                    Smart.proxyDeferred(this.data(dataValue)).done(function () {
+                    Smart.deferDelegate(this.data(dataValue)).done(function () {
                         deferred.resolve();
                     }).fail(function () {
                         deferred.reject();
@@ -1502,10 +1501,11 @@
     var CHECKED_ATTR = "s_check_checked";
     var CHECKED_CLASS = "s-ui-check-checked";
     var CHECK_ROW_IG_SELECTOR = "*[" + Smart.optionAttrName('check', 'ig') + "]";
+    var CHECK_DISABLE_ATTR = "s-check-role-disabled";
     //选中控件
     Smart.widgetExtend({
         id: "check",
-        options: "checkedStyle, turn, multiple, ctx:checkallHandler, handlerCheckStyle, path",
+        options: "checkedStyle,turn, multiple, ctx:checkallHandler, handlerCheckStyle, path",
         defaultOptions: {
             "turn": "on",
             "checkedStyle": "warning",
@@ -1560,8 +1560,12 @@
         turn: function (type) {
             this.widget.check.options.turn = type;
             if (type != "on") {
+                $(CHECK_ITEM_SELECTOR, this.node).attr(CHECK_DISABLE_ATTR, '');
+                $("*[s-check-role='checkall-h']", this.node).prop("disabled", true);
                 $(CHECK_ITEM_HANDLER_SELECTOR, this.node).prop("disabled", true);
             } else {
+                $(CHECK_ITEM_SELECTOR, this.node).removeAttr(CHECK_DISABLE_ATTR);
+                $("*[s-check-role='checkall-h']", this.node).prop("disabled", false);
                 $(CHECK_ITEM_HANDLER_SELECTOR, this.node).prop("disabled", false);
             }
         },
@@ -1579,7 +1583,7 @@
         checkAll: function () {
             this._checkHandlesByFlag(true);
             var that = this;
-            $(CHECK_ITEM_SELECTOR, this.node).each(function () {
+            $(CHECK_ITEM_SELECTOR+":not(["+CHECK_DISABLE_ATTR+"])", this.node).each(function () {
                 that._checkNode($(this));
             });
         },
@@ -4619,7 +4623,7 @@
                     xhr.upload.addEventListener("progress", function(e){
                         if (e.lengthComputable) {
                             var percentComplete = e.loaded * 100 / e.total;
-                            listener.onProgress(percentComplete, e.total, e.loaded);
+                            listener.onProgress(parseInt(percentComplete), e.total, e.loaded);
                         }
                     }, false);
                     return xhr;
