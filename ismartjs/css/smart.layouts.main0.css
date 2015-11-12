@@ -227,9 +227,13 @@
     overflow-x: hidden;
 }
 
+.main-left-sidebar .sidebar-nav{
+    text-shadow: 1px 1px 1px #000;
+}
+
 .main-left-sidebar .sidebar-nav .sidebar-title {
     height: 40px;
-    background: #3F464C;
+    background: #3c434c;
     color: #fff;
     line-height: 40px;
     position: relative;
@@ -299,7 +303,7 @@
 }
 
 .main-left-sidebar .sidebar-nav li.active a {
-    background: #0099cc;
+    background: #37424f;
 }
 
 .main-left-sidebar .sidebar-nav li a:hover {
