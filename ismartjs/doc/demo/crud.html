@@ -1,0 +1,137 @@
+<meta title="DEMO(CRUD)"/>
+<form class="form-inline" id="userSearchForm" s="form"
+      s-form="{action: function(){S.N('#page').val(1); userGrid.refresh();}}">
+    <input type="text" name="name" class="form-control" placeholder="用户名"/>
+    <input type="text" name="phone" class="form-control" placeholder="手机号"/>
+    <select s="select" id="province" name="province_id"
+            s-build="S.get('rest/regions/0')"
+            s-change="S.S('#city').refresh().done(function(){S.N('#city').change()})"
+            class="form-control">
+        <option value="">选择省份</option>
+    </select>
+    <select s="select" id="city" name="city_id"
+            s-build="S.get('rest/regions/' + (S.N('#province').val() == '' ? -1 : S.N('#province').val()))"
+            s-change="S.S('#district').refresh()"
+            class="form-control">
+        <option value="">选择城市</option>
+    </select>
+    <select s="select" id="district" name="district_id"
+            s-build="S.get('rest/regions/' + (S.N('#city').val() == '' ? -1 : S.N('#city').val()))"
+            class="form-control">
+        <option value="">选择城市</option>
+    </select>
+    <select s="select" name="status" class="form-control">
+        <option value="">所有状态</option>
+        <option value="VALID">可用</option>
+        <option value="INVALID">冻结</option>
+    </select>
+    <input type="hidden" name="page" value="1" id="page"/>
+    <input type="hidden" name="pageSize" value="20"/>
+    <input type="hidden" name="order" value="id desc"/>
+    <input type="submit" class="btn btn-success" value="查找"/>
+</form>
+<div class="s-ui-grid-action">
+    <input type="button" class="btn btn-sm btn-info" value="新建" s-click="createUser()"/>
+    <input type="button" class="btn btn-sm btn-danger" value="删除" s-click="deleteUsers()"/>
+</div>
+<table s="check,nda,datac" s-data="S.get('/rest/users', S.N('#userSearchForm').serialize())" id="userGrid"
+       class="table table-striped table-hover" style="width: 100%;">
+    <thead>
+    <tr>
+        <th><input type="checkbox" s-check-role="checkall-h"/></th>
+        <th>AVATAR</th>
+        <th style="width: 10%;">用户名</th>
+        <th style="width: 10%;">年龄</th>
+        <th style="width: 10%;">性别</th>
+        <th style="width: 10%;">电话</th>
+        <th style="width: 10%;">地址</th>
+        <th style="width: 15%;">创建时间</th>
+        <th style="width: 15%;">更新时间</th>
+        <th style="width: 10%;">状态</th>
+        <th style="width: 10%;" class="text-right">操作</th>
+    </tr>
+    </thead>
+    <tbody s="loop" s-data-filter="'results'">
+    <tr s-loop-role="empty">
+        <td colspan="11">
+            <div class="s-ui-none-data-info text-center"><i class="fa fa-info-circle text-info"></i> 未查询到用户</div>
+        </td>
+    </tr>
+    <tr s-loop-role="loading">
+        <td colspan="11">
+            <div class="text-center" style="padding: 20px;"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>
+        </td>
+    </tr>
+    <tr s-loop-role="row" s-check-role="i" s="datac,row">
+        <td><input type="checkbox" s-check-role="h"/></td>
+        <td s="tpl"><img src="{%=this.avatar%}" style="max-width: 50px; max-height: 50px;"/></td>
+        <td name="username"></td>
+        <td name="age"></td>
+        <td s="tpl">
+                <span>
+                {%if(this.gender){%}
+                男
+                {%} else {%}
+                女
+                {%}%}
+                </span>
+        </td>
+        <td name="phone"></td>
+        <td>
+            <span name="provinceName"></span><span name="cityName"></span><span name="provinceName"></span><span
+                name="address"></span>
+        </td>
+        <td name="create_time"></td>
+        <td name="update_time"></td>
+        <td s="tpl">
+            {%if(this.status == 'VALID'){%}
+            <span class="label label-success">可用</span>
+            {%}else{%}
+            <span class="label label-warning">冻结</span>
+            {%}%}
+        </td>
+        <td class="text-right">
+            <input type="button" class="btn btn-sm btn-link" s-click="editUser(this)" value="编辑"/>
+        </td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td colspan="11" class="s-ui-pagination-wrapper">
+            <ul s="pagination" id="userBillPagination"
+                s-pagination="{action:function(){S.N('#page').val(this); userGrid.refresh()}}"
+                class="pagination pagination-sm pull-right" style="margin: 0">
+            </ul>
+            <div class="s-ui-pagination-info pull-right">共有<span name="total"></span>条记录</div>
+        </td>
+    </tr>
+    </tfoot>
+</table>
+<script type="text/javascript">
+    var userGrid = S.S('#userGrid');
+
+    function createUser() {
+        S.popupOpen('doc/demo/user-add.html').done(function (flag) {
+            flag && userGrid.refresh();
+        })
+    }
+
+    function deleteUsers() {
+        var ids = userGrid.getCheckedData('id');
+        if (ids.length == 0) {
+            S.notice("请选择需要删除的用户", 'warning');
+            return;
+        }
+        S.confirm("确认删除所选用户吗？").done(function () {
+            S.remove("/rest/user/" + ids.join(",")).done(function () {
+                userGrid.refresh();
+            });
+        });
+    }
+
+    function editUser(s) {
+        S.popupOpen("doc/demo/user-edit.html", {user: s.parent().data()}).done(function(user){
+            user && s.parent().data(user);
+        })
+    }
+</script>

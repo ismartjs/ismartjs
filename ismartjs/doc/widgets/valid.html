@@ -187,6 +187,30 @@
             当该值为true的时候，表单域的blur事件不会触发验证。
         </td>
     </tr>
+    <tr>
+        <td>s-valid-msg</td>
+        <td>object</td>
+        <td>
+            个性化定制当前node的验证消息，该消息会覆盖掉全局的验证消息配置。格式为：
+            <div s="sh" s-sh="{brush:'JScript'}">
+                {
+                    error: {
+                        require: { // require为验证器的名称
+                            0: '该输入不能为空', // 0 表示验证失败
+                            1: '输入正确' //1表示验证成功
+                        },
+                        ...
+                    },
+                    warning: {
+                        require: {
+                            0: '该输入不建议为空'
+                        },
+                        ...
+                    }
+                }
+            </div>
+        </td>
+    </tr>
 </table>
 <h4>使用<code>s-valid-role="item"</code>定义验证项</h4>
 <p class="lead">默认的验证结果会通过bootstrap的<code>tooltip</code>显示在表单域上面，如果我们想要把结果显示在某个dom元素内，那么就需要通过该属性去定义一个验证项，
@@ -208,6 +232,37 @@
     </form>
 </div>
 <div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource1')}"></div>
+<h4>使用<code>s-valid-warning</code>验证密码强度</h4>
+<div class="bs-example" id="shSource2" s="sh" s-sh="{phase:'source'}">
+    <form s="valid" class="form-horizontal" style="width: 600px;">
+        <div class="form-group has-feedback" s-valid-role="item">
+            <label class="col-sm-2">密码：</label>
+
+            <div class="col-sm-10">
+                <input type="text" s-valid-error="require(),len(6,12)"
+                       s-valid-warning="regex(/(?=.*[a-zA-Z])(?=.*[0-9])/g),regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*\W)/g)"
+                       s-valid-msg="{
+                           warning: {
+                                regex: {
+                                    '0': '密码强度弱'
+                                },
+                                'regex#1': {
+                                    '0': '密码强度中'
+                                }
+                           },
+                           successMsg: '密码强度强'
+                       }"
+                       name="password" class="form-control"
+                       placeholder="不能为空"/>
+                <span s-valid-role="msg" class="help-block"></span>
+                <span class="fa fa-check form-control-feedback s-valid-feedback-success"></span>
+                <span class="fa fa-exclamation-triangle form-control-feedback s-valid-feedback-warning"></span>
+                <span class="fa fa-close form-control-feedback s-valid-feedback-error"></span>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#shSource2')}"></div>
 <h2>api</h2>
 <hr/>
 <table class="table table-bordered table-striped bs-param-table">

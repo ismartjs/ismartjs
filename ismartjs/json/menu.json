@@ -8,8 +8,15 @@
   },
   {
     "id": "demo",
-    "title": "常用DEMO",
-    "url": "doc/demo/demo.html"
+    "title": "DEMO",
+    "children": [
+      {
+        "id": "DEMO_CRUD",
+        "title": "DEMO(CRUD)",
+        "url": "doc/demo/crud.html",
+        "open": "true"
+      }
+    ]
   },
   {
     "id": "API",

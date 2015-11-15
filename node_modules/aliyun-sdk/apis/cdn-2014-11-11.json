@@ -1,0 +1,513 @@
+{
+  "format": "pop",
+  "apiVersion": "2014-11-11",
+  "checksumFormat": "md5",
+  "endpointPrefix": "cdn",
+  "serviceAbbreviation": "CDN",
+  "serviceFullName": "Aliyun CDN",
+  "signatureVersion": "pop",
+  "timestampFormat": "top",
+  "xmlnamespace": "",
+  "operations": {
+    "refreshObjectCaches": {
+      "name": "RefreshObjectCaches",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "RefreshObjectCaches"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "ObjectPath": {
+            "required": true,
+            "type": "string"
+          },
+          "ObjectType": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "startCdnDomain": {
+      "name": "StartCdnDomain",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "StartCdnDomain"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "DomainName": {
+            "required": true,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "stopCdnDomain": {
+      "name": "StopCdnDomain",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "StopCdnDomain"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "DomainName": {
+            "required": true,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "describeCdnMonitorData": {
+      "name": "DescribeCdnMonitorData",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "DescribeCdnMonitorData"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "DomainName": {
+            "required": true,
+            "type": "string"
+          },
+          "StartTime": {
+            "type": "string"
+          },
+          "EndTime": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "describeCdnService": {
+      "name": "DescribeCdnService",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "DescribeCdnService"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "describeOneMinuteData": {
+      "name": "DescribeOneMinuteData",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "DescribeOneMinuteData"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "DomainName": {
+            "required": true,
+            "type": "string"
+          },
+          "DataTime": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "describeRefreshTasks": {
+      "name": "DescribeRefreshTasks",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "DescribeRefreshTasks"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "TaskId": {
+            "type": "string"
+          },
+          "ObjectPath": {
+            "type": "string"
+          },
+          "PageNumber": {
+            "type": "integer"
+          },
+          "PageSize": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "describeUserDomains": {
+      "name": "DescribeUserDomains",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "DescribeUserDomains"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "PageSize": {
+            "type": "integer"
+          },
+          "PageNumber": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "modifyCdnService": {
+      "name": "ModifyCdnService",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "ModifyCdnService"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "InternetChargeType": {
+            "required": true,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "openCdnService": {
+      "name": "OpenCdnService",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "OpenCdnService"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "InternetChargeType": {
+            "required": true,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "pushObjectCache": {
+      "name": "PushObjectCache",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "PushObjectCache"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "ObjectPath": {
+            "required": true,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "addCdnDomain": {
+      "name": "AddCdnDomain",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "AddCdnDomain"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "DomainName": {
+            "required": true,
+            "type": "string"
+          },
+          "SslFlag": {
+            "type": "string"
+          },
+          "SourceType": {
+            "required": true,
+            "type": "string"
+          },
+          "CdnType": {
+            "required": true,
+            "type": "string"
+          },
+          "Sources": {
+            "required": true,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "deleteCdnDomain": {
+      "name": "DeleteCdnDomain",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "DeleteCdnDomain"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "DomainName": {
+            "required": true,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "describeCdnDomainBaseDetail": {
+      "name": "DescribeCdnDomainBaseDetail",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "DescribeCdnDomainBaseDetail"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "DomainName": {
+            "required": true,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "describeCdnDomainDetail": {
+      "name": "DescribeCdnDomainDetail",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "DescribeCdnDomainDetail"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "DomainName": {
+            "required": true,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "describeCdnDomainLogs": {
+      "name": "DescribeCdnDomainLogs",
+      "http": {
+        "method": "POST",
+        "uri": "/"
+      },
+      "input": {
+        "type": "structure",
+        "members": {
+          "Action": {
+            "required": true,
+            "default": "DescribeCdnDomainLogs"
+          },
+          "OwnerId": {
+            "type": "integer"
+          },
+          "ResourceOwnerAccount": {
+            "type": "string"
+          },
+          "ResourceOwnerId": {
+            "type": "integer"
+          },
+          "DomainName": {
+            "required": true,
+            "type": "string"
+          },
+          "LogDay": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

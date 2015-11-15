@@ -5,6 +5,7 @@
     "main": "main.js",
     "dependencies": {
         "express": "",
+        "aliyun-sdk": "",
         "serve-favicon": "",
         "morgan": "~1.0.0",
         "cookie-parser": "~1.0.1",

@@ -1,0 +1,8 @@
+dist/
+samples/
+test/
+tools/
+bower_components/
+
+test*
+
