@@ -1,3 +1,4 @@
+<meta args="loginFlag" />
 <div s="window" id="mainWindow">
 
 </div>
@@ -19,6 +20,11 @@
     var loginDiv = S.N("#loginDiv");
 
     S.on("s-ready", function () {
+
+        if(loginFlag){
+            mainWindow.load('layouts/main0.html', Page);
+            return;
+        }
 
         loginPanel.load('html/login-panel.html');
         loginDiv.show();

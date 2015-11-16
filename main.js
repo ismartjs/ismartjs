@@ -22,12 +22,14 @@ express.appConfig(function (app, express) {
             return;
         }
         if (path == "/") {
-            path = "/index.html";
+            path = "ismartjs/default.html";
+        } else {
+            path = "ismartjs/" + path;
         }
         if (path.indexOf(".html") != -1) {
-            res.render('ismartjs' + path);
+            res.render(path);
         } else {
-            res.sendFile(path, {root: __dirname + '/ismartjs'});
+            res.sendFile(path, {root: __dirname });
         }
     });
 });
