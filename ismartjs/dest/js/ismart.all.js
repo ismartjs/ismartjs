@@ -3422,6 +3422,7 @@
     var VALID_NODE_WARNING_ATTR = Smart.optionAttrName("valid", "warning");
     var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not(:disabled),*[" + VALID_NODE_WARNING_ATTR + "]:not(:disabled)";
     var VALID_NODE_ID_ATTR = Smart.optionAttrName("valid", 'id');
+    var VALID_NODE_MSG = Smart.optionAttrName("valid", 'msg');
     var VALID_NODE_SHOW_ATTR = Smart.optionAttrName("valid", 'show');
     var VALID_NODE_RESET_SHOW_ATTR = Smart.optionAttrName("valid", 'resetShow');
     var VALID_NODE_BLUR_IG_ATTR = Smart.optionAttrName("valid", "blur-ig");
@@ -3588,7 +3589,11 @@
         validateNode: function (node, notice) {
             var id = node.attr(VALID_NODE_ID_ATTR);
             this.widget.valid.cache.validedNodes.push(node);
-            var defMsg = this.widget.valid.options.msg[id] || {};
+            var nodeMsgAttrStr = node.attr(VALID_NODE_MSG);
+            var defMsg = {};
+            if(nodeMsgAttrStr){
+                defMsg = this.context('(' + nodeMsgAttrStr + ')');
+            }
             var errorExp = node.attr(VALID_NODE_ERROR_ATTR);
             var label = node.attr(VALID_NODE_LABEL_ATTR);
             var deferreds = [];
@@ -3638,7 +3643,7 @@
                 deferreds.push(function () {
                     var deferred = $.Deferred();
                     var warningMsg = defMsg['warning'] || {};
-                    executeExp(that, node, warningExp, warningMsg, validateItem, validateItemMap).always(function (result, level) {
+                    executeExp(that, node, warningExp, warningMsg, validateItem, validateItemMap, LEVELS.warning).always(function (result, level) {
                         msg = result;
                         deferred.resolve();
                     }).done(function (result, _level) {
@@ -3702,11 +3707,11 @@
 
     //require:true,len(6,12),eq(ctx:S.N('#aaaaa').val())
 
-    function executeExp(smart, node, exp, nodeMsg, item, validateItemMap) {
+    function executeExp(smart, node, exp, nodeMsg, item, validateItemMap, level) {
         var validSegs = getValidSegs(exp);
         var deferred = $.Deferred();
         var validMsg = "";
-        var msgLevel = LEVELS.error
+        var msgLevel = level || LEVELS.error
 
         function processMsg(validation, msg) {
             if (msg == null) {
@@ -3783,18 +3788,10 @@
                     count++;
                 }
                 methodCount[method] = count;//method计数
-                var methodCountMsg = nodeMsg[method + "#" + count] || {};
-                var methodMsg = nodeMsg[method] || {};
-                var msg = methodCountMsg.msg || methodMsg.msg || "";
-
-                //默认的success code 是 1
-                var successCode = methodCountMsg.successCode || methodMsg.successCode || "1";
-
-                msg = $.extend($.extend({}, validator.msg), msg);
-
+                msg = $.extend($.extend({}, validator.msg), nodeMsg[method + "#" + count] || nodeMsg[method] || {});
                 function processSuccess(msgStr) {
                     msgLevel = LEVELS.success;
-                    processMsg(validation, msgStr || msg[successCode]);
+                    processMsg(validation, msgStr || msg['1']);
                     //如果验证成功，并且不继续往下验证，则中断验证。
                     if (validation.interrupted()) {
                         resolve();
@@ -3803,28 +3800,28 @@
                     validate(i + 1);
                 }
 
-                if (rs == successCode) {
+                if (rs == 1) {
                     processSuccess();
                     return;
                 } else if ($.type(rs) == "object" && 'done' in rs) {
                     rs.done(function (code, _msg) {
-                        if (code == successCode) {
+                        if (code == 1) {
                             msgLevel = LEVELS.success;
                             processSuccess(_msg);
                         } else {
-                            msgLevel = LEVELS.error;
+                            msgLevel = level;
                             processMsg(validation, _msg || msg[code]);//这里只显示错误提示
                             //处理msg消息
                             reject();
                         }
                     });
                 } else {
-                    msgLevel = LEVELS.error;
+                    msgLevel = level;
                     processMsg(validation, msg[rs]);
                     return reject();
                 }
             } else {
-                msgLevel = LEVELS.error;
+                msgLevel = level;
                 return reject();
             }
         }
