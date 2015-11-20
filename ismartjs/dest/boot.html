@@ -21,11 +21,21 @@
 
     S.on("s-ready", function () {
 
+        /**
+         * 在这里实现自己的登录代码，请参考下面的ajax check登录的说明以及代码，等号线标记中的代码，你的修改的时候请删除掉
+         * ===============================================================================================
+         * */
+        /**
+         * loginFlag是为了配合default.html加载的时候直接进入主布局页面而设定的特殊参数，你在修改的时候，请去掉这里。
+         * */
         if(loginFlag){
             mainWindow.load('layouts/main0.html', Page);
             return;
         }
 
+        /**
+         * 这里直接加载登录页，做demo用，没有判断是否登录，你在修改的时候，请去掉这里，使用下面ajax check登录的代码。
+         * */
         loginPanel.load('html/login-panel.html');
         loginDiv.show();
         loginPanel.node.on("close", function (e, rs) {
@@ -35,14 +45,17 @@
                 loginDiv.remove();
             }
         });
+        /**
+         * ===============================================================================================
+         * */
 
         return;
         /**
-         * 这里可以通过check登陆状态，判断加载主界面还是加载登陆页面
+         * 这里是ajax check是否登录的代码，如果已经登录，则加载main0.html(主布局文件)，如果没有登录，则加载登录面板(login-panel.html)
+         * 你可以通过修改这里实现登录的流程。
          * */
         S.get("/login/check").done(function (rs) {
             if (rs) {
-                window.CURRENT_MANAGER = rs;
                 mainWindow.load('layouts/main0.html', Page);
                 loginDiv.remove();
             } else {
