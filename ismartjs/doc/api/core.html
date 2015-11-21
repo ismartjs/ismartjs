@@ -282,62 +282,63 @@
                 <input type="button" class="btn btn-sm btn-primary" value="测试" s-click="testCleanJsonRef()"/> 请打开控制台看输出
                 <script type="text/plain" s-sh-role="javascript">
 
-                    var cleanJsonRef_data = [
-                        {
-                            name: 'Jack',
-                            age: 20,
-                            wallet: {
-                                money: 100,
-                                user: {$ref: '..'}
-                            },
-                            city: {
-                                name: 'shang hai'
-                            }
-                        },
-                        {
-                            name: 'kevin',
-                            age: 21,
-                            wallet: {
-                                money: 200,
-                                user: {$ref: '..'}
-                            },
-                            city: {
-                                $ref: '$[0].city'
-                            }
-                        }
-                    ];
+
 
                     function testCleanJsonRef(){
+                        var cleanJsonRef_data = [
+                            {
+                                name: 'Jack',
+                                age: 20,
+                                wallet: {
+                                    money: 100,
+                                    user: {$ref: '..'}
+                                },
+                                city: {
+                                    name: 'shang hai'
+                                }
+                            },
+                            {
+                                name: 'kevin',
+                                age: 21,
+                                wallet: {
+                                    money: 200,
+                                    user: {$ref: '..'}
+                                },
+                                city: {
+                                    $ref: '$[0].city'
+                                }
+                            }
+                        ];
                         Smart.info(Smart.cleanJsonRef(cleanJsonRef_data));
                     }
                 </script>
                 <script type="text/javascript">
-                    var cleanJsonRef_data = [
-                        {
-                            name: 'Jack',
-                            age: 20,
-                            wallet: {
-                                money: 100,
-                                user: {$ref: '..'}
-                            },
-                            city: {
-                                name: 'shang hai'
-                            }
-                        },
-                        {
-                            name: 'kevin',
-                            age: 21,
-                            wallet: {
-                                money: 200,
-                                user: {$ref: '..'}
-                            },
-                            city: {
-                                $ref: '$[0].city'
-                            }
-                        }
-                    ];
 
                     function testCleanJsonRef(){
+                        var cleanJsonRef_data = [
+                            {
+                                name: 'Jack',
+                                age: 20,
+                                wallet: {
+                                    money: 100,
+                                    user: {$ref: '..'}
+                                },
+                                city: {
+                                    name: 'shang hai'
+                                }
+                            },
+                            {
+                                name: 'kevin',
+                                age: 21,
+                                wallet: {
+                                    money: 200,
+                                    user: {$ref: '..'}
+                                },
+                                city: {
+                                    $ref: '$[0].city'
+                                }
+                            }
+                        ];
                         Smart.info(Smart.cleanJsonRef(cleanJsonRef_data));
                     }
                 </script>
