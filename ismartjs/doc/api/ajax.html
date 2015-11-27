@@ -56,34 +56,53 @@
         </td>
     </tr>
 </table>
-<h4>获取返回信息</h4>
-<p class="lead">该方法返回Deferred对象，通过注册该返回值的<code>done</code>方法来获得返回值，如下：</p>
+<h4>延时成功时的回掉</h4>
+<p class="lead">该方法返回Deferred对象，通过注册该返回值的<code>done</code>方法来获得ajax的返回值，如下：</p>
 <div class="bs-example" s="sh" s-sh="{phase:'source'}" id="getSource">
     <input type="button" class="btn btn-sm btn-info" value="GET请求数据"
            s-click="testGet()"/>
     <script type="text/plain" s-sh-role="javascript">
         function testGet(){
-            S.get("/rest/region/140000").done(function(province){
+            S.get("/rest/region/140000").done(function(province, e){
+                //e.stopPropagation(); 可以阻止ajax事件冒泡到布局上，即可以阻止全局的ajax动作提示条显示。
                 S.alert(JSON.stringify(province));
             });
         }
     </script>
     <script type="text/javascript">
         function testGet(){
-            S.get("/rest/region/140000").done(function(province){
+            S.get("/rest/region/140000").done(function(province, e){
                 S.alert(JSON.stringify(province));
             });
         }
     </script>
 </div>
 <div class="highlight" s="sh" s-sh="{sourceNode: S.N('#getSource'), brush:'JScript'}"></div>
-<h4>事件</h4>
+<h4>延时失败时的回掉</h4>
+<p class="lead">该方法返回Deferred对象，通过注册该返回值的<code>fail</code>方法来获得ajax的返回值，如下：</p>
+<div class="bs-example" s="sh" s-sh="{phase:'source'}" id="failSource">
+    <input type="button" class="btn btn-sm btn-info" value="GET请求数据"
+           s-click="testGet()"/>
+    <script type="text/plain" s-sh-role="javascript">
+        function testGet(){
+            S.get("/rest/region/140000").fail(function(xhr, e){
+                //xhr 代表当前的jqXHR对象
+                //e.stopPropagation(); 可以阻止ajax事件冒泡到布局上，即可以阻止全局的ajax动作提示条显示。
+                S.alert(JSON.stringify(province));
+            });
+        }
+    </script>
+</div>
+<div class="highlight" s="sh" s-sh="{sourceNode: S.N('#getSource'), brush:'JScript'}"></div>
+<h3>事件</h3>
 <ul>
     <li><code>smart-ajaxStart</code>： ajax开始请求时触发的事件</li>
     <li><code>smart-ajaxSuccess</code>：ajax请求成功时触发的事件</li>
     <li><code>smart-ajaxError</code>：ajax请求错误时触发的事件</li>
     <li><code>smart-ajaxComplete</code>：ajax请求完成时触发的事件，不管ajax请求成功还是失败，都会触发。</li>
 </ul>
+<h3>静默阻断事件请求</h3>
+<blockquote class="lead text-warning">通过配置<code>cfg.silent = true</code>可以静默访问ajax，即不会触发上述ajax事件，通过设置<code>done</code>、<code>fail</code>回掉方法中的参数<code>e.stopPropagation()</code>即可截断相应的<code>smart-ajaxSuccess</code>、<code>smart-ajaxError</code>事件。</blockquote>
 <h2>S.post(url, [data], [type], [cfg], [ajaxSetting])</h2>
 <p class="lead">post方式请求url</p>
 <h2>S.remove(url, [data], [type], [cfg], [ajaxSetting])</h2>

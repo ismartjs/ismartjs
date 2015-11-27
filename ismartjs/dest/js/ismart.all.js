@@ -356,7 +356,7 @@
             }
             return _datas;
         },
-        dataTransfer: function(rs, fn, ref){
+        dataTransfer: function (rs, fn, ref) {
             if (Smart.isDeferred(rs)) {
                 var deferred = $.Deferred();
                 rs.done(function (_rs) {
@@ -389,18 +389,18 @@
         /**
          * 清理json反序列化后的引用问题，该问题可能来自于fastjson序列化后的json。
          * */
-        cleanJsonRef: (function(){
+        cleanJsonRef: (function () {
 
-            function clean($$, obj, parent){
-                if(arguments.length == 1){
+            function clean($$, obj, parent) {
+                if (arguments.length == 1) {
                     obj = $$;
                 }
-                $.each(obj, function(key, val){
-                    if(!$.isPlainObject(val) && !$.isArray(val)){
+                $.each(obj, function (key, val) {
+                    if (!$.isPlainObject(val) && !$.isArray(val)) {
                         return;
                     }
-                    if(val.hasOwnProperty('$ref')){
-                        if(val['$ref'] == '..'){
+                    if (val.hasOwnProperty('$ref')) {
+                        if (val['$ref'] == '..') {
                             obj[key] = parent;
                             return;
                         }
@@ -412,7 +412,7 @@
                 return obj;
             }
 
-            return function(obj){
+            return function (obj) {
                 return Smart.dataTransfer(obj, clean);
             }
         })(),
@@ -850,26 +850,25 @@
 
                 function doRequest() {
                     $.ajax(ajaxOptions).done(function (result) {
-                        deferred.resolve.apply(deferred, Smart.SLICE.call(arguments));
+                        var event = $.Event('smart-ajaxSuccess');
+                        deferred.resolve.apply(deferred, [result, event]);
+                        if (!cfg.silent && !event.isPropagationStopped()) {
+                            _this.trigger(event, [cfg.successTip, result]);
+                        }
                         if (!cfg.silent) {
-                            _this.trigger("smart-ajaxSuccess", [cfg.successTip, result]);
+                            _this.trigger("smart-ajaxComplete");
                         }
                     }).fail(function (xhr) {
-                        if (!cfg.silent) {
-                            var event = $.Event('smart-ajaxError', {
-                                retryRequest: doRequest
-                            });
+                        var event = $.Event('smart-ajaxError', {
+                            retryRequest: doRequest
+                        });
+                        deferred.reject.apply(deferred, [xhr, event]);
+                        if (!cfg.silent && !event.isPropagationStopped()) {
                             _this.trigger(event, [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url), xhr]);
                             if (event.isPropagationStopped()) {
                                 return;
                             }
-                            deferred.reject.apply(deferred, Smart.SLICE.call(arguments));
-                        } else {
-                            deferred.reject.apply(deferred, Smart.SLICE.call(arguments));
                         }
-
-
-                    }).always(function () {
                         if (!cfg.silent) {
                             _this.trigger("smart-ajaxComplete");
                         }
@@ -1511,7 +1510,7 @@
     }, {
         onPrepare: function () {
             var that = this;
-            this.S.node.delegate(CHECK_ITEM_SELECTOR, "click", function (e) {
+            this.S.node.delegate(CHECK_ITEM_SELECTOR, "change", function (e) {
                 if (that.options.turn != "on") {
                     return;
                 }
