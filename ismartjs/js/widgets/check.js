@@ -24,7 +24,7 @@
     }, {
         onPrepare: function () {
             var that = this;
-            this.S.node.delegate(CHECK_ITEM_SELECTOR, "click", function (e) {
+            this.S.node.delegate(CHECK_ITEM_SELECTOR, "change", function (e) {
                 if (that.options.turn != "on") {
                     return;
                 }
