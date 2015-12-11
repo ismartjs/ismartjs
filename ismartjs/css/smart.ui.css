@@ -175,7 +175,7 @@ ul.s-ui-contextmenu li.disabled:hover > span {
 
 .s-ui-grid-action {
     background: #fff;
-    padding: 10px;
+    padding: 10px 0;
 }
 
 .s-ui-grid-action h3, .s-ui-grid-action h4, .s-ui-grid-action h5, .s-ui-grid-action h6 {

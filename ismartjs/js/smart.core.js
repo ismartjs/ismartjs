@@ -353,7 +353,7 @@
                     results.push(rs);
                     callFn(i + 1);
                 }).fail(function () {
-                    deferred.reject();
+                    deferred.reject.apply(deferred, $.makeArray(arguments));
                 });
             }
 
@@ -1172,6 +1172,7 @@
                  * */
                 var dataLazy = this.node.attr("s-data-lazy");
                 if (dataLazy != undefined) {
+                    this.node.removeAttr("s-data-lazy");
                     dataLazy = this.context(dataLazy);
                     if ($.isFunction(dataLazy)) {
                         dataLazy = dataLazy();
@@ -1179,7 +1180,6 @@
                     if (dataLazy == true) {
                         return;
                     }
-                    this.node.removeAttr("s-data-lazy");
                 }
                 var dataValue = this.context(dataAttrStr);
                 var deferred = $.Deferred();
@@ -1187,18 +1187,18 @@
                     var that = this;
                     dataValue.done(function (data) {
                         Smart.deferDelegate(that.data(data)).done(function () {
-                            deferred.resolve();
+                            deferred.resolve.apply(deferred, $.makeArray(arguments));
                         }).fail(function () {
-                            deferred.reject();
+                            deferred.reject.apply(deferred, $.makeArray(arguments));
                         })
                     }).fail(function () {
-                        deferred.reject();
+                        deferred.reject.apply(deferred, $.makeArray(arguments));
                     })
                 } else {
                     Smart.deferDelegate(this.data(dataValue)).done(function () {
-                        deferred.resolve();
+                        deferred.resolve.apply(deferred, $.makeArray(arguments));
                     }).fail(function () {
-                        deferred.reject();
+                        deferred.reject.apply(deferred, $.makeArray(arguments));
                     })
                 }
                 return deferred;

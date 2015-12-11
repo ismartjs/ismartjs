@@ -280,10 +280,10 @@
                     that.trigger("s-ready");
                     deferred.resolve(that);
                 }).fail(function () {
-                    deferred.reject();
+                    deferred.reject.apply(deferred, $.makeArray(arguments));
                 })
             }).fail(function () {
-                deferred.reject();
+                deferred.reject.apply(deferred, $.makeArray(arguments));
             });
             return deferred;
         },
@@ -313,7 +313,7 @@
                 });
 
             }).fail(function () {
-                deferred.reject();
+                deferred.reject.apply(deferred, $.makeArray(arguments));;
             });
             return deferred;
         },

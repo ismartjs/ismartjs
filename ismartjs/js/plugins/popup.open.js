@@ -106,7 +106,16 @@
             return $("button[s-ui-dialog-btn-id='"+id+"']", footerNode);
         }
         nodeSmart.getButtonById = getButtonById;
-        nodeSmart.load.apply(nodeSmart, $.makeArray(arguments));
+        nodeSmart.load.apply(nodeSmart, $.makeArray(arguments)).fail(function(xhr){
+            var msg;
+            if(xhr.status == 0){
+                msg = "网络异常，请重试";
+            } else {
+                msg = "页面打开错误，请重试";
+            }
+            nodeSmart.notice(msg, "danger");
+            Smart.UI.backdrop(false);
+        });
 
         return $.extend(deferred, {
             close: function(){
