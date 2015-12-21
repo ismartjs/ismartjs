@@ -475,10 +475,18 @@ code {
     border-color: #DDD;
 }
 
+.alert-hover.alert-info:hover{
+    border-color: #BABABA;
+}
+
 .alert-warning {
     color: #f68300;
     background-color: #FCF8E2;
     border-color: #FBECCB;
+}
+
+.alert-hover.alert-warning:hover{
+    border-color: #FACF70;
 }
 
 .alert-danger {
@@ -487,10 +495,18 @@ code {
     border-color: #F1ACAC;
 }
 
+.alert-hover.alert-danger:hover{
+    border-color: #D59E9E;
+}
+
 .alert-success {
     color: #090;
     background-color: #F2FFEA;
     border-color: #C7DDB9;
+}
+
+.alert-hover.alert-success:hover{
+    border-color: #A7B89C;
 }
 
 .alert-tip {
