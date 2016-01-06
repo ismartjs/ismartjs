@@ -734,7 +734,6 @@
                         var event = $.Event('smart-ajaxError', {
                             retryRequest: doRequest
                         });
-                        deferred.reject.apply(deferred, [xhr, event]);
                         if (!cfg.silent && !event.isPropagationStopped()) {
                             _this.trigger(event, [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url), xhr]);
                             if (event.isPropagationStopped()) {
@@ -743,6 +742,9 @@
                         }
                         if (!cfg.silent) {
                             _this.trigger("smart-ajaxComplete");
+                        }
+                        if(!event.isPropagationStopped()){
+                            deferred.reject.apply(deferred, [xhr, event]);
                         }
                     });
                 }

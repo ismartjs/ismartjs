@@ -34,17 +34,13 @@
                     {% }) %}
                 </ul>
                 {%} else {%}
-                <ul class="s-ui-trans">
-                    <li class="nav-item " menuUrl="{%=menu.url%}" menuId="{%=menu.id%}"
-                        s-click="openMenuById('{%=menu.id%}')">
-                        <a class="s-ui-trans" href="javascript:;">
-                            <div class="nav-icon s-ui-trans"><i
-                                    class="{%=menu.icon || 'fa fa-file-text-o' %}"></i>
-                            </div>
-                            <span class="nav-title ng-binding">{%=menu.title%}</span>
-                        </a>
-                    </li>
-                </ul>
+                <div class="sidebar-title" menuUrl="{%=menu.url%}" menuId="{%=menu.id%}"
+                     s-click="openMenuById('{%=menu.id%}')">
+                    <div class="sidebar-title-inner">
+                        <span class="sidebar-title-icon {%=menu.icon%}"></span>
+                        <span class="sidebar-title-text">{%=menu.title%}</span>
+                    </div>
+                </div>
                 {%}%}
             </div>
             {% }) %}
@@ -125,23 +121,27 @@
         handleAjaxError: function (e, errorTip, errorMsg, xhr) {
             if (xhr.status == 403) {
                 e.stopPropagation();
-                if (e.retryRequest) {
-                    loginRetryCallbacks.push(e.retryRequest);
-                }
-                if (loginProcessStatus == 1) {
-                    return;
-                }
-                //登陆超时
-                loginProcessStatus = 1;
-                S.popupOpen(Main.loginPanel).done(function (status) {
-                    loginProcessStatus = 0;
-                    if (status) {
-                        $.each(loginRetryCallbacks, function (i, callback) {
-                            callback();
-                        })
-                        loginRetryCallbacks = [];
+                if(errorMsg == "LoginRequire"){ //需要登录
+                    if (e.retryRequest) {
+                        loginRetryCallbacks.push(e.retryRequest);
                     }
-                })
+                    if (loginProcessStatus == 1) {
+                        return;
+                    }
+                    //登陆超时
+                    loginProcessStatus = 1;
+                    S.popupOpen(Main.loginPanel).done(function (status) {
+                        loginProcessStatus = 0;
+                        if (status) {
+                            $.each(loginRetryCallbacks, function (i, callback) {
+                                callback();
+                            })
+                            loginRetryCallbacks = [];
+                        }
+                    })
+                } else { //无权限操作
+                    S.notice(errorMsg, "danger");
+                }
                 return;
             }
             S.notice($.trim(errorMsg), "danger");
@@ -178,17 +178,17 @@
     });
 
     function activeSidebarMenuByUrl(url) {
-        var node = $("li[menuurl='" + url + "']", S.N("#menuPanel"));
+        var node = $("*[menuurl='" + url + "']", S.N("#menuPanel"));
         activeSidebarMenu(node);
     }
     function activeSidebarMenu(node) {
-        $("li[menuurl].active", S.N("#menuPanel")).removeClass("active");
+        $("*[menuurl].active", S.N("#menuPanel")).removeClass("active");
         node && node.size() && node.addClass("active");
     }
 
     function openMenuById(id) {
         var menu = MenuPanel.getMenuById(id);
-        var tabNode = $("li[menuurl='" + menu.url + "']", S.N("#mainTabContainer"));
+        var tabNode = $("*[menuurl='" + menu.url + "']", S.N("#mainTabContainer"));
         if (tabNode.size() > 0) {
             var tab = tabNode.data("tab");
             tab.active();
@@ -320,7 +320,7 @@
     }
 
     MainTab.findSingleTabByUrl = function (url) {
-        var tabNode = $("li[menuurl='" + url + "']", MainTab.container);
+        var tabNode = $("*[menuurl='" + url + "']", MainTab.container);
         if (tabNode.size() != 1) {
             return null;
         }
@@ -432,7 +432,7 @@
                 pushStateFlag = true;
             }
             var menuUrl = this.data.url;
-            var sidebarMenuNode = $("li[menuurl='" + menuUrl + "']", S.N("#menuPanel"));
+            var sidebarMenuNode = $("*[menuurl='" + menuUrl + "']", S.N("#menuPanel"));
             if (sidebarMenuNode.size() > 0) {
                 activeSidebarMenu(sidebarMenuNode);
             } else {

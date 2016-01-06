@@ -302,8 +302,8 @@
     overflow: hidden;
 }
 
-.main-left-sidebar .sidebar-nav li.active a {
-    background: #37424f;
+.main-left-sidebar .sidebar-nav li.active a, .main-left-sidebar .sidebar-title.active {
+    background: #4D4F52;
 }
 
 .main-left-sidebar .sidebar-nav li a:hover {

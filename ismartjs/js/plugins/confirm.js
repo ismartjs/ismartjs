@@ -37,8 +37,8 @@
             $("*[s-ui-confirm-role='title']", dialog).html(option.title);
             $("*[s-ui-confirm-role='message']", dialog).html(msg);
             $("*[s-ui-confirm-role='sign']", dialog).addClass(confirmLevel.color).addClass(confirmLevel.sign);
-            var sureBtn = $("*[s-ui-confirm-role='sureBtn']", dialog).html(confirmLevel.sureBtnName);
-            var cancelBtn = $("*[s-ui-confirm-role='cancelBtn']", dialog).html(confirmLevel.cancelBtnName);
+            var sureBtn = $("*[s-ui-confirm-role='sureBtn']", dialog).html(option.sureBtnName);
+            var cancelBtn = $("*[s-ui-confirm-role='cancelBtn']", dialog).html(option.cancelBtnName);
             Smart.UI.backdrop();
             var selectVal = 0;
             sureBtn.click(function () {
