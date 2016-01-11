@@ -862,7 +862,6 @@
                         var event = $.Event('smart-ajaxError', {
                             retryRequest: doRequest
                         });
-                        deferred.reject.apply(deferred, [xhr, event]);
                         if (!cfg.silent && !event.isPropagationStopped()) {
                             _this.trigger(event, [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url), xhr]);
                             if (event.isPropagationStopped()) {
@@ -871,6 +870,9 @@
                         }
                         if (!cfg.silent) {
                             _this.trigger("smart-ajaxComplete");
+                        }
+                        if(!event.isPropagationStopped()){
+                            deferred.reject.apply(deferred, [xhr, event]);
                         }
                     });
                 }
@@ -4236,8 +4238,8 @@
             $("*[s-ui-confirm-role='title']", dialog).html(option.title);
             $("*[s-ui-confirm-role='message']", dialog).html(msg);
             $("*[s-ui-confirm-role='sign']", dialog).addClass(confirmLevel.color).addClass(confirmLevel.sign);
-            var sureBtn = $("*[s-ui-confirm-role='sureBtn']", dialog).html(confirmLevel.sureBtnName);
-            var cancelBtn = $("*[s-ui-confirm-role='cancelBtn']", dialog).html(confirmLevel.cancelBtnName);
+            var sureBtn = $("*[s-ui-confirm-role='sureBtn']", dialog).html(option.sureBtnName);
+            var cancelBtn = $("*[s-ui-confirm-role='cancelBtn']", dialog).html(option.cancelBtnName);
             Smart.UI.backdrop();
             var selectVal = 0;
             sureBtn.click(function () {
