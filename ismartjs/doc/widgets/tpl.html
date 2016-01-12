@@ -20,8 +20,8 @@
 <div class="alert alert-warning lead">
     模板脚本中的<code>this</code>引用指向模板控件的赋值对象。
 </div>
-<h2>使用<code>text/plain</code>定义模板</h2>
-<p class="lead">在某些情况下，我们需要使用<code>&lt;script type='text/plain'</code>来定义模板，因为有些时候需要在html标签上面输出某些属性，那么就不能把模板脚本写在html标签中，会被浏览器当成属性去解析，造成模板解析错误，这个时候就可以使用这种方法去处理</p>
+<h2>使用<code>text/template</code>定义模板</h2>
+<p class="lead">在某些情况下，我们需要使用<code>&lt;script type='text/template'</code>来定义模板，因为有些时候需要在html标签上面输出某些属性，那么就不能把模板脚本写在html标签中，会被浏览器当成属性去解析，造成模板解析错误，这个时候就可以使用这种方法去处理</p>
 <div class="bs-example" s="sh" s-sh="{phase:'source'}" id="tplSource1">
     <input type="button" class="btn btn-sm btn-info" value="设为INFO级别" s-click="S.S('#tpl2').data({level:'info', tip:'欢迎使用ismartjs，info级别'})" />
     <input type="button" class="btn btn-sm btn-warning" value="设为WARNING级别" s-click="S.S('#tpl2').data({level:'warning', tip:'欢迎使用ismartjs，warning级别'})" />

@@ -1956,7 +1956,7 @@
         onPrepare: function(){
             this.cache = {};
             var tplText;
-            var plainTextNode = this.S.node.find(" > script[type='text/plain']");
+            var plainTextNode = this.S.node.find(" > script[type='text/template']");
             if(plainTextNode.size() > 0){
                 tplText = plainTextNode.html();
             } else {
