@@ -1,0 +1,30 @@
+/**
+  radius
+*/
+/**
+  button
+*/
+/**
+toast
+*/
+/**
+  panel
+*/
+/**
+state
+*/
+.s-loading-spinner {
+  display: none;
+}
+.s-loading-icon .s-loading-spinner {
+  display: inline-block;
+}
+.s-loading {
+  position: relative;
+}
+.s-loading .s-loading-spinner {
+  display: inline-block;
+  -webkit-animation: spin_frame 3s infinite linear;
+  -o-animation: spin_frame 3s infinite linear;
+  animation: spin_frame 3s infinite linear;
+}

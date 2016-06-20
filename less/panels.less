@@ -1,0 +1,77 @@
+@import "var.less";
+@import "mixins.less";
+
+.panel {
+  border-radius: @radius-default-width;
+  box-shadow: @panel-box-shadow;
+  background: @panel-bg;
+  border: none;
+  .panel-body{
+    background: @panel-body-bg;
+    border: 1px solid @panel-border-color;
+    margin-top: -1px;
+  }
+  .panel-heading{
+    border-radius: @panel-heading-radius;
+    padding: @panel-heading-padding;
+    color: @color-default;
+    border: none;
+  }
+  .panel-footer{
+    .border(0px 1px 1px, solid, @panel-border-color);
+    border-radius: @panel-border-radius;
+    background: @panel-footer-bg;
+  }
+  &.panel-built{
+    .panel-heading{
+      padding: @panel-built-heading-padding;
+      background: @panel-built-heading-bg;
+      .border(1px, solid, @panel-border-color);
+    }
+  }
+}
+
+// Mixin for generating new styles
+.panel-heading-styles(@color) {
+  background: @color;
+}
+
+.panel-style(@panel-heading-bg, @panel-style-body-border-width, @panel-primary-body-border-color){
+  .panel-heading   { .panel-heading-styles(@panel-heading-bg); }
+  .panel-heading+.panel-collapse>.panel-body, > .panel-body{
+    border-top: @panel-style-body-border-width solid @panel-primary-body-border-color;
+  }
+}
+
+.panel-primary{ .panel-style(@panel-primary-heading-bg, @panel-style-body-border-width, @panel-primary-body-border-color)}
+.panel-success{ .panel-style(@panel-success-heading-bg, @panel-style-body-border-width, @panel-success-body-border-color)}
+.panel-danger{ .panel-style(@panel-danger-heading-bg, @panel-style-body-border-width, @panel-danger-body-border-color)}
+.panel-warning{ .panel-style(@panel-warning-heading-bg, @panel-style-body-border-width, @panel-warning-body-border-color)}
+.panel-info{ .panel-style(@panel-info-heading-bg, @panel-style-body-border-width, @panel-info-body-border-color)}
+.panel-orange{ .panel-style(@panel-orange-heading-bg, @panel-style-body-border-width, @panel-orange-body-border-color)}
+.panel-violet{ .panel-style(@panel-violet-heading-bg, @panel-style-body-border-width, @panel-violet-body-border-color)}
+.panel-default{ .panel-style(@panel-default-heading-bg, @panel-default-body-border-width, @panel-default-body-border-color)}
+
+//panel list group
+.panel-heading+.list-group{
+  .list-group-item:first-child {
+    border-top-width: 1px;
+    margin-top: -1px;
+  }
+}
+.panel-body+.list-group{
+  margin-top: -1px;
+}
+
+.panel > .list-group{
+  .border(0 1px, solid, @panel-border-color);
+  &:last-child {
+    .list-group-item:last-child {
+      border-bottom: 1px solid @panel-border-color;
+    }
+  }
+}
+
+.panel > .alert{
+  margin: 0;
+}

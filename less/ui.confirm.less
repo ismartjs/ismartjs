@@ -1,0 +1,51 @@
+@import "var.less";
+@import "mixins.less";
+
+.s-confirm {
+  .s-confirm-msg {
+    margin-top: 5px;
+  }
+  .s-confirm-sign {
+    font-size: @confirm-sign-font-size;
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    &.s-confirm-sign-default {
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: @confirm-sign-font-size;
+    }
+  }
+  &.s-confirm-info {
+    .s-confirm-sign {
+      color: @confirm-info-sign-color;
+      &.s-confirm-sign-default:before {
+        content: "\f05a";
+      }
+    }
+  }
+  &.s-confirm-success {
+    .s-confirm-sign {
+      color: @confirm-success-sign-color;
+      &.s-confirm-sign-default:before {
+        content: "\f058";
+      }
+    }
+  }
+  &.s-confirm-warning {
+    .s-confirm-sign {
+      color: @confirm-warning-sign-color;
+      &.s-confirm-sign-default:before {
+        content: "\f071";
+      }
+    }
+  }
+  &.s-confirm-danger {
+    .s-confirm-sign {
+      color: @confirm-danger-sign-color;
+      &.s-confirm-sign-default:before {
+        content: "\f057";
+      }
+    }
+  }
+}

@@ -1,0 +1,310 @@
+[
+  {
+    "id": "SMART_WIDGET",
+    "title": "Smart控件",
+    "icon": "fa fa-cog",
+    "children": [
+      {
+        "id": "WIDGET_WINDOW",
+        "title": "Window控件",
+        "icon": "fa fa-desktop",
+        "url": "html/widget/window.html"
+      },
+      {
+        "id": "WIDGET_DATAC",
+        "title": "数据绑定",
+        "url": "html/widget/data-bind.html"
+      },
+      {
+        "id": "WIDGET_TPL",
+        "title": "模板控件",
+        "url": "html/widget/tpl.html"
+      },
+      {
+        "id": "WIDGET_FORM",
+        "title": "表单控件",
+        "icon": "fa fa-file-text-o",
+        "url": "html/widget/form.html"
+      },
+      {
+        "id": "WIDGET_VALID",
+        "title": "表单验证",
+        "icon": "fa fa-check-circle-o",
+        "url": "html/widget/valid.html"
+      },
+      {
+        "id": "WIDGET_LOOP",
+        "title": "列表与选择",
+        "icon": "fa fa-list",
+        "url": "html/widget/loop.html"
+      },
+      {
+        "id": "WIDGET_PAGINATION",
+        "title": "分页控件",
+        "url": "html/widget/pagination.html"
+      },
+      {
+        "id": "WIDGET_CHECK",
+        "title": "选择控件",
+        "icon": "fa fa-check-square-o",
+        "url": "html/widget/check.html"
+      },
+      {
+        "id": "WIDGET_TOOLTIP_POPOVER",
+        "title": "工具提示与弹出框",
+        "url": "html/widget/tooltip-popover.html"
+      }
+    ]
+  },
+  {
+    "id": "dashboard",
+    "title": "仪表盘",
+    "url": "html/dashboard.html",
+    "icon": "fa fa-dashboard",
+    "open": "true",
+    "label": {
+      "text": "NEW",
+      "style": "label-danger"
+    }
+  },
+  {
+    "id": "ANALYTICS",
+    "title": "统计分析",
+    "url": "html/views/analytics.html",
+    "icon": "fa fa-bar-chart",
+    "label": {
+      "text": "NEW",
+      "style": "label-danger"
+    }
+  },
+  {
+    "id": "CHARTS",
+    "title": "图表",
+    "icon": "fa fa-pie-chart",
+    "children": [
+      {
+        "id": "ECHARTS",
+        "title": "ECharts",
+        "url": "html/charts/echarts.html"
+      },
+      {
+        "id": "FLOT",
+        "title": "Flot",
+        "url": "html/charts/flot.html"
+      },
+      {
+        "id": "peity",
+        "title": "Peity",
+        "url": "html/charts/peity.html"
+      }
+    ]
+  },
+  {
+    "id": "VIEWS",
+    "icon": "fa fa-tv",
+    "title": "页面",
+    "children": [
+      {
+        "id": "联系人",
+        "title": "联系人",
+        "icon": "fa fa-puzzle-piece",
+        "url": "html/views/contacts.html"
+      },
+      {
+        "id": "个人资料",
+        "title": "个人资料",
+        "icon": "fa fa-user",
+        "url": "html/views/profile.html"
+      },
+      {
+        "id": "PROJECTS",
+        "title": "项目",
+        "icon": "fa fa-paw",
+        "url": "html/views/projects.html"
+      },
+      {
+        "id": "PROJECT_DETAIL",
+        "title": "项目详情",
+        "icon": "fa fa-product-hunt",
+        "url": "html/views/project-detail.html"
+      },
+      {
+        "id": "SOCIAL",
+        "title": "社交",
+        "icon": "fa fa-comments-o",
+        "url": "html/views/socials.html"
+      },
+      {
+        "id": "TIMELINE",
+        "title": "时间轴",
+        "icon": "fa fa-clock-o",
+        "url": "html/views/timeline.html"
+      },
+      {
+        "id": "MAILBOX",
+        "title": "信箱",
+        "icon": "fa fa-envelope-o",
+        "url": "html/views/mailbox.html"
+      },
+      {
+        "id": "MAIL_compose",
+        "title": "写信",
+        "icon": "fa fa-pencil",
+        "url": "html/views/mail-compose.html"
+      },
+      {
+        "id": "MAIL_VIEW",
+        "title": "邮件详情",
+        "icon": "fa fa-envelope-o",
+        "url": "html/views/mail-view.html"
+      },
+      {
+        "id": "ARTICLES",
+        "title": "文章列表",
+        "icon": "fa fa-file-text",
+        "url": "html/views/articles.html"
+      },
+      {
+        "id": "forum",
+        "title": "论坛",
+        "icon": "fa fa-comments-o",
+        "url": "html/views/forum.html"
+      },
+      {
+        "id": "forum_detail",
+        "title": "帖子详情",
+        "icon": "fa fa-comments-o",
+        "url": "html/views/forum-detail.html"
+      },
+      {
+        "id": "FILE_MANAGER",
+        "title": "文件浏览器",
+        "icon": "fa fa-file-o",
+        "url": "html/views/file-manager.html"
+      },
+      {
+        "id": "Invoice",
+        "title": "票据",
+        "icon": "fa fa-ticket",
+        "url": "html/views/invoice.html"
+      }
+    ]
+  },
+  {
+    "id": "INTERFACE",
+    "title": "UI元素",
+    "icon": "fa fa-puzzle-piece",
+    "open": true,
+    "children": [
+      {
+        "id": "PANELS",
+        "title": "面板",
+        "icon": "fa fa-clone",
+        "url": "html/ui/panels.html"
+      },
+      {
+        "id": "toast",
+        "title": "toast通知",
+        "icon": "fa fa-bell-o",
+        "url": "html/ui/toast.html"
+      },
+      {
+        "id": "ALERT",
+        "title": "Alert",
+        "icon": "fa fa-exclamation-triangle",
+        "url": "html/ui/alert.html"
+      },
+      {
+        "id": "CONFIRM",
+        "title": "确认框",
+        "icon": "fa fa-check-square-o",
+        "url": "html/ui/confirm.html"
+      },
+      {
+        "id": "typography",
+        "title": "排版",
+        "icon": "fa fa-indent",
+        "url": "html/ui/typography.html"
+      },
+      {
+        "id": "BUTTONS",
+        "title": "按钮",
+        "icon": "fa fa-square-o",
+        "url": "html/ui/buttons.html"
+      },
+      {
+        "id": "COMPONENT",
+        "title": "组件",
+        "icon": "fa fa-cog",
+        "url": "html/ui/components.html"
+      },
+      {
+        "id": "MODALS",
+        "title": "模态框",
+        "icon": "fa fa-desktop",
+        "url": "html/ui/modal.html"
+      },
+      {
+        "id": "LOADING_BUTTONS",
+        "title": "加载按钮",
+        "icon": "fa fa-spinner",
+        "url": "html/ui/loading-buttons.html"
+      },
+      {
+        "id": "ICON_LIB",
+        "title": "图标",
+        "icon": "fa fa-rocket",
+        "url": "html/ui/icons.html"
+      }
+    ]
+  },
+  {
+    "id": "TABLE",
+    "title": "表格",
+    "icon": "fa fa-table",
+    "url": "html/ui/tables.html"
+  },
+  {
+    "id": "UI_WIDGETS",
+    "title": "UI组件",
+    "icon": "fa fa-desktop",
+    "url": "html/ui/widgets.html"
+  },
+  {
+    "id": "FORM",
+    "icon": "fa fa-file-text-o",
+    "title": "表单",
+    "children": [
+      {
+        "id": "FORM_ELEMENTS",
+        "title": "表单元素",
+        "icon": "fa fa-dot-circle-o",
+        "url": "html/form/form-elements.html"
+      },
+      {
+        "id": "FORM_VALID",
+        "title": "表单验证",
+        "icon": "fa fa-check-circle-o",
+        "url": "html/form/form-validation.html"
+      },
+      {
+        "id": "EDITOR",
+        "title": "编辑器",
+        "icon": "fa fa-file-code-o",
+        "url": "html/form/editors.html"
+      }
+    ]
+  },
+  {
+    "id": "GRID_SYSTEM",
+    "title": "栅格",
+    "icon": "fa fa-th",
+    "url": "html/ui/grids.html"
+  },
+  {
+    "id": "CSS3_ANIMATION",
+    "title": "CSS3动画",
+    "icon": "fa fa-flag-o",
+    "url": "html/other/animations.html"
+  }
+]

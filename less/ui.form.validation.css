@@ -1,0 +1,14 @@
+.s-valid-feedback-success,
+.s-valid-feedback-warning,
+.s-valid-feedback-error {
+  opacity: 0;
+}
+.has-success .s-valid-feedback-success {
+  opacity: 1;
+}
+.has-error .s-valid-feedback-error {
+  opacity: 1;
+}
+.has-warning .s-valid-feedback-warning {
+  opacity: 1;
+}

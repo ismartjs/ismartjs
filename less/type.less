@@ -1,0 +1,180 @@
+@import "var.less";
+@import "mixins.less";
+/**
+Typography
+*/
+.text-white{  color: white;}
+.text-ellipsis{ .text-overflow(); display: inline-block; max-width: 100%;}
+
+/**
+  font-size
+*/
+.f-xs {  font-size: 10px;}
+
+.f-sm {  font-size: 13px;}
+
+.f-m {  font-size: 18px;}
+
+.f-md {  font-size: 24px;}
+
+.f-lg {  font-size: 30px;}
+
+.f-xl {  font-size: 40px;}
+
+.f-xxl{ font-size: 60px;}
+
+.f-bold{font-weight: bold;}
+
+/* MARGINS & PADDINGS */
+
+.generate-mp(@prefix, @attr) {
+  .@{prefix}-none {  @{attr}: 0;}
+  .@{prefix}-wrapper-none {  > * {@{attr}: 0;}}
+
+  .@{prefix}-xxs {  @{attr}: 1px;}
+  .@{prefix}-wrapper-xxs {  > * {@{attr}: 1px;}}
+
+  .@{prefix}-xs {  @{attr}: @mp-xs-width;}
+  .@{prefix}-wrapper-xs {   > * {@{attr}: @mp-xs-width;}}
+
+  .@{prefix}-sm {  @{attr}: @mp-sm-width;}
+  .@{prefix}-wrapper-sm {   > * {@{attr}: @mp-sm-width;}}
+
+  .@{prefix} {  @{attr}: @mp-width;}
+  .@{prefix}-wrapper {   > * {@{attr}: @mp-width;}}
+
+  .@{prefix}-md {  @{attr}: @mp-md-width;}
+  .@{prefix}-wrapper-md {   > * {@{attr}: @mp-md-width;}}
+
+  .@{prefix}-lg {  @{attr}: @mp-lg-width;}
+  .@{prefix}-wrapper-lg {   > * {@{attr}: @mp-lg-width;}}
+
+  .@{prefix}-xl {  @{attr}: @mp-xl-width;}
+  .@{prefix}-wrapper-xl {   > * {@{attr}: @mp-xl-width;}}
+
+  .@{prefix}-n-xxs {  @{attr}: -1px;}
+  .@{prefix}-wrapper-n-xxs {   > * {@{attr}: -1px;}}
+
+  .@{prefix}-n-xs {  @{attr}: -@mp-xs-width;}
+  .@{prefix}-wrapper-n-xs {   > * {@{attr}: -@mp-xs-width;}}
+
+  .@{prefix}-n-sm {  @{attr}: -@mp-sm-width;}
+  .@{prefix}-wrapper-n-sm {   > * {@{attr}: -@mp-sm-width;}}
+
+  .@{prefix}-n-md {  @{attr}: -@mp-md-width;}
+  .@{prefix}-wrapper-n-md {   > * {@{attr}: -@mp-md-width;}}
+
+  .@{prefix}-n-lg {  @{attr}: -@mp-lg-width;}
+  .@{prefix}-wrapper-n-lg {   > * {@{attr}: -@mp-lg-width;}}
+
+  .@{prefix}-n-xl {  @{attr}: -@mp-xl-width;}
+  .@{prefix}-wrapper-n-xl {   > * {@{attr}: -@mp-xl-width;}}
+
+  .@{prefix}-n {  @{attr}: -@mp-width;}
+  .@{prefix}-wrapper-n {   > * {@{attr}: -@mp-width;}}
+}
+
+.generate-mp(p, padding);
+
+//top
+.generate-mp(p-t, padding-top);
+
+//bottom
+
+.generate-mp(p-b, padding-bottom);
+
+
+//left
+.generate-mp(p-l, padding-left);
+
+//right
+.generate-mp(p-r, padding-right);
+
+//margin
+.generate-mp(m, margin);
+
+.generate-mp(m-l, margin-left);
+
+.generate-mp(m-t, margin-top);
+
+.generate-mp(m-r, margin-right);
+
+.generate-mp(m-b, margin-bottom);
+
+
+.space-xs {  margin-left: @mp-xs-width; margin-right: @mp-xs-width;}
+.space-sm {  margin-left: @mp-sm-width; margin-right: @mp-sm-width;}
+.space {  margin-left: @mp-width; margin-right: @mp-width;}
+
+.space-md {  margin-left: @mp-md-width; margin-right: @mp-md-width;}
+
+.space-lg {  margin-left: @mp-lg-width; margin-right: @mp-lg-width}
+
+.space-xl {  margin-left: @mp-xl-width; margin-right: @mp-lg-width}
+
+.space-v-xs {  margin-top: @mp-xs-width; margin-bottom: @mp-xs-width;}
+.space-v-sm {  margin-top: @mp-sm-width; margin-bottom: @mp-sm-width;}
+.space-v {  margin-top: @mp-width; margin-bottom: @mp-width;}
+
+.space-v-md {  margin-top: @mp-md-width; margin-bottom: @mp-md-width;}
+
+.space-v-lg {  margin-top: @mp-lg-width; margin-bottom: @mp-md-width;}
+
+.space-v-xl {  margin-top: @mp-xl-width; margin-bottom: @mp-md-width;}
+
+
+.text-orange {.text-emphasis-variant(@state-orange-text);}
+.text-violet {.text-emphasis-variant(@state-violet-text);}
+.text-blue {.text-emphasis-variant(@state-blue-text);}
+
+/**
+blockquote
+*/
+blockquote{
+  font-size: @blockquote-font-size;
+}
+
+.img-xs{
+  &,img{
+    max-width: 32px;
+    max-height: 32px;
+  }
+}
+.img-sm{
+  &,img{
+    max-width: 48px;
+    max-height: 48px;
+  }
+}
+
+.img-md{
+  &,img{
+    max-width: 62px;
+    max-height: 62px;
+  }
+}
+.img-wrapper{
+  position: relative;
+  img{
+    max-width: 100%;
+    max-height: 100%;
+  }
+  a, .title{
+    color: #f8f8f8;
+  }
+  .title{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+  }
+}
+
+//dl
+.dl-muted {
+  dt{
+    color: @brand-muted;
+  }
+}

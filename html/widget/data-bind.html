@@ -1,0 +1,333 @@
+<meta title="数据绑定" />
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <h3>数据绑定</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-built">
+                <div class="panel-heading">使用<code>s-data</code>属性进行数据绑定</div>
+                <div class="alert alert-warning">
+                    任何一个Smart控件都可以使用<code>s-data</code>属性的配置进行数据绑定，相当于调用该控件的<code>data(obj)</code>方法
+                </div>
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            <h4>绑定数据到html元素上</h4>
+                            <p>
+                                <div s s-data="'Hello iSmartJs'" class="alert alert-info"></div>
+                                <input s s-data="'Hello iSmartJs'" type="text" class="form-control" />
+                            </p>
+                            代码如下：
+<pre>
+&lt;div <span class="text-success">s s-data="'Hello iSmartJs'"</span> class="alert alert-info"&gt;&lt;/div&gt;
+&lt;input <span class="text-success">s s-data="'Hello iSmartJs'"</span> type="text" class="form-control" /&gt;
+</pre>
+                            <blockquote class="border-warning">
+                                <code>s-data</code>的属性值需要是一个当前脚本闭包域的一个变量，所以当需要直接赋值字符串的时候需要加单引号或者双引号。
+                            </blockquote>
+                        </li>
+                        <li>
+                            <h4>绑定当前脚本域的变量到元素上</h4>
+                            <p>
+                                <input s s-data="whatYouSay" type="text" class="form-control" />
+                            </p>
+                            代码如下：
+<pre>
+&lt;input s s-data="whatYouSay" type="text" class="form-control" /&gt;
+&lt;script type="text/javascript"&gt;
+    var whatYouSay = "Hello iSmartJs, u are so powerful!";
+&lt;/script&gt;
+</pre>
+                            <p>
+                                本示例中<code>s-data='whatYouSay'</code>的属性值<code>whatYouSay</code>是当前脚本域中的一个变量，该变量的值为：<code>Hello iSmartJs, u are so powerful!</code>
+                            </p>
+                        </li>
+                        <li>
+                            <h4>绑定Function对象</h4>
+                            <p>
+                                <input s s-data="dataFunction" type="text" class="form-control" />
+                            </p>
+                            代码如下：
+<pre>
+&lt;input s s-data="dataFunction" type="text" class="form-control" /&gt;
+&lt;script type="text/javascript"&gt;
+    function dataFunction(){
+        return "Hello iSmartJs, u are so powerful!";
+    }
+&lt;/script&gt;
+</pre>
+                            <p>Function返回Deferred对象，1秒后会对文本框进行赋值</p>
+                            <p>
+                                <input s s-data="dataFunctionDeferred" type="text" class="form-control" />
+                            </p>
+                            代码如下：
+<pre>
+&lt;input s s-data="dataFunctionDeferred" type="text" class="form-control" /&gt;
+&lt;script type="text/javascript"&gt;
+    function dataFunctionDeferred(){
+        var deferred = $.Deferred();
+        setTimeout(function(){
+            deferred.resolve("Hello iSmartJs, u are so powerful!")
+        }, 50);
+        return deferred;
+    }
+&lt;/script&gt;
+</pre>
+                        </li>
+                        <li>
+                            <h4>绑定远程数据和数据过滤</h4>
+                            <div class="alert alert-warning">
+                                绑定远程数据就是绑定通过ajax读取的远程数据，通过属性<code>s-data-filter</code>可以配置数据的过滤器，即将<code>s-data</code>的值经过
+                                <code>s-data-filter</code>过滤器过滤后的返回值赋值给控件。
+                            </div>
+                            <p>
+                                <input s s-data="S.get('json/data.json')" s-data-filter="'desc'" type="text" class="form-control" />
+                            </p>
+                            <p>
+                                代码如下：
+                            </p>
+<pre>
+&lt;input s s-data="S.get('json/data.json')" s-data-filter="'desc'" type="text" class="form-control" /&gt;
+</pre>
+                            <p>
+                                <code>js/data.json</code>的值为：
+                            </p>
+<pre>
+{
+  "name": "iSmartJs",
+  "desc": "iSmartJs是一个功能强大的js ria开发框架！",
+  "website": "http://www.ismartjs.com"
+}
+</pre>
+                            <p>我们将该json的值的<code>desc</code>属性值赋值了文本域</p>
+                            <blockquote class="border-warning">
+                                如果<code>s-data-filter</code>配置的值为字符串，那么会把该字符串作为key，从原始数据中取出相应的值赋值给控件，
+                                <code>s-data-filter</code>的属性值也可以配置成function，如果配置成方法，则会把原始的数据值作为参数调用该方法，然后将返回值赋值给当前控件。
+                            </blockquote>
+                            <blockquote class="border-danger">
+                                <p>
+                                    <code>s-data</code>的配置的值可以是普通的对象，或者Deferred对象，或者Function对象，如果是Deferred对象，会把该对象resolve的值赋值给控件，
+                                    如果是Function对象，会把当前控件的Smart对象作为该Function的this引用执行该方法后的返回值赋值给该控件，当然该返回值依然可以是Deferred对象，但是不可以是function对象。
+                                </p>
+                            </blockquote>
+                            <p>
+                                代码如下：
+                            </p>
+<pre>
+&lt;input s s-data="S.get('json/data.json')" s-data-filter="'desc'" type="text" class="form-control" /&gt;
+</pre>
+                            <h4>使用方法进行数据过滤</h4>
+                            <p>
+                                <input s s-data="S.get('json/data.json')" s-data-filter="dataFilter" type="text" class="form-control" />
+                            </p>
+                            <p>
+                                代码如下：
+                            </p>
+<pre>
+&lt;input s s-data="S.get('json/data.json')" s-data-filter="dataFilter" type="text" class="form-control" /&gt;
+&lt;script type="text/javascript"&gt;
+    var dataFilter = function(data){
+        return data.name + data.desc + "，它的官方网址是：" + data.website;
+    }
+&lt;/script&gt;
+</pre>
+                        </li>
+                        <li>
+                            <h4>赋值开关</h4>
+                            <blockquote class="border-warning">
+                                比如，我们打开一个用户管理的界面，该界面有一个用户查询的列表，起初我们并不希望打开的时候就去查询用户的数据，而是需要通过点击查询后再去查询显示，
+                                这种情况下如果我们配置了<code>s-data="S.get('user/search')"</code>，则会直接去进行查询，那么在这种情况下我们可以使用如下方法进行处理。
+                            </blockquote>
+                            <p>
+                                通过配置<code>s-data-switch</code>的属性值，可以指定控件的赋值开关是否开启，有如下2个值可以选择：
+                            </p>
+                            <table class="table table-bordered table-striped">
+                                <tr>
+                                    <td>off-on</td>
+                                    <td>先关闭后打开，即可以实现忽略第一次赋值。</td>
+                                </tr>
+                                <tr>
+                                    <td>off</td>
+                                    <td>关闭赋值，关闭后一切赋值操作都无效</td>
+                                </tr>
+                                <tr>
+                                    <td>on</td>
+                                    <td>开启赋值</td>
+                                </tr>
+                                <tr>
+                                    <td>Function</td>
+                                    <td>
+                                        当该值为function的时候，则会执行该方法，根据该方法的返回值进行判断，该方法需要返回<code>off-on</code>、<code>off</code>、<code>on</code>
+                                        中的一个值。
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <form class="form-inline">
+                                <input id="lazyInput" s s-data-switch="'off-on'" s-data="S.get('json/data.json')"
+                                       s-data-filter="dataFilter" type="text" class="form-control" style="width: 400px;" />
+                                <input type="button" class="btn btn-primary btn-sm" value="赋值" s-click="$lazyInput.refresh()" />
+                            </form>
+                            <p>示例代码：</p>
+<pre>
+&lt;input id="lazyInput" s s-data-switch="'off-on'" s-data="S.get('json/data.json')"
+       s-data-filter="dataFilter" type="text" class="form-control" style="width: 300px;" /&gt;
+&lt;input type="button" class="btn btn-primary btn-sm" value="赋值" s-click="$lazyInput.refresh()" /&gt;
+</pre>
+                            <p>
+                                我们也可以是用当前控件的<code>$lazyInput.dataSwitch('off-on|on|off')</code>的api方法来设置赋值开关。
+                            </p>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">子控件数据绑定（datac）</div>
+                <div class="alert alert-warning">
+                    在很多时候，我们需要同时为很多控件赋值相同的值，如用户表单的输入框需要绑定用户的数据，那么我们就可以使用<code>datac</code>控件进行赋值操作。
+                </div>
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            <h4>form表单绑定<code>json/data.json</code>数据</h4>
+                            <form s="datac" s-data="S.get('json/data.json')" class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">名称：</label>
+                                    <div class="col-lg-10">
+                                        <input type="text" class="form-control" name="name" s s-data-filter="'name'" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">说明：</label>
+                                    <div class="col-lg-10">
+                                        <input type="text" class="form-control" name="desc" s s-data-filter="'desc'" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">网站地址：</label>
+                                    <div class="col-lg-10">
+                                        <input type="text" class="form-control" name="website" s s-data-filter="'website'" />
+                                    </div>
+                                </div>
+                            </form>
+                            <p>示例代码：</p>
+<pre>
+&lt;form <span class="text-success">s="datac" s-data="S.get('json/data.json')"</span> class="form-horizontal"&gt;
+   &lt;div class="form-group"&gt;
+       &lt;label class="col-lg-2 control-label"&gt;名称：&lt;/label&gt;
+       &lt;div class="col-lg-10"&gt;
+           &lt;input type="text" class="form-control" name="name" s s-data-filter="'name'" /&gt;
+       &lt;/div&gt;
+   &lt;/div&gt;
+   &lt;div class="form-group"&gt;
+       &lt;label class="col-lg-2 control-label"&gt;说明：&lt;/label&gt;
+       &lt;div class="col-lg-10"&gt;
+           &lt;input type="text" class="form-control" name="desc" s s-data-filter="'desc'" /&gt;
+       &lt;/div&gt;
+   &lt;/div&gt;
+   &lt;div class="form-group"&gt;
+       &lt;label class="col-lg-2 control-label"&gt;网站地址：&lt;/label&gt;
+       &lt;div class="col-lg-10"&gt;
+           &lt;input type="text" class="form-control" name="website" s s-data-filter="'website'" /&gt;
+       &lt;/div&gt;
+   &lt;/div&gt;
+&lt;/form&gt;
+</pre>
+                        </li>
+                        <li>
+                            <h4>使用<code>s-datac-ig="true"</code>属性忽略数据绑定</h4>
+                            <p>在一些情况下我们并不需要datac控件为其的某个子控件进行数据绑定，那么久可以配置该子控件的<code>s-datac-ig="true"</code>属性，那么该子控件将会被忽略</p>
+                        </li>
+                        <li>
+                            <h4>使用<code>s-datac-fn="build"</code>指定子控件数据绑定的方法名</h4>
+                            <p>
+                                默认情况下子控件数据绑定的时候，会调用子控件的<code>data(obj)</code>方法进行数据绑定，但是也有特殊情况需要调用另外的api，那么久可以配置该子控件的
+                                <code>s-datac-fn</code>的属性即可，如该属性值配置的是<code>build</code>，数据绑定的时候就会调用该控件的build方法，而不是data方法。
+                            </p>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="panel panel-built panel-primary">
+                <div class="panel-heading">表单name适配赋值（nda控件）</div>
+                <div class="alert alert-warning">
+                    我们在表单数据绑定的时候可以根据表单域的name值进行数据绑定，而不需要为每个表单域声明<code>s-data-filter="'key'"</code>的属性，使用nda控件可以省去很大一部分代码量。
+                </div>
+                <div class="panel-body">
+                    <h4>form表单绑定<code>json/data.json</code>数据</h4>
+                    <form s="nda,datac" s-data="S.get('json/data.json')" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">名称：</label>
+                            <div class="col-lg-10">
+                                <input type="text" class="form-control" name="name" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">说明：</label>
+                            <div class="col-lg-10">
+                                <input type="text" class="form-control" name="desc"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">网站地址：</label>
+                            <div class="col-lg-10">
+                                <input type="text" class="form-control" name="website" />
+                            </div>
+                        </div>
+                    </form>
+                    <p>示例代码：</p>
+<pre>
+&lt;form <span class="text-success">s="nda,datac" s-data="S.get('json/data.json')"</span> class="form-horizontal"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label class="col-lg-2 control-label"&gt;名称：&lt;/label&gt;
+        &lt;div class="col-lg-10"&gt;
+            &lt;input type="text" class="form-control" name="name" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label class="col-lg-2 control-label"&gt;说明：&lt;/label&gt;
+        &lt;div class="col-lg-10"&gt;
+            &lt;input type="text" class="form-control" name="desc"/&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label class="col-lg-2 control-label"&gt;网站地址：&lt;/label&gt;
+        &lt;div class="col-lg-10"&gt;
+            &lt;input type="text" class="form-control" name="website" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/form&gt;
+</pre>
+                    <div>
+                        nda控件会对当前控件所有拥有name属性的子元素进行适配，所以对于表单域来说，可以直接通过name属性值进行数据绑定。
+                    </div>
+                    <h4>忽略name适配</h4>
+                    <p>为子元素配置<code>s-nda-ig="true"</code>属性可以忽略该元素的name适配，如代码<code>&lt;input s-nda-ig="true" type="text" class="form-control" name="website" /&gt;</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var whatYouSay = "Hello iSmartJs, u are so powerful!";
+
+    var dataFilter = function(data){
+        return data.name + data.desc + "，它的官方网址是：" + data.website;
+    }
+
+    function dataFunction(){
+        return "Hello iSmartJs, u are so powerful!";
+    }
+    function dataFunctionDeferred(){
+        var deferred = $.Deferred();
+        setTimeout(function(){
+            deferred.resolve("Hello iSmartJs, u are so powerful!")
+        }, 50);
+        return deferred;
+    }
+</script>

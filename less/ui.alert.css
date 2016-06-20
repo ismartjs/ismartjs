@@ -1,0 +1,53 @@
+/**
+  radius
+*/
+/**
+  button
+*/
+/**
+toast
+*/
+/**
+  panel
+*/
+/**
+state
+*/
+.s-alert .s-alert-msg {
+  margin-top: 5px;
+}
+.s-alert .s-alert-sign {
+  font-size: 32px;
+  display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.s-alert .s-alert-sign.s-alert-sign-default {
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: 32px;
+}
+.s-alert.s-alert-info .s-alert-sign {
+  color: #3498DB;
+}
+.s-alert.s-alert-info .s-alert-sign.s-alert-sign-default:before {
+  content: "\f05a";
+}
+.s-alert.s-alert-success .s-alert-sign {
+  color: #62cb31;
+}
+.s-alert.s-alert-success .s-alert-sign.s-alert-sign-default:before {
+  content: "\f058";
+}
+.s-alert.s-alert-warning .s-alert-sign {
+  color: #ffb606;
+}
+.s-alert.s-alert-warning .s-alert-sign.s-alert-sign-default:before {
+  content: "\f071";
+}
+.s-alert.s-alert-danger .s-alert-sign {
+  color: #e74c3c;
+}
+.s-alert.s-alert-danger .s-alert-sign.s-alert-sign-default:before {
+  content: "\f057";
+}

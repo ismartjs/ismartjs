@@ -1,0 +1,173 @@
+<meta title="表单控件" icon="fa fa-file-text-o"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">表单控件</div>
+            <div>
+                表单控件主要用于通过ajax提交表单到服务器或者提交表单数据到方法。
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">Follow Me</div>
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            <h4>提交表单到远程</h4>
+                            <form s="form,valid" action="json/form-submit.json"
+                                  s-form="{done: submitDone}"
+                                  class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">
+                                        账号：
+                                    </label>
+                                    <div class="col-lg-10">
+                                        <input type="text" s-valid-error="require()" class="form-control" name="account" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">
+                                        密码：
+                                    </label>
+                                    <div class="col-lg-10">
+                                        <input type="password" s-valid-error="require()" class="form-control" name="password" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-lg-offset-2 col-lg-10">
+                                        <input type="submit" class="btn btn-primary" value="提交" />
+                                    </div>
+                                </div>
+                            </form>
+                            <blockquote class="border-orange">
+                                <code>form</code>控件一般会与<code>valid</code>控件组合使用，<code>form</code>控件在提交数据的时候，会自动调用<code>valid</code>控件的验证方法，而不需要手动去做表单输入验证。
+                            </blockquote>
+                            <h4>代码</h4>
+<pre>
+&lt;form <span class="text-success">s="form,valid" action="json/form-submit.json"
+      s-form="{done: submitDone}"</span>
+      class="form-horizontal"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label class="control-label col-lg-2"&gt;
+            账号：
+        &lt;/label&gt;
+        &lt;div class="col-lg-10"&gt;
+            &lt;input type="text" s-valid-error="require()" class="form-control" name="account" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label class="control-label col-lg-2"&gt;
+            密码：
+        &lt;/label&gt;
+        &lt;div class="col-lg-10"&gt;
+            &lt;input type="password" s-valid-error="require()" class="form-control" name="password" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+        &lt;div class="col-lg-offset-2 col-lg-10"&gt;
+            &lt;input type="submit" class="btn btn-primary" value="提交" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/form&gt;
+&lt;script type="text/javascript"&gt;
+    function submitDone(rs){
+        S.alert("数据提交成功，服务器返回json为：" + JSON.stringify(rs));
+    }
+&lt;/script&gt;
+</pre>
+                            <blockquote class="border-orange">
+                                当表单声明为form控件后，form控件会监听表单的submit事件，处理表单的数据提交！
+                            </blockquote>
+                        </li>
+                        <li>
+                            <h4>处理表单数据提交的返回结果</h4>
+                            <p class="lead">通过配置form控件的<code>done</code>参数，可以处理表单提交的返回结果，done方法的参数为表单提交后服务器的返回结果，在上述示例中，
+                                通过submitDone方法进行处理。</p>
+                        </li>
+                        <li>
+                            <h4>提交表单数据到异步方法</h4>
+                            <form s="form,valid"
+                                  s-form="{done: submitDone, action: formAsyncAction}"
+                                  class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">
+                                        账号：
+                                    </label>
+                                    <div class="col-lg-10">
+                                        <input type="text" s-valid-error="require()" class="form-control" name="account" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">
+                                        密码：
+                                    </label>
+                                    <div class="col-lg-10">
+                                        <input type="password" s-valid-error="require()" class="form-control" name="password" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-lg-offset-2 col-lg-10">
+                                        <input type="submit" class="btn btn-primary" value="提交" />
+                                    </div>
+                                </div>
+                            </form>
+                            <h4>代码</h4>
+<pre>
+&lt;form s="form,valid"
+      s-form="{done: submitDone, action: formAsyncAction}"
+      class="form-horizontal"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label class="control-label col-lg-2"&gt;
+            账号：
+        &lt;/label&gt;
+        &lt;div class="col-lg-10"&gt;
+            &lt;input type="text" s-valid-error="require()" class="form-control" name="account" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label class="control-label col-lg-2"&gt;
+            密码：
+        &lt;/label&gt;
+        &lt;div class="col-lg-10"&gt;
+            &lt;input type="password" s-valid-error="require()" class="form-control" name="password" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+        &lt;div class="col-lg-offset-2 col-lg-10"&gt;
+            &lt;input type="submit" class="btn btn-primary" value="提交" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/form&gt;
+&lt;script type="text/javascript"&gt;
+    function submitDone(rs){
+        S.alert("数据提交成功，服务器返回json为：" + JSON.stringify(rs));
+    }
+
+    function formAsyncAction(data){
+        //如果是异步方法，必须返回一个deferred对象，同步方法则直接返回值即可
+        return S.post("json/form-submit.json", data);
+    }
+
+&lt;/script&gt;
+</pre>
+                            <p class="lead">我们可以将表单的数据提交到一个异步的方法中，异步方法的返回值可以是</p>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function submitDone(rs){
+        S.alert("数据提交成功，服务器返回json为：" + JSON.stringify(rs));
+    }
+
+    function formAsyncAction(data){
+        //如果是异步方法，必须返回一个deferred对象，同步方法则直接返回值即可
+        return S.post("json/form-submit.json", data);
+    }
+
+</script>

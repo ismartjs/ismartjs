@@ -1,0 +1,572 @@
+<meta title="表单元素" icon="fa fa-dot-circle-o"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">表单元素</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-success panel-built">
+                <div class="panel-heading">基本表单</div>
+                <div class="panel-body">
+                    <form>
+                        <div class="form-group">
+                            <label>用户名</label>
+                            <input type="email" class="form-control" placeholder="用户名">
+                        </div>
+                        <div class="form-group">
+                            <label>密码</label>
+                            <input type="password" class="form-control" placeholder="请输入密码">
+                        </div>
+                        <div class="checkbox">
+                            <label class="s-checkbox">
+                                <input type="checkbox"> 记住我
+                                <span class="s-checkbox-indicator"></span>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-default">登 录</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-primary panel-built">
+                <div class="panel-heading">水平排列的表单</div>
+                <div class="panel-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户名</label>
+
+                            <div class="col-sm-10">
+                                <input type="email" class="form-control" placeholder="用户名">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">密码</label>
+
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" placeholder="密码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <label class="s-checkbox">
+                                    <input type="checkbox"> 记住我
+                                    <span class="s-checkbox-indicator"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-default">登 录</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-orange panel-built">
+                <div class="panel-heading">内联表单</div>
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label class="sr-only">用户名</label>
+                            <input type="email" class="form-control" placeholder="用户名"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only">密码</label>
+                            <input type="password" class="form-control" placeholder="密码"/>
+                        </div>
+                        <label class="s-checkbox">
+                            <input type="checkbox"> 记住我
+                            <span class="s-checkbox-indicator"></span>
+                        </label>
+                        <button type="submit" class="btn btn-primary btn-sm">登 录</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-built">
+                <div class="panel-heading">下拉列表</div>
+                <div class="panel-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">原生下拉列表</label>
+
+                            <div class="col-sm-10">
+                                <select class="form-control">
+                                    <option>齐秦</option>
+                                    <option>周杰伦</option>
+                                    <option>许巍</option>
+                                    <option>刘惜君</option>
+                                    <option>梁静茹</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">可搜索下拉列表</label>
+
+                            <div class="col-sm-10">
+                                <div class="form-control s-select" s="select">
+                                    <input type="hidden" s-select-role="input">
+
+                                    <div class="s-select-mirror">
+                                        <span></span>
+                                        <i class="fa fa-caret-down"></i>
+                                    </div>
+                                    <div class="s-select-panel">
+                                        <input type="text" class="s-select-filter" placeholder="输入筛选"/>
+                                        <ul class="s-select-list">
+                                            <li class="s-select-list-item" value="">选择歌手</li>
+                                            <li class="s-select-list-item" value="qiqin">齐秦</li>
+                                            <li class="s-select-list-item" value="zjl">周杰伦</li>
+                                            <li class="s-select-list-item" value="xw">许巍</li>
+                                            <li class="s-select-list-item" value="lxj">刘惜君</li>
+                                            <li class="s-select-list-item" value="ljr">梁静茹</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                这里需要使用<code>s='select'</code>控件进行渲染，具体请查看<a href="javascript:;"
+                                                                            s-click="S.open('select.html')">【下拉列表】</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-5">
+            <div class="panel panel-built panel-info">
+                <div class="panel-heading">
+                    基本表单
+                </div>
+                <div class="panel-body">
+                    <form method="get" class="form-horizontal">
+                        <div class="form-group"><label class="col-sm-2 control-label">默认</label>
+
+                            <div class="col-sm-10"><input type="text" class="form-control"></div>
+                        </div>
+                        <hr/>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">帮助块</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control">
+                                <span class="help-block ">这里可以填写帮助信息</span>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group"><label class="col-sm-2 control-label">密码</label>
+
+                            <div class="col-sm-10"><input type="password" class="form-control" name="password"></div>
+                        </div>
+                        <hr/>
+                        <div class="form-group"><label class="col-sm-2 control-label">Placeholder</label>
+
+                            <div class="col-sm-10"><input type="text" placeholder="placeholder" class="form-control">
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group"><label class="col-lg-2 control-label">禁用状态</label>
+
+                            <div class="col-lg-10">
+                                <input type="text" disabled="" placeholder="Disabled input here..."
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group"><label class="col-lg-2 control-label">静态</label>
+
+                            <div class="col-lg-10"><p class="form-control-static">email@example.com</p></div>
+                        </div>
+                        <hr/>
+                        <div class="form-group">
+                            <div class="col-sm-8 col-sm-offset-2">
+                                <button class="btn btn-primary" type="button">提 交</button>
+                                <button class="btn btn-default" type="button">取 消</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">
+                    单选和多选
+                </div>
+                <div class="panel-body">
+                    <form method="get" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">单选</label>
+
+                            <div class="col-sm-10 ">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="radio">
+                                            <label class="s-radio">
+                                                <input type="radio" name="radio"> 选项1
+                                                <span class="s-radio-indicator"></span>
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label class="s-radio">
+                                                <input type="radio" name="radio"> 选项2
+                                                <span class="s-radio-indicator"></span>
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label class="s-radio">
+                                                <input type="radio" name="radio"> 选项3
+                                                <span class="s-radio-indicator"></span>
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label class="s-radio">
+                                                <input type="radio" name="radio"> 选项4
+                                                <span class="s-radio-indicator"></span>
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label class="s-radio">
+                                                <input type="radio" disabled name="radio"> 禁用状态
+                                                <span class="s-radio-indicator"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <h4>单选样式html代码</h4>
+<pre>
+&lt;label class="s-radio"&gt;
+    &lt;input type="radio" name="radio"&gt; 选项
+    &lt;span class="s-radio-indicator"&gt;&lt;/span&gt;
+&lt;/label&gt;
+</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">多选</label>
+
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-lg-2">
+                                        <div class="checkbox">
+                                            <label class="s-checkbox">
+                                                <input type="checkbox"> 选项1
+                                                <span class="s-checkbox-indicator"></span>
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label class="s-checkbox">
+                                                <input type="checkbox"> 选项2
+                                                <span class="s-checkbox-indicator"></span>
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label class="s-checkbox">
+                                                <input type="checkbox"> 选项3
+                                                <span class="s-checkbox-indicator"></span>
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label class="s-checkbox">
+                                                <input type="checkbox"> 选项4
+                                                <span class="s-checkbox-indicator"></span>
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label class="s-checkbox">
+                                                <input type="checkbox" disabled /> 禁用状态
+                                                <span class="s-checkbox-indicator"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-10">
+                                        <h4>多选样式html代码</h4>
+<pre>
+&lt;label class="s-checkbox"&gt;
+    &lt;input type="checkbox"&gt; 选项
+    &lt;span class="s-checkbox-indicator"&gt;&lt;/span&gt;
+&lt;/label&gt;
+</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Inline radios</label>
+
+                            <div class="col-sm-10">
+                                <div class="radio ">
+                                    <label class="s-radio">
+                                        <input type="radio" name="radio"> 选项1
+                                        <span class="s-radio-indicator"></span>
+                                    </label>
+                                    <label class="s-radio">
+                                        <input type="radio" name="radio"> 选项2
+                                        <span class="s-radio-indicator"></span>
+                                    </label>
+                                    <label class="s-radio">
+                                        <input type="radio" name="radio"> 选项3
+                                        <span class="s-radio-indicator"></span>
+                                    </label>
+                                    <label class="s-radio">
+                                        <input type="radio" name="radio"> 选项4
+                                        <span class="s-radio-indicator"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Inline checkboxes</label>
+
+                            <div class="col-sm-10">
+                                <div class="checkbox  ">
+                                    <label class="s-checkbox">
+                                        <input type="checkbox"> 选项1
+                                        <span class="s-checkbox-indicator"></span>
+                                    </label>
+                                    <label class="s-checkbox">
+                                        <input type="checkbox"> 选项2
+                                        <span class="s-checkbox-indicator"></span>
+                                    </label>
+                                    <label class="s-checkbox">
+                                        <input type="checkbox"> 选项3
+                                        <span class="s-checkbox-indicator"></span>
+                                    </label>
+                                    <label class="s-checkbox">
+                                        <input type="checkbox"> 选项4
+                                        <span class="s-checkbox-indicator"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">
+                                开关按钮
+                            </label>
+
+                            <div class="col-lg-10">
+                                <div class="col-lg-2">
+                                    <label class="s-checkbox-switch">
+                                        <input type="checkbox" name="checkbox">
+                                        <span class="s-checkbox-indicator"></span>
+                                    </label>
+                                </div>
+                                <div class="col-lg-10">
+                                    <h4>开关样式代码</h4>
+<pre>
+&lt;label class="s-checkbox-switch"&gt;
+        &lt;input type="checkbox" name="checkbox"&gt;
+        &lt;span class="s-checkbox-indicator"&gt;&lt;/span&gt;
+    &lt;/label&gt;
+</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-built panel-info">
+                <div class="panel-heading">
+                    其他表单元素
+                </div>
+                <div class="panel-body">
+                    <form method="get" class="form-horizontal">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文本框大小</label>
+
+                            <div class="col-sm-10"><input type="text" placeholder=".input-lg"
+                                                          class="form-control input-lg m-b">
+                                <input type="text" placeholder="Default input" class="form-control m-b"/>
+                                <input type="text" placeholder=".input-sm" class="form-control input-sm"/>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group"><label class="col-sm-2 control-label">列宽</label>
+
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-md-2"><input type="text" placeholder=".col-md-2"
+                                                                 class="form-control"></div>
+                                    <div class="col-md-3"><input type="text" placeholder=".col-md-3"
+                                                                 class="form-control"></div>
+                                    <div class="col-md-4"><input type="text" placeholder=".col-md-4"
+                                                                 class="form-control"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group"><label class="col-sm-2 control-label">Input groups</label>
+
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    <span class="input-group-addon">@</span> <input type="text" placeholder="Username"
+                                                                                    class="form-control">
+                                </div>
+                                <div class="input-group m-b">
+                                    <input type="text" class="form-control"> <span class="input-group-addon">.00</span>
+                                </div>
+                                <div class="input-group m-b">
+                                    <span class="input-group-addon">$</span>
+                                    <input type="text" class="form-control"> <span class="input-group-addon">.00</span>
+                                </div>
+                                <div class="input-group m-b">
+                                    <span class="input-group-addon">
+                                        <input type="checkbox" name="checkbox"/>
+                                    </span>
+                                    <input type="text" class="form-control">
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <input type="radio" name="checkbox"/>
+                                    </span>
+                                    <input type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group"><label class="col-sm-2 control-label">Button addons</label>
+
+                            <div class="col-sm-10">
+                                <div class="input-group m-b"><span class="input-group-btn">
+                                            <button type="button" class="btn btn-primary">Go!</button> </span> <input
+                                        type="text" class="form-control">
+                                </div>
+                                <div class="input-group"><input type="text" class="form-control"> <span
+                                        class="input-group-btn"> <button type="button" class="btn btn-primary">Go!
+                                </button> </span></div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group"><label class="col-sm-2 control-label">With dropdowns</label>
+
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                                type="button">Action <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="">Action</a></li>
+                                            <li><a href="">Another action</a></li>
+                                            <li><a href="">Something else here</a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="">Separated link</a></li>
+                                        </ul>
+                                    </div>
+                                    <input type="text" class="form-control"></div>
+                                <div class="input-group"><input type="text" class="form-control">
+
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                                type="button">Action <span class="caret"></span></button>
+                                        <ul class="dropdown-menu pull-right">
+                                            <li><a href="">Action</a></li>
+                                            <li><a href="">Another action</a></li>
+                                            <li><a href="">Something else here</a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="">Separated link</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group"><label class="col-sm-2 control-label">Segmented</label>
+
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    <div class="input-group-btn">
+                                        <button tabindex="-1" class="btn btn-default" type="button">Action</button>
+                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                                type="button"><span class="caret"></span></button>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="">Action</a></li>
+                                            <li><a href="">Another action</a></li>
+                                            <li><a href="">Something else here</a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="">Separated link</a></li>
+                                        </ul>
+                                    </div>
+                                    <input type="text" class="form-control"></div>
+                                <div class="input-group"><input type="text" class="form-control">
+
+
+                                    <div class="input-group-btn">
+                                        <button tabindex="-1" class="btn btn-default" type="button">Action</button>
+                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                                type="button"><span class="caret"></span></button>
+                                        <ul class="dropdown-menu pull-right">
+                                            <li><a href="">Action</a></li>
+                                            <li><a href="">Another action</a></li>
+                                            <li><a href="">Something else here</a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="">Separated link</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="form-group">
+                            <div class="col-sm-8 col-sm-offset-2">
+                                <button class="btn btn-default" type="submit">Cancel</button>
+                                <button class="btn btn-primary" type="submit">Save changes</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">
+                    格式化输入
+                </div>
+                <div class="alert alert-warning">
+                    可以按照固定格式输入文本，详情访问：<a href="http://jasny.github.io/bootstrap/" external target="_blank">http://jasny.github.io/bootstrap/</a>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">手机号码：</label>
+                            <div class="col-lg-10">
+                                <input type="text" class="form-control" data-mask="999-9999-9999" placeholder="手机号码" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">ip地址：</label>
+                            <div class="col-lg-10">
+                                <input type="text" class="form-control" data-mask="999.999.999.999" placeholder="ip地址" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">日期：</label>
+                            <div class="col-lg-10">
+                                <input type="text" class="form-control" data-mask="9999-99-99" placeholder="日期" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

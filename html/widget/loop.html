@@ -1,0 +1,701 @@
+<meta title="列表控件（loop）" icon="fa fa-list"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">列表控件</div>
+            <div>
+                使用列表控件、行选择控件、分页控件、表单控件可以构建出查询列表。
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">Follow Me</div>
+                <div class="alert alert-warning">
+                    列表控件最常用的地方是和行选择控件、分页控件、表单搜索控件组合起来构建查询列表，iSmartJs强大的控件渲染与协作机制可以使得查询列表可以实现完全的自定义。
+                </div>
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            <h4>一个简单的列表</h4>
+                            <table class="table table-striped">
+                                <tr>
+                                    <th>歌手</th>
+                                    <th>地区</th>
+                                    <th>歌曲</th>
+                                    <th>排行榜</th>
+                                </tr>
+                                <tbody s="loop" s-data="S.get('json/singers.json')">
+                                <tr s-loop-role="row" s="datac">
+                                    <td s s-data-filter="'name'"></td>
+                                    <td s s-data-filter="'area'"></td>
+                                    <td s s-data-filter="'song'"></td>
+                                    <td s s-data-filter="'rank'"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <h4>代码</h4>
+<pre>
+&lt;table class="table table-striped"&gt;
+   &lt;tr&gt;
+       &lt;th&gt;歌手&lt;/th&gt;
+       &lt;th&gt;地区&lt;/th&gt;
+       &lt;th&gt;歌曲&lt;/th&gt;
+       &lt;th&gt;排行榜&lt;/th&gt;
+   &lt;/tr&gt;
+   &lt;tbody <span class="text-success">s="loop" s-data="S.get('json/singers.json')"</span> &gt;
+   &lt;tr <span class="text-success">s-loop-role="row" s="datac"</span>&gt;
+       &lt;td s s-data-filter="'name'"&gt;&lt;/td&gt;
+       &lt;td s s-data-filter="'area'"&gt;&lt;/td&gt;
+       &lt;td s s-data-filter="'song'"&gt;&lt;/td&gt;
+       &lt;td s s-data-filter="'rank'"&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
+                            <h4><code>json/singers.json</code>的值为</h4>
+<pre>
+[
+  {
+    "name": "齐秦",
+    "area": "港台",
+    "song": "不让我的眼泪陪我过夜",
+    "rank": 1
+  },
+  {
+    "name": "周杰伦",
+    "area": "港台",
+    "song": "爱在西元前",
+    "rank": 2
+  },
+  {
+    "name": "梁静茹",
+    "area": "马来西亚",
+    "song": "宁夏",
+    "rank": 3
+  },
+  {
+    "name": "刘惜君",
+    "area": "大陆",
+    "song": "恋风恋歌",
+    "rank": 4
+  },
+  {
+    "name": "刘瑞琪",
+    "area": "大陆",
+    "song": "头号粉丝",
+    "rank": 5
+  },
+  {
+    "name": "莫文蔚",
+    "area": "港台",
+    "song": "阴天",
+    "rank": 6
+  }
+]
+</pre>
+                            <ul>
+                                <li>
+                                    <h5>声明loop控件，并绑定数据源</h5>
+
+                                    <p>
+                                        使用<code>s='loop'</code>将tbody声明为loop控件，并且通过<code>s-data="S.get('json/singers.json')"</code>绑定loop控件的数据源。
+                                    </p>
+                                </li>
+                                <li>
+                                    <h5>声明列表控件循环的行</h5>
+
+                                    <p>
+                                        使用<code>s-loop-role="row"</code>声明列表控件的行，列表控件构建的时候，会根据该行的dom进行构建，可以声明多个行。
+                                        在这里，通常情况下，还需要声明行为<code>datac</code>控件，因为进行数据绑定的是行下面的用于显示数据的控件。
+                                    </p>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <h4>声明空数据提示行</h4>
+
+                            <div class="alert alert-warning">通常的，如果查询的列表数据为空的时候需要在列表中提示，比如提示：未查询到相关数据等，我们可以通过声明<code>s-loop-role="empty"</code>
+                                来声明空数据提示行，当查询数据列表为空的时候，该行会作为提示行显示出来。
+                            </div>
+                            <table class="table table-striped">
+                                <tr>
+                                    <th>歌手</th>
+                                    <th>地区</th>
+                                    <th>歌曲</th>
+                                    <th>排行榜</th>
+                                </tr>
+                                <tbody s="loop" s-data="[]">
+                                <tr s-loop-role="empty">
+                                    <td colspan="4">
+                                        <div class="space-v text-center">
+                                            <i class="fa fa-info-circle text-info"></i> 未查询到数据
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr s-loop-role="row" s="datac">
+                                    <td s s-data-filter="'name'"></td>
+                                    <td s s-data-filter="'area'"></td>
+                                    <td s s-data-filter="'song'"></td>
+                                    <td s s-data-filter="'rank'"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <h4>代码</h4>
+<pre>
+&lt;table class="table table-striped"&gt;
+    &lt;tr&gt;
+        &lt;th&gt;歌手&lt;/th&gt;
+        &lt;th&gt;地区&lt;/th&gt;
+        &lt;th&gt;歌曲&lt;/th&gt;
+        &lt;th&gt;排行榜&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tbody s="loop" s-data="[]"&gt;
+    <span class="text-success">&lt;tr s-loop-role="empty"&gt;
+        &lt;td colspan="4"&gt;
+            &lt;div class="space-v text-center"&gt;
+                &lt;i class="fa fa-info-circle text-info"&gt;&lt;/i&gt; 未查询到数据
+            &lt;/div&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;</span>
+    &lt;tr s-loop-role="row" s="datac"&gt;
+        &lt;td s s-data-filter="'name'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'area'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'song'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'rank'"&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
+                        </li>
+                        <li>
+                            <h4>声明加载提示</h4>
+
+                            <div class="alert alert-warning">
+                                通过<code>s-loop-role="loading"</code>声明加载提示行，可以在列表控件刷新或者进行数据源加载的时候显示。
+                            </div>
+                            <table class="table table-striped">
+                                <tr>
+                                    <th>歌手</th>
+                                    <th>地区</th>
+                                    <th>歌曲</th>
+                                    <th>排行榜</th>
+                                </tr>
+                                <p>
+                                    <input type="button" class="btn btn-primary btn-xs" value="刷新"
+                                           s-click="$singersList.refresh()"/>
+                                </p>
+                                <tbody id="singersList" s="loop" s-data="mockSyncData()">
+                                <tr s-loop-role="loading">
+                                    <td colspan="4">
+                                        <div class="space-v text-center">
+                                            <div class="sk-fading-circle ">
+                                                <div class="sk-circle1  "></div>
+                                                <div class="sk-circle2  "></div>
+                                                <div class="sk-circle3  "></div>
+                                                <div class="sk-circle4  "></div>
+                                                <div class="sk-circle5  "></div>
+                                                <div class="sk-circle6  "></div>
+                                                <div class="sk-circle7  "></div>
+                                                <div class="sk-circle8  "></div>
+                                                <div class="sk-circle9  "></div>
+                                                <div class="sk-circle10  "></div>
+                                                <div class="sk-circle11  "></div>
+                                                <div class="sk-circle12  "></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr s-loop-role="row" s="datac">
+                                    <td s s-data-filter="'name'"></td>
+                                    <td s s-data-filter="'area'"></td>
+                                    <td s s-data-filter="'song'"></td>
+                                    <td s s-data-filter="'rank'"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <h4>代码</h4>
+<pre>
+&lt;table class="table table-striped"&gt;
+    &lt;tr&gt;
+        &lt;th&gt;歌手&lt;/th&gt;
+        &lt;th&gt;地区&lt;/th&gt;
+        &lt;th&gt;歌曲&lt;/th&gt;
+        &lt;th&gt;排行榜&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;p&gt;
+        &lt;input type="button" class="btn btn-primary btn-xs" value="刷新" s-click="$singersList.refresh()" /&gt;
+    &lt;/p&gt;
+    &lt;tbody id="singersList" s="loop" s-data="mockSyncData()"&gt;
+    &lt;tr s-loop-role="loading"&gt;
+        &lt;td colspan="4"&gt;
+            &lt;div class="space-v text-center"&gt;
+                &lt;div class="sk-fading-circle "&gt;
+                    &lt;div class="sk-circle1  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle2  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle3  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle4  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle5  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle6  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle7  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle8  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle9  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle10  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle11  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle12  "&gt;&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr s-loop-role="row" s="datac"&gt;
+        &lt;td s s-data-filter="'name'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'area'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'song'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'rank'"&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;script type="text/javascript"&gt;
+    function mockSyncData(){
+        var deferred = $.Deferred();
+
+        //在这里模拟了500ms的延时用于展示效果
+        setTimeout(function(){
+            Smart.deferredChain(deferred, S.get('json/singers.json'));
+        }, 500);
+
+        return deferred;
+    }
+&lt;/script&gt;
+</pre>
+                        </li>
+                        <li>
+                            <h4>根据form表单查询列表</h4>
+
+                            <div class="alert alert-warning">
+                                我们可以在为列表绑定数据源的时候将form表单的序列化值作为参数传递即可实现form表单查询列表。<br/>
+                                如：<code>S.get('json/singers.json', $form.node.serialize())</code>
+                            </div>
+                            <p>以下的演示数据源并不是动态的，所以表单的参数并不会影响查询结果，仅仅是作为效果演示。</p>
+
+                            <form id="searchForm" class="form-inline space-v">
+                                <input type="text" name="name" class="form-control" placeholder="输入歌手名进行查询"/>
+                                <input type="button" class="btn btn-primary btn-sm" value="查询"
+                                       s-click="$singersList1.refresh()"/>
+                            </form>
+                            <table class="table table-striped">
+                                <tr>
+                                    <th>歌手</th>
+                                    <th>地区</th>
+                                    <th>歌曲</th>
+                                    <th>排行榜</th>
+                                </tr>
+                                <tbody id="singersList1" s="loop"
+                                       s-data="S.get('json/singers.json', $searchForm.node.serialize())">
+                                <tr s-loop-role="loading">
+                                    <td colspan="4">
+                                        <div class="space-v text-center">
+                                            <div class="sk-fading-circle ">
+                                                <div class="sk-circle1  "></div>
+                                                <div class="sk-circle2  "></div>
+                                                <div class="sk-circle3  "></div>
+                                                <div class="sk-circle4  "></div>
+                                                <div class="sk-circle5  "></div>
+                                                <div class="sk-circle6  "></div>
+                                                <div class="sk-circle7  "></div>
+                                                <div class="sk-circle8  "></div>
+                                                <div class="sk-circle9  "></div>
+                                                <div class="sk-circle10  "></div>
+                                                <div class="sk-circle11  "></div>
+                                                <div class="sk-circle12  "></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr s-loop-role="row" s="datac">
+                                    <td s s-data-filter="'name'"></td>
+                                    <td s s-data-filter="'area'"></td>
+                                    <td s s-data-filter="'song'"></td>
+                                    <td s s-data-filter="'rank'"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <h4>代码</h4>
+<pre>
+&lt;form <span class="text-success">id="searchForm"</span> class="form-inline space-v"&gt;
+    &lt;input type="text" name="name" class="form-control" placeholder="输入歌手名进行查询" /&gt;
+    &lt;input type="button" class="btn btn-primary btn-sm" value="查询" <span class="text-success">s-click="$singersList1.refresh()"</span> /&gt;
+&lt;/form&gt;
+&lt;table class="table table-striped"&gt;
+    &lt;tr&gt;
+        &lt;th&gt;歌手&lt;/th&gt;
+        &lt;th&gt;地区&lt;/th&gt;
+        &lt;th&gt;歌曲&lt;/th&gt;
+        &lt;th&gt;排行榜&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tbody <span class="text-success">id="singersList1" s="loop" s-data="S.get('json/singers.json', $searchForm.node.serialize())"</span>&gt;
+    &lt;tr s-loop-role="loading"&gt;
+        &lt;td colspan="4"&gt;
+            &lt;div class="space-v text-center"&gt;
+                &lt;div class="sk-fading-circle "&gt;
+                    &lt;div class="sk-circle1  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle2  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle3  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle4  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle5  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle6  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle7  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle8  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle9  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle10  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle11  "&gt;&lt;/div&gt;
+                    &lt;div class="sk-circle12  "&gt;&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr s-loop-role="row" s="datac"&gt;
+        &lt;td s s-data-filter="'name'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'area'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'song'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'rank'"&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
+                        </li>
+                        <li>
+                            <h4>分页列表</h4>
+
+                            <div class="alert alert-warning">
+                                分页列表需要通过分页控件配合列表控件来构建。简单来说，就是通过<code>datac</code>控件把查询的返回值分别赋值给列表控件和分页控件，点击分页控件页数的时候，
+                                将当前的页数保存到查询form当中再次进行查询，即可实现分页查询功能。
+                            </div>
+                            <form id="searchForm2"
+                                  s="form"
+                                  s-form="{action: function(){ return $singersGrid.refresh();}}"
+                                  class="form-inline space-v">
+                                <input type="text" name="name" class="form-control" placeholder="输入歌手名进行查询"/>
+                                <input type="hidden" name="page" id="page"/>
+                                <input type="submit" class="btn btn-primary btn-sm" value="查询"/>
+                            </form>
+                            <table class="table table-striped"
+                                   id="singersGrid"
+                                   s="datac" s-data="S.get('json/singers-page.php', $searchForm2.node.serialize())">
+                                <tr>
+                                    <th>歌手</th>
+                                    <th>地区</th>
+                                    <th>歌曲</th>
+                                    <th>排行榜</th>
+                                </tr>
+                                <tbody s="loop" s-data-filter="'results'">
+                                <tr s-loop-role="empty">
+                                    <td colspan="4">
+                                        <div class="space-v text-center">
+                                            <i class="fa fa-info-circle text-info"></i> 未查询到数据
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr s-loop-role="row" s="datac">
+                                    <td s s-data-filter="'name'"></td>
+                                    <td s s-data-filter="'area'"></td>
+                                    <td s s-data-filter="'song'"></td>
+                                    <td s s-data-filter="'rank'"></td>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td colspan="4">
+                                        <ul s="pagination"
+                                            s-pagination="{action: function(){$page.node.val(this);$singersGrid.refresh();}}"
+                                            class="pagination pagination-sm pull-right">
+                                        </ul>
+                                        <span class="pull-right p-lg">总记录数：<span s
+                                                                                 s-data-filter="'total'"></span></span>
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                            <h4>代码</h4>
+<pre>
+&lt;form id="searchForm2"
+      <span class="text-success">
+      s="form"
+      s-form="{action: function(){ return $singersGrid.refresh();}}"
+      </span>
+      class="form-inline space-v"&gt;
+    &lt;input type="text" name="name" class="form-control" placeholder="输入歌手名进行查询" /&gt;
+    &lt;input type="hidden" name="page" id="page" /&gt;
+    &lt;input type="submit" class="btn btn-primary btn-sm" value="查询" /&gt;
+&lt;/form&gt;
+&lt;table class="table table-striped"
+       <span class="text-success">id="singersGrid"
+       s="datac"
+       s-data="S.get('json/singers-page.php', $searchForm2.node.serialize())"</span>
+        &gt;
+    &lt;tr&gt;
+        &lt;th&gt;歌手&lt;/th&gt;
+        &lt;th&gt;地区&lt;/th&gt;
+        &lt;th&gt;歌曲&lt;/th&gt;
+        &lt;th&gt;排行榜&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tbody s="loop" s-data-filter="'results'"&gt;
+    &lt;tr s-loop-role="empty"&gt;
+        &lt;td colspan="4"&gt;
+            &lt;div class="space-v text-center"&gt;
+                &lt;i class="fa fa-info-circle text-info"&gt;&lt;/i&gt; 未查询到数据
+            &lt;/div&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr s-loop-role="row" s="datac"&gt;
+        &lt;td s s-data-filter="'name'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'area'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'song'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'rank'"&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+    &lt;tfoot&gt;
+    &lt;tr&gt;
+        &lt;td colspan="4"&gt;
+            <span class="text-success">&lt;span class="pull-right"&gt;总记录数：&lt;span s s-data-filter="'total'"&gt;&lt;/span&gt;&lt;/span&gt;
+            &lt;ul s="pagination"
+                s-pagination="{action: function(){$page.node.val(this);$singersGrid.refresh();}}"
+                class="pagination pagination-sm pull-right"&gt;
+            &lt;/ul&gt;</span>
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tfoot&gt;
+&lt;/table&gt;
+</pre>
+                            <p class="lead">
+                                在这里使用了<code>form控件</code>、<code>loop控件</code>、<code>pagination控件</code>、<code>datac控件</code>的组合构建出了拥有查询功能的分页列表，
+                                <code>datac</code>控件负责把数据源返回的值分别赋值给<code>loop控件</code>和<code>pagination</code>控件，用以显示，当然也可以声明<code>
+                                &lt;span s s-data-filter='total' &gt;&lt;/span&gt;</code>用于显示总记录数。
+                            </p>
+
+                        </li>
+                        <li>
+                            <h4>添加行选择功能</h4>
+
+                            <div class="alert alert-warning">
+                                使用<code>check</code>控件可以为列表添加行选择功能，用于选择数据。
+                            </div>
+                            <form id="searchForm3"
+                                  s="form"
+                                  s-form="{action: function(){ return $singersGrid2.refresh();}}"
+                                  class="form-inline space-v">
+                                <input type="text" name="name" class="form-control" placeholder="输入歌手名进行查询"/>
+                                <input type="hidden" name="page" id="page1"/>
+                                <input type="submit" class="btn btn-primary btn-sm" value="查询"/>
+                            </form>
+                            <p>
+                                <input type="button" class="btn btn-primary btn-sm" value="获取选择的行"
+                                       s-click="getCheckedRows()"/>
+                            </p>
+                            <table class="table table-striped"
+                                   id="singersGrid2"
+                                   s="datac,check"
+                                   s-data="S.get('json/singers-page.json', $searchForm3.node.serialize())">
+                                <tr>
+                                    <th>
+                                        <label class="s-checkbox">
+                                            <input type="checkbox" s-check-role="checkall-h"/>
+                                            <span class="s-checkbox-indicator"></span>
+                                        </label>
+                                    </th>
+                                    <th>歌手</th>
+                                    <th>地区</th>
+                                    <th>歌曲</th>
+                                    <th>排行榜</th>
+                                </tr>
+                                <tbody s="loop" s-data-filter="'results'">
+                                <tr s-loop-role="empty">
+                                    <td colspan="5">
+                                        <div class="space-v text-center">
+                                            <i class="fa fa-info-circle text-info"></i> 未查询到数据
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr s-loop-role="row"
+                                    s-check-role="i"
+                                    s="datac">
+                                    <td>
+                                        <label class="s-checkbox">
+                                            <input type="checkbox" s-check-role="h"/>
+                                            <span class="s-checkbox-indicator"></span>
+                                        </label>
+                                    </td>
+                                    <td s s-data-filter="'name'"></td>
+                                    <td s s-data-filter="'area'"></td>
+                                    <td s s-data-filter="'song'"></td>
+                                    <td s s-data-filter="'rank'"></td>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td colspan="5">
+                                        <ul s="pagination"
+                                            s-pagination="{action: function(){$page1.node.val(this);$singersGrid2.refresh();}}"
+                                            class="pagination pagination-sm pull-right">
+                                        </ul>
+                                        <span class="pull-right p-lg">总记录数：<span s
+                                                                                 s-data-filter="'total'"></span></span>
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                            <h4>代码</h4>
+<pre>
+&lt;form id="searchForm3"
+      s="form"
+      s-form="{action: function(){ return $singersGrid2.refresh();}}"
+      class="form-inline space-v"&gt;
+    &lt;input type="text" name="name" class="form-control" placeholder="输入歌手名进行查询" /&gt;
+    &lt;input type="hidden" name="page" id="page1" /&gt;
+    &lt;input type="submit" class="btn btn-primary btn-sm" value="查询" /&gt;
+&lt;/form&gt;
+&lt;p&gt;
+    &lt;input type="button" class="btn btn-primary btn-sm" value="获取选择的行" s-click="getCheckedRows()" /&gt;
+&lt;/p&gt;
+&lt;table class="table table-striped"
+       id="singersGrid2"
+       s="datac,<span class="text-success">check</span>" s-data="S.get('json/singers-page.php', $searchForm3.node.serialize())"&gt;
+    &lt;tr&gt;
+        &lt;th&gt;
+            &lt;label class="s-checkbox"&gt;
+                <span class="text-success">&lt;input type="checkbox" s-check-role="checkall-h" /&gt;</span>
+                &lt;span class="s-checkbox-indicator"&gt;&lt;/span&gt;
+            &lt;/label&gt;
+        &lt;/th&gt;
+        &lt;th&gt;歌手&lt;/th&gt;
+        &lt;th&gt;地区&lt;/th&gt;
+        &lt;th&gt;歌曲&lt;/th&gt;
+        &lt;th&gt;排行榜&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tbody s="loop" s-data-filter="'results'"&gt;
+    &lt;tr s-loop-role="empty"&gt;
+        &lt;td colspan="5"&gt;
+            &lt;div class="space-v text-center"&gt;
+                &lt;i class="fa fa-info-circle text-info"&gt;&lt;/i&gt; 未查询到数据
+            &lt;/div&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr s-loop-role="row"
+        <span class="text-success">s-check-role="i"</span>
+        s="datac"&gt;
+        &lt;td&gt;
+            &lt;label class="s-checkbox"&gt;
+                <span class="text-success">&lt;input type="checkbox" s-check-role="h"/&gt;</span>
+                &lt;span class="s-checkbox-indicator"&gt;&lt;/span&gt;
+            &lt;/label&gt;</span>
+    &lt;/td&gt;
+        &lt;td s s-data-filter="'name'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'area'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'song'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'rank'"&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+    &lt;tfoot&gt;
+    &lt;tr&gt;
+        &lt;td colspan="5"&gt;
+            &lt;ul s="pagination"
+                s-pagination="{action: function(){$page1.node.val(this);$singersGrid2.refresh();}}"
+                class="pagination pagination-sm pull-right"&gt;
+            &lt;/ul&gt;
+            &lt;span class="pull-right p-lg"&gt;总记录数：&lt;span s s-data-filter="'total'"&gt;&lt;/span&gt;&lt;/span&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tfoot&gt;
+&lt;/table&gt;
+&lt;script type="text/javascript"&gt;
+    function getCheckedRows(){
+        var datas = $singersGrid2.getCheckedData();
+        if(datas.length){
+            S.alert(JSON.stringify(datas));
+        } else {
+            S.toast("请先选择数据！");
+        }
+    }
+&lt;/script&gt;
+</pre>
+                            <p class="lead"><code>check</code>控件使用方法请参考<a href="check.html">check控件</a>。 </p>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="panel panel-built panel-success">
+                <div class="panel-heading">API</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody>
+                        <tr>
+                            <th>方法名</th>
+                            <th>返回值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>empty()</td>
+                            <td></td>
+                            <td>
+                                清空
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>setRows(datas)</td>
+                            <td></td>
+                            <td>
+                                为控件赋值，基本上等同于默认api<code>data(datas)</code>，调用该方法会清空现有的数据。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>addRow(rowData, mode, indentNum)</td>
+                            <td></td>
+                            <td>
+                                添加一个新行。参数分别为：<code>rowData</code>行数据，<code>mode</code>行追加方式，默认为<code>append</code>，<code>indentNum</code>行缩进值，默认为0。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>addRows(datas, mode, indentNum)</td>
+                            <td></td>
+                            <td>
+                                添加行数据。参数分别为：<code>datas</code>行数据，<code>mode</code>行追加方式，默认为<code>append</code>，<code>indentNum</code>行缩进值，默认为0。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>hideAssistRows()</td>
+                            <td></td>
+                            <td>
+                                清理辅助行，比如空数据提示行、准备提示行、加载提示行等。
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function mockSyncData() {
+        var deferred = $.Deferred();
+
+        //在这里模拟了500ms的延时用于展示效果
+        setTimeout(function () {
+            Smart.deferredChain(deferred, S.get('json/singers.json'));
+        }, 500);
+
+        return deferred;
+    }
+
+    function getCheckedRows() {
+        var datas = $singersGrid2.getCheckedData();
+        if (datas.length) {
+            S.alert(JSON.stringify(datas));
+        } else {
+            S.toast("请先选择数据！", "warning");
+        }
+    }
+</script>

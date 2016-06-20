@@ -1,0 +1,128 @@
+<meta title="写信" icon="fa fa-pencil"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">写信</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel">
+                <div class="panel-body">
+
+                    <ul class="nav nav-pills nav-stacked border-bottom p-b p-t">
+                        <li class="active">
+                            <a href="javascript:;">
+                                <span class="pull-right">12</span>
+                                <i class="fa fa-envelope"></i> 收件箱
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;"><i class="fa fa-paper-plane"></i> 发件箱</a>
+                        </li>
+                        <li>
+                            <a href="javascript:;"><i class="fa fa-pencil"></i> 草稿箱</a>
+                        </li>
+                        <li>
+                            <a href="javascript:;"><i class="fa fa-trash"></i> 回收站</a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-pills nav-stacked border-bottom p-b p-t">
+                        <li>
+                            <a href="javascript:;"><i class="fa fa-plane text-danger"></i> 旅行</a>
+                        </li>
+                        <li>
+                            <a href="javascript:;"><i class="fa fa-bar-chart text-warning"></i> 金融</a>
+                        </li>
+                        <li>
+                            <a href="javascript:;"><i class="fa fa-users text-info"></i> 社交</a>
+                        </li>
+                        <li>
+                            <a href="javascript:;"><i class="fa fa-tag text-success"></i> 推广</a>
+                        </li>
+                        <li>
+                            <a href="javascript:;"><i class="fa fa-flag text-primary"></i> 更新</a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-pills nav-stacked p-b p-t">
+                        <li>
+                            <a href="javascript:;"><i class="fa fa-gears"></i> 设置</a>
+                        </li>
+                        <li>
+                            <a href="javascript:;"><i class="fa fa-info-circle"></i> 支持</a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="panel panel-built">
+                <div class="panel-heading">
+                    <div class="p-xs h4">
+                        新信息
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <form method="get" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label text-left">收件人：</label>
+                            <div class="col-sm-11">
+                                <input type="text" class="form-control input-sm"
+                                                          placeholder="example@email.com" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label text-left">抄送：</label>
+                            <div class="col-sm-11">
+                                <input type="text" class="form-control input-sm" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label text-left">主题：</label>
+                            <div class="col-sm-11">
+                                <input type="text" class="form-control input-sm"
+                                                          placeholder="请填写主题" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-1 col-sm-11">
+                                <script id="editor" type="text/plain"
+                                        style="width:100%; height:300px;"><p>iSmartJs是一个基于bootstrap和jQuery的后端RIA开发框架，它是一整套的解决方案，通过iSmartJs您可以通过配置以及跟随iSmartJs的教程在10分钟之内进入业务开发，提高工作效率。</p>
+<p>它提供了众多的控件，如loop控件用来构建列表，pagination控件用来构建分页，check控件用来构建选择功能等，整个iSmartJs是一个完全的异步框架，强大的控件合作机制可以通过多个控件组合出强大的功能。</p>
+<p>iSmartJs将业务所需的页面可以异步按需加载进来，iSmartJs对页面的加载并不是通过iframe进行加载的，而是把页面加载到当前页面的dom里面，iSmartJs会对这些页面进行闭包封装，所以每个页面都在一个独立的ctrl作用域里面，多个页面的加载不会形成变量冲突和污染。这样就极大简化了模块页面的开发，提高开发效率。</p>
+                                </script>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="panel-footer">
+                    <div class="pull-right">
+                        <div class="btn-group">
+                            <button class="btn btn-default"><i class="fa fa-edit"></i> 保存</button>
+                            <button class="btn btn-default"><i class="fa fa-trash"></i> 放弃</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">发 送</button>
+                    <div class="btn-group">
+                        <button class="btn btn-default"><i class="fa fa-paperclip"></i></button>
+                        <button class="btn btn-default"><i class="fa fa-image"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    UE.delEditor($editor.node[0]);
+    var editor = UE.getEditor($editor.node[0]);
+    S.onBeforeClose(function(){
+        var deferred = $.Deferred();
+        S.confirm("您还没有保存，关闭后将失去编辑的内容，确认关闭吗？", "warning").done(function(){
+            deferred.resolve();
+        }).fail(function(){
+            deferred.reject();
+        })
+        return deferred;
+    })
+</script>

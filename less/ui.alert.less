@@ -1,0 +1,51 @@
+@import "var.less";
+@import "mixins.less";
+
+.s-alert {
+  .s-alert-msg {
+    margin-top: 5px;
+  }
+  .s-alert-sign {
+    font-size: @alert-sign-font-size;
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    &.s-alert-sign-default {
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: @alert-sign-font-size;
+    }
+  }
+  &.s-alert-info {
+    .s-alert-sign {
+      color: @alert-info-sign-color;
+      &.s-alert-sign-default:before {
+        content: "\f05a";
+      }
+    }
+  }
+  &.s-alert-success {
+    .s-alert-sign {
+      color: @alert-success-sign-color;
+      &.s-alert-sign-default:before {
+        content: "\f058";
+      }
+    }
+  }
+  &.s-alert-warning {
+    .s-alert-sign {
+      color: @alert-warning-sign-color;
+      &.s-alert-sign-default:before {
+        content: "\f071";
+      }
+    }
+  }
+  &.s-alert-danger {
+    .s-alert-sign {
+      color: @alert-danger-sign-color;
+      &.s-alert-sign-default:before {
+        content: "\f057";
+      }
+    }
+  }
+}

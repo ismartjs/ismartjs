@@ -1,0 +1,46 @@
+<meta title="弹出框" />
+<div class="panel panel-danger panel-built">
+    <div class="panel-heading ">
+        Popover
+    </div>
+    <div class="alert alert-warning no-margin">
+        在iSmartJs中需要声明<code>s="popover"</code>控件即才能支持<code>popover</code>效果，
+        bootstrap原有的<code>data-toggle="popover"</code>声明方式在此处无效，因为当前页面是后续加载进来的。
+    </div>
+    <div class="panel-body">
+        <div class=" text-center">
+            <button type="button" class="btn btn-sm btn-default" data-container="body" s="popover"
+                    data-placement="left" data-title="Title example"
+                    data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
+                    data-original-title="" title="">
+                Popover on left
+            </button>
+            <button type="button" class="btn btn-sm btn-default" data-container="body" s="popover"
+                    data-placement="top" data-title="Title example"
+                    data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
+                    data-original-title="" title="">
+                Popover on top
+            </button>
+            <button type="button" class="btn btn-sm btn-default" data-container="body" s="popover"
+                    data-placement="bottom" data-title="Title example"
+                    data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
+                    data-original-title="" title="">
+                Popover on bottom
+            </button>
+            <button type="button" class="btn btn-sm btn-default" data-container="body" s="popover"
+                    data-placement="right" data-title="Title example"
+                    data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
+                    data-original-title="" title="">
+                Popover on right
+            </button>
+        </div>
+        <h3>代码示例：</h3>
+<pre>
+&lt;button type="button" class="btn btn-sm btn-default" data-container="body" <abbr title class="text-danger">s="popover"</abbr>
+        data-placement="left" data-title="Title example"
+        data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
+        data-original-title="" title="">Tooltip on left
+&lt;/button&gt;
+</pre>
+    </div>
+</div>

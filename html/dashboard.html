@@ -1,0 +1,438 @@
+<meta title="仪表盘" icon="fa fa-dashboard"/>
+<div class="container-fluid space-v">
+    <div class="row space-v-lg">
+        <div class="col-lg-12 text-center ">
+            <h2>
+                欢迎使用iSmartJs，一个简洁、快速、优美的后端RIA开发框架
+            </h2>
+
+            <p>
+                iSmartJs是一个基于bootstrap和jQuery的后端RIA开发框架，它是一整套的解决方案，通过iSmartJs您可以通过配置以及跟随iSmartJs的教程在10分钟之内进入业务开发，提高工作效率。
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="small">
+                                <i class="fa fa-bolt"></i> PV统计
+                            </div>
+                            <div>
+                                <h1 class="m-t-xl m-b-xs text-orange">
+                                    226,802
+                                </h1>
+
+                                <p>本月PV总数</p>
+                            </div>
+                            <div class="small m-t-xl">
+                                <i class="fa fa-clock-o"></i> 5月份数据
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-center small">
+                                <i class="fa fa-laptop"></i> 本月活跃用户（6月份）
+                            </div>
+                            <div style="height: 160px;" id="lineChart"></div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="h4">
+                                <i class="fa fa-clock-o "></i> 活动周期
+                            </div>
+                            <div>
+                                <h1 class=" m-t-xl m-b-xs text-success">
+                                    10个月
+                                </h1>
+                                <small>4周</small>
+                            </div>
+                            <div class="small m-t-xl">
+                                <i class="fa fa-clock-o"></i> 最后时间：2016年6月10日
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <span class="pull-right">
+                          <a href="#">您有10个订单需要及时处理</a>
+                    </span>
+                    最后更新：2016年6月9日
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="panel">
+                <div class="panel-body text-center ">
+                    <i class="pe-7s-graph1 fa-4x"></i>
+
+                    <h1 class="m-xs text-orange">￥1 206,90</h1>
+
+                    <h3>
+                        总收入
+                    </h3>
+                </div>
+                <div class="panel-footer">
+                    当前总收入信息
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel">
+                <div class="panel-body ">
+                    <h4 class="m-xxs pull-left">活跃用户</h4>
+
+                    <div class="pull-right text-success">
+                        <i class="pe-7s-share fa-4x text-orange"></i>
+                    </div>
+                    <div class="m-t-xl">
+                        <h3 class="m-b-xs">210</h3>
+
+                        <div class="progress space-v-sm progress-sm">
+                            <div style="width: 55%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="55"
+                                 role="progressbar" class=" progress-bar progress-bar-success">
+                                <span class="sr-only">35% Complete (success)</span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <small class="stats-label">PV/UV</small>
+                                <h4>7.80</h4>
+                            </div>
+
+                            <div class="col-xs-6">
+                                <small class="stats-label">新用户占比</small>
+                                <h4>76.43%</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    当月的活跃用户较往月有所增长
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel">
+                <div class="panel-body ">
+                    <h4 class="pull-left m-xxs">PV统计</h4>
+
+                    <div class="pull-right">
+                        <i class="pe-7s-monitor fa-4x"></i>
+                    </div>
+                    <div class="m-t-xl">
+                        <h1 class="text-success">860k+</h1>
+
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <small class="-label">昨日此时</small>
+                                <h4>880k+</h4>
+                            </div>
+                            <div class="col-xs-6">
+                                <small class="-label">平均值</small>
+                                <h4>900k+</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    当前PV较昨日有所提高
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel">
+                <div class="panel-body ">
+                    <i class="pe-7s-cash pull-right fa-4x"></i>
+                    <h4 class="pull-left m-xxs">今日收入</h4>
+
+                    <div class="clearfix"></div>
+                    <div id="incomeChart" style="height: 35px;"></div>
+                    <div class="row m-t-xs">
+                        <div class="col-xs-5">
+                            <small class="stat-label">今天</small>
+                            <div class="f-m">￥560</div>
+                        </div>
+                        <div class="col-xs-7">
+                            <small class="stat-label">昨天</small>
+                            <div class="f-m">￥35684 <i class="fa fa-level-up text-success"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    当前收入较昨日有所提高
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="panel">
+                <div class="panel-body">
+                    <h4 class="pull-left m-xxs">活跃用户</h4>
+                    <i class="pe-7s-science fa-4x pull-right text-orange"></i>
+                    <div class="m-t-xl">
+                        <span>
+                            不让我的眼泪陪我过夜
+                        </span>
+                        <br>
+                        <small>
+                            你的柔情似水，几度让我爱得沉醉，毫无保留不知道后悔，你能不能体会真情可贵，没有余力伤悲， 爱情像难收的覆水，长长来路走的太憔悴
+                        </small>
+                    </div>
+                    <div class="row m-t-md">
+                        <div class="col-xs-6">
+                            <h3 class="text-success">300,102</h3>
+
+                            <div >98% <i class="fa fa-level-up text-success"></i></div>
+                        </div>
+                        <div class="col-xs-6">
+                            <h3 class="text-success">280,200</h3>
+
+                            <div >98% <i class="fa fa-level-up text-success"></i></div>
+                        </div>
+                    </div>
+                    <div class="row m-t-md">
+                        <div class="col-xs-6">
+                            <h3>120,108</h3>
+
+                            <div >38% <i class="fa fa-level-down"></i></div>
+                        </div>
+                        <div class="col-xs-6">
+                            <h3>450,600</h3>
+                            <div >28% <i class="fa fa-level-down"></i></div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    爱情像难收的覆水，长长来路走的太憔悴
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel">
+                <div class="panel-body">
+                    <table class="table table-responsive table-striped m-none">
+                        <thead>
+                        <tr>
+
+                            <th colspan="2">项目</th>
+                            <th>完成度</th>
+                            <th>任务</th>
+                            <th>日期</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div class="checkbox">
+                                    <label class="s-checkbox">
+                                        <input type="checkbox">
+                                        <span class="s-checkbox-indicator"></span>
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                iSmartJs 4.0版本
+                                <br>
+                                <small class="text-muted"><i class="fa fa-clock-o"></i> 创建于：2016年6月1日</small>
+                            </td>
+                            <td>
+                                <span peity="pie">1/5</span>
+                            </td>
+                            <td><strong>20%</strong></td>
+                            <td>2015年12月2日</td>
+                            <td><a href=""><i class="fa fa-check text-success"></i></a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="checkbox">
+                                    <label class="s-checkbox">
+                                        <input type="checkbox">
+                                        <span class="s-checkbox-indicator"></span>
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                iSmartJs 3.0版本
+                                <br>
+                                <small class="text-muted"><i class="fa fa-clock-o"></i> 创建于：2014年7月1日</small>
+                            </td>
+                            <td>
+                                <span peity="pie">1/4</span>
+                            </td>
+                            <td><strong>40%</strong></td>
+                            <td>2015年12月2日</td>
+                            <td><a href=""><i class="fa fa-check text-navy"></i></a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="checkbox">
+                                    <label class="s-checkbox">
+                                        <input type="checkbox">
+                                        <span class="s-checkbox-indicator"></span>
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                iSmartJs 4.0版本
+                                <br>
+                                <small class="text-muted"><i class="fa fa-clock-o"></i> 创建于：2016年6月1日</small>
+                            </td>
+                            <td>
+                                <span peity="pie">1/5</span>
+                            </td>
+                            <td><strong>20%</strong></td>
+                            <td>2015年12月2日</td>
+                            <td><a href=""><i class="fa fa-check text-success"></i></a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="checkbox">
+                                    <label class="s-checkbox">
+                                        <input type="checkbox">
+                                        <span class="s-checkbox-indicator"></span>
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                iSmartJs 3.0版本
+                                <br>
+                                <small class="text-muted"><i class="fa fa-clock-o"></i> 创建于：2014年7月1日</small>
+                            </td>
+                            <td>
+                                <span peity="pie">1/4</span>
+                            </td>
+                            <td><strong>40%</strong></td>
+                            <td>2015年12月2日</td>
+                            <td><a href=""><i class="fa fa-check text-navy"></i></a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="checkbox">
+                                    <label class="s-checkbox">
+                                        <input type="checkbox">
+                                        <span class="s-checkbox-indicator"></span>
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                iSmartJs 3.0版本
+                                <br>
+                                <small class="text-muted"><i class="fa fa-clock-o"></i> 创建于：2014年7月1日</small>
+                            </td>
+                            <td>
+                                <span peity="pie">1/4</span>
+                            </td>
+                            <td><strong>40%</strong></td>
+                            <td>2015年12月2日</td>
+                            <td><a href=""><i class="fa fa-check text-navy"></i></a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="pull-right">
+                        <a href="#" class="btn btn-xs btn-default">今日</a>
+                        <a href="#" class="btn btn-xs btn-default">昨日</a>
+                    </div>
+                    <div class="panel-title">数据统计</div>
+                    <small class="fo">本站基础数据统计</small>
+                </div>
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <h3 class="space-v-xs text-success">2,773</h3>
+                        <small>信息发送总量</small>
+                        <div class="pull-right ">98% <i class="fa fa-level-up text-success"></i></div>
+                    </div>
+                    <div class="list-group-item">
+                        <h3 class="space-v-xs text-orange">4,422</h3>
+                        <small>活跃用户数</small>
+                        <div class="pull-right ">13% <i class="fa fa-level-down text-color3"></i></div>
+                    </div>
+                    <div class="list-group-item">
+                        <h3 class="space-v-xs text-violet">9,180</h3>
+                        <small>月收入</small>
+                        <div class="pull-right ">22% <i class="fa fa-bolt text-color3"></i></div>
+                    </div>
+                    <div class="list-group-item">
+                        <h3 class="space-v-xs text-success">1,450</h3>
+                        <small>季度收入</small>
+                        <div class="pull-right ">44% <i class="fa fa-level-up text-success"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * Flot charts data and options
+     */
+    var data1 = [[0, 55], [1, 48], [2, 40], [3, 36], [4, 40], [5, 60], [6, 50], [7, 51]];
+    var data2 = [[0, 56], [1, 49], [2, 41], [3, 38], [4, 46], [5, 67], [6, 57], [7, 59]];
+
+    var chartUsersOptions = {
+        series: {
+            splines: {
+                show: true,
+                tension: 0.4,
+                lineWidth: 1,
+                fill: 0.4
+            },
+        },
+        grid: {
+            tickColor: "#f0f0f0",
+            borderWidth: 1,
+            borderColor: 'f0f0f0',
+            color: '#6a6c6f'
+        },
+        colors: ["#62cb31", "#efefef"],
+    };
+
+    $.plot($lineChart.node, [data1, data2], chartUsersOptions);
+
+    /**
+     * Flot charts 2 data and options
+     */
+    var chartIncomeData = [
+        {
+            label: "line",
+            data: [[1, 10], [2, 26], [3, 16], [4, 36], [5, 32], [6, 51]]
+        }
+    ];
+
+    var chartIncomeOptions = {
+        series: {
+            lines: {
+                show: true,
+                lineWidth: 0,
+                fill: true,
+                fillColor: "#64cc34"
+
+            }
+        },
+        colors: ["#62cb31"],
+        grid: {
+            show: false
+        },
+        legend: {
+            show: false
+        }
+    };
+
+    $.plot($incomeChart.node, chartIncomeData, chartIncomeOptions);
+
+    S.node.find("[peity]").each(function(){
+        $(this).peity(this.getAttribute("peity"));
+    });
+</script>

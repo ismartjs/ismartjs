@@ -1,0 +1,20 @@
+@import "var.less";
+@import "mixins.less";
+
+.s-loading-spinner{
+  display: none;
+}
+
+&.s-loading-icon{
+  .s-loading-spinner{
+    display: inline-block;
+  }
+}
+
+.s-loading{
+  position: relative;
+  .s-loading-spinner{
+    display: inline-block;
+    .animation(spin_frame 3s infinite linear)
+  }
+}

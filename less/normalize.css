@@ -1,0 +1,51 @@
+/**
+  radius
+*/
+/**
+  button
+*/
+/**
+toast
+*/
+/**
+  panel
+*/
+/**
+state
+*/
+* {
+  box-sizing: border-box;
+}
+body {
+  font-family: "微软雅黑", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #fff;
+  font-size: 14px;
+  color: #6a6c6f;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+a {
+  text-decoration: none;
+  color: #556A7E;
+}
+a:hover,
+a:focus {
+  color: #2c3741;
+  text-decoration: none;
+}
+dt {
+  font-weight: normal;
+}
+label {
+  font-weight: normal;
+}
+h1,
+h2,
+h3,
+.h1,
+.h2,
+.h3 {
+  margin-top: 10px;
+}

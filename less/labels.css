@@ -1,0 +1,32 @@
+/**
+  radius
+*/
+/**
+  button
+*/
+/**
+toast
+*/
+/**
+  panel
+*/
+/**
+state
+*/
+.label {
+  font-weight: normal;
+}
+.label-violet {
+  background-color: #9b59b6;
+}
+.label-violet[href]:hover,
+.label-violet[href]:focus {
+  background-color: #804399;
+}
+.label-orange {
+  background-color: #e67e22;
+}
+.label-orange[href]:hover,
+.label-orange[href]:focus {
+  background-color: #bf6516;
+}

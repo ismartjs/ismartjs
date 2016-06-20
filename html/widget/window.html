@@ -1,0 +1,511 @@
+<meta title="window控件" icon="fa fa-desktop"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">window控件</div>
+        </div>
+        <div class="alert alert-warning">
+            window控件是iSmartJs的核心控件，用于根据url加载页面，<code>S.popupOpen</code>也是使用window控件用于支持弹出框的形式根据url打开页面。
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-orange panel-built">
+                <div class="panel-heading">Follow Me</div>
+                <div class="alert alert-warning">
+                    模块页面就是所有需要通过window控件加载的页面，可以是业务逻辑页面（如：用户管理，订单管理等），也可以是功能性的页面，如（类目选择器，图片选择器，权限选择器等），
+                    这些页面可以通过window控件加载，通过<code>S.open()</code>方法打开，也可以通过<code>S.popupOpen()</code>方法打开或者使用<code>a</code>标签来定义。
+                </div>
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            <h4>编写模块页面</h4>
+                            <blockquote class="border-orange">
+                                模块页面有<code>meta</code>、<code>html</code>、<code>script</code>三部分组成，script可以写在页面的script标签中，也可以通过meta的ctrl属性来定义当前页面的控制脚本的路径。
+                            </blockquote>
+                            <p>
+                                页面代码示例： <code>html/widget/window/demo1.html</code>
+                            </p>
+                            <pre s
+                                 s-data="Smart.dataTransfer(S.get('text:html/widget/window/demo1.html'), Smart.encodeHtml)"></pre>
+                        </li>
+                        <li>
+                            <h4>在工作区打开页面</h4>
+                            <a href="window/demo1.html" class="btn btn-primary btn-sm">在工作区打开</a> 代码如下：
+                            <p>
+<pre>
+&lt;a href="window/demo1.html" class="btn btn-primary btn-sm"&gt;在工作区打开&lt;/a&gt;
+</pre>
+                            </p>
+                            <p>你也可以通过API<code>S.open('window/demo1.html')</code> 打开页面， 代码如下：</p>
+
+                            <p>
+<pre>
+&lt;a href="javascript:;" s-click="S.open('window/demo1.html')" class="btn btn-primary btn-sm"&gt;在工作区打开&lt;/a&gt;
+</pre>
+                            </p>
+                            <blockquote class="border-orange text-orange">
+                                使用该种方式打开的页面url是当前模块页面路径的相对路径，如果该路径以<code>/</code>开头则视为相对于浏览器路径的绝对路径，所以在这里打开的
+                                <code>window/demo1.html</code>的绝对路径是<code>html/widget/window/demo1.html</code>，当前模块页面的路径是<code>html/widget/window.html</code>
+                            </blockquote>
+                        </li>
+                        <li>
+                            <h4>使用弹出的形式打开页面</h4>
+                            <a href="popup:html/widget/window/demo1.html" class="btn btn-orange btn-sm">弹出层打开</a> 代码如下：
+                            <p>
+<pre>
+&lt;a href="popup:html/widget/window/demo1.html" class="btn btn-primary btn-sm"&gt;弹出形式打开&lt;/a&gt;
+</pre>
+                            </p>
+                            <div class="alert alert-warning">
+                                如果a标签href配置的路径地址以<code>popup:</code>开头的，则该url会通过弹出框的形式打开。
+                            </div>
+                            <p>你也可以通过API<code>S.popupOpen('html/widget/window/demo1.html')</code> 打开页面， 代码如下：</p>
+
+                            <p>
+<pre>
+&lt;a href="javascript:;" s-click="S.popupOpen('html/widget/window/demo1.html')" class="btn btn-primary btn-sm"&gt;弹出形式打开&lt;/a&gt;
+</pre>
+                            </p>
+                            <blockquote class="border-orange text-orange">
+                                使用该种方式打开的页面url不同于<code>S.open</code>的配置路径，这里需要配置的是相对于浏览器地址的url路径，所以这里的路径配置为：<code>html/widget/window/demo1.html</code>
+
+                                <p>
+                                    弹出框的大小取决于模块页面<code>meta</code>中定义的<code>width</code>、<code>height</code>属性值。
+                                </p>
+                            </blockquote>
+                        </li>
+                        <li>
+                            <h4>页面传参和弹出层的按钮</h4>
+
+                            <div class="alert alert-info">
+                                在弹出层打开页面的时候，通常是需要按钮的，比如关闭按钮，确认按钮等。我们可以通过在页面的script脚本中定义<code>S.meta.btns =
+                                [{},{}]</code>来定义弹出层的按钮。
+                            </div>
+                            <p>
+                                页面代码示例： <code>html/widget/window/demo2.html</code>
+                            </p>
+                            <pre s
+                                 s-data="Smart.dataTransfer(S.get('text:html/widget/window/demo2.html'), Smart.encodeHtml)"></pre>
+                            <p>
+                                <input type="button"
+                                       s-click="S.popupOpen('html/widget/window/demo2.html', {word: 'Hello iSmartJs, u are so powerful!'})"
+                                       class="btn btn-orange" value="打开页面"/>
+                                代码如下：
+                            </p>
+
+                            <p>
+<pre>
+&lt;input type="button" class="btn btn-orange" value="打开页面"
+                            s-click="S.popupOpen('html/widget/window/demo2.html', {word: 'Hello iSmartJs, u are so powerful!'})"  /&gt;
+</pre>
+                            </p>
+                            <blockquote class="border-orange">
+                                使用meta的<code>args</code>属性来定义当前页面的所需参数，多个参数用<code>,</code>隔开，如<code>args="arg1,arg2,arg3"</code>，声明参数后，在当前页面的
+                                脚本域中就直接可以使用定义的参数。传递参数时，我们可以通过<code>S.open(url, {arg1: 'hello', arg2: 'iSmartJs'})</code>的形式进行传参，
+                                <code>S.popupOpen</code>和<code>S.open</code>都支持该种形式的传参。
+                            </blockquote>
+                            <h4>通过url传参</h4>
+                            <div class="alert alert-warning">
+                                也可以通过url传参，在很多时候是很有用的，至少能减少代码编写。url的queryString会与页面args中声明的参数值一一对应进行传递。
+                            </div>
+                            <p>
+                                <input type="button"
+                                       s-click="S.popupOpen('html/widget/window/demo2.html?word=Hello%20iSmartJs%2C%20u%20are%20so%20powerful!')"
+                                       class="btn btn-orange" value="通过URL传参示例"/>
+                                代码如下：
+                            </p>
+                            <p>
+<pre>
+&lt;input type="button" class="btn btn-orange" value="打开页面"
+                            s-click="S.popupOpen('html/widget/window/demo2.html?word=Hello%20iSmartJs%2C%20u%20are%20so%20powerful!')"  /&gt;
+</pre>
+                            </p>
+                        </li>
+                        <li>
+                            <h4>页面回掉和回掉传参</h4>
+                            <div class="alert alert-warning">
+                                通过API（<code>S.open(...).done(callback)</code>，<code>S.popupOpen(...).done(callback)</code>）注册回掉来监听被打开页面的关闭事件，在被打开页面关闭的时候，可以通过
+                                <code>S.close(obj)</code>来传递参数给回掉的方法。这样我们就可以实现多页面的互动，如：打开类目选择器，选择类目后，点击关闭按钮，把选择的类目传递回去。
+                            </div>
+                            <p>
+                                <input type="button" class="btn btn-primary btn-sm" value="打开页面" s-click="openCallback()" />
+                            </p>
+                            <h4>代码</h4>
+<pre>
+&lt;input type="button" class="btn btn-primary btn-sm" value="打开页面" s-click="openCallback()" /&gt;
+&lt;script type="text/javascript"&gt;
+    function openCallback(){
+        S.popupOpen('html/widget/window/demo4.html').done(function(rs){
+            if(rs){
+                S.alert("页面关闭后传递的参数为：" + JSON.stringify(rs));
+            }
+        })
+    }
+&lt;/script&gt;
+</pre>
+                            <h4><code>html/widget/window/demo4.html</code>页面源码为：</h4>
+<pre s s-data="Smart.dataTransfer(S.get('text:html/widget/window/demo4.html'), Smart.encodeHtml)"></pre>
+                        </li>
+                        <li>
+                            <h4>页面meta的详细定义</h4>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th style="width: 5%;">属性</th>
+                                    <th style="width: 10%;">属性可选性</th>
+                                    <th>属性说明</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        title
+                                    </td>
+                                    <td>必须</td>
+                                    <td>
+                                        页面的标题
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        icon
+                                    </td>
+                                    <td>非必需</td>
+                                    <td>
+                                        页面的图标，值为class，可以使用图标字体的class定义，如阿里图标。
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        width
+                                    </td>
+                                    <td>非必需</td>
+                                    <td>
+                                        页面的宽度，仅仅在页面通过<code>S.popupOpen</code>打开时有效
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        height
+                                    </td>
+                                    <td>非必需</td>
+                                    <td>
+                                        页面的高度，仅仅在页面通过<code>S.popupOpen</code>打开时有效
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        ctrl
+                                    </td>
+                                    <td>非必需</td>
+                                    <td>
+                                        页面的控制脚本的路径，同在当前页面中的script标签脚本定义不同的是，ctrl将脚本定义在了外部，已使得html与脚本分离，在复杂页面或者需要书写大量js脚本的时候非常有用。
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        args
+                                    </td>
+                                    <td>非必需</td>
+                                    <td>
+                                        当前页面的所需参数，即该页面被其他页面打开时需要传递的参数，多个参数通过逗号隔开，如<code>args="arg1,arg2,arg3"</code>，声明参数后，在当前页面的
+                                        脚本域中就直接可以使用定义的参数。传递参数时，我们可以通过<code>S.open(url, {arg1: 'hello', arg2:
+                                        'iSmartJs'})</code>的形式进行传参，
+                                        <code>S.popupOpen</code>和<code>S.open</code>都支持该种形式的传参，或者使用window控件定义时传递，如：
+<pre>
+&lt;div s="window" s-window="{href:'...', args: {arg1:'hello', arg2: 'iSmartJs'}}"&gt;&lt;/div&gt;
+</pre>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>animation</td>
+                                    <td>非必需</td>
+                                    <td>当页面在工作区打开时的载入效果，使用的是class来定义的，大家可以参考<a
+                                            href="../other/animations.html">CSS3动画</a>该页面的动画效果进行声明。
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>template</td>
+                                    <td>非必需</td>
+                                    <td>
+                                        可选值为：<code>true|false</code>，当前页面是否是模板页面，如果置为true，则当前页面会经过模板处理，然后再载入到dom节点中。模板使用方法请参考
+                                        <a href="tpl.html">模板(tpl)控件</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>single</td>
+                                    <td>非必需</td>
+                                    <td>
+                                        可选值为：<code>true|false</code>，默认值为true，定义为false时，在工作区域可以打开多个当前页面，否则就只能打开一个。
+                                    </td>
+                                </tr>
+                            </table>
+                        </li>
+                        <li>
+                            <h4>meta属性动态属性值</h4>
+
+                            <div class="alert alert-warning">
+                                在某些情况下我们打开页面的时候需要动态声明一些meta的属性，比如在权限绑定的时候，可能需要根据姓名来动态声明meta的title属性，如title="权限绑定 -
+                                张三"等，那么我们就需要
+                                声明动态的meta属性值。
+                            </div>
+                            <p>使用{%=xxx%}这样的形式就可以声明动态meta属性值，如<code>&lt;meta title="权限绑定 - {%=name%}" args='name'
+                                /&gt;</code>，就可以输出args中的name参数值，这里的表达式仅仅能访问
+                                全局性的参数和args声明的参数。</p>
+                        </li>
+                        <li>
+                            <h4>模块页面中的元素id值的处理</h4>
+
+                            <div class="alert alert-warning">
+                                通常我们的应用可能会有成百个页面，可能会有上百人进行协同开发，那么我们就不能保证每个页面中元素的id值能够全局唯一，即使通过约定也是很难做到，而且也会增加协同开发的成本，那么在iSmartJs中，
+                                这些页面在载入的时候，页面中的id值都会做相应的处理，以保证全局的唯一性，所以如果一个元素的id声明为id="abc"，直接通过jQuery原生的方法<code>$('#abc')</code>是获取不到的，
+                                而是要通过<code>S.N('#abc')</code>来获取，或者通过<code>$(S.trueId("abc"))</code>来获取。
+                            </div>
+                            <blockquote class="border-orange">
+                                我们在页面的html中也可以通过占位符来输入最终的id，如<span class="text-danger"><span>#</span>TID:abc#</span>，这样会输出最终的id。
+                            </blockquote>
+                            <blockquote class="border-success">
+                                <h4>id元素的预定义变量</h4>
+                                <p>
+                                    window控件在封装页面控制脚本的时候，会把当前页面所有声明id的元素在脚本域中生成一个预定义变量，这个变量是这个元素的Smart对象，通过该对象
+                                    <code>.node</code>属性可以获取到jQuery对象。如果一个元素的id声明为<code>id="abc"</code>，那么当前页面脚本域中将会有一个默认的变量<code>$abc</code>，
+                                    在这里声明一下，id的值不能有任何非操作符号，否则会出错，因为如果一个id声明为<code>id="abc-1"</code>，
+                                    那么在构建默认变量<code>$abc-1 = S.S('#abc-1')</code>的时候则会出现编译错误，导致脚本构建失败。
+                                </p>
+                            </blockquote>
+                        </li>
+                        <li>
+                            <h4>监听模块页面关闭</h4>
+
+                            <div class="alert alert-warning">
+                                有些时候需要在关闭当前模块页面的时候判断表单的内容是否保存，如果没有保存则提示保存，这种情况下我们可以使用<code>S.onBeforeClose(fn)</code>方法来注册页面关闭的监听事件。
+                            </div>
+                            <p>
+                                页面代码示例： <code>html/widget/window/demo3.html</code>
+                                <input type="button"
+                                       s-click="S.popupOpen('html/widget/window/demo3.html', {word: 'Hello iSmartJs, u are so powerful!'})"
+                                       class="btn btn-orange btn-sm" value="打开页面"/>
+                            </p>
+                            <pre s s-data="Smart.dataTransfer(S.get('text:html/widget/window/demo3.html'), Smart.encodeHtml)"></pre>
+                            <blockquote class="border-orange">
+                                <code>S.onBeforeClose</code>注册的方法需要返回一个<code>Deferred</code>对象，当该返回的对象resolve的时候，将会关闭页面，当返回的对象reject的时候则不会关闭页面。
+                                也可以没有返回值，则会直接看作是允许关闭页面。
+                            </blockquote>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-orange panel-built">
+                <div class="panel-heading">演示一下</div>
+                <div class="alert alert-warning">
+                    在下面的window控件中加载<code>html/views/socials.html</code>页面，或者你可以<a class="btn btn-primary btn-sm"
+                                                                                  href="../views/socials.html">打开该页面</a>，
+                    或者您可以通过<a class="btn btn-primary btn-sm" href="popup:html/views/socials.html">弹出框形式打开</a>
+                </div>
+                <div class="panel-body">
+                    <div style="height: 400px; overflow: auto" s="window"
+                         s-window="{href:'html/views/socials.html'}"></div>
+                </div>
+                <div class="panel-footer">
+                    <h3>相关代码</h3>
+<pre>
+&lt;div <span class="text-success">s="window" s-window="{href:'html/views/socials.html'}"</span> style="height: 400px; overflow: auto" &gt;&lt;/div&gt;
+</pre>
+                    <p>怎么样，非常简单吧，window控件式非常强大，通过window控件我们可以很轻松的复用很多页面，在需要的地方将其加载。</p>
+                </div>
+            </div>
+            <div class="panel panel-primary panel-built">
+                <div class="panel-heading">window控件参数</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody><tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>默认值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>href</td>
+                            <td>String</td>
+                            <td></td>
+                            <td>
+                                <code>window</code>控件加载的url地址。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>args</td>
+                            <td>Object</td>
+                            <td></td>
+                            <td>
+                                <code>args</code>是模块页面的参数（<span class="text-danger">该参数并不是加载url传递的参数，而是渲染页面时传递的参数</span>）。
+                            </td>
+                        </tr>
+                        </tbody></table>
+                </div>
+            </div>
+            <div class="panel panel-orange panel-built">
+                <div class="panel-heading">API</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                        <tr>
+                            <th>API名</th>
+                            <th>返回值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>load(url, args)</td>
+                            <td>Deferred</td>
+                            <td>
+                                将url的页面加载到当前的元素中，<code>args</code>是模块页面的参数（<span class="text-danger">该参数并不是加载url传递的参数，而是渲染页面时传递的参数</span>）
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>refresh</td>
+                            <td>Deferred</td>
+                            <td>刷新当前<code>window</code>页面，调用该方法，会重新加载当前模块页面</td>
+                        </tr>
+                        <tr>
+                            <td>setMeta(key, value)</td>
+                            <td></td>
+                            <td>设置当前模块页面的meta信息，该方法会触发<code>meta</code>事件</td>
+                        </tr>
+                        <tr>
+                            <td>scrollTo(selector)</td>
+                            <td>Deferred</td>
+                            <td>
+                                滚动当前模块页面到<code>selector</code>的元素，selector是标准的css选择器。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>open(url, args)</td>
+                            <td>Deferred</td>
+                            <td>
+                                该方法触发一个<code>open</code>事件，以便layouts页面监听到该事件，从而打开相应的页面，调用代码如<code>S.open('window.html')</code>，<a
+                                    href="javascript:;" s-click="S.open('window.html?id=1')">点击我</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>close()</td>
+                            <td></td>
+                            <td>
+                                关闭当前模块页面，<a href="javascript:;" s-click="S.close()">关闭页面</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>onBeforeClose(fn)</td>
+                            <td></td>
+                            <td>
+                                注册页面关闭监听事件，当参数fn返回<code>Deferred</code>对象的时候，当该deferred对象<code>resolve</code>的时候，才会关闭页面。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>S(selector)</td>
+                            <td>Smart</td>
+                            <td>
+                                根据css选择器<code>selector</code>获取当前模块页面中的jQuery对象的Smart对象。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>N(selector)</td>
+                            <td>jQuery</td>
+                            <td>
+                                根据css选择器<code>selector</code>获取当前模块页面中的jQuery对象。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>action(script)</td>
+                            <td></td>
+                            <td>
+                                将script脚本在当前闭包中进行运行，并返回运行后的值。
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-success panel-built">
+                <div class="panel-heading">鼠标事件定义</div>
+                <div class="alert alert-warning">
+                    在模块页面中，不能使用浏览器原生的事件定义方法来定义事件，必须使用以下的事件定义，通过原生的事件定义，无法在当前页面的脚本闭包域中执行。
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody><tr>
+                            <th style="width: 30%;">事件定义</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>s-click</td>
+                            <td>
+                                鼠标点击事件，声明如<code>s-click='S.alert("hello iSmartJs")'</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>s-change</td>
+                            <td>
+                                change事件，声明如<code>s-change='S.alert("hello iSmartJs")'</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>s-focus</td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>s-blur</td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>s-dblclick</td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>s-mouseover</td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>s-mousemove</td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>s-mouseout</td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>s-mouseleave</td>
+                            <td>
+                            </td>
+                        </tr>
+                        </tbody></table>
+                </div>
+            </div>
+            <div class="panel panel-success panel-built">
+                <div class="panel-heading">打开外部的url</div>
+                <div class="alert alert-warning">
+                    通过为a标签声明<code>external</code> 属性，则将a标签的点击事件交由浏览器进行处理，这样可以打开外部的url或者实现页面跳转。
+                </div>
+                <div class="panel-body">
+                    <h4>相关代码</h4>
+<pre>
+&lt;a href="http://www.aliyun.com" target="_blank" external&gt;http://www.aliyun.com&lt;/a&gt;
+</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function openCallback(){
+        S.popupOpen('html/widget/window/demo4.html').done(function(rs){
+            if(rs){
+                S.alert("页面关闭后传递的参数为：" + JSON.stringify(rs));
+            }
+        })
+    }
+</script>

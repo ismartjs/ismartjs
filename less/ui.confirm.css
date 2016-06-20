@@ -1,0 +1,53 @@
+/**
+  radius
+*/
+/**
+  button
+*/
+/**
+toast
+*/
+/**
+  panel
+*/
+/**
+state
+*/
+.s-confirm .s-confirm-msg {
+  margin-top: 5px;
+}
+.s-confirm .s-confirm-sign {
+  font-size: 32px;
+  display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.s-confirm .s-confirm-sign.s-confirm-sign-default {
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: 32px;
+}
+.s-confirm.s-confirm-info .s-confirm-sign {
+  color: #3498DB;
+}
+.s-confirm.s-confirm-info .s-confirm-sign.s-confirm-sign-default:before {
+  content: "\f05a";
+}
+.s-confirm.s-confirm-success .s-confirm-sign {
+  color: #62cb31;
+}
+.s-confirm.s-confirm-success .s-confirm-sign.s-confirm-sign-default:before {
+  content: "\f058";
+}
+.s-confirm.s-confirm-warning .s-confirm-sign {
+  color: #ffb606;
+}
+.s-confirm.s-confirm-warning .s-confirm-sign.s-confirm-sign-default:before {
+  content: "\f071";
+}
+.s-confirm.s-confirm-danger .s-confirm-sign {
+  color: #e74c3c;
+}
+.s-confirm.s-confirm-danger .s-confirm-sign.s-confirm-sign-default:before {
+  content: "\f057";
+}

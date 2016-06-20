@@ -1,0 +1,79 @@
+<meta title="加载按钮" icon="fa fa-spinner"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">加载按钮（Loading buttons）</div>
+            <div>我们通常在点击按钮，提交ajax数据的时候，需要为按钮添加一个加载和引用效果，幸运的是，iSmartJs提供了非常简洁的方法实现这样的效果</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    加载按钮
+                </div>
+                <div class="panel-body">
+                    <p class="buttons-wrapper">
+                        <button type="button" class="btn btn-info " s-click="return submit()">
+                            提交 <i class="fa fa-refresh s-loading-spinner"></i></button>
+                        <button type="button" class="btn btn-success" s-click="return submit()">
+                            提交 <i class="fa fa-circle-o-notch s-loading-spinner"></i></button>
+                        <button type="button" class="btn btn-warning" s-click="return submit()">
+                            提交 <i class="fa fa-cog s-loading-spinner"></i></button>
+                        <button type="button" class="btn btn-danger" s-click="return submit()">
+                            提交 <i class="fa fa-spinner s-loading-spinner"></i></button>
+                        <button type="button" class="btn btn-orange btn-sm s-loading-icon" s-click="return submit()">
+                            <i class="fa fa-refresh s-loading-spinner"></i>
+                        </button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    代码
+                </div>
+                <div class="panel-body">
+                    <p>
+                        使用下面列出的类可以快速创建一个带有预定义样式的按钮。
+                    </p>
+<pre>
+&lt;button type="button" class="btn btn-info " <label class="label label-success">s-click="return submit()"</label>&gt;
+    提交 &lt;i class="fa fa-refresh <label class="label label-success">s-loading-spinner"</label>"&gt;&lt;/i&gt;&lt;/button&gt;
+//icon 按钮
+&lt;button type="button" class="btn btn-orange btn-sm <label class="label label-success">s-loading-icon</label>" s-click="return submit()"&gt;
+    &lt;i class="fa fa-refresh <label class="label label-success">s-loading-spinner"</label>"&gt;&lt;/i&gt;
+&lt;/button&gt;
+&lt;script type="text/javascript"&gt;
+    <strong class="text-success">
+    function submit(){
+        var deferred = $.Deferred();
+        setTimeout(function(){
+        deferred.resolve();
+        }, 4000);
+        return deferred;
+    }
+    </strong>
+&lt;/script&gt;
+</pre>
+                    <blockquote class="border-warning">
+                        按钮点击想要获取加载效果，必须要返回一个<code>Deferred</code>对象，当该<code>Deferred</code>对象resolve、或者reject的时候，会自动回复原来的效果。
+                        所以这样的调用方法适合iSmartJs的ajax函数、jQuery的ajax函数，因为这些方法都会返回一个Deferred对象。
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function submit(){
+        var deferred = $.Deferred();
+        setTimeout(function(){
+            deferred.resolve();
+        }, 4000);
+        return deferred;
+    }
+</script>

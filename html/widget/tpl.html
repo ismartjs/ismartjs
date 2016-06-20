@@ -1,0 +1,142 @@
+<meta title="模板控件" />
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">模板控件</div>
+            <div>模板控件用于模板输出，具有很大程度的灵活性</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">模板控件（tpl）</div>
+                <div class="alert alert-warning">
+                    使用<code>s="tpl"</code>来声明模板控件。
+                </div>
+                <div class="panel-body">
+                    <h4>使用模板输入内容</h4>
+                    <div s="tpl" s-data="tplData" class="alert alert-warning">
+                        <strong class="text-primary">{%=this.name%}</strong>,
+                        <span class="text-success">{%=this.desc%}</span>，
+                        <span class="text-info">{%=this.website%}</span>
+                    </div>
+                    <h4>代码</h4>
+<pre>
+&lt;div s="tpl" s-data="tplData" class="alert alert-warning"&gt;
+    &lt;strong class="text-primary"&gt;{%=this.name%}&lt;/strong&gt;,
+    &lt;span class="text-success"&gt;{%=this.desc%}&lt;/span&gt;，
+    &lt;span class="text-info"&gt;{%=this.website%}&lt;/span&gt;
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
+    var tplData = {
+        name: "iSmartJs",
+        desc: "u are so powerful!",
+        website: "http://www.ismartjs.com"
+    }
+&lt;/script&gt;
+</pre>
+                    <blockquote class="border-orange">
+                        <p>
+                            使用表达式{%=xxx%}用来输出内容，也可以使用<code>{%out.print(xxx)%}</code>来输出，这两者是等价的。
+                        </p>
+                        <p>
+                            <code>{%</code>与<code>%}</code>之间包含的是脚本块，你可以在该脚本块里面写任何脚本，甚至可以定义方法，模板脚本的this引用指向绑定的数据。
+                        </p>
+                    </blockquote>
+                    <hr />
+                    <h4><strong>忽略脚本</strong></h4>
+                    <p>使用<code>{#</code>、<code>#}</code>包含的脚本将不会被编译输出，会作为字符串输出</p>
+                    <p s="tpl" s-data="tplData" class="alert alert-warning">
+                        <strong class="text-primary">使用{#{%=this.name%}#}输出{%=this.name%}</strong><br />
+                        <span class="text-success">使用{#{%=this.desc%}#}输出{%=this.desc%}</span><br />
+                        <span class="text-info">使用{#{%=this.website%}#}输出{%=this.website%}</span>
+                    </p>
+                    <h4>代码</h4>
+<pre>
+&lt;p s="tpl" s-data="tplData" class="alert alert-warning"&gt;
+    &lt;strong class="text-primary"&gt;使用{#{%=this.name%}#}输出{%=this.name%}&lt;/strong&gt;&lt;br /&gt;
+    &lt;span class="text-success"&gt;使用{#{%=this.desc%}#}输出{%=this.desc%}&lt;/span&gt;&lt;br /&gt;
+    &lt;span class="text-info"&gt;使用{#{%=this.website%}#}输出{%=this.website%}&lt;/span&gt;
+&lt;/p&gt;
+</pre>
+                    <blockquote class="border-orange">
+                        忽略脚本的输出在模板嵌套输出的时候非常有用，即一个模板控件嵌套了另外一个模板控件，可以将子模版控件的脚本通过{#...#}保护起来，
+                        在福脚本输出的时候不会影响到子模板控件的脚本定义。
+                    </blockquote>
+                    <hr />
+                    <h4><strong>使用<code>&lt;script type='text/template'</code>定义脚本</strong></h4>
+                    <p class="alert alert-warning">
+                        在很多时候也需要在html标签属性中定义脚本如：<code>&lt;div {%if(checked){%}{%='checked'%}{%}%}</code>，这个时候就需要用到该方法去定义脚本，否则会导致
+                        脚本编译出错。
+                    </p>
+                    <p s="tpl" s-data="tplData" class="alert alert-warning">
+                        <script type="text/template">
+                            <strong class="text-primary">{%=this.name%}</strong>,
+                            <span class="text-success">{%=this.desc%}</span>，
+                            <span class="text-info">{%=this.website%}</span>
+                        </script>
+                    </p>
+                    <p>代码：</p>
+<pre>
+&lt;p s="tpl" s-data="tplData" class="alert alert-warning"&gt;
+&lt;script type="text/template"&gt;
+    &lt;strong class="text-primary"&gt;{%=this.name%}&lt;/strong&gt;,
+    &lt;span class="text-success"&gt;{%=this.desc%}&lt;/span&gt;，
+    &lt;span class="text-info"&gt;{%=this.website%}&lt;/span&gt;
+&lt;/script&gt;
+&lt;/p&gt;
+</pre>
+                    <hr />
+                    <h4>使用<code>tplText</code>定义模板源码</h4>
+                    <p class="alert alert-warning">我们也可以将脚本代码定义在外部或者变量中，通过声明控件的时候指定tplText参数即可。</p>
+                    <p s="tpl" s-data="tplData" s-tpl="{tplText: tplText}" class="alert alert-warning">
+
+                    </p>
+                    <p>代码：</p>
+<pre>
+&lt;p s="tpl" s-data="tplData" s-tpl="{tplText: tplText}" class="alert alert-warning"&gt;
+&lt;script type="text/template"&gt;
+    var tplText = '&lt;strong class="text-primary"&gt;{%=this.name%}&lt;/strong&gt;,\
+                    &lt;span class="text-success"&gt;{%=this.desc%}&lt;/span&gt;，\
+                    &lt;span class="text-info"&gt;{%=this.website%}&lt;/span&gt;';
+&lt;/script&gt;
+&lt;/p&gt;
+</pre>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-built panel-primary">
+                <div class="panel-heading">API</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <td>data</td>
+                            <td>控件数据绑定，该方法是标准的Smart控件方法，所有Smart控件都具有该方法。</td>
+                        </tr>
+                        <tr>
+                            <td>appendData</td>
+                            <td>末尾追加</td>
+                        </tr>
+                        <tr>
+                            <td>prependData</td>
+                            <td>前部追加</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var tplData = {
+        name: "iSmartJs",
+        desc: "u are so powerful!",
+        website: "http://www.ismartjs.com"
+    }
+
+    var tplText = '<strong class="text-primary">{%=this.name%}</strong>,\
+                    <span class="text-success">{%=this.desc%}</span>，\
+                    <span class="text-info">{%=this.website%}</span>';
+
+</script>

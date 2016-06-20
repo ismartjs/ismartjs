@@ -1,0 +1,136 @@
+<meta title="Toast通知" icon="fa fa-bell-o" />
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="f-md m-b-xs">Toast通知</div>
+            <div>toast可以作为错误通知提示，消息通知提示等使用场景</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel">
+                <div class="panel-heading">调用方法</div>
+                <div class="panel-body">
+<pre>
+S.toast(msg, level, holdTime)
+</pre>
+                    <table class="table table-bordered">
+                        <tr>
+                            <td><code>msg</code></td>
+                            <td>需要显示的信息</td>
+                        </tr>
+                        <tr>
+                            <td><code>level</code></td>
+                            <td>
+                                信息显示的级别，可以设定为：<code>primary</code>、<code>info</code>、<code>success</code>、<code>danger</code>、<code>warning</code>，<code>violet</code>，<code>orange</code>
+                                默认为<code>primary</code>级别。
+                                <div class="alert alert-warning">
+                                    level参数也可定义显示的标识（sign）,如<code>success:fa fa-cloud-upload</code>，通过冒号<code>:</code>分隔，<code>success</code>是显示级别，
+                                    <code>fa fa-cloud-upload</code>是sign的class，用来自定义icon。
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>holdTime</code></td>
+                            <td>持续时间，单位为毫秒，默认为3000，如果需要stick效果，则可以将该值设置为无限大</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-heading">亲自试一试</div>
+                <div class="panel-body buttons-wrapper">
+                    <input type="button" class="btn btn-primary" value="PRIMARY级别" s-click="S.toast('iSmartJs是一个全能的并且很棒的后台开发框架！<br />iSmartJs是一个全能的并且很棒的后台开发框架！<br />iSmartJs是一个全能的并且很棒的后台开发框架！<br />iSmartJs是一个全能的并且很棒的后台开发框架！', 'primary')" />
+                    <input type="button" class="btn btn-info" value="INFO级别" s-click="S.toast('iSmartJs是一个全能的并且很棒的后台开发框架！<br />iSmartJs是一个全能的并且很棒的后台开发框架！<br />iSmartJs是一个全能的并且很棒的后台开发框架！<br />iSmartJs是一个全能的并且很棒的后台开发框架！', 'info')" />
+                    <input type="button" class="btn btn-success" value="成功级别" s-click="S.toast('iSmartJs是一个全能的并且很棒的后台开发框架！', 'success')" />
+                    <input type="button" class="btn btn-danger" value="错误级别" s-click="S.toast('iSmartJs是一个全能的并且很棒的后台开发框架！', 'danger')" />
+                    <input type="button" class="btn btn-warning" value="警告级别" s-click="S.toast('iSmartJs是一个全能的并且很棒的后台开发框架！', 'warning')" />
+                    <input type="button" class="btn btn-orange" value="橙色级别" s-click="S.toast('iSmartJs是一个全能的并且很棒的后台开发框架！', 'orange')" />
+                    <input type="button" class="btn btn-violet" value="violet级别" s-click="S.toast('iSmartJs是一个全能的并且很棒的后台开发框架！', 'violet')" />
+                    <input type="button" class="btn btn-default" value="自定义级别" s-click="S.toast('iSmartJs是一个全能的并且很棒的后台开发框架！', 'dark')" />
+                    <input type="button" class="btn btn-success" value="自定义图标" s-click="S.toast('文件已经成功上传到云服务器！', 'success:fa fa-cloud-upload')" />
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-heading">自定义显示sign</div>
+                <div class="panel-body">
+                    <div class="text-info">
+                        <div class="alert alert-warning">
+                            使用<code>level</code>参数定义显示的标识（sign）,如<code>success:fa fa-cloud-upload</code>，通过冒号<code>:</code>分隔，<code>success</code>是显示级别，
+                            <code>fa fa-cloud-upload</code>是sign的class，用来自定义icon。
+                        </div>
+                        代码：<code>S.toast('文件已经成功上传到云服务器！', 'success:fa fa-cloud-upload')</code>
+                        <input type="button" class="btn btn-info btn-sm" value="试一试" s-click="S.toast('文件已经成功上传到云服务器！', 'success:fa fa-cloud-upload')" />
+                    </div>
+                    <br />
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="panel">
+                <div class="panel-heading">自定义Toast显示的位置</div>
+                <div class="panel-body">
+                    <div class="text-info">通过定义<code>.s-toast-container</code>的css样式实现Toast的显示位置，如显示在页面顶部中间可以如下定义：</div>
+<pre>
+&lt;style&gt;
+    .s-toast-container{
+        position: fixed;
+        width: 500px;
+        left: 50%;
+        top: 60px;
+        margin-left: -250px;
+        bottom: auto;
+    }
+&lt;/style&gt;
+</pre>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-heading">通过自定义class来自定义显示级别</div>
+                <div class="panel-body">
+                    <div class="text-info">
+                        使用<code>level</code>参数值定义class<code>.s-toast-<span class="text-success">{level}</span></code>，就可以实现自定义显示级别。
+                        如<code>S.toast('iSmartJs', 'dark')</code>
+                        <input type="button" class="btn btn-info btn-sm" value="试一试" s-click="S.toast('iSmartJs是一个全能的并且很棒的后台开发框架！', 'dark')" />
+                    </div>
+                    <br />
+                    <style>
+                        .s-toast-dark{
+                            background: #000;
+                            color: #fff;
+                        }
+                        /**
+                            定义级别的符号
+                        */
+                        .s-toast.s-toast-dark .s-toast-sign.s-toast-sign-default{
+                            font-family: 'Pe-icon-7-stroke';
+                        }
+                        .s-toast.s-toast-dark .s-toast-sign.s-toast-sign-default:before{
+                            content: "\e612";
+                        }
+                    </style>
+
+<pre>
+&lt;style&gt;
+        .s-toast-<code>dark</code>{
+            background: #000;
+            color: #fff;
+        }
+        /**
+            定义级别的符号
+        */
+        .s-toast.s-toast-<code>dark</code> .s-toast-sign.s-toast-sign-default{
+            font-family: 'Pe-icon-7-stroke';
+        }
+        .s-toast.s-toast-<code>dark</code> .s-toast-sign.s-toast-sign-default:before{
+            content: "\e612";
+        }
+&lt;/style&gt;
+</pre>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

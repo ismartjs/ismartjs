@@ -1,0 +1,273 @@
+<meta title="选择控件" icon="fa fa-check-square-o"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">选择控件</div>
+            <div>
+                选择控件主要用于行选择的场景，如列表中的选择功能。
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">Follow Me</div>
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            <h4>示例</h4>
+
+                            <p>
+                                <input type="button" class="btn btn-primary btn-sm" value="获取选择的行"
+                                       s-click="getCheckedRows()"/>
+                                <input type="button" class="btn btn-danger btn-sm" value="禁止选择"
+                                       s-click="$singersGrid.turn('off')"/>
+                                <input type="button" class="btn btn-success btn-sm" value="激活选择"
+                                       s-click="$singersGrid.turn('on')"/>
+                            </p>
+                            <table class="table table-striped"
+                                   id="singersGrid"
+                                   s="check">
+                                <tr>
+                                    <th>
+                                        <label class="s-checkbox">
+                                            <input type="checkbox" s-check-role="checkall-h"/>
+                                            <span class="s-checkbox-indicator"></span>
+                                        </label>
+                                    </th>
+                                    <th>歌手</th>
+                                    <th>地区</th>
+                                    <th>歌曲</th>
+                                    <th>排行榜</th>
+                                </tr>
+                                <tbody s="loop" s-data="S.get('json/singers.json')">
+                                <tr s-loop-role="empty">
+                                    <td colspan="5">
+                                        <div class="space-v text-center">
+                                            <i class="fa fa-info-circle text-info"></i> 未查询到数据
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr s-loop-role="row"
+                                    s-check-role="i"
+                                    s="datac">
+                                    <td>
+                                        <label class="s-checkbox">
+                                            <input type="checkbox" s-check-role="h"/>
+                                            <span class="s-checkbox-indicator"></span>
+                                        </label>
+                                    </td>
+                                    <td s s-data-filter="'name'"></td>
+                                    <td s s-data-filter="'area'"></td>
+                                    <td s s-data-filter="'song'"></td>
+                                    <td s s-data-filter="'rank'"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <h4>代码</h4>
+<pre>
+&lt;input type="button" class="btn btn-primary btn-sm" value="获取选择的行"
+       s-click="getCheckedRows()"/&gt;
+&lt;input type="button" class="btn btn-danger btn-sm" value="禁止选择"
+    s-click="$singersGrid.turn('off')"/&gt;
+&lt;input type="button" class="btn btn-success btn-sm" value="激活选择"
+   s-click="$singersGrid.turn('on')"/&gt;
+&lt;table class="table table-striped"
+       id="singersGrid"
+       <span class="text-success">s="check"</span> &gt;
+    &lt;tr&gt;
+        &lt;th&gt;
+            &lt;label class="s-checkbox"&gt;
+                <span class="text-success">&lt;input type="checkbox" s-check-role="checkall-h"/&gt;</span>
+                &lt;span class="s-checkbox-indicator"&gt;&lt;/span&gt;
+            &lt;/label&gt;
+        &lt;/th&gt;
+        &lt;th&gt;歌手&lt;/th&gt;
+        &lt;th&gt;地区&lt;/th&gt;
+        &lt;th&gt;歌曲&lt;/th&gt;
+        &lt;th&gt;排行榜&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tbody s="loop" s-data="S.get('json/singers.json')"&gt;
+    &lt;tr s-loop-role="empty"&gt;
+        &lt;td colspan="5"&gt;
+            &lt;div class="space-v text-center"&gt;
+                &lt;i class="fa fa-info-circle text-info"&gt;&lt;/i&gt; 未查询到数据
+            &lt;/div&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr s-loop-role="row"
+        <span class="text-success">s-check-role="i"</span>
+        s="datac"&gt;
+        &lt;td&gt;
+            &lt;label class="s-checkbox"&gt;
+                <span class="text-success">&lt;input type="checkbox" s-check-role="h"/&gt;</span>
+                &lt;span class="s-checkbox-indicator"&gt;&lt;/span&gt;
+            &lt;/label&gt;
+        &lt;/td&gt;
+        &lt;td s s-data-filter="'name'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'area'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'song'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'rank'"&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;script type="text/javascript"&gt;
+    function getCheckedRows() {
+        var datas = $singersGrid.getCheckedData();
+        if (datas.length) {
+            S.alert(JSON.stringify(datas));
+        } else {
+            S.toast("请先选择数据！", "warning");
+        }
+    }
+&lt;/script&gt;
+</pre>
+                        </li>
+                        <li>
+                            <h4>声明选择控件</h4>
+                            <ol>
+                                <li>使用<code>s="check"</code>声明选择控件</li>
+                                <li>使用<code>s-check-role='i'</code>声明选择项，选择项可以动态创建，比如上面示例中通过<code>loop</code>控件去创建选项。
+                                </li>
+                                <li>
+                                    使用<code>s-check-role="checkall-h"</code>声明全选按钮，当全选按钮选中的时候，会添加<code>.s-check-checked</code>
+                                </li>
+                                <li>使用<code>s-check-role='h'</code>为选择行添加选择按钮，添加后行只有通过点击该按钮才会被选中，否则行可以通过行点击进行选中</li>
+                            </ol>
+                        </li>
+                        <li>
+                            <h4>使用<code>getCheckedData([field])</code>方法获取选择的行数据</h4>
+
+                            <p>该方法会返回被选择的行的绑定的数据，如上述示例中<code>var datas = $singersGrid.getCheckedData()</code>即获取被选择的行的绑定数据。
+                            </p>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-built panel-success">
+                <div class="panel-heading">配置项</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>默认值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>turn</td>
+                            <td>String</td>
+                            <td>on</td>
+                            <td>
+                                是否开启选择，如果该参数为off则关闭选择功能。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>checkedStyle</td>
+                            <td>String</td>
+                            <td>warning</td>
+                            <td>
+                                当选项被选中的时候，为选项添加的class
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>multiple</td>
+                            <td>boolean</td>
+                            <td>true</td>
+                            <td>
+                                是否开启多选，默认开启，当为false的时候，则为单选
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>checkallHandler</td>
+                            <td>jQuery</td>
+                            <td></td>
+                            <td>
+                                全选的按钮，默认为空
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>handlerCheckStyle</td>
+                            <td>String</td>
+                            <td></td>
+                            <td>
+                                行选择句柄被选中时添加的class
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>path</td>
+                            <td>boolean</td>
+                            <td>false</td>
+                            <td>
+                                路径选择，当选项有父子路径的时候，该选项可用，如TreeGrid的父子选项的选择。
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">API</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody>
+                        <tr>
+                            <th>方法名</th>
+                            <th>返回值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>turn('on'|'off')</td>
+                            <td></td>
+                            <td>
+                                打开和关闭是选择功能。on是开启，off是关闭
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>checkAll()</td>
+                            <td></td>
+                            <td>
+                                全选
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>uncheckAll()</td>
+                            <td></td>
+                            <td>
+                                取消全选
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>getChecked(type)</td>
+                            <td>[]</td>
+                            <td>
+                                获取选择的行列表，如果参数type为<code>node</code>的时候，则返回选择行的jQuery对象列表，否则返回行的Smart对象列表。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>getCheckedData(field)</td>
+                            <td>[]</td>
+                            <td>
+                                获取行选择的数据列表，如果field不为空时，返回每行数据的field属性值。
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function getCheckedRows() {
+        var datas = $singersGrid.getCheckedData();
+        if (datas.length) {
+            S.alert(JSON.stringify(datas));
+        } else {
+            S.toast("请先选择数据！", "warning");
+        }
+    }
+</script>

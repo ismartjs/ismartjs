@@ -1,0 +1,41 @@
+@import "var.less";
+@import "mixins.less";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "微软雅黑", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #fff;
+  font-size: @font-default-size;
+  color: @color-default;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: @a-color-default;
+  &:hover, &:focus {
+    color: @a-hover-color-default;
+    text-decoration: none;
+  }
+}
+
+ul, dl, ol, dt, dd {
+}
+
+dt {
+  font-weight: normal;
+}
+
+label {
+  font-weight: normal;
+}
+
+h1,h2,h3,.h1,.h2,.h3{
+  margin-top: 10px;
+}

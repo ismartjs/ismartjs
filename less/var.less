@@ -1,0 +1,243 @@
+@base-color: #fff;
+@color-default: #6a6c6f;
+@a-color-default: @brand-primary;
+@a-hover-color-default: darken(@a-color-default, 20%);
+@font-default-size: 14px;
+@layout-aside-bg-color: #F7F9FA;
+
+@brand-primary: #556A7E;
+@brand-muted: #999;
+@brand-info: #3498DB;
+@brand-success: #62cb31;
+@brand-warning: #ffb606;
+@orange-color: #e67e22;
+@brand-danger: #e74c3c;
+@violet-color: #9b59b6;
+@blue-color: #3498db;
+
+@bg-default-color: #F7F9FA;
+@bg-primary-color: @brand-primary;
+@bg-muted-color: @brand-muted;
+@bg-info-color: @brand-info;
+@bg-success-color: @brand-success;
+@bg-waring-color: @brand-warning;
+@bg-orange-color: @orange-color;
+@bg-danger-color: @brand-danger;
+@bg-violet-color: @violet-color;
+@bg-blue-color: @blue-color;
+@bg-light-color: #f3f3f3;
+
+//== Form states and alerts
+//
+//## Define colors for form feedback states and, by default, alerts.
+
+@state-success-text: #3c763d;
+@state-success-bg: #dff0d8;
+@state-success-border: darken(spin(@state-success-bg, -10), 5%);
+
+@state-info-text: #31708f;
+@state-info-bg: #d9edf7;
+@state-info-border: darken(spin(@state-info-bg, -10), 7%);
+
+@state-warning-text: #8a6d3b;
+@state-warning-bg: #fcf8e3;
+@state-warning-border: darken(spin(@state-warning-bg, -10), 5%);
+
+@state-danger-text: #a94442;
+@state-danger-bg: #f2dede;
+@state-danger-border: darken(spin(@state-danger-bg, -10), 5%);
+
+/**
+  radius
+*/
+@radius-default-width: 0;
+
+/**
+  button
+*/
+@btn-default-bg: @base-color;
+@btn-primary-bg: @brand-primary;
+@btn-success-bg: @brand-success;
+@btn-info-bg: @brand-info;
+@btn-warning-bg: @brand-warning;
+@btn-danger-bg: @brand-danger;
+
+@btn-orange-color: @base-color;
+@btn-orange-bg: @orange-color;
+@btn-orange-border: darken(@orange-color, 5%);
+
+@btn-violet-color: @base-color;
+@btn-violet-bg: @violet-color;
+@btn-violet-border: darken(@violet-color, 5%);
+
+@btn-outline-color: @color-default;
+@btn-outline-bg: @base-color;
+
+@btn-circle-width: 30px;
+@btn-circle-lg-width: 50px;
+@btn-circle-xs-width: 20px;
+
+@dropdown-link-hover-bg: @brand-primary;
+@dropdown-link-active-bg: @brand-primary;
+
+@alert-success-bg: @brand-success;
+@alert-info-bg: @brand-info;
+@alert-warning-bg: @brand-warning;
+@alert-danger-bg: @brand-danger;
+
+//progress bar
+@progress-radius: 0;
+
+@progress-sm-height: 10px;
+@progress-xs-height: 5px;
+
+@progress-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+
+@progress-bar-violet-bg: @bg-violet-color;
+@progress-bar-orange-bg: @bg-orange-color;
+
+/**
+toast
+*/
+@toast-transparency: .9;
+@toast-info-bg: rgba(red(@bg-info-color), green(@bg-info-color), blue(@bg-info-color), @toast-transparency);
+@toast-info-color: #fff;
+@toast-success-bg: rgba(red(@bg-success-color), green(@bg-success-color), blue(@bg-success-color), @toast-transparency);
+@toast-success-color: #fff;
+@toast-danger-bg: rgba(red(@bg-danger-color), green(@bg-danger-color), blue(@bg-danger-color), @toast-transparency);
+@toast-danger-color: #fff;
+@toast-warning-bg: rgba(red(@bg-waring-color), green(@bg-waring-color), blue(@bg-waring-color), @toast-transparency);
+@toast-warning-color: #fff;
+@toast-primary-bg: rgba(red(@bg-primary-color), green(@bg-primary-color), blue(@bg-primary-color), @toast-transparency);
+@toast-primary-color: #fff;
+@toast-violet-bg: rgba(red(@bg-violet-color), green(@bg-violet-color), blue(@bg-violet-color), @toast-transparency);
+@toast-violet-color: #fff;
+@toast-orange-bg: rgba(red(@bg-orange-color), green(@bg-orange-color), blue(@bg-orange-color), @toast-transparency);
+@toast-orange-color: #fff;
+
+/**
+  panel
+*/
+@panel-box-shadow: none;
+@panel-border-radius: @radius-default-width;
+@panel-bg: transparent;
+@panel-body-bg: @base-color;
+@panel-heading-radius: 0;
+@panel-heading-padding: 10px 2px;
+@panel-built-heading-padding: 10px 15px;
+@panel-built-heading-bg: @base-color;
+
+@panel-default-heading-bg: transparent;
+@panel-primary-heading-bg: transparent;
+@panel-info-heading-bg: transparent;
+@panel-success-heading-bg: transparent;
+@panel-danger-heading-bg: transparent;
+@panel-warning-heading-bg: transparent;
+@panel-orange-heading-bg: transparent;
+@panel-violet-heading-bg: transparent;
+
+@panel-border-color: @border-default-color;
+@panel-footer-bg: #F7F9FA;
+
+@panel-style-body-border-width: 2px;
+@panel-default-body-border-width: 1px;
+@panel-default-body-border-color: @panel-border-color;
+@panel-primary-body-border-color: @brand-primary;
+@panel-info-body-border-color: @brand-info;
+@panel-success-body-border-color: @brand-success;
+@panel-danger-body-border-color: @brand-danger;
+@panel-warning-body-border-color: @brand-warning;
+@panel-orange-body-border-color: @orange-color;
+@panel-violet-body-border-color: @violet-color;
+
+/**
+state
+*/
+@state-orange-text: @orange-color;
+@state-blue-text: @blue-color;
+@state-violet-text: @violet-color;
+
+//blockquote
+@blockquote-font-size: @font-default-size;
+
+//border
+@border-default-color: #e5e5e5;
+@border-primary-color: @brand-primary;
+@border-info-color: @brand-info;
+@border-success-color: @brand-success;
+@border-danger-color: @brand-danger;
+@border-violet-color: @violet-color;
+@border-warning-color: @brand-warning;
+@border-blue-color: @blue-color;
+@border-orange-color: @orange-color;
+
+//dropdown-menu
+@dropdown-menu-radius: 0;
+@dropdown-menu-box-shadow: none;
+
+//label
+@label-violet-bg: @bg-violet-color;
+@label-orange-bg: @bg-orange-color;
+
+//alert ui
+@alert-sign-font-size: 32px;
+@alert-info-sign-color: @brand-info;
+@alert-success-sign-color: @brand-success;
+@alert-warning-sign-color: @brand-warning;
+@alert-danger-sign-color: @brand-danger;
+@alert-violet-sign-color: @violet-color;
+@alert-orange-sign-color: @orange-color;
+
+//confirm ui
+//alert ui
+@confirm-sign-font-size: 32px;
+@confirm-info-sign-color: @brand-info;
+@confirm-success-sign-color: @brand-success;
+@confirm-warning-sign-color: @brand-warning;
+@confirm-danger-sign-color: @brand-danger;
+@confirm-violet-sign-color: @violet-color;
+@confirm-orange-sign-color: @orange-color;
+
+//form elements
+@checkbox-indicator-checked-color: @brand-primary;
+@checkbox-indicator-border-color: #ddd;
+@checkbox-indicator-width: 15px;
+@checkbox-indicator-disabled-bg: #eee;
+@checkbox-indicator-disabled-border-color: #eee;
+
+@radio-indicator-checked-color: @brand-primary;
+@radio-indicator-border-color: @border-default-color;
+@radio-indicator-width: 15px;
+
+//s-select
+@select-panel-border: #ccc;
+@select-list-item-hover-bg: @brand-primary;
+
+//checkbox switch
+@checkbox-switch-bg: @brand-success;
+
+//well
+@well-padding: 10px;
+
+//type
+@mp-xxs-width: 1px;
+@mp-xs-width: 5px;
+@mp-sm-width: 10px;
+@mp-width: 15px;
+@mp-md-width: 20px;
+@mp-lg-width: 25px;
+@mp-xl-width: 30px;
+
+
+//timeline
+@timeline-line-bg: #e8ebf0;
+@timeline-line-width: 4px;
+@timeline-border-color: @border-default-color;
+@timeline-primary-border: @brand-primary;
+@timeline-success-border: @brand-success;
+@timeline-danger-border: @brand-danger;
+@timeline-info-border: @brand-info;
+@timeline-warning-border: @brand-warning;
+@timeline-orange-border: @orange-color;
+@timeline-violet-border: @violet-color;
+@timeline-footer-bg: @bg-default-color;

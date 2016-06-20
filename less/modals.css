@@ -1,0 +1,24 @@
+/**
+  radius
+*/
+/**
+  button
+*/
+/**
+toast
+*/
+/**
+  panel
+*/
+/**
+state
+*/
+.modal-bg {
+  background: rgba(0, 0, 0, 0.4);
+}
+.modal .modal-dialog {
+  max-width: 98%;
+}
+.modal-content {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+}

@@ -1,0 +1,34 @@
+@import "var.less";
+@import "mixins.less";
+
+.progress {
+  border-radius: @progress-radius;
+  .box-shadow(@progress-box-shadow);
+}
+
+.progress-sm{
+  height: @progress-sm-height;
+  .progress-bar{
+    height: @progress-sm-height;
+    line-height: @progress-sm-height;
+  }
+}
+
+.progress-xs{
+  height: @progress-xs-height;
+  .progress-bar{
+    height: @progress-xs-height;
+    line-height: @progress-xs-height;
+  }
+}
+
+// Mixin for generating new styles
+.progress-bar-styles(@color) {
+  background: @color;
+  border-right: 3px solid darken(@color, 8%);
+}
+
+// Apply the mixin to the progress bars
+.progress-bar-violet     { .progress-bar-styles(@progress-bar-violet-bg); }
+.progress-bar-orange     { .progress-bar-styles(@progress-bar-orange-bg); }
+

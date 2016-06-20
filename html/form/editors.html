@@ -1,0 +1,31 @@
+<meta title="编辑器" icon="fa fa-file-code-o"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <i class="pull-left fa f-xl fa-file-o text-orange"></i>
+
+            <div class="m-b-xs f-md">HTML编辑器</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-built">
+                <div class="panel-heading">UEditor</div>
+                <div class="alert alert-warning m-none">
+                    UEditor是由百度web前端研发部开发所见即所得富文本web编辑器，具有轻量，可定制，注重用户体验等特点，开源基于MIT协议，允许自由使用和修改代码。<a href="http://ueditor.baidu.com/" target="_blank" external>http://ueditor.baidu.com/</a>
+                </div>
+                <div class="panel-body">
+                    <script id="editor" type="text/plain"
+                            style="width:100%; height:300px;"><p>iSmartJs是一个基于bootstrap和jQuery的后端RIA开发框架，它是一整套的解决方案，通过iSmartJs您可以通过配置以及跟随iSmartJs的教程在10分钟之内进入业务开发，提高工作效率。</p>
+<p>它提供了众多的控件，如loop控件用来构建列表，pagination控件用来构建分页，check控件用来构建选择功能等，整个iSmartJs是一个完全的异步框架，强大的控件合作机制可以通过多个控件组合出强大的功能。</p>
+<p>iSmartJs将业务所需的页面可以异步按需加载进来，iSmartJs对页面的加载并不是通过iframe进行加载的，而是把页面加载到当前页面的dom里面，iSmartJs会对这些页面进行闭包封装，所以每个页面都在一个独立的ctrl作用域里面，多个页面的加载不会形成变量冲突和污染。这样就极大简化了模块页面的开发，提高开发效率。</p>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    UE.delEditor($editor.node[0]);
+    var editor = UE.getEditor($editor.node[0]);
+</script>

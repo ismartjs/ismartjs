@@ -1,0 +1,42 @@
+/**
+  radius
+*/
+/**
+  button
+*/
+/**
+toast
+*/
+/**
+  panel
+*/
+/**
+state
+*/
+.progress {
+  border-radius: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.progress-sm {
+  height: 10px;
+}
+.progress-sm .progress-bar {
+  height: 10px;
+  line-height: 10px;
+}
+.progress-xs {
+  height: 5px;
+}
+.progress-xs .progress-bar {
+  height: 5px;
+  line-height: 5px;
+}
+.progress-bar-violet {
+  background: #9b59b6;
+  border-right: 3px solid #8646a0;
+}
+.progress-bar-orange {
+  background: #e67e22;
+  border-right: 3px solid #c96a17;
+}

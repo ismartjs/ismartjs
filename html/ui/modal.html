@@ -1,0 +1,119 @@
+<meta title="模态框" icon="fa fa-desktop" width="800px" animation="none"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">模态框（Modal）</div>
+            <small>模态框可以根据url动态将页面加载进来，或者使用原生的bootstrap模态框声明方式创建模态框</small>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-danger panel-built">
+                <div class="panel-heading">
+                    根据url动态加载页面<code>S.popupOpen(url, [args])</code>
+                </div>
+                <div class="alert alert-success no-margin">
+                    在项目中，我们经常需要弹出框形式打开一些页面，用于便捷性的操作，比如用户编辑、用户信息浏览、类目选择器、图片选择器等，使用
+                    <code>S.popupOpen(url, [args])</code>可以动态将需要加载的页面通过模态框打开。
+                </div>
+                <div class="panel-body">
+                    <h3 class="text-center m-b-md">
+                        使用模态框打开当前的模块页面
+                    </h3>
+
+                    <div class="text-center m-b-md">
+                        <button type="button" class="btn btn-primary" s-click="S.popupOpen('html/ui/modal.html')">
+                            打开页面
+                        </button>
+                    </div>
+
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>默认值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>url</td>
+                            <td>String</td>
+                            <td></td>
+                            <td>打开的模块页面的url</td>
+                            <iframe id="tmp_downloadhelper_iframe" style="display: none;"></iframe>
+                        </tr>
+                        <tr>
+                            <td>args</td>
+                            <td>object</td>
+                            <td></td>
+                            <td>
+                                传递给模块页面的参数
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="alert alert-warning">
+                        定义打开的页面的meta的width属性值，可以声明打开的页面的宽度，如：modal.html的meta声明为:<code>&lt;meta width="500px" /&gt;</code>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-success panel-built">
+                <div class="panel-heading">
+                    原生模态框
+                </div>
+                <div class="alert alert-warning no-margin">
+                    也许是chrome的bug，如果一个<code>position:fixed</code>元素的所有父元素中有一个元素有动画（即声明了css的<code>animation</code>），那么该元素的定位将不是根据body来获取定位的，
+                    而是根据animation的元素进行定位，所以在此如果要用到原生的模态框，请将当前页面meta属性的<code>animation</code>置为<code>none</code>，代码如：<code>
+                    &lt;meta animation='none' /&gt;</code>
+                </div>
+                <div class="alert alert-danger no-margin">
+                    还有未知的原因导致fixed定位失败，请尽量少用原生模态框，而是用<code>S.popupOpen</code>替代。
+                </div>
+                <div class="panel-body">
+                    <div class="text-center">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#$TID:myModal$">
+                            Launch demo modal
+                        </button>
+
+                    </div>
+
+                    <div class="m-t-md">
+                    <pre>
+&lt;button type="button" class="btn btn-success"
+        data-toggle="modal" data-target="#myModal"&gt;
+        Launch demo modal
+&lt;/button&gt;
+                    </pre>
+                    </div>
+                </div>
+                <div class="modal fade in" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header text-center">
+                                <h4 class="modal-title">Modal title</h4>
+                                <small >Lorem Ipsum is simply dummy text of the printing and
+                                    typesetting industry.
+                                </small>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Lorem Ipsum is simply dummy</strong> text of the printing and typesetting
+                                    industry. Lorem Ipsum has been the industry's standard dummy text ever since the
+                                    1500s, when an unknown
+                                    printer took a galley of type and scrambled it to make a type specimen book. It has
+                                    survived not only five centuries, but also the leap into electronic typesetting,
+                                    remaining essentially unchanged.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

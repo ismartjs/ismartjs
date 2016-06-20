@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ISmart Js 4.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/font-awesome-4.6.3/css/font-awesome.min.css" type="text/css" rel="stylesheet" />
+    <link href="css/pe-icon-7-stroke/css/pe-icon-7-stroke.css" type="text/css" rel="stylesheet" />
+    <link href="css/pe-icon-7-stroke/css/helper.css" type="text/css" rel="stylesheet" />
+    <link href="css/animate.css" type="text/css" rel="stylesheet" />
+    <link href="css/spinkit.css" type="text/css" rel="stylesheet" />
+    <link href="css/bootstrap.css" type="text/css" rel="stylesheet" />
+    <link href="less/layout.css" type="text/css" rel="stylesheet" />
+    <link href="less/keyframes.css" type="text/css" rel="stylesheet" />
+    <link href="less/animate.css" type="text/css" rel="stylesheet" />
+    <link href="less/loading.css" type="text/css" rel="stylesheet" />
+    <link href="less/buttons.css" type="text/css" rel="stylesheet" />
+    <link href="less/labels.css" type="text/css" rel="stylesheet" />
+    <link href="less/panels.css" type="text/css" rel="stylesheet" />
+    <link href="less/modals.css" type="text/css" rel="stylesheet" />
+    <link href="less/progresses.css" type="text/css" rel="stylesheet" />
+    <link href="less/normalize.css" type="text/css" rel="stylesheet" />
+    <link href="less/type.css" type="text/css" rel="stylesheet" />
+    <link href="less/component-animations.css" type="text/css" rel="stylesheet" />
+    <link href="less/utilities.css" type="text/css" rel="stylesheet" />
+    <link href="less/forms.css" type="text/css" rel="stylesheet" />
+    <link href="less/well.css" type="text/css" rel="stylesheet" />
+    <link href="less/ui.contextmenu.css" type="text/css" rel="stylesheet" />
+    <link href="less/ui.toast.css" type="text/css" rel="stylesheet" />
+    <link href="less/ui.alert.css" type="text/css" rel="stylesheet" />
+    <link href="less/ui.confirm.css" type="text/css" rel="stylesheet" />
+    <link href="less/ui.form.validation.css" type="text/css" rel="stylesheet" />
+    <link href="less/view.timeline.css" type="text/css" rel="stylesheet" />
+    <link href="less/view.forum.css" type="text/css" rel="stylesheet" />
+    <link href="less/widget.tpl.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="js/3rd/jquery-1.12.4.js"></script>
+    <script type="text/javascript" src="js/3rd/jquery-ui-1.10.4.custom.min.js"></script>
+    <script type="text/javascript" src="js/3rd/bootstrap.js"></script>
+    <script type="text/javascript" src="js/bootstrap-plugins/inputmask.js"></script>
+    <script type="text/javascript" src="js/3rd/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="js/3rd/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="js/3rd/echarts.min.js"></script>
+    <script type="text/javascript" src="js/3rd/jquery.peity.min.js"></script>
+    <script type="text/javascript" src="js/3rd/flot/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="js/3rd/flot/jquery.flot.pie.min.js"></script>
+    <script type="text/javascript" src="js/3rd/flot/jquery.flot.spline.js"></script>
+    <script type="text/javascript" src="js/3rd/flot/jquery.flot.resize.min.js"></script>
+    <script type="text/javascript" src="js/3rd/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" src="js/3rd/ueditor/ueditor.all.js"> </script>
+    <script type="text/javascript" src="js/3rd/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript" src="js/src/smart.core.js"></script>
+    <script type="text/javascript" src="js/src/smart.ui.js"></script>
+    <script type="text/javascript" src="js/src/smart.template.js"></script>
+    <script type="text/javascript" src="js/src/widgets/window.js"></script>
+    <script type="text/javascript" src="js/src/widgets/tpl.js"></script>
+    <script type="text/javascript" src="js/src/widgets/datac.js"></script>
+    <script type="text/javascript" src="js/src/widgets/nameDataAdapter.js"></script>
+    <script type="text/javascript" src="js/src/widgets/loop.js"></script>
+    <script type="text/javascript" src="js/src/widgets/check.js"></script>
+    <script type="text/javascript" src="js/src/widgets/event.js"></script>
+    <script type="text/javascript" src="js/src/plugins/alert.js"></script>
+    <script type="text/javascript" src="js/src/plugins/confirm.js"></script>
+    <script type="text/javascript" src="js/src/plugins/popup.open.js"></script>
+    <script type="text/javascript" src="js/src/plugins/upload.js"></script>
+    <script type="text/javascript" src="js/src/plugins/toast.js"></script>
+    <script type="text/javascript" src="js/src/widgets-ui/contextmenu.js"></script>
+    <script type="text/javascript" src="js/src/widgets-ui/pagination.js"></script>
+    <script type="text/javascript" src="js/src/widgets-ui/form.js"></script>
+    <script type="text/javascript" src="js/src/widgets-ui/select.js"></script>
+    <script type="text/javascript" src="js/src/widgets-ui/valid.js"></script>
+    <script type="text/javascript" src="js/src/widgets-ui/tooltip.js"></script>
+    <script type="text/javascript" src="js/src/widgets-ui/popover.js"></script>
+    <script type="text/javascript" src="js/src/widgets-ui/datetimepicker.js"></script>
+    <script type="text/javascript" src="js/src/widgets-ui/affix.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            Smart.UI.booting($("#root"), {
+                /**
+                 * 用于定义交互的模板，如弹出框，通知，警告框，确认框等等
+                 * */
+                uiTemplateUrl: "ui-template.html",
+                /**
+                 * 主布局文件的url
+                 * */
+                layoutUrl: "layout.html",
+                layoutConfig: {
+                    /**
+                     * 菜单的url
+                     * */
+                    menuUrl: "json/menu.json",
+                    asideTopUrl: "html/asideTop.html",
+                    headerUrl: "html/header.html",
+                    tabWindowAnimation: "animated fadeInUp-sm"
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="root" s="window">
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,146 @@
+/**
+  radius
+*/
+/**
+  button
+*/
+/**
+toast
+*/
+/**
+  panel
+*/
+/**
+state
+*/
+.timeline-wrapper {
+  position: relative;
+}
+.timeline-wrapper:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 18px;
+  height: 100%;
+  width: 4px;
+  background: #e8ebf0;
+}
+.timeline-wrapper .timeline {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 10px;
+  margin-left: 60px;
+  margin-top: 10px;
+  border: 1px solid #e5e5e5;
+}
+.timeline-wrapper .timeline.timeline-success {
+  border-top: 2px solid #62cb31;
+}
+.timeline-wrapper .timeline.timeline-success .timeline-icon {
+  background: #62cb31;
+  color: #fff;
+}
+.timeline-wrapper .timeline.timeline-primary {
+  border-top: 2px solid #556A7E;
+}
+.timeline-wrapper .timeline.timeline-primary .timeline-icon {
+  background: #556A7E;
+  color: #fff;
+}
+.timeline-wrapper .timeline.timeline-warning {
+  border-top: 2px solid #ffb606;
+}
+.timeline-wrapper .timeline.timeline-warning .timeline-icon {
+  background: #ffb606;
+  color: #fff;
+}
+.timeline-wrapper .timeline.timeline-danger {
+  border-top: 2px solid #e74c3c;
+}
+.timeline-wrapper .timeline.timeline-danger .timeline-icon {
+  background: #e74c3c;
+  color: #fff;
+}
+.timeline-wrapper .timeline.timeline-info {
+  border-top: 2px solid #3498DB;
+}
+.timeline-wrapper .timeline.timeline-info .timeline-icon {
+  background: #3498DB;
+  color: #fff;
+}
+.timeline-wrapper .timeline.timeline-orange {
+  border-top: 2px solid #e67e22;
+}
+.timeline-wrapper .timeline.timeline-orange .timeline-icon {
+  background: #e67e22;
+  color: #fff;
+}
+.timeline-wrapper .timeline.timeline-violet {
+  border-top: 2px solid #9b59b6;
+}
+.timeline-wrapper .timeline.timeline-violet .timeline-icon {
+  background: #9b59b6;
+  color: #fff;
+}
+.timeline-wrapper .timeline .timeline-icon {
+  position: absolute;
+  top: 0;
+  left: -60px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 16px;
+  border: 1px solid #e5e5e5;
+  text-align: center;
+  background: #fff;
+}
+.timeline-wrapper .timeline .timeline-icon i {
+  display: block;
+  width: 24px;
+  height: 24px;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  margin-left: -12px;
+  margin-top: -9px;
+}
+.timeline-wrapper .timeline .timeline-body {
+  position: relative;
+  background: white;
+}
+.timeline-wrapper .timeline .timeline-body:before,
+.timeline-wrapper .timeline .timeline-body:after {
+  right: 100%;
+  top: 20px;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.timeline-wrapper .timeline .timeline-body:before {
+  border-color: transparent;
+  border-right-color: #e5e5e5;
+  border-width: 11px;
+  margin-top: -11px;
+}
+.timeline-wrapper .timeline .timeline-body:after {
+  border-color: transparent;
+  border-right-color: #fff;
+  border-width: 10px;
+  margin-top: -10px;
+}
+.timeline-wrapper .timeline .timeline-footer {
+  border-top: 1px solid #e5e5e5;
+  border-radius: 0;
+  background: #F7F9FA;
+  padding: 10px 15px;
+}
+.timeline-wrapper .timeline > .alert,
+.timeline-wrapper .timeline .timeline-body > .alert {
+  margin: 0 -1px;
+}
+.timeline-wrapper .timeline .timeline-footer {
+  margin-top: -1px;
+}

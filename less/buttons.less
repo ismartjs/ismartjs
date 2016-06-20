@@ -1,0 +1,43 @@
+@import "var.less";
+@import "mixins.less";
+
+.btn {
+  .transition(all .3s ease 0s);
+}
+
+// Apply the mixin to the buttons
+.btn-orange  { .button-variant(@btn-orange-color, @btn-orange-bg, @btn-orange-border); }
+.btn-violet  { .button-variant(@btn-violet-color, @btn-violet-bg, @btn-violet-border); }
+
+.btn-outline{
+  background: @btn-outline-bg;
+  color: @btn-outline-color;
+  &.btn-primary { color: @btn-primary-bg; border: 1px solid darken(@btn-primary-bg, 1%)}
+  &.btn-success { color: @btn-success-bg; border: 1px solid darken(@btn-success-bg, 1%) }
+  &.btn-info    { color: @btn-info-bg; border: 1px solid darken(@btn-info-bg, 1%) }
+  &.btn-warning { color: @btn-warning-bg;  border: 1px solid darken(@btn-warning-bg, 1%)}
+  &.btn-danger  { color: @btn-danger-bg; border: 1px solid darken(@btn-danger-bg, 1%) }
+  &.btn-orange  { color: @btn-orange-bg; border: 1px solid darken(@btn-orange-bg, 1%) }
+  &.btn-violet  { color: @btn-violet-bg; border: 1px solid darken(@btn-violet-bg, 1%) }
+  &:hover{
+    color: @base-color;
+  }
+}
+
+.btn-circle{
+  .square(@btn-circle-width);
+  border-radius: 100%;
+  line-height: @btn-circle-width/2;
+  text-align: center;
+  padding: 0;
+}
+.btn-lg{
+  &.btn-circle{
+    .square(@btn-circle-lg-width);
+  }
+}
+.btn-xs{
+  &.btn-circle{
+    .square(@btn-circle-xs-width);
+  }
+}

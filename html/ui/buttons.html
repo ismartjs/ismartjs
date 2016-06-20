@@ -1,0 +1,409 @@
+<meta title="按钮" icon="fa fa-square"/>
+<style>
+    .buttons-wrapper .btn {
+        margin-bottom: 5px;
+    }
+</style>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="f-md m-b-xs">按钮</div>
+            <small>toast可以作为错误通知提示，消息通知提示等使用场景</small>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    预定义样式
+                </div>
+                <div class="panel-body">
+                    <p>
+                        使用下面列出的类可以快速创建一个带有预定义样式的按钮。
+                    </p>
+
+                    <p class="buttons-wrapper">
+                        <button type="button" class="btn btn-default">.btn-default</button>
+                        <button type="button" class="btn btn-primary">.btn-primary</button>
+                        <button type="button" class="btn btn-info">.btn-info</button>
+                        <button type="button" class="btn btn-success">.btn-success</button>
+                        <button type="button" class="btn btn-warning">.btn-warning</button>
+                        <button type="button" class="btn btn-danger">.btn-danger</button>
+                        <button type="button" class="btn btn-orange">.btn-orange</button>
+                        <button type="button" class="btn btn-violet">.btn-violet</button>
+                        <button type="button" class="btn btn-link">.btn-link</button>
+                    </p>
+                    <p>
+                        禁用样式，为按钮添加<code>disabled</code>属性即可禁用按钮
+                    </p>
+
+                    <p class="buttons-wrapper">
+                        <button type="button" class="btn btn-default" disabled>.btn-default</button>
+                        <button type="button" class="btn btn-primary" disabled>.btn-primary</button>
+                        <button type="button" class="btn btn-info" disabled>.btn-info</button>
+                        <button type="button" class="btn btn-success" disabled>.btn-success</button>
+                        <button type="button" class="btn btn-warning" disabled>.btn-warning</button>
+                        <button type="button" class="btn btn-danger" disabled>.btn-danger</button>
+                        <button type="button" class="btn btn-orange" disabled>.btn-orange</button>
+                        <button type="button" class="btn btn-violet" disabled>.btn-violet</button>
+                        <button type="button" class="btn btn-link" disabled>.btn-link</button>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    按钮尺寸
+                </div>
+                <div class="panel-body buttons-wrapper">
+                    <p>
+                        需要让按钮具有不同尺寸吗？使用 <code>.btn-lg</code>, <code>.btn-sm</code>,
+                        <code>.btn-xs</code> 就可以获得不同尺寸的按钮。
+                    </p>
+
+                    <p>
+                        <button type="button" class="btn btn-primary btn-lg">Large button</button>
+                        <button type="button" class="btn btn-default btn-lg">Large button</button>
+                        <br>
+                        <button type="button" class="btn btn-primary">Default button</button>
+                        <button type="button" class="btn btn-default">Default button</button>
+                        <br>
+                        <button type="button" class="btn btn-primary btn-sm">Small button</button>
+                        <button type="button" class="btn btn-default btn-sm">Small button</button>
+                        <br>
+                        <button type="button" class="btn btn-primary btn-xs">Mini button</button>
+                        <button type="button" class="btn btn-default btn-xs">Mini button</button>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    边框按钮
+                </div>
+                <div class="panel-body buttons-wrapper">
+                    <p>
+                        为按钮添加<code>.btn-outline</code>可以声明边框按钮。
+                    </p>
+
+                    <p>
+                        <button type="button" class="btn btn-outline btn-primary">.btn-primary</button>
+                        <button type="button" class="btn btn-outline btn-info">.btn-info</button>
+                        <button type="button" class="btn btn-outline btn-success">.btn-success</button>
+                        <button type="button" class="btn btn-outline btn-warning">.btn-warning</button>
+                        <button type="button" class="btn btn-outline btn-danger">.btn-danger</button>
+                        <button type="button" class="btn btn-outline btn-orange">.btn-orange</button>
+                        <button type="button" class="btn btn-outline btn-violet">.btn-violet</button>
+                    </p>
+                    <p>
+                        <button type="button" class="btn btn-block btn-default">Block button</button>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    按钮式下拉菜单
+                </div>
+                <div class="panel-body buttons-wrapper">
+                    <p>
+                        把任意一个按钮放入 .btn-group 中，然后加入适当的菜单标签，就可以让按钮作为菜单的触发器了。
+                    </p>
+
+                    <div class="btn-group">
+                        <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle">Action <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;">Action</a></li>
+                            <li><a href="javascript:;" >Another action</a></li>
+                            <li><a href="javascript:;">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;">Separated link</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <button data-toggle="dropdown" class="btn btn-info dropdown-toggle">Action <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;">Action</a></li>
+                            <li><a href="javascript:;">Another action</a></li>
+                            <li><a href="javascript:;">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;">Separated link</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <button data-toggle="dropdown" class="btn btn-default dropdown-toggle">Action <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;">Action</a></li>
+                            <li><a href="javascript:;">Another action</a></li>
+                            <li><a href="javascript:;">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;">Separated link</a></li>
+                        </ul>
+                    </div>
+
+                    <br>
+
+                    <div class="btn-group">
+                        <button data-toggle="dropdown" class="btn btn-primary btn-sm dropdown-toggle">Action <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;">Action</a></li>
+                            <li><a href="javascript:;">Another action</a></li>
+                            <li><a href="javascript:;">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;">Separated link</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <button data-toggle="dropdown" class="btn btn-info btn-sm dropdown-toggle">Action <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;">Action</a></li>
+                            <li><a href="javascript:;">Another action</a></li>
+                            <li><a href="javascript:;">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;">Separated link</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <button data-toggle="dropdown" class="btn btn-default btn-sm dropdown-toggle">Action <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;">Action</a></li>
+                            <li><a href="javascript:;">Another action</a></li>
+                            <li><a href="javascript:;">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;">Separated link</a></li>
+                        </ul>
+                    </div>
+                    <br>
+
+                    <div class="btn-group">
+                        <button data-toggle="dropdown" class="btn btn-primary btn-xs dropdown-toggle">Action <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;">Action</a></li>
+                            <li><a href="javascript:;">Another action</a></li>
+                            <li><a href="javascript:;">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;">Separated link</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <button data-toggle="dropdown" class="btn btn-info btn-xs dropdown-toggle">Action <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;">Action</a></li>
+                            <li><a href="javascript:;">Another action</a></li>
+                            <li><a href="javascript:;">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;">Separated link</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <button data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle">Action <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:;">Action</a></li>
+                            <li><a href="javascript:;">Another action</a></li>
+                            <li><a href="javascript:;">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;">Separated link</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    按钮组
+                </div>
+                <div class="panel-body buttons-wrapper">
+                    <div class="btn-group">
+                        <button class="btn btn-default" type="button">Left</button>
+                        <button class="btn btn-primary" type="button">Middle</button>
+                        <button class="btn btn-default" type="button">Right</button>
+                    </div>
+                    <br>
+                    <div class="btn-group btn-group-xs">
+                        <button class="btn btn-default" type="button">Left</button>
+                        <button class="btn btn-primary" type="button">Middle</button>
+                        <button class="btn btn-default" type="button">Right</button>
+                    </div>
+                    <br />
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default"><i class="fa fa-chevron-left"></i></button>
+                        <button class="btn btn-default">1</button>
+                        <button class="btn btn-default  active">2</button>
+                        <button class="btn btn-default">3</button>
+                        <button class="btn btn-default">4</button>
+                        <button class="btn btn-default">5</button>
+                        <button class="btn btn-default">6</button>
+                        <button class="btn btn-default">7</button>
+                        <button class="btn btn-default">8</button>
+                        <button type="button" class="btn btn-default"><i class="fa fa-chevron-right"></i></button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Icon按钮
+                </div>
+                <div class="panel-body buttons-wrapper">
+                    <button class="btn btn-primary " type="button"><i class="fa fa-check"></i> 提交</button>
+                    <button class="btn btn-success " type="button">
+                        <i class="fa fa-upload"></i> 上传
+                    </button>
+                    <button class="btn btn-info " type="button"><i class="fa fa-paste"></i> 编辑</button>
+                    <button class="btn btn-danger" type="button"><i class="fa fa-trash-o"></i> 删除</button>
+                    <button class="btn btn-warning " type="button"><i class="fa fa-map-marker"></i> 地图</button>
+                    <a class="btn btn-orange"><i class="fa fa-user-md"></i></a>
+                    <a class="btn btn-success"><i class="fa fa-group"></i></a>
+                    <a class="btn btn-danger"><i class="fa fa-wrench"></i></a>
+                    <a class="btn btn-info"><i class="fa fa-exchange"></i></a>
+                    <a class="btn btn-primary"><i class="fa fa-check-circle-o"></i></a>
+                    <a class="btn btn-orange"><i class="fa fa-road"></i></a>
+                    <a class="btn btn-violet"><i class="fa fa-ambulance"></i></a>
+                    <a class="btn btn-default"><i class="fa fa-refresh fa-spin"></i> 刷新中</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    图标按钮
+                </div>
+                <div class="panel-body buttons-wrapper">
+                    <button class="btn btn-default" type="button"><i class="fa fa-file f-m"></i> <br><span
+                            class="f-xs">文件</span></button>
+                    <button class="btn btn-primary" type="button"><i class="fa fa-group f-m"></i> <br><span
+                            class="f-xs">用户</span></button>
+                    <button class="btn btn-orange" type="button"><i class="fa fa-volume-up f-m"></i> <br><span class="f-xs">声音</span>
+                    </button>
+                    <button class="btn btn-info" type="button"><i class="fa fa-print f-m"></i> <br><span
+                            class="f-xs">打印</span></button>
+                    <button class="btn btn-success" type="button"><i class="fa fa-recycle f-m"></i> <br><span class="f-xs">回收站</span>
+                    </button>
+                    <button class="btn btn-warning" type="button"><i class="fa fa-music f-m"></i> <br><span
+                            class="f-xs">音乐</span></button>
+                    <button class="btn btn-violet" type="button"><i class="fa fa-medkit f-m"></i> <br><span
+                            class="f-xs">医疗箱</span></button>
+                    <br>
+                    <button class="btn btn-primary btn-xs" type="button"><i class="fa fa-group"></i></button>
+                    <button class="btn btn-orange btn-xs" type="button"><i class="fa fa-volume-up"></i></button>
+                    <button class="btn btn-info btn-xs" type="button"><i class="fa fa-print"></i></button>
+                    <button class="btn btn-success btn-xs" type="button"><i class="fa fa-recycle"></i></button>
+                    <button class="btn btn-warning btn-xs" type="button"><i class="fa fa-music"></i></button>
+                    <button class="btn btn-violet btn-xs" type="button"><i class="fa fa-medkit"></i></button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    其他按钮样式
+                </div>
+                <div class="panel-body buttons-wrapper">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <p>
+                                圆形按钮 添加<code>.btn-circle</code>可声明圆形按钮
+                            </p>
+                            <button class="btn btn-lg btn-primary btn-circle" type="button"><i class="fa fa-list"></i></button>
+                            <button class="btn btn-lg btn-success btn-circle" type="button"><i class="fa fa-link"></i></button>
+                            <button class="btn btn-lg btn-info btn-circle" type="button"><i class="fa fa-check"></i></button>
+                            <button class="btn btn-lg btn-warning btn-circle" type="button"><i class="fa fa-times"></i></button>
+                            <button class="btn btn-lg btn-danger btn-circle" type="button"><i class="fa fa-heart"></i></button>
+                            <br />
+                            <button class="btn btn-primary btn-circle" type="button"><i class="fa fa-list"></i></button>
+                            <button class="btn btn-success btn-circle" type="button"><i class="fa fa-link"></i></button>
+                            <button class="btn btn-info btn-circle" type="button"><i class="fa fa-check"></i></button>
+                            <button class="btn btn-warning btn-circle" type="button"><i class="fa fa-times"></i></button>
+                            <button class="btn btn-danger btn-circle" type="button"><i class="fa fa-heart"></i></button>
+                            <br />
+                            <button class="btn btn-xs btn-primary btn-circle" type="button"><i class="fa fa-list"></i></button>
+                            <button class="btn btn-xs btn-success btn-circle" type="button"><i class="fa fa-link"></i></button>
+                            <button class="btn btn-xs btn-info btn-circle" type="button"><i class="fa fa-check"></i></button>
+                            <button class="btn btn-xs btn-warning btn-circle" type="button"><i class="fa fa-times"></i></button>
+                            <button class="btn btn-xs btn-danger btn-circle" type="button"><i class="fa fa-heart"></i></button>
+                        </div>
+                        <div class="col-lg-3">
+                            <p>
+                                Single toggle button
+                            </p>
+                            <button data-toggle="button" class="btn btn-success" type="button">Single toggle</button>
+                            <button data-toggle="button" class="btn btn-orange" type="button">Single toggle</button>
+                        </div>
+                        <div class="col-lg-3">
+                            <p>
+                                Checkbox buttons
+                            </p>
+
+                            <div data-toggle="buttons" class="btn-group">
+                                <label class="btn btn-primary active">
+                                    <input type="checkbox"> Option 1
+                                </label>
+                                <label class="btn btn-primary">
+                                    <input type="checkbox"> Option 2
+                                </label>
+                                <label class="btn btn-primary">
+                                    <input type="checkbox"> Option 3
+                                </label>
+                            </div>
+                            <div data-toggle="buttons" class="btn-group btn-group-xs">
+                                <label class="btn btn-orange active">
+                                    <input type="checkbox"> Option 1
+                                </label>
+                                <label class="btn btn-orange">
+                                    <input type="checkbox"> Option 2
+                                </label>
+                                <label class="btn btn-orange">
+                                    <input type="checkbox"> Option 3
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <p>
+                                Radio buttons
+                            </p>
+
+                            <div data-toggle="buttons" class="btn-group">
+                                <label class="btn btn-success active">
+                                    <input type="radio" id="option1" name="options"> Option 1
+                                </label>
+                                <label class="btn btn-success">
+                                    <input type="radio" id="option2" name="options"> Option 2
+                                </label>
+                                <label class="btn btn-success">
+                                    <input type="radio" id="option3" name="options"> Option 3
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

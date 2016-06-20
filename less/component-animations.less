@@ -1,0 +1,18 @@
+@import "var.less";
+@import "mixins.less";
+
+//collapse
+.collapse-angle {
+  .transition(all 0.3s ease-in 0s);
+  .rotate(90deg);
+  &.collapsed {
+    .rotate(0);
+  }
+}
+
+.collapsed {
+  .collapse-angle {
+    .rotate(0);
+  }
+}
+

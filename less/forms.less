@@ -1,0 +1,206 @@
+@import "var.less";
+@import "mixins.less";
+
+/**
+ form elements styles
+*/
+.s-checkbox {
+  cursor: pointer;
+  position: relative;
+  padding-left: 20px;
+  padding-right: 5px;
+  height: 15px;
+  margin-bottom: 0;
+  input {
+    display: none;
+    &:checked ~ .s-checkbox-indicator:after {
+      background-color: @checkbox-indicator-checked-color;
+      border: 1px solid @checkbox-indicator-checked-color;
+      background-size: 85% 85%;
+      background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNy4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgOCA4IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA4IDgiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZmlsbD0iI0ZGRkZGRiIgZD0iTTYuNCwxTDUuNywxLjdMMi45LDQuNUwyLjEsMy43TDEuNCwzTDAsNC40bDAuNywwLjdsMS41LDEuNWwwLjcsMC43bDAuNy0wLjdsMy41LTMuNWwwLjctMC43TDYuNCwxTDYuNCwxeiINCgkvPg0KPC9zdmc+DQo=);
+    }
+    &:disabled ~ .s-checkbox-indicator:after {
+      background-color: @checkbox-indicator-disabled-bg;
+      border: 1px solid @checkbox-indicator-disabled-border-color;
+    }
+  }
+  &:hover {
+    .s-checkbox-indicator {
+      &:after {
+        border: 1px solid @checkbox-indicator-checked-color;
+      }
+    }
+  }
+  .s-checkbox-indicator {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    &:after {
+      content: " ";
+      display: block;
+      overflow: hidden;
+      .square(@checkbox-indicator-width);
+      border: 1px solid @checkbox-indicator-border-color;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  }
+}
+
+.s-checkbox-switch {
+  position: relative;
+  width: 45px;
+  height: 25px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: 100px;
+  box-shadow: inset 0 0 0 0 #eee, 0 0 1px rgba(0, 0, 0, 0.4);
+  background-color: @checkbox-switch-bg;
+  input[type=checkbox] {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 2;
+    & ~ .s-checkbox-indicator:before {
+      content: ' ';
+      position: absolute;
+      transition: all 0.2s ease-out;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 100px;
+      background-color: #fafafa;
+    }
+    & ~ .s-checkbox-indicator:after {
+      content: ' ';
+      position: absolute;
+      background: white;
+      display: block;
+      top: 0px;
+      left: 0px;
+      z-index: 1;
+      width: 25px;
+      transition: all 0.2s ease-out;
+      height: 25px;
+      border-radius: 100px;
+      box-shadow: 0 3px 1px rgba(0, 0, 0, 0.05), 0 0px 1px rgba(0, 0, 0, 0.3);
+    }
+    &:checked ~ .s-checkbox-indicator:before {
+      content: ' ';
+      font-size: 1.5em;
+      position: absolute;
+      top: 50%;
+      left: 30%;
+      width: 40%;
+      height: 0;
+    }
+    &:checked ~ .s-checkbox-indicator:after {
+      left: 21px;
+    }
+  }
+}
+
+//radio
+.s-radio {
+  cursor: pointer;
+  position: relative;
+  padding-left: 20px;
+  padding-right: 5px;
+  height: 15px;
+  margin-bottom: 0;
+  input {
+    display: none;
+    &:checked ~ .s-radio-indicator:after {
+      background-color: @checkbox-indicator-checked-color;
+      border: 1px solid @checkbox-indicator-checked-color;
+      background-size: 70%;
+      background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNy4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgOCA4IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA4IDgiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZmlsbD0iI0ZGRkZGRiIgZD0iTTQsMUMyLjMsMSwxLDIuMywxLDRzMS4zLDMsMywzczMtMS4zLDMtM1M1LjcsMSw0LDF6Ii8+DQo8L3N2Zz4NCg==);
+    }
+    &:disabled ~ .s-radio-indicator:after {
+      background-color: @checkbox-indicator-disabled-bg;
+      border: 1px solid @checkbox-indicator-disabled-border-color;
+    }
+  }
+  &:hover {
+    .s-radio-indicator {
+      &:after {
+        border: 1px solid @checkbox-indicator-checked-color;
+      }
+    }
+  }
+  .s-radio-indicator {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    &:after {
+      content: " ";
+      display: block;
+      overflow: hidden;
+      .square(@checkbox-indicator-width);
+      border-radius: 100%;
+      border: 1px solid @checkbox-indicator-border-color;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  }
+
+}
+
+
+.s-select{
+  position: relative;
+  display: inline-block;
+  width: 150px;
+}
+.s-select .s-select-mirror{
+  width: 100%;
+  height: 100%;
+  text-align: right;
+  position: relative;
+}
+.s-select .s-select-mirror span{
+  position: absolute;
+  left: 0;
+}
+.s-select .s-select-panel{
+  position: absolute;
+  width: 100%;
+  box-sizing: content-box;
+  left: -1px;
+  top: 100%;
+  border: 1px solid @select-panel-border;
+  border-top: none;
+  padding-top: 5px;
+  background: #fff;
+  z-index: 1;
+  display: none;
+}
+.s-select .s-select-panel .s-select-filter{
+  border: none;
+  border-width: 1px 0 1px 0;
+  border-style: solid;
+  border-color: @select-panel-border;
+  height: 24px;
+  line-height: 24px;
+  color: #666;
+  padding: 0px 5px;
+  width: 100%;
+}
+.s-select .s-select-panel .s-select-list{
+  max-height: 200px;
+  overflow: auto;
+  padding: 0;
+  margin: 0;
+}
+.s-select .s-select-panel .s-select-list .s-select-list-item{
+  padding: 1px 10px;
+  height: 24px;
+  line-height: 24px;
+  list-style: none;
+}
+.s-select .s-select-panel .s-select-list .s-select-list-item:hover{
+  background: @select-list-item-hover-bg;
+  color: #ffffff;
+}

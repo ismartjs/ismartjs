@@ -1,0 +1,115 @@
+@import "var.less";
+@import "mixins.less";
+
+.s-toast-container {
+  position: fixed;
+  width: 500px;
+  bottom: 20px;
+  right: 40px;
+  .s-toast {
+    border-radius: 0;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    font-size: 16px;
+    margin-bottom: 20px;
+    position: relative;
+    .transition(all .3s ease-out 0s);
+    .translate(0, -30px);
+    .opacity(0);
+    &.in {
+      .translate(0, 0);
+      .opacity(1);
+    }
+    &.out {
+      margin-bottom: -30px;
+      .opacity(0);
+    }
+    .s-toast-close {
+      font-size: 38px;
+      font-weight: normal;
+      position: absolute;
+      right: 7px;
+      top: 50%;
+      height: 40px;
+      line-height: 40px;
+      margin-top: -20px;
+      .opacity(.7);
+      color: inherit;
+      span {
+        display: block;
+        margin-top: -2px;
+      }
+      &:hover {
+        .opacity(.9);
+      }
+    }
+    .s-toast-msg {
+      padding: 20px 50px 20px 50px;
+      word-break: break-all;
+    }
+    .s-toast-sign {
+      display: inline-block;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      &.s-toast-sign-default{
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: 24px;
+      }
+      position: absolute;
+      font-size: 24px;
+      height: 24px;
+      top: 50%;
+      margin-top: -12px;
+      left: 15px;
+      &.s-toast-sign-default:before {
+        content: "\f0e6";
+      }
+    }
+    &.s-toast-info {
+      background: @toast-info-bg;
+      color: @toast-info-color;
+      .s-toast-sign.s-toast-sign-default:before {
+        content: "\f05a";
+      }
+    }
+    &.s-toast-success {
+      background: @toast-success-bg;
+      color: @toast-success-color;
+      .s-toast-sign.s-toast-sign-default:before {
+        content: "\f058";
+      }
+    }
+    &.s-toast-warning {
+      background: @toast-warning-bg;
+      color: @toast-warning-color;
+      .s-toast-sign.s-toast-sign-default:before {
+        content: "\f071";
+      }
+    }
+    &.s-toast-danger {
+      background: @toast-danger-bg;
+      color: @toast-danger-color;
+      .s-toast-sign.s-toast-sign-default:before {
+        content: "\f057";
+      }
+    }
+    &.s-toast-primary {
+      background: @toast-primary-bg;
+      color: @toast-primary-color;
+      .s-toast-sign.s-toast-sign-default {
+        font-family: 'Pe-icon-7-stroke';
+        &:before {
+          content: "\e612";
+        }
+      }
+    }
+    &.s-toast-violet {
+      background: @toast-violet-bg;
+      color: @toast-violet-color;
+    }
+    &.s-toast-orange {
+      background: @toast-orange-bg;
+      color: @toast-orange-color;
+    }
+  }
+}

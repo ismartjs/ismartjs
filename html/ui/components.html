@@ -1,0 +1,526 @@
+<meta title="组件" icon="fa fa-cog"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">组件</div>
+            <small>Tabs, according, collapse and other UI components.</small>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-primary panel-built">
+                <div class="panel-heading">
+                    Accordion directive example
+                </div>
+                <div class="alert alert-warning no-margin">
+                    iSmartJs会将加载进来页面中的id修改成特定的id，修改后的格式为：<code>{WID}_{ID}</code>，如原始的id为：<code>id="abc"</code>，那么处理后的真实id为：
+                    <code>id="_w_1_abc"</code>，iSmartJs提供了在模块页面输出真实id的方法：<code>$TID<span>:</span>{ID}$</code>，那么在这里我们声明<code>data-target</code>或者<code>data-parent</code>
+                    的时候就需要声明为：<code>data-target="#$TID<span>:</span>collapseOne$"</code>这样的形式。
+                </div>
+                <div class="panel-body">
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-success">
+                            <div class="panel-heading" role="tab" id="headingOne">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#$TID:accordion$" href="#$TID:collapseOne$"
+                                       aria-expanded="false" aria-controls="$TID:collapseOne$">
+                                        Collapsible Group Item #1
+                                        <i class="pull-right fa fa-angle-down collapse-angle"></i>
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
+                                 aria-labelledby="headingOne" aria-expanded="true">
+                                <div class="panel-body" style="display: block;">
+                                    你的柔情似水，几度让我爱得沉醉，毫无保留不知道后悔，你能不能体会真情可贵，没有余力伤悲， 爱情像难收的覆水，
+                                    长长来路走的太憔悴，你只留下我收拾这一切，不让我的眼泪陪我过夜，不让你的吻留着余味， 忘了曾经爱过谁
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingTwo">
+                                <h4 class="panel-title">
+                                    <a class="collapsed" data-toggle="collapse" data-parent="#$TID:accordion$"
+                                       href="#$TID:collapseTwo$"
+                                       aria-expanded="false" aria-controls="$TID:collapseTwo$">
+                                        Collapsible Group Item #2
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
+                                 aria-labelledby="headingTwo" aria-expanded="false" style="height: 0px;">
+                                <div class="panel-body" style="display: block;">
+                                    慢慢习惯了寂寞相随，不让我的眼泪陪我过夜，不让你的脸梦里相对，爱的潮水已经退， 我的真情不再随便给，
+                                    没有余力伤悲，爱情像难收的覆水，长长来路走的太憔悴，你只留下我收拾这一切
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingThree">
+                                <h4 class="panel-title">
+                                    <a class="collapsed" data-toggle="collapse" data-parent="#$TID:accordion$"
+                                       href="#$TID:collapseThree$" aria-expanded="false"
+                                       aria-controls="$TID:collapseThree$">
+                                        Collapsible Group Item #3
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseThree" class="panel-collapse collapse" role="tabpanel"
+                                 aria-labelledby="headingThree" aria-expanded="false" style="height: 0px;">
+                                <div class="panel-body" style="display: block;">
+                                    不让我的眼泪陪我过夜， 不让你的吻留着余味，忘了曾经爱过谁，慢慢习惯了寂寞相随，不让我的眼泪陪我过夜，不让你的脸梦里相对，
+                                    爱的潮水已经退，我的真情不再随便给，不让我的眼泪陪我过夜
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab">
+                                <h4 class="panel-title">
+                                    <a class="collapsed" data-toggle="collapse" data-parent="#$TID:accordion$"
+                                       href="#$TID:collapse4$" aria-expanded="false" aria-controls="$TID:collapse4$">
+                                        Collapsible Group Item #4
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapse4" class="panel-collapse collapse" role="tabpanel"
+                                 aria-labelledby="headingThree" aria-expanded="false" style="height: 0px;">
+                                <div class="panel-body" style="display: block;">
+                                    不让你的吻留着余味，忘了曾经爱过谁， 慢慢习惯了寂寞相随，不让我的眼泪陪我过夜，不让你的脸梦里相对，爱的潮水已经退，我的真情不再随便给。
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab">
+                                <h4 class="panel-title">
+                                    <a class="collapsed" data-toggle="collapse" data-parent="#$TID:accordion$"
+                                       href="#$TID:collapse5$" aria-expanded="false" aria-controls="$TID:collapse5$">
+                                        Collapsible Group Item #5
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapse5" class="panel-collapse collapse" role="tabpanel"
+                                 aria-labelledby="headingThree" aria-expanded="false" style="height: 0px;">
+                                <div class="panel-body" style="display: block;">
+                                    给你我的心作纪念　这份爱　任何时刻你打开都新鲜
+                                    去年夏天　数着贝壳和浪花的海边
+                                    我们祈祷着明年的今天　还能够保持这样无忧笑脸
+                                    你是夏天　有海风吹过棕榈的蓝天
+                                    让我忘记了眼泪有多咸
+                                    你一出现就是晴天
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-success">
+                <div class="panel-heading hbuilt">
+                    Collapse example
+                </div>
+                <div class="panel-body collapse-wrapper">
+                    <div class="text-center m-b-md">
+                        <h3>Collapse box</h3>
+                        <br>
+                        <button class="btn btn-default btn-sm" type="button" data-toggle="collapse"
+                                data-target="#$TID:collapseExample$" aria-expanded="true"
+                                aria-controls="$TID:collapseExample$">
+                            Toggle collapse <i class="fa fa-angle-down collapse-angle"></i>
+                        </button>
+                    </div>
+                    <div class="collapse in " aria-expanded="true" id="collapseExample">
+                        <div class="well well-lg">
+                            <h5 >不让我的眼泪陪我过夜</h5>
+                            你的柔情似水，几度让我爱得沉醉，毫无保留不知道后悔，你能不能体会真情可贵，没有余力伤悲， 爱情像难收的覆水，长长来路走的太憔悴，你只留下我收拾这一切，不让我的眼泪陪我过夜，不让你的吻留着余味，
+                            忘了曾经爱过谁
+                            <br>
+                            <br>
+                            慢慢习惯了寂寞相随，不让我的眼泪陪我过夜，不让你的脸梦里相对，爱的潮水已经退，
+                            我的真情不再随便给，没有余力伤悲，爱情像难收的覆水，长长来路走的太憔悴，你只留下我收拾这一切，不让我的眼泪陪我过夜， 不让你的吻留着余味
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6" s="window" s-window="{href: 'html/widget/tooltip.html'}"></div>
+        <div class="col-lg-6" s="window" s-window="{href: 'html/widget/popover.html'}"></div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-success">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#$TID:tab_1$" aria-expanded="true"> This is tab</a></li>
+                    <li ><a data-toggle="tab" href="#$TID:tab_2$" aria-expanded="false">This is second tab</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tab_1" class="tab-pane active">
+                        <div class="panel-body">
+                            <strong>不让我的眼泪陪我过夜</strong>
+
+                            <p>你的柔情似水，几度让我爱得沉醉，毫无保留不知道后悔，你能不能体会真情可贵，没有余力伤悲， 爱情像难收的覆水，长长来路走的太憔悴，
+                                你只留下我收拾这一切，不让我的眼泪陪我过夜，不让你的吻留着余味， 忘了曾经爱过谁，慢慢习惯了寂寞相随，不让我的眼泪陪我过夜，
+                            </p>
+
+                            <p>
+                                不让你的脸梦里相对，爱的潮水已经退， 我的真情不再随便给，没有余力伤悲，
+                                爱情像难收的覆水，长长来路走的太憔悴，你只留下我收拾这一切，不让我的眼泪陪我过夜， 不让你的吻留着余味，忘了曾经爱过谁，慢慢习惯了寂寞相随
+                            </p>
+                        </div>
+                    </div>
+                    <div id="tab_2" class="tab-pane">
+                        <div class="panel-body">
+                            <strong>Donec quam felis</strong>
+
+                            <p>Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the
+                                stalks, and grow familiar with the countless indescribable forms of the insects
+                                and flies, then I feel the presence of the Almighty, who formed us in his own image, and the
+                                breath </p>
+
+                            <p>I am alone, and feel the charm of existence in this spot, which was created for the bliss of
+                                souls like mine. I am so happy, my dear friend, so absorbed in the exquisite
+                                sense of mere tranquil existence, that I neglect my talents. I should be incapable of
+                                drawing a single stroke at the present moment; and yet.</p>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-info">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#$TID:tab_3$"> <i class="fa fa-laptop"></i></a></li>
+                    <li ><a data-toggle="tab" href="#$TID:tab_4$"><i class="fa fa-desktop"></i></a></li>
+                    <li ><a data-toggle="tab" href="#$TID:tab_5$"><i class="fa fa-database"></i></a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tab_3" class="tab-pane active">
+                        <div class="panel-body">
+                            <strong>青春纪念册</strong>
+
+                            <p>
+                                给你我的心作纪念　这份爱　任何时刻你打开都新鲜
+                                去年夏天　数着贝壳和浪花的海边
+                                我们祈祷着明年的今天　还能够保持这样无忧笑脸
+                                你是夏天　有海风吹过棕榈的蓝天
+                                让我忘记了眼泪有多咸
+                                你一出现就是晴天
+                            </p>
+
+                            <p>
+                                还想听你任性的说
+                                要带我去环游世界　就算整个世界都改变
+                                也不改变　为你勇敢的自己
+                                给你我的心作纪念　这份爱　任何时刻你打开都新鲜
+                                有我陪伴　多苦都变成甜　睁开眼就看见永远
+                                给我你的心作纪念　我的梦　有你的祝福才能够完全
+                            </p>
+                        </div>
+                    </div>
+                    <div id="tab_4" class="tab-pane">
+                        <div class="panel-body">
+                            <strong>Donec quam felis</strong>
+
+                            <p>Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the
+                                stalks, and grow familiar with the countless indescribable forms of the insects
+                                and flies, then I feel the presence of the Almighty, who formed us in his own image, and the
+                                breath </p>
+
+                            <p>I am alone, and feel the charm of existence in this spot, which was created for the bliss of
+                                souls like mine. I am so happy, my dear friend, so absorbed in the exquisite
+                                sense of mere tranquil existence, that I neglect my talents. I should be incapable of
+                                drawing a single stroke at the present moment; and yet.</p>
+                        </div>
+                    </div>
+                    <div id="tab_5" class="tab-pane">
+                        <div class="panel-body">
+                            <strong>不让我的眼泪陪我过夜</strong>
+
+                            <p>你的柔情似水，几度让我爱得沉醉，毫无保留不知道后悔，你能不能体会真情可贵，没有余力伤悲， 爱情像难收的覆水，长长来路走的太憔悴，你只留下我收拾这一切，
+                                不让我的眼泪陪我过夜，不让你的吻留着余味， 忘了曾经爱过谁，慢慢习惯了寂寞相随，不让我的眼泪陪我过夜，不让你的脸梦里相对，爱的潮水已经退，
+                                我的真情不再随便给，没有余力伤悲，爱情像难收的覆水，长长来路走的太憔悴，你只留下我收拾这一切，不让我的眼泪陪我过夜 </p>
+
+                            <p>不让你的吻留着余味，忘了曾经爱过谁，慢慢习惯了寂寞相随，不让我的眼泪陪我过夜，不让你的脸梦里相对， 爱的潮水已经退，我的真情不再随便给，不让我的眼泪陪我过夜，不让你的吻留着余味</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-warning panel-built">
+                <div class="panel-heading">
+                    进度条（Progressbar）
+                </div>
+                <div class="panel-body">
+                    <div class="text-center m-b-md">
+                        <h3>进度条（Progressbar）</h3>
+                        <small>
+                            通过这些简单、灵活的进度条，为当前工作流程或动作提供实时反馈。
+                        </small>
+                    </div>
+                    <h5>Basic ProgressBars</h5>
+                    <small>Light version of progress bar</small>
+
+                    <div class="m">
+
+                        <div class="progress m-t-xs">
+                            <div style="width: 45%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="45"
+                                 role="progressbar" class=" progress-bar progress-bar-warning">
+                                45% .progress-bar-warning
+                            </div>
+                        </div>
+                        <div class="progress m-t-xs">
+                            <div style="width: 65%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="65"
+                                 role="progressbar" class=" progress-bar progress-bar-success">
+                                65% .progress-bar-success
+                            </div>
+                        </div>
+                        <div class="progress m-t-xs">
+                            <div style="width: 30%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="30"
+                                 role="progressbar" class=" progress-bar progress-bar-info">
+                                30% .progress-bar-info
+                            </div>
+                        </div>
+                        <div class="progress m-t-xs">
+                            <div style="width: 40%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="40"
+                                 role="progressbar" class=" progress-bar progress-bar-danger">
+                                40% .progress-bar-danger
+                            </div>
+                        </div>
+                        <div class="progress m-t-xs">
+                            <div style="width: 50%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="50"
+                                 role="progressbar" class=" progress-bar progress-bar-violet">
+                                50% .progress-bar-violet
+                            </div>
+                        </div>
+                        <div class="progress m-t-xs">
+                            <div style="width: 60%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="60"
+                                 role="progressbar" class=" progress-bar progress-bar-blue">
+                                60% .progress-bar-blue
+                            </div>
+                        </div>
+                        <div class="progress m-t-xs">
+                            <div style="width: 70%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="70"
+                                 role="progressbar" class=" progress-bar progress-bar-orange">
+                                70% .progress-bar-orange
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5>Striped Progressbars</h5>
+                    <small>Add <code>.full</code> class to get full background. Add <code>.progress-striped</code> to get
+                        striped version.
+                    </small>
+
+                    <div class="m">
+                        <div class="progress m-t-xs full progress-striped">
+                            <div style="width: 75%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="75"
+                                 role="progressbar" class=" progress-bar progress-bar-warning">
+                                75%
+                            </div>
+                        </div>
+                    </div>
+                    <h5>Active Progressbars</h5>
+                    <small>Add <code>.active</code> to get active striped.</small>
+
+                    <div class="m">
+                        <div class="progress m-t-xs full progress-striped active">
+                            <div style="width: 90%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="90"
+                                 role="progressbar" class=" progress-bar progress-bar-success">
+                                90%
+                            </div>
+                        </div>
+                    </div>
+                    <h5>小尺寸</h5>
+                    <small>Add <code>.progress-sm</code>，<code>.progress-xs</code> class to get mini version</small>
+                    <div class="m">
+
+                        <div class="progress m-t-xs full progress-sm">
+                            <div style="width: 20%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="60"
+                                 role="progressbar" class=" progress-bar progress-bar-warning">
+                            </div>
+                        </div>
+                        <div class="progress m-t-xs full progress-xs">
+                            <div style="width: 50%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="50"
+                                 role="progressbar" class=" progress-bar progress-bar-success">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-danger panel-built">
+                <div class="panel-heading">标签</div>
+                <style>
+                    .labels-wrapper .label{
+                        margin-bottom: 5px;
+                        display: inline-block;
+                    }
+                </style>
+                <div class="panel-body labels-wrapper">
+                    <label class="label label-default">.label-default</label>
+                    <label class="label label-primary">.label-primary</label>
+                    <label class="label label-info">.label-info</label>
+                    <label class="label label-success">.label-success</label>
+                    <label class="label label-danger">.label-danger</label>
+                    <label class="label label-warning">.label-warning</label>
+                    <label class="label label-violet">.label-violet</label>
+                    <label class="label label-orange">.label-orange</label>
+                </div>
+            </div>
+            <div class="panel panel-danger panel-built">
+                <div class="panel-heading">列表组</div>
+                <div class="panel-body labels-wrapper">
+                    <ul class="list-group">
+                        <li class="list-group-item active">
+                            <span class="badge bg-orange">16</span>
+                            不让我的眼泪陪我过夜
+                        </li>
+                        <li class="list-group-item ">
+                            <span class="badge bg-success">12</span>
+                            <a href="javascript:;">
+                                无情的雨无情的你
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="badge bg-danger">10</span>
+                            <a href="javascript:;">
+                                往事随风
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="badge bg-violet">10</span>
+                            <a href="javascript:;">
+                                大约在冬季
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="badge bg-primary">7</span>
+                            <a href="javascript:;">
+                                月亮代表我的心
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-danger panel-built">
+                <div class="panel-heading">徽章（badge）</div>
+                <div class="panel-body ">
+                    <ul class="nav nav-pills" role="tablist">
+                        <li role="presentation"><a href="javascript:;">.badge<span class="badge">42</span></a></li>
+                        <li role="presentation"><a href="javascript:;">.badge .bg-success <span class="badge bg-success">22</span></a></li>
+                        <li role="presentation"><a href="javascript:;">.badge .bg-warning <span class="badge bg-warning">32</span></a></li>
+                        <li role="presentation"><a href="javascript:;">.badge .bg-danger <span class="badge bg-danger">52</span></a></li>
+                        <li role="presentation"><a href="javascript:;">.badge .bg-violet <span class="badge bg-violet">62</span></a></li>
+                        <li role="presentation"><a href="javascript:;">.badge .bg-orange <span class="badge bg-orange">72</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-primary panel-built">
+                <div class="panel-heading ">
+                    Dropdown
+                </div>
+                <style>
+                    .dropdown-example .dropdown-menu{
+                        display: block;
+                        position: static;
+                        margin-left: 30px;
+                    }
+                </style>
+                <div class="panel-body ">
+                    <div class="text-center m-b-md">
+                        <h3>Dropdown</h3>
+                        <small>Dropdown is a simple directive which will toggle a dropdown menu on click or
+                            programmatically.
+                        </small>
+                    </div>
+                    <div class="dropdown dropdown-example">
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="javascript:;">Action</a></li>
+                            <li><a href="javascript:;">Another action</a></li>
+                            <li><a href="javascript:;">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;">Separated link</a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown dropdown-example">
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="javascript:;"><strong>Action</strong></a></li>
+                            <li><a href="javascript:;"><span class="text-success">Another action</span></a></li>
+                            <li><a href="javascript:;">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;"><span class="text-muted">Separated link</span></a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown dropdown-example">
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="javascript:;"><i class="fa fa-pencil"> </i> Edit</a></li>
+                            <li><a href="javascript:;"><i class="fa fa-copy"> </i> Copy</a></li>
+                            <li><a href="javascript:;"><i class="fa fa-paste"> </i> paste</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;"><i class="fa fa-trash"> </i> Remove</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div s="window" s-window="{href: 'html/widget/pagination-inner.html'}"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-danger panel-built">
+                <div class="panel-heading">well</div>
+                <div class="panel-body ">
+                    <div class="well">
+                        Look, I'm in a well!
+                    </div>
+                    <div class="well border-warning">
+                        Look, I'm in a well! <code>.border-warning</code>
+                    </div>
+                    <div class="well border-info">
+                        Look, I'm in a well! <code>.border-info</code>
+                    </div>
+                    <div class="well border-success">
+                        Look, I'm in a well! <code>.border-success</code>
+                    </div>
+                    <div class="well border-danger">
+                        Look, I'm in a well! <code>.border-danger</code>
+                    </div>
+                    <div class="well border-violet">
+                        Look, I'm in a well! <code>.border-violet</code>
+                    </div>
+                    <div class="well border-orange">
+                        Look, I'm in a well! <code>.border-orange</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-danger panel-built">
+                <div class="panel-heading">警告框（Alert）</div>
+                <div class="panel-body ">
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        <strong>白风车想谁呢，</strong>六月的樱花悄声寂寞，蒲公英它的旅程，终点会在哪里降落呢，听风说它走了，宁夏的流星已划过，静止了旋转木马
+                    </div>
+                    <div class="alert alert-warning" role="alert">
+                        <strong>白风车想谁呢，</strong>六月的樱花悄声寂寞，蒲公英它的旅程，终点会在哪里降落呢，听风说它走了，宁夏的流星已划过，静止了旋转木马
+                    </div>
+                    <div class="alert alert-danger" role="alert">
+                        <strong>白风车想谁呢，</strong>六月的樱花悄声寂寞，蒲公英它的旅程，终点会在哪里降落呢，听风说它走了，宁夏的流星已划过，静止了旋转木马
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <strong>白风车想谁呢，</strong>六月的樱花悄声寂寞，蒲公英它的旅程，终点会在哪里降落呢，听风说它走了，宁夏的流星已划过，静止了旋转木马
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
