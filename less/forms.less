@@ -153,54 +153,60 @@
   position: relative;
   display: inline-block;
   width: 150px;
-}
-.s-select .s-select-mirror{
-  width: 100%;
-  height: 100%;
-  text-align: right;
-  position: relative;
-}
-.s-select .s-select-mirror span{
-  position: absolute;
-  left: 0;
-}
-.s-select .s-select-panel{
-  position: absolute;
-  width: 100%;
-  box-sizing: content-box;
-  left: -1px;
-  top: 100%;
-  border: 1px solid @select-panel-border;
-  border-top: none;
-  padding-top: 5px;
-  background: #fff;
-  z-index: 1;
-  display: none;
-}
-.s-select .s-select-panel .s-select-filter{
-  border: none;
-  border-width: 1px 0 1px 0;
-  border-style: solid;
-  border-color: @select-panel-border;
-  height: 24px;
-  line-height: 24px;
-  color: #666;
-  padding: 0px 5px;
-  width: 100%;
-}
-.s-select .s-select-panel .s-select-list{
-  max-height: 200px;
-  overflow: auto;
+  cursor: default;
+  vertical-align: middle;
   padding: 0;
-  margin: 0;
-}
-.s-select .s-select-panel .s-select-list .s-select-list-item{
-  padding: 1px 10px;
-  height: 24px;
-  line-height: 24px;
-  list-style: none;
-}
-.s-select .s-select-panel .s-select-list .s-select-list-item:hover{
-  background: @select-list-item-hover-bg;
-  color: #ffffff;
+  .s-select-input[disabled] + .s-select-mirror{
+    background: @input-bg-disabled;
+  }
+  .s-select-mirror{
+    width: 100%;
+    height: 100%;
+    text-align: right;
+    position: relative;
+    padding: 6px 12px;
+    span{
+      float: left;
+    }
+  }
+  .s-select-panel{
+    position: absolute;
+    width: 100%;
+    box-sizing: content-box;
+    left: -1px;
+    top: 100%;
+    border: 1px solid @select-panel-border;
+    border-top: none;
+    padding-top: 5px;
+    background: #fff;
+    z-index: 1;
+    display: none;
+    .s-select-filter{
+      border: none;
+      border-width: 1px 0 1px 0;
+      border-style: solid;
+      border-color: @select-panel-border;
+      height: 24px;
+      line-height: 24px;
+      color: #666;
+      padding: 0px 5px;
+      width: 100%;
+    }
+    .s-select-list{
+      max-height: 200px;
+      overflow: auto;
+      padding: 0;
+      margin: 0;
+      .s-select-list-item{
+        padding: 1px 10px;
+        height: 24px;
+        line-height: 24px;
+        list-style: none;
+        &:hover{
+          background: @select-list-item-hover-bg;
+          color: #ffffff;
+        }
+      }
+    }
+  }
 }

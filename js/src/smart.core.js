@@ -699,7 +699,7 @@
                 }
                 var urlSegs = url.split(":");
                 var type;//默认json请求
-                if(urlSegs.length > 1){
+                if (urlSegs.length > 1) {
                     type = urlSegs[0];
                     url = url.substring(type.length + 1);
                 } else {
@@ -1054,7 +1054,13 @@
                 var dataType = $.type(data);
                 if (dataType == "boolean" || dataType == "number" || dataType == "string" || data == undefined) {
                     //如果没有子元素
-                    if (this.node.is("input[type='text'],input[type='hidden'],select,textarea," +
+                    if (this.node.is("select")) {
+                        data = data == undefined ? '' : data;
+                        if ($("option[value='" + data + "']", this.node).size() > 0) {
+                            this.node.val(data + "");
+                        }
+                        return;
+                    } else if (this.node.is("input[type='text'],input[type='hidden'],textarea," +
                             "input[type='password'],input[type='email'],input[type='number']")) {
                         data = data == undefined ? '' : data;
                         this.node.val(data + '');
@@ -1104,9 +1110,9 @@
                     }
                 }
                 if (arguments.length == 1) {
-                    this.__SMART__DATA__ = value[0];
+                    this.__SMART__DATA__ = args[0];
                 } else {
-                    this.__SMART__DATA__ = value;
+                    this.__SMART__DATA__ = args;
                 }
                 var that = this;
                 return Smart.deferDelegate(this.dataSetter.apply(this, value)).done(function () {
@@ -1152,18 +1158,20 @@
                 if (buildAttrStr == undefined) {
                     return;
                 }
-                /**
-                 * 该属性只会触发一次，当再次执行的时候将会被忽略掉。
-                 * */
-                var lazy = this.node.attr("s-build-lazy");
-                if (lazy != undefined) {
-                    this.node.removeAttr("s-build-lazy");
-                    lazy = this.context(lazy);
-                    if ($.isFunction(lazy)) {
-                        lazy = lazy();
+                var buildSwitch = this.node.attr("s-build-switch");
+                if (buildSwitch != undefined) {
+                    buildSwitch = this.context(buildSwitch);
+                    if ($.isFunction(buildSwitch)) {
+                        buildSwitch = buildSwitch();
                     }
-                    if (lazy == true) {
-                        return;
+                    switch (buildSwitch) {
+                        case 'off-on':
+                            this.node.attr("s-build-switch", "'on'");
+                            return;
+                        case 'on':
+                            break;
+                        default :
+                            return;
                     }
                 }
                 var buildData = this.context(buildAttrStr);
@@ -1189,34 +1197,32 @@
                 }
                 return deferred;
             },
-            dataSwitch: function(type){
+            dataSwitch: function (type) {
                 this.node.attr("s-data-switch", type);
             },
             _executeData: function () {
-                var dataAttrStr = this.node.attr("s-data");
-                if (dataAttrStr == undefined) {
-                    return;
-                }
-                /**
-                 * 该属性只会触发一次，当再次执行的时候将会被忽略掉。
-                 * */
                 var dataSwitch = this.node.attr("s-data-switch");
                 if (dataSwitch != undefined) {
                     dataSwitch = this.context(dataSwitch);
                     if ($.isFunction(dataSwitch)) {
                         dataSwitch = dataSwitch();
                     }
-                    switch( dataSwitch){
+                    switch (dataSwitch) {
                         case 'off-on':
                             this.node.attr("s-data-switch", "'on'");
                             return;
-                        case 'on': break;
+                        case 'on':
+                            break;
                         default :
                             return;
                     }
                 }
+                var dataAttrStr = this.node.attr("s-data");
+                if (dataAttrStr == undefined) {
+                    return;
+                }
                 var dataValue = this.context(dataAttrStr);
-                if($.isFunction(dataValue)){
+                if ($.isFunction(dataValue)) {
                     dataValue = dataValue.call(this);
                 }
                 var deferred = $.Deferred();

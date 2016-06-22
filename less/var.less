@@ -5,6 +5,13 @@
 @font-default-size: 14px;
 @layout-aside-bg-color: #F7F9FA;
 
+@gray-base: #222;
+@gray-darker: lighten(@gray-base, 13.5%);
+@gray-dark: lighten(@gray-base, 20%);
+@gray: lighten(@gray-base, 33.5%);
+@gray-light: lighten(@gray-base, 46.7%);
+@gray-lighter: lighten(@gray-base, 82%);
+
 @brand-primary: #556A7E;
 @brand-muted: #999;
 @brand-info: #3498DB;
@@ -208,6 +215,8 @@ state
 @radio-indicator-checked-color: @brand-primary;
 @radio-indicator-border-color: @border-default-color;
 @radio-indicator-width: 15px;
+
+@input-bg-disabled: @gray-lighter;
 
 //s-select
 @select-panel-border: #ccc;

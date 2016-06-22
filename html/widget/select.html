@@ -109,8 +109,220 @@
 </pre>
                 </div>
             </div>
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">级联操作与数据绑定</div>
+                <div class="alert alert-warning">
+                    级联操作通过<code>S.cascade($S0, $S1, $S2,...)</code>方法进行实现。
+                </div>
+                <div class="panel-body" >
+                    <form class="form-inline" s="nda">
+                        <select s="select"
+                                id="province"
+                                name="province"
+                                s-data="cascadeData"
+                                s-build="S.get('json/select-cascade.php?id=0')"
+                                class="form-control">
+                            <option value="">选择省份</option>
+                        </select>
+                        <select s="select"
+                                id="city"
+                                name="city"
+                                s-data="cascadeData"
+                                s-build-switch="'off-on'"
+                                s-build="S.get('json/select-cascade.php?id={$province.node.val() || -1}')"
+                                class="form-control">
+                            <option value="">选择城市</option>
+                        </select>
+                        <div class="form-control s-select" style="width: 150px;"
+                             s="select"
+                             id="district"
+                             s-data-filter="'district'"
+                             s-data="cascadeData"
+                             s-build-switch="'off-on'"
+                             s-build="S.get('json/select-cascade.php?id={$city.node.val() || -1}')" >
+                            <input type="hidden" s-select-role="input">
+                            <div class="s-select-mirror">
+                                <span></span>
+                                <i class="fa fa-caret-down"></i>
+                            </div>
+                            <div class="s-select-panel">
+                                <input type="text" class="s-select-filter">
+                                <ul class="s-select-list">
+                                    <li class="s-select-list-item" value="">选择地区</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </form>
+                    <h4>代码</h4>
+<pre>
+&lt;form class="form-inline" s="nda" &gt;
+    &lt;select
+            <span class="text-success">s="select"
+            id="province"
+            name="province"
+            s-data="cascadeData"
+            s-build="S.get('json/select-cascade.php?id=0')"</span>
+            class="form-control"&gt;
+        &lt;option value=""&gt;选择省份&lt;/option&gt;
+    &lt;/select&gt;
+    &lt;select
+            <span class="text-success">s="select"
+            id="city"
+            name="city"
+            s-data="cascadeData"
+            s-build-switch="'off-on'"
+            s-build="S.get('json/select-cascade.php?id={$province.node.val() || -1}')"</span>
+            class="form-control"&gt;
+        &lt;option value=""&gt;选择城市&lt;/option&gt;
+    &lt;/select&gt;
+   &lt;div class="form-control s-select" style="width: 150px;"
+        s="select"
+        id="district"
+        s-data-filter="'district'"
+        s-data="cascadeData"
+        s-build-switch="'off-on'"
+        s-build="S.get('json/select-cascade.php?id={$city.node.val() || -1}')" &gt;
+       &lt;input type="hidden" s-select-role="input"&gt;
+       &lt;div class="s-select-mirror"&gt;
+           &lt;span&gt;&lt;/span&gt;
+           &lt;i class="fa fa-caret-down"&gt;&lt;/i&gt;
+       &lt;/div&gt;
+       &lt;div class="s-select-panel"&gt;
+           &lt;input type="text" class="s-select-filter"&gt;
+           &lt;ul class="s-select-list"&gt;
+               &lt;li class="s-select-list-item" value=""&gt;选择地区&lt;/li&gt;
+           &lt;/ul&gt;
+       &lt;/div&gt;
+   &lt;/div&gt;
+&lt;/form&gt;
+&lt;script type="text/javascript"&gt;
+    S.cascade($province, $city, $district);
+    var cascadeData = {
+        province: 'sx',
+        city: 'yc',
+        district: '005'
+    }
+&lt;/script&gt;
+</pre>
+                    <p class="lead">级联操作不仅仅适合下拉列表，而且适用于任何Smart控件，在这里只是把下拉列表作为一个典型来讲述，上述示例中的最后一个下拉列表使用的是带搜索功能的下拉列表，这里只为示例，你可以换成普通的下拉列表。</p>
+                    <div class="alert alert-warning">
+                        级联操作的元素在数据绑定的时候，不能用datac控件进行绑定，而是要直接使用<code>s-data='..'</code>属性进行数据绑定，如果在表单数据绑定中，避免不了要使用
+                        <code>datac</code>控件进行绑定，那么就需要在级联操作的控件元素上声明<code>s-datac-ig='true'</code>来忽略<code>datac</code>控件的数据绑定，而使用
+                        <code>s-data</code>属性配置来绑定数据。
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-6"></div>
+        <div class="col-lg-6">
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">带搜索功能的下拉列表</div>
+                <div class="alert alert-warning">
+                    带搜索功能的下拉列表是通过html来构建的，搜索功能仅仅是对当前下拉选项中数据的过滤，而不是去远程服务器过滤。
+                </div>
+                <div class="panel-body">
+                    <div class="form-control s-select" style="width: 150px;"
+                         s="select"
+                         id="singerSelect"
+                         s-build="S.get('json/select-options.json')" >
+                        <input type="hidden" class="s-select-input"/>
+                        <div class="s-select-mirror">
+                            <span></span>
+                            <i class="fa fa-caret-down"></i>
+                        </div>
+                        <div class="s-select-panel">
+                            <input type="text" class="s-select-filter">
+                            <ul class="s-select-list">
+                                <li class="s-select-list-item" value="">选择歌手</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <input type="button" class="btn btn-primary" value="赋值" s-click="$singerSelect.data('8')">
+
+                    <div class="form-control s-select" style="width: 200px;"
+                         s="select"
+                         id="singerSelect"
+                         s-build="S.get('json/select-options.json')" >
+                        <input type="hidden" class="s-select-input" disabled/>
+                        <div class="s-select-mirror">
+                            <span></span>
+                            <i class="fa fa-caret-down"></i>
+                        </div>
+                        <div class="s-select-panel">
+                            <input type="text" class="s-select-filter">
+                            <ul class="s-select-list">
+                                <li class="s-select-list-item" value="">禁用状态下拉列表</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <h4>代码</h4>
+<pre>
+&lt;div class="form-control s-select" style="width: 150px;"
+     s="select"
+     id="singerSelect"
+     s-build="S.get('json/select-options.json')" &gt;
+    <span class="text-success">&lt;input type="hidden" class="s-select-input" /&gt;</span>
+    &lt;div class="s-select-mirror"&gt;
+        &lt;span&gt;&lt;/span&gt;
+        &lt;i class="fa fa-caret-down"&gt;&lt;/i&gt;
+    &lt;/div&gt;
+    &lt;div class="s-select-panel"&gt;
+        &lt;input type="text" class="s-select-filter"&gt;
+        &lt;ul class="s-select-list"&gt;
+            &lt;li class="s-select-list-item" value=""&gt;选择歌手&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;input type="button" class="btn btn-primary" value="赋值" s-click="$singerSelect.data('8')"&gt;
+
+//禁用状态的下拉列表
+&lt;div class="form-control s-select" style="width: 200px;"
+     s="select"
+     id="singerSelect"
+     s-build="S.get('json/select-options.json')" &gt;
+    <span class="text-success">&lt;input type="hidden" class="s-select-input" disabled/&gt;</span>
+    &lt;div class="s-select-mirror"&gt;
+        &lt;span&gt;&lt;/span&gt;
+        &lt;i class="fa fa-caret-down"&gt;&lt;/i&gt;
+    &lt;/div&gt;
+    &lt;div class="s-select-panel"&gt;
+        &lt;input type="text" class="s-select-filter"&gt;
+        &lt;ul class="s-select-list"&gt;
+            &lt;li class="s-select-list-item" value=""&gt;禁用状态下拉列表&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+                    <div class="alert alert-warning">
+                        通过该方式构建的下拉列表的选择的数据保存在<code>&lt;input type="hidden" class="s-select-input" /&gt;</code>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-built">
+                <div class="panel-heading">配置参数</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody><tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>默认值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>title</td>
+                            <td>Function</td>
+                            <td></td>
+                            <td>该方法用于自定义title的显示</td>
+                        </tr>
+                        <tr>
+                            <td>value</td>
+                            <td>Function</td>
+                            <td></td>
+                            <td>该方法用于自定义value的值</td>
+                        </tr>
+                        </tbody></table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <script type="text/javascript">
@@ -121,10 +333,17 @@
         {id: "4", name: "孙燕姿"}
     ]
 
-    function titleFn(data){
+    function titleFn(data) {
         return data.name + "[id:" + data.sid + "]";
     }
-    function valueFn(data){
+    function valueFn(data) {
         return "[" + data.id + "]";
+    }
+
+    S.cascade($province, $city, $district);
+    var cascadeData = {
+        province: 'sx',
+        city: 'yc',
+        district: '005'
     }
 </script>

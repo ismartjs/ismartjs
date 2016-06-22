@@ -32,7 +32,7 @@
                 });
                 this.env.mode = "html";
                 this.env.listContainer = $(SELECT_LIST_CLASS, this.S.node);
-                this.env.targetNode = $("input[s-select-role='input']", this.S.node);
+                this.env.targetNode = $(".s-select-input", this.S.node);
                 var filterInput = $("input[type='text'].s-select-filter", this.S.node);
                 this.env.selectMirror = $(SELECT_MIRROR_CLASS, this.S.node);
                 this.env.mirrorSpan = $("span", this.env.selectMirror);
@@ -57,6 +57,9 @@
                 this.env.selectMirror.click(function(){
                     if(!that.env.selectPanelShow){
                         $("body").click();
+                        if(that.env.targetNode.prop("disabled") || that.env.targetNode.prop("readonly")){
+                            return;
+                        }
                         showSelectPanel(that.env.selectPanel);
                         filterInput.focus();
                         $("body").one("click", function(){
