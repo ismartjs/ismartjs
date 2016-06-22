@@ -1,0 +1,97 @@
+<meta title="日期控件" icon="fa fa-calendar"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">日期控件</div>
+            <div>
+                日期控件的github地址为：<a href="https://github.com/smalot/bootstrap-datetimepicker" target="_blank" external>https://github.com/smalot/bootstrap-datetimepicker</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">Follow Me</div>
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            <h4>一个基本的日期选择器</h4>
+                            <form class="form-inline">
+                                <input type="text" class="form-control" s="datetimepicker" style="width: 250px;" />
+                            </form>
+                            <h4>代码</h4>
+<pre>
+&lt;form class="form-inline"&gt;
+    &lt;input type="text" class="form-control" <span class="text-success">s="datetimepicker"</span> style="width: 200px;" /&gt;
+&lt;/form&gt;
+</pre>
+                        </li>
+                        <li>
+                            <h4>带时间选择的日期选择器</h4>
+                            <form class="form-inline">
+                                <input type="text" class="form-control" s="datetimepicker"
+                                       s-datetimepicker="{minView:'hour', format:'yyyy-mm-dd hh:ii', pickerPosition:'top-left'}" style="width: 250px;" />
+                            </form>
+                            <h4>代码</h4>
+<pre>
+&lt;form class="form-inline"&gt;
+    &lt;input type="text" class="form-control" s="datetimepicker"
+           <span class="text-success">s-datetimepicker="{minView:'hour', format:'yyyy-mm-dd hh:ii', pickerPosition:'top-left'}"</span> style="width: 250px;" /&gt;
+&lt;/form&gt;
+</pre>
+                            <blockquote class="border-orange">
+                                更多配置参数请参考github：<a href="https://github.com/smalot/bootstrap-datetimepicker" target="_blank" external>https://github.com/smalot/bootstrap-datetimepicker</a>
+                            </blockquote>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-built panel-success">
+                <div class="panel-heading">参数配置</div>
+                <div class="alert alert-warning">参数配置可参考<a href="https://github.com/smalot/bootstrap-datetimepicker" external target="_blank">https://github.com/smalot/bootstrap-datetimepicker</a>， 通过<code>s-datetimepicker</code>属性来配置参数。</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tr>
+                            <th>默认参数名</th>
+                            <th>类型</th>
+                            <th>默认值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>format</td>
+                            <td>String</td>
+                            <td><code>yyyy-mm-dd</code></td>
+                            <td>日期的格式</td>
+                        </tr>
+                        <tr>
+                            <td>autoclose</td>
+                            <td>boolean</td>
+                            <td><code>true</code></td>
+                            <td>当日期选择后是否关闭</td>
+                        </tr>
+                        <tr>
+                            <td>language</td>
+                            <td>String</td>
+                            <td><code>zh-CN</code></td>
+                            <td>语言</td>
+                        </tr>
+                        <tr>
+                            <td>minView</td>
+                            <td>String</td>
+                            <td><code>month</code></td>
+                            <td>日期时间选择器所能够提供的最精确的时间选择视图。</td>
+                        </tr>
+                        <tr>
+                            <td>todayHighlight</td>
+                            <td>boolean</td>
+                            <td><code>true</code></td>
+                            <td>是否高亮显示当前日期</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

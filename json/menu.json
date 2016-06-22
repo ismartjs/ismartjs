@@ -53,6 +53,12 @@
         "id": "WIDGET_TOOLTIP_POPOVER",
         "title": "工具提示与弹出框",
         "url": "html/widget/tooltip-popover.html"
+      },
+      {
+        "id": "WIDGET_CALENDAR",
+        "title": "日期控件",
+        "icon": "fa fa-calendar",
+        "url": "html/widget/calendar.html"
       }
     ]
   },

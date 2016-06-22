@@ -16,6 +16,7 @@
                     <ol>
                         <li>
                             <h4>提交表单到远程</h4>
+
                             <form s="form,valid" action="json/form-submit.json"
                                   s-form="{done: submitDone}"
                                   class="form-horizontal">
@@ -23,21 +24,25 @@
                                     <label class="control-label col-lg-2">
                                         账号：
                                     </label>
+
                                     <div class="col-lg-10">
-                                        <input type="text" s-valid-error="require()" class="form-control" name="account" />
+                                        <input type="text" s-valid-error="require()" class="form-control"
+                                               name="account"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">
                                         密码：
                                     </label>
+
                                     <div class="col-lg-10">
-                                        <input type="password" s-valid-error="require()" class="form-control" name="password" />
+                                        <input type="password" s-valid-error="require()" class="form-control"
+                                               name="password"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="col-lg-offset-2 col-lg-10">
-                                        <input type="submit" class="btn btn-primary" value="提交" />
+                                        <input type="submit" class="btn btn-primary" value="提交"/>
                                     </div>
                                 </div>
                             </form>
@@ -83,11 +88,13 @@
                         </li>
                         <li>
                             <h4>处理表单数据提交的返回结果</h4>
+
                             <p class="lead">通过配置form控件的<code>done</code>参数，可以处理表单提交的返回结果，done方法的参数为表单提交后服务器的返回结果，在上述示例中，
                                 通过submitDone方法进行处理。</p>
                         </li>
                         <li>
                             <h4>提交表单数据到异步方法</h4>
+
                             <form s="form,valid"
                                   s-form="{done: submitDone, action: formAsyncAction}"
                                   class="form-horizontal">
@@ -95,21 +102,25 @@
                                     <label class="control-label col-lg-2">
                                         账号：
                                     </label>
+
                                     <div class="col-lg-10">
-                                        <input type="text" s-valid-error="require()" class="form-control" name="account" />
+                                        <input type="text" s-valid-error="require()" class="form-control"
+                                               name="account"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">
                                         密码：
                                     </label>
+
                                     <div class="col-lg-10">
-                                        <input type="password" s-valid-error="require()" class="form-control" name="password" />
+                                        <input type="password" s-valid-error="require()" class="form-control"
+                                               name="password"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="col-lg-offset-2 col-lg-10">
-                                        <input type="submit" class="btn btn-primary" value="提交" />
+                                        <input type="submit" class="btn btn-primary" value="提交"/>
                                     </div>
                                 </div>
                             </form>
@@ -152,20 +163,105 @@
 
 &lt;/script&gt;
 </pre>
-                            <p class="lead">我们可以将表单的数据提交到一个异步的方法中，异步方法的返回值可以是</p>
+                            <p class="lead">我们可以将表单的数据提交到一个异步的方法中，该方法可以无返回值或者返回一个Deferred对象。</p>
                         </li>
                     </ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">配置参数</div>
+                <div class="alert alert-warning">
+                    表单提交的方法配置可以直接使用表单的<code>method="post|get"</code>属性进行配置，表单的提交url可以通过表单的<code>action='url'</code>属性进行配置，
+                    如果表单数据要提交的当前脚本域的方法，可以配置表单控件的action属性为相应的方法，如：<code>s-form="{action: fn}"</code>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>默认值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>action</td>
+                            <td>String | Function</td>
+                            <td></td>
+                            <td>
+                                <ul>
+                                    <li>1、定义原生的表单action属性，如 <code>&lt;form action='ajax url' ...&gt;</code></li>
+                                    <li>2、定义控件参数，如<code>s-form="{action:'ajax url'}"</code>，已可以将参数定义为当前闭包环境中的方法（该方法可以是同步或者异步方法），
+                                        如<code>s-form='{action: function(){...}}'</code>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>method</td>
+                            <td>String</td>
+                            <td><code>post</code></td>
+                            <td>提交表单时使用的http方法，该值亦可以使用表单原生method的属性进行定义</td>
+                        </tr>
+                        <tr>
+                            <td>enctype</td>
+                            <td>String</td>
+                            <td><code>application/x-www-form-urlencoded</code></td>
+                            <td>该值亦可以使用表单原生enctype的属性进行定义</td>
+                        </tr>
+                        <tr>
+                            <td>done</td>
+                            <td>Function</td>
+                            <td></td>
+                            <td>当表单提交成功时执行的方法，该方法的参数是提交表单时后台接口返回的值</td>
+                        </tr>
+                        <tr>
+                            <td>fail</td>
+                            <td>Function</td>
+                            <td></td>
+                            <td>当表单提交失败时执行的方法，该方法的参数是ajax执行失败时的回掉参数</td>
+                        </tr>
+                        <tr>
+                            <td>always</td>
+                            <td>Function</td>
+                            <td></td>
+                            <td>当表单完成时执行的方法，不论成功或者失败该方法都会被执行</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">API</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody>
+                        <tr>
+                            <th>方法名</th>
+                            <th>返回值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>submit</td>
+                            <td><code>Deferred</code></td>
+                            <td>
+                                提交表单，该方法返回一个deferred对象。
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    function submitDone(rs){
+    function submitDone(rs) {
         S.alert("数据提交成功，服务器返回json为：" + JSON.stringify(rs));
     }
 
-    function formAsyncAction(data){
+    function formAsyncAction(data) {
         //如果是异步方法，必须返回一个deferred对象，同步方法则直接返回值即可
         return S.post("json/form-submit.json", data);
     }

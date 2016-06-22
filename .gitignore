@@ -1,2 +1,3 @@
-.idea/*
-.svn/*
+.idea
+.svn
+node_modules
