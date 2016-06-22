@@ -14,16 +14,14 @@
     }
     Smart.widgetExtend({
         id: "select",
-        options: "form,ctx:title,ctx:value",
         defaultOptions: {
-            form: "id:name,title"
+            title: "name,title",
+            value: "id"
         }
     }, {
         onPrepare: function () {
             this.cache = {};
             this.env = {};
-            this.options.form = this.options.form.split(":");
-            this.options.form[1] = this.options.form[1].split(",");
             this.cache.dataMap = {};
             /**
              * 如果判断控件的node不是select元素，而且拥有s-select的class，则说明使用html来渲染下拉列表，而不是使用原生的下来列表
@@ -128,13 +126,17 @@
             }
         },
         _getOptionData: function(data){
-            var value = this.widget.select.options.value ?
-                this.widget.select.options.value(data) : data[this.widget.select.options.form[0]];
-            var title = this.widget.select.options.title ?
-                this.widget.select.options.title(data) : data[this.widget.select.options.form[1][0]];
-            this.widget.select.cache.dataMap[value] = data;
-            if (!title && this.widget.select.options.form[1].length == 2) {
-                title = data[this.widget.select.options.form[1][1]];
+            var value,title;
+            if($.isFunction(this.widget.select.options.value)){
+                value = this.widget.select.options.value(data);
+            } else {
+                value = data[this.widget.select.options.value];
+            }
+            if($.isFunction(this.widget.select.options.title)){
+                title = this.widget.select.options.title(data);
+            } else {
+                var tmp = this.widget.select.options.title.split(",");
+                title = tmp[0] in data ? data[tmp[0]] : data[tmp[1]];
             }
             return {value: value, title: title};
         },

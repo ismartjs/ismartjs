@@ -1,1 +1,130 @@
-<meta title="下拉列表" />
+<meta title="下拉列表"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">下拉列表</div>
+            <div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">使用当前脚本域变量构建下拉列表</div>
+                <div class="alert alert-warning">
+                    下拉列表通过iSmartJs控件的<code>s-build</code>属性来进行构建，<code>s-build</code>属性同<code>s-data</code>属性一样，可以接受脚本域中的变量和
+                    远程url返回的数据。
+                </div>
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <select s="select" s-build="selectBuildData" class="form-control">
+                            <option value="">选择歌手</option>
+                        </select>
+                    </form>
+                    <h4>代码</h4>
+<pre>
+&lt;form class="form-inline"&gt;
+  &lt;select <span class="text-success">s="select" s-build="selectBuildData"</span> class="form-control"&gt;
+      &lt;option value=""&gt;选择歌手&lt;/option&gt;
+  &lt;/select&gt;
+&lt;/form&gt;
+&lt;script type="text/javascript"&gt;
+    var selectBuildData = [
+        {id: "1", name: "齐秦"},
+        {id: "2", name: "周杰伦"},
+        {id: "3", name: "刘若英"},
+        {id: "4", name: "孙燕姿"}
+    ]
+&lt;/script&gt;
+</pre>
+                </div>
+            </div>
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">使用远程url构建下拉列表</div>
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <select s="select" s-build="S.get('json/select-options.json')" class="form-control">
+                            <option value="">选择歌手</option>
+                        </select>
+                    </form>
+                    <h4>代码</h4>
+<pre>
+&lt;form class="form-inline"&gt;
+  &lt;select <span class="text-success">s="select" s-build="S.get('json/select-options.json')"</span> class="form-control"&gt;
+      &lt;option value=""&gt;选择歌手&lt;/option&gt;
+  &lt;/select&gt;
+&lt;/form&gt;
+</pre>
+                    <h4><code>json/select-options.json</code>返回如下</h4>
+<pre>
+[
+  {"id": "1", "name": "齐秦"},
+  {"id": "2", "name": "周杰伦"},
+  {"id": "3", "name": "刘若英"},
+  {"id": "4", "name": "孙燕姿"}
+]
+</pre>
+                </div>
+            </div>
+            <div class="panel panel-built panel-orange">
+                <div class="panel-heading">自定义title和value的显示</div>
+                <div class="alert alert-warning">
+                    通过配置select控件的<code>title</code>和<code>value</code>参数可以自定义option的value和文字显示，这两个参数可以配置为字符串和方法，如果为字符串的时候，则根据字符串做为key取出数组项相应的值作为选项的value和title的值进行显示，如果是
+                    方法，则是方法执行后的返回值作为选项的value和title的值。
+                </div>
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <select s="select"
+                                s-build="S.get('json/select-options1.json')"
+                                s-select="{title: titleFn, value: 'sid'}"
+                                class="form-control">
+                            <option value="">选择歌手</option>
+                        </select>
+                    </form>
+                    <h4>代码</h4>
+<pre>
+&lt;form class="form-inline"&gt;
+  &lt;select <span class="text-success">s="select"
+    s-build="S.get('json/select-options1.json')"
+    s-select="{title: titleFn, value: 'sid'}"
+    </span> class="form-control"&gt;
+      &lt;option value=""&gt;选择歌手&lt;/option&gt;
+  &lt;/select&gt;
+&lt;/form&gt;
+&lt;script type="text/javascript"&gt;
+    <span class="text-success">function titleFn(data){
+        return data.name + "[id:]" + data.sid;
+    }</span>
+&lt;/script&gt;
+</pre>
+                    <h4><code>json/select-options.json</code>返回如下</h4>
+<pre>
+[
+  {"sid": "1", "name": "齐秦"},
+  {"sid": "2", "name": "周杰伦"},
+  {"sid": "3", "name": "刘若英"},
+  {"sid": "4", "name": "孙燕姿"}
+]
+</pre>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    var selectBuildData = [
+        {id: "1", name: "齐秦"},
+        {id: "2", name: "周杰伦"},
+        {id: "3", name: "刘若英"},
+        {id: "4", name: "孙燕姿"}
+    ]
+
+    function titleFn(data){
+        return data.name + "[id:" + data.sid + "]";
+    }
+    function valueFn(data){
+        return "[" + data.id + "]";
+    }
+</script>

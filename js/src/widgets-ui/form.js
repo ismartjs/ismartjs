@@ -5,7 +5,6 @@
     //表单提交插件，作用于submit按钮，可以实现表单回车提交
     Smart.widgetExtend({
         id: "form",
-        options: "ctx:action,ctx:done,ctx:fail,ctx:always",
         defaultOptions: {
             method: "post",
             enctype: "application/x-www-form-urlencoded"
