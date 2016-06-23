@@ -11,8 +11,7 @@
     var CURRENT_SHOWN_CONTEXTMENU;
 
     Smart.widgetExtend({
-        id: "contextmenu",
-        options: "ctx:target,ctx:filter,delegate"
+        id: "contextmenu"
     },{
         onPrepare: function(){
             var target = this.options['target'];
@@ -73,17 +72,16 @@
             Smart.UI.contextmenu.node = $(e.target);
             //过滤菜单
             if(this.widget.contextmenu.options.filter){
-                var menuNodes = this.node.find("li[menuId]");
+                var menuNodes = this.node.find("li");
                 var that = this;
                 if(menuNodes.size()){
                     menuNodes.each(function(){
                         //如果filter的返回值是false，则说明该菜单不可用。
                         var node = $(this);
-                        var menuId = node.attr("menuId");
-                        if(that.widget.contextmenu.options.filter(menuId, node) == false){
-                            that._disableMenu(node);
+                        if(that.widget.contextmenu.options.filter(node, $(e.target)) == false){
+                            that.disableMenu(node);
                         } else {
-                            that._enableMenu(node);
+                            that.enableMenu(node);
                         }
                     });
                 }
@@ -101,19 +99,13 @@
         hide: function(){
             this.node.fadeOut(200);
         },
-        disableMenuById: function(id){
-            this._disableMenu(this.node.find("li[menuId='"+id+"']"));
-        },
-        _disableMenu: function(menu){
+        disableMenu: function(menu){
             menu.addClass(DISABLED_CLASS);
             $("i, span", menu).click(function(e){
                 e.stopPropagation();
             });
         },
-        enableMenuById: function(id){
-            this._enableMenu(this.node.find("li[menuId='"+id+"']"));
-        },
-        _enableMenu: function(menu){
+        enableMenu: function(menu){
             menu.removeClass(DISABLED_CLASS);
             $("i, span", menu).unbind("click");
         }

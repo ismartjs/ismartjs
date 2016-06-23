@@ -243,7 +243,8 @@
                 } else {
                     smart.open(href);
                 }
-                e.stopPropagation();
+                //事件需要继续向上冒泡
+                smart.node.parent().click();
                 return false;
             }
         });

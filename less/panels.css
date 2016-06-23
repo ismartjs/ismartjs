@@ -26,9 +26,17 @@ state
 }
 .panel .panel-heading {
   border-radius: 0;
-  padding: 10px 2px;
+  padding: 10px 15px;
   color: #6a6c6f;
   border: none;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #e5e5e5;
+}
+.panel .panel-heading.panel-heading-blank {
+  background: none;
+  border: none;
+  padding: 10px 2px;
 }
 .panel .panel-footer {
   border-width: 0px 1px 1px;
@@ -37,64 +45,57 @@ state
   border-radius: 0;
   background: #F7F9FA;
 }
-.panel.panel-built .panel-heading {
-  padding: 10px 15px;
-  background: #fff;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #e5e5e5;
-}
 .panel-primary .panel-heading {
-  background: transparent;
+  background: #fff;
 }
 .panel-primary .panel-heading + .panel-collapse > .panel-body,
 .panel-primary > .panel-body {
   border-top: 2px solid #556A7E;
 }
 .panel-success .panel-heading {
-  background: transparent;
+  background: #fff;
 }
 .panel-success .panel-heading + .panel-collapse > .panel-body,
 .panel-success > .panel-body {
   border-top: 2px solid #62cb31;
 }
 .panel-danger .panel-heading {
-  background: transparent;
+  background: #fff;
 }
 .panel-danger .panel-heading + .panel-collapse > .panel-body,
 .panel-danger > .panel-body {
   border-top: 2px solid #e74c3c;
 }
 .panel-warning .panel-heading {
-  background: transparent;
+  background: #fff;
 }
 .panel-warning .panel-heading + .panel-collapse > .panel-body,
 .panel-warning > .panel-body {
   border-top: 2px solid #ffb606;
 }
 .panel-info .panel-heading {
-  background: transparent;
+  background: #fff;
 }
 .panel-info .panel-heading + .panel-collapse > .panel-body,
 .panel-info > .panel-body {
   border-top: 2px solid #3498DB;
 }
 .panel-orange .panel-heading {
-  background: transparent;
+  background: #fff;
 }
 .panel-orange .panel-heading + .panel-collapse > .panel-body,
 .panel-orange > .panel-body {
   border-top: 2px solid #e67e22;
 }
 .panel-violet .panel-heading {
-  background: transparent;
+  background: #fff;
 }
 .panel-violet .panel-heading + .panel-collapse > .panel-body,
 .panel-violet > .panel-body {
   border-top: 2px solid #9b59b6;
 }
 .panel-default .panel-heading {
-  background: transparent;
+  background: #fff;
 }
 .panel-default .panel-heading + .panel-collapse > .panel-body,
 .panel-default > .panel-body {

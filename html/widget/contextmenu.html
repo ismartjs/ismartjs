@@ -1,0 +1,327 @@
+<meta title="右键菜单"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">右键菜单</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel  panel-orange">
+                <div class="panel-heading">Follow Me</div>
+                <div class="alert alert-warning">
+                    右键菜单可以用在任何页面元素上面，提供鼠标右键点击操作的功能。
+                </div>
+                <div class="panel-body">
+                    <div class="alert alert-info" id="alertPanel">右键点击我改变我的警告级别</div>
+                    <ul s="contextmenu" s-contextmenu="{target: $alertPanel.node}" class="s-contextmenu">
+                        <li s-click="setAlertLevel('alert-success')">
+                            <span>设为SUCCESS</span>
+                        </li>
+                        <li s-click="setAlertLevel('alert-danger')">
+                            <span>设为DANGER</span>
+                        </li>
+                        <li s-click="setAlertLevel('alert-warning')">
+                            <span>设为WARNING</span>
+                        </li>
+                    </ul>
+                    <h4>代码</h4>
+<pre>
+&lt;div class="alert alert-info" id="alertPanel"&gt;右键点击我改变我的警告级别&lt;/div&gt;
+<span class="text-success">&lt;-- 这里声明右键菜单以及配置作用的元素 --&gt;
+&lt;ul s="contextmenu" s-contextmenu="{target: $alertPanel.node}" class="s-contextmenu"&gt;
+    &lt;li s-click="setAlertLevel('alert-success')"&gt;
+        &lt;span&gt;设为SUCCESS&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li s-click="setAlertLevel('alert-danger')"&gt;
+        &lt;span&gt;设为DANGER&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li s-click="setAlertLevel('alert-warning')"&gt;
+        &lt;span&gt;设为WARNING&lt;/span&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;</span>
+&lt;script type="text/javascript"&gt;
+    function setAlertLevel(clazz){
+        var target = Smart.UI.contextmenu.target;
+        var allClass = "alert-warning alert-success alert-danger alert-info";
+        target.node.removeClass(allClass).addClass(clazz);
+    }
+&lt;/script&gt;
+</pre>
+                    <blockquote class="border-orange">
+                        在右键菜单调用的方法中，我们使用<code>Smart.UI.contextmenu.target</code>来获取当前右键点击的目标元素，该属性是一个jQuery对象。
+                    </blockquote>
+                </div>
+            </div>
+            <div class="panel  panel-orange">
+                <div class="panel-heading">根据当前右键点击的对象去禁用右键菜单项</div>
+                <div class="alert alert-warning">
+                    通过配置contextmenu的filter参数（<code>s-contextmenu="{filter: function(menu, target){...}}"</code>），可以实现右键菜单项的过滤。filter方法接受两个参数，第一个参数是右键菜单menu，第二个参数是当前的右键点击的对象。
+                </div>
+                <div class="panel-body">
+                    <div class="alert alert-info" id="alertPanel1">右键点击我改变我的警告级别</div>
+                    <ul s="contextmenu" s-contextmenu="{target: $alertPanel1.node, filter: menuFilter}"
+                        class="s-contextmenu">
+                        <li menuId="info" s-click="setAlertLevel('alert-info')">
+                            <span>设为INFO</span>
+                        </li>
+                        <li menuId="success" s-click="setAlertLevel('alert-success')">
+                            <span>设为SUCCESS</span>
+                        </li>
+                        <li menuId="danger" s-click="setAlertLevel('alert-danger')">
+                            <span>设为DANGER</span>
+                        </li>
+                        <li menuId="warning" s-click="setAlertLevel('alert-warning')">
+                            <span>设为WARNING</span>
+                        </li>
+                    </ul>
+                    <h4>代码</h4>
+<pre>
+&lt;div class="alert alert-info" id="alertPanel1"&gt;右键点击我改变我的警告级别&lt;/div&gt;
+&lt;ul s="contextmenu" s-contextmenu="{target: $alertPanel1.node, filter: menuFilter}" class="s-contextmenu"&gt;
+    &lt;li menuId="info" s-click="setAlertLevel('alert-info')"&gt;
+        &lt;span&gt;设为INFO&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li menuId="success" s-click="setAlertLevel('alert-success')"&gt;
+        &lt;span&gt;设为SUCCESS&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li menuId="danger" s-click="setAlertLevel('alert-danger')"&gt;
+        &lt;span&gt;设为DANGER&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li menuId="warning" s-click="setAlertLevel('alert-warning')"&gt;
+        &lt;span&gt;设为WARNING&lt;/span&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;
+&lt;script type="text/javascript"&gt;
+    function menuFilter(menu, target){
+        if(!menu.attr("menuId")){
+            return;
+        }
+        var clazz = "alert-" + menu.attr("menuId");
+        if(target.hasClass(clazz)){
+            return false;
+        }
+    }
+&lt;/script&gt;
+</pre>
+                </div>
+            </div>
+            <div class="panel  panel-success">
+                <div class="panel-heading">使用父元素代理子元素的右键菜单</div>
+                <div class="alert alert-warning">
+                    如果需要绑定右键菜单元素过多时，或者需要绑定动态添加进来元素的右键菜单，可以配置<code>delegate</code>参数，使得通过父元素去代理子元素的右键菜单。
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped" id="singersTable">
+                        <thead>
+                        <tr>
+                            <th>歌手</th>
+                            <th>地区</th>
+                            <th>歌曲</th>
+                            <th>排行榜</th>
+                        </tr>
+                        </thead>
+                        <tbody s="loop" s-data="S.get('json/singers.json')">
+                        <tr s-loop-role="row" s="datac">
+                            <td s s-data-filter="'name'"></td>
+                            <td s s-data-filter="'area'"></td>
+                            <td s s-data-filter="'song'"></td>
+                            <td s s-data-filter="'rank'"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <ul s="contextmenu" s-contextmenu="{target: $singersTable.node, delegate:'tbody tr'}"
+                        class="s-contextmenu">
+                        <li s-click="selectTr(true)">
+                            <span>选中</span>
+                        </li>
+                        <li s-click="selectTr(false)">
+                            <span>取消选中</span>
+                        </li>
+                    </ul>
+<pre>
+&lt;table class="table table-striped" id="singersTable"&gt;
+    &lt;thead&gt;
+    &lt;tr&gt;
+        &lt;th&gt;歌手&lt;/th&gt;
+        &lt;th&gt;地区&lt;/th&gt;
+        &lt;th&gt;歌曲&lt;/th&gt;
+        &lt;th&gt;排行榜&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody s="loop" s-data="S.get('json/singers.json')"&gt;
+    &lt;tr s-loop-role="row" s="datac"&gt;
+        &lt;td s s-data-filter="'name'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'area'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'song'"&gt;&lt;/td&gt;
+        &lt;td s s-data-filter="'rank'"&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ul <span
+        class="text-success">s="contextmenu" s-contextmenu="{target: $singersTable.node, delegate:'tbody tr'}"</span> class="s-contextmenu"&gt;
+    &lt;li s-click="selectTr(true)"&gt;
+        &lt;span&gt;选中&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li s-click="selectTr(false)"&gt;
+        &lt;span&gt;取消选中&lt;/span&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;
+&lt;script type="text/javascript"&gt;
+    function selectTr(flag){
+        var target = Smart.UI.contextmenu.target;
+        if(flag){
+            target.node.addClass("success");
+        } else {
+            target.node.removeClass("success");
+        }
+    }
+&lt;/script&gt;
+</pre>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel  panel-orange">
+                <div class="panel-heading">配置参数</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>默认值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>target</td>
+                            <td>jQuery</td>
+                            <td></td>
+                            <td>右键菜单的点击目标</td>
+                        </tr>
+                        <tr>
+                            <td>delegate</td>
+                            <td>String</td>
+                            <td></td>
+                            <td>
+                                通过target代理子元素的右键菜单，该值为正确的<code>css</code>选择器，比如通过<code>table</code>代理<code>tr</code>元素的右键菜单。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>filter</td>
+                            <td>Function(menuId, menuNode) : boolean</td>
+                            <td></td>
+                            <td>
+                                右键菜单的过滤器，参数为<code>menuId</code>，即右键的菜单项的<code>menuId</code>属性值，如<code>&lt;li
+                                menuId='close' /&gt;</code>，
+                                当返回值为<code>false</code>的时候，该菜单将会被<code>disabled</code>，<code>menuNode</code>为右键菜单项的<code>jQuery</code>对象。
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel  panel-orange">
+                <div class="panel-heading">API</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody>
+                        <tr>
+                            <th>方法名</th>
+                            <th>返回值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>bindTarget(node, option)</td>
+                            <td></td>
+                            <td>
+                                将当前的右键菜单绑定到node元素上，option是配置参数。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>disableMenu(menu)</td>
+                            <td></td>
+                            <td>
+                                禁用右键菜单项，参数menu为右键菜单项的jQuery对象。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>enableMenu(menu)</td>
+                            <td></td>
+                            <td>
+                                使右键菜单项可用，参数menu为右键菜单项的jQuery对象。
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel  panel-success">
+                <div class="panel-heading">右键菜单样式</div>
+                <div class="panel-body">
+                    <ul class="s-contextmenu" style="display: block;">
+                        <li menuid="close">
+                            <span>关闭</span>
+                        </li>
+                        <li class="s-contextmenu-line"></li>
+                        <li menuid="clostOther">
+                            <span>关闭其他</span>
+                        </li>
+                        <li menuid="closeAll">
+                            <span>关闭所有</span>
+                        </li>
+                        <li class="s-contextmenu-line"></li>
+                        <li menuid="refresh">
+                            <i class="fa fa-refresh"></i><span>刷新</span>
+                        </li>
+                    </ul>
+                    <h4>代码</h4>
+<pre>
+&lt;ul class="s-contextmenu" style="display: block;"&gt;
+    &lt;li menuid="close"&gt;
+        &lt;span&gt;关闭&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li class="s-contextmenu-line"&gt;&lt;/li&gt;
+    &lt;li menuid="clostOther"&gt;
+        &lt;span&gt;关闭其他&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li menuid="closeAll"&gt;
+        &lt;span&gt;关闭所有&lt;/span&gt;
+    &lt;/li&gt;
+    &lt;li class="s-contextmenu-line"&gt;&lt;/li&gt;
+    &lt;li menuid="refresh"&gt;
+        &lt;i class="fa fa-refresh"&gt;&lt;/i&gt;&lt;span&gt;刷新&lt;/span&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;
+</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function setAlertLevel(clazz) {
+        var target = Smart.UI.contextmenu.target;
+        var allClass = "alert-warning alert-success alert-danger alert-info";
+        target.node.removeClass(allClass).addClass(clazz);
+    }
+
+    function menuFilter(menu, target) {
+        if (!menu.attr("menuId")) {
+            return;
+        }
+        var clazz = "alert-" + menu.attr("menuId");
+        if (target.hasClass(clazz)) {
+            return false;
+        }
+    }
+
+    function selectTr(flag) {
+        var target = Smart.UI.contextmenu.target;
+        if (flag) {
+            target.node.addClass("success");
+        } else {
+            target.node.removeClass("success");
+        }
+    }
+</script>

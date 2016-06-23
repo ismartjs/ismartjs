@@ -1,0 +1,404 @@
+<meta title="核心API" />
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">核心API</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-warning">
+                请特别关注标红的方法
+            </div>
+            <div class="panel  panel-orange">
+                <div class="panel-heading">iSmartJs实例方法</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody>
+                        <tr>
+                            <th>方法名</th>
+                            <th>返回值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>extend(api)</td>
+                            <td></td>
+                            <td>
+                                扩展smart对象实例方法。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>each(callback)</td>
+                            <td></td>
+                            <td>
+                                以node的每一个匹配元素的Smart实例作为上下文来执行一个函数。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>parent()</td>
+                            <td>Smart</td>
+                            <td>
+                                返回当前Smart对象的父Smart对象，该父子关系并不是dom结构的直接父子关系，而是Smart控件范畴上的直接父子关系，
+                                也就是说该方法返回的是向上查找所有父节点，返回第一个拥有<code>s</code>属性元素的Smart对象，知道返回window的Smart对象。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>isWidget(wId)</td>
+                            <td>boolean</td>
+                            <td>
+                                判断当前Smart对象是否是<code>wId</code>的控件。如<code>S.isWidget('loop')</code>，判断当前Smart实例是否是<code>loop</code>控件。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>closest(wId)</td>
+                            <td>Smart</td>
+                            <td>
+                                返回当前对象所有父节点中第一个是<code>wId</code>控件的Smart对象。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>isWindow()</td>
+                            <td>boolean</td>
+                            <td>
+                                判断当前Smart对象是否是window的Smart对象。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>add(S)</td>
+                            <td></td>
+                            <td>
+                                将S对象的node添加到当前的实例中
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>size()</td>
+                            <td>int</td>
+                            <td>
+                                返回当前Smart对象的node元素的个数。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>children(selector)</td>
+                            <td>Smart</td>
+                            <td>
+                                返回当前实例的所有子Smart对象，会从深度遍历每一条树路径上的元素，直到根据selector匹配到第一个Smart控件并返回。返回的并不是dom树范畴的子元素，而是Smart控件树范畴的子实例
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>pick(selector)</td>
+                            <td>Smart</td>
+                            <td>
+                                返回当前实例的所有匹配selector的子Smart对象。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>find(selector)</td>
+                            <td>Smart</td>
+                            <td>
+                                搜索所有与selector匹配的Smart对象
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>setNode(node)</td>
+                            <td></td>
+                            <td>
+                                设定当前实例的node元素的内容，该方法会渲染参数<code>node</code>中的控件，如果不想渲染请使用<code>S.node.empty().append(node)</code>。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>prependNode(node)</td>
+                            <td></td>
+                            <td>
+                                设定当前实例的node元素内部的前端追加内容，该方法也会渲染参数<code>node</code>中的控件。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>appendNode(node)</td>
+                            <td></td>
+                            <td>
+                                设定当前实例的node元素内部的后面追加内容，该方法也会渲染参数<code>node</code>中的控件。
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="panel  panel-orange">
+                <div class="panel-heading">iSmartJs静态方法</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tr>
+                            <th>方法名</th>
+                            <th>类型</th>
+
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td class="text-danger">* Smart.of(node)</td>
+
+                            <td>Smart</td>
+                            <td>
+                                返回node的Smart对象，node为jQuery对象
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.extend(object[,object1])</td>
+                            <td>object</td>
+                            <td>
+                                扩展Smart对象本身，如果参数数量为2，则扩展第一个参数对象，并返回扩展后的对象，同<code>jQuery.extend</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.fn.extend(object)</td>
+                            <td></td>
+                            <td>
+                                扩展Smart实例方法。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.isSmart(smart)</td>
+                            <td></td>
+                            <td>
+                                判断参数是否是Smart的实例。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.isWidgetNode(node)</td>
+                            <td></td>
+                            <td>
+                                判断node是否是控件，参数为jQuery对象。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.disableNode(node, flag)</td>
+                            <td></td>
+                            <td>
+                                将node元素置为可用或者不可用。<code>flag</code>为<code>true|false</code>。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.clickDeferred(node, fn)</td>
+                            <td></td>
+                            <td>
+                                为node元素绑定fn的click事件，fn调用前将node置为不可用，调用后置为可用。fn的返回值可以是<code>Deferred</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.serializeToObject(form)</td>
+                            <td>Object</td>
+                            <td>
+                                将form表单内容序列化成Object
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.formData(form)</td>
+                            <td>FormData</td>
+                            <td>
+                                将form表单内容封装成<code>FormData</code>对象。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.uniqueId()</td>
+                            <td>String</td>
+                            <td>
+                                获取唯一id
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.removeArrayElement(element, array)</td>
+                            <td>Array</td>
+                            <td>
+                                从数组中移除一个元素，并返回移除后的数组
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.equalArray(ary1, ary2)</td>
+                            <td>boolean</td>
+                            <td>比较两个数组是否一致，精确比较</td>
+                        </tr>
+                        <tr>
+                            <td>Smart.isEmpty(val)</td>
+                            <td>boolean</td>
+                            <td>判断值是否为空，空的概念是null、undefined、trim后的空字符串</td>
+                        </tr>
+                        <tr>
+                            <td>Smart.isDeferred(obj)</td>
+                            <td>boolean</td>
+                            <td>判断对象是否是<code>Deferred</code>对象</td>
+                        </tr>
+                        <tr>
+                            <td class="text-danger">* Smart.deferredChain(deferred, listenDeferred)</td>
+                            <td></td>
+                            <td>
+                                将<code>deferred</code>与<code>listenDeferred</code>链接，使得其能够监听<code>listenDeferred</code>的状态变更
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-danger">* Smart.deferDelegate(obj|deferred)</td>
+                            <td>Deferred</td>
+                            <td>
+                                iSmartJs是一个完全的异步框架，很多方法的返回值可能是普通的对象，也可能是Deferred对象，所以提供了该方法以便可以统一处理，该方法会判断参数是否是Deferred对象，如果不是，则转换成Deferred对象。
+<pre>
+    var deferDelegateData = 'hello iSmartJs';
+    Smart.deferDelegate(deferDelegateData).done(function(rs){
+        S.alert(rs); //该rs即为deferDelegateData
+    });
+
+    var defer_delegate = $.Deferred();
+    Smart.deferDelegate(defer_delegate).done(function(rs){
+        S.alert(rs); //该rs即为deferDelegateData
+    });
+    defer_delegate.resolve(deferDelegateData);
+</pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.map(array, callback|key)</td>
+                            <td>Array</td>
+                            <td>
+                                转换数组，返回处理过的新数组，callback是数组项处理方法或者数组项的属性。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-danger">* Smart.dataTransfer(obj|deferred, callback[,thisRef])</td>
+                            <td>deferred|object</td>
+                            <td>
+                                将obj或者deferred
+                                resolve的返回值使用callback进行处理，并返回处理后的值。<code>thisRef</code>是callback方法通过<code>call</code>调用时的<code>this</code>引用。
+                                <div>
+                                    <input type="button" class="btn btn-sm btn-primary" value="测试" s-click="testDataTransfer()"/>
+                                    <script type="text/javascript">
+                                        function testDataTransfer() {
+                                            Smart.dataTransfer(S.get('json/data.json'),
+                                                    function (data) {
+                                                        return data.name + "，" + data.desc + "，" + data.website;
+                                                    }).done(function (data) {
+                                                        S.alert(data);
+                                                    });
+                                        }
+                                    </script>
+                                    <h4>代码</h4>
+<pre>
+Smart.dataTransfer(S.get('json/data.json'),
+        function (data) {
+            return data.name + "，" + data.desc + "，" + data.website;
+        }).done(function (data) {
+            S.alert(data);
+        });
+</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-danger">* Smart.cleanJsonRef(obj|deferred)</td>
+                            <td>deferred|Object</td>
+                            <td>
+                                用于清理json字符串中的<code>$ref</code>引用，在使用alibaba的<code>fastjson</code>序列化json对象的引用。
+                                <div s="sh" s-sh="{phase:'source'}" id="cleanJsonRef">
+                                    <input type="button" class="btn btn-sm btn-primary" value="测试" s-click="testCleanJsonRef()"/> 请打开控制台看输出
+<pre>
+
+var cleanJsonRef_data = [
+    {
+        name: 'Jack',
+        age: 20,
+        wallet: {
+            money: 100,
+            user: {$ref: '..'}
+        },
+        city: {
+            name: 'shang hai'
+        }
+    },
+    {
+        name: 'kevin',
+        age: 21,
+        wallet: {
+            money: 200,
+            user: {$ref: '..'}
+        },
+        city: {
+            $ref: '$[0].city'
+        }
+    }
+];
+
+//处理$ref引用
+Smart.cleanJsonRef(cleanJsonRef_data);
+</pre>
+                                    <script type="text/javascript">
+                                        function testCleanJsonRef(){
+                                            var cleanJsonRef_data = [
+                                                {
+                                                    name: 'Jack',
+                                                    age: 20,
+                                                    wallet: {
+                                                        money: 100,
+                                                        user: {$ref: '..'}
+                                                    },
+                                                    city: {
+                                                        name: 'shang hai'
+                                                    }
+                                                },
+                                                {
+                                                    name: 'kevin',
+                                                    age: 21,
+                                                    wallet: {
+                                                        money: 200,
+                                                        user: {$ref: '..'}
+                                                    },
+                                                    city: {
+                                                        $ref: '$[0].city'
+                                                    }
+                                                }
+                                            ];
+                                            Smart.info(Smart.cleanJsonRef(cleanJsonRef_data));
+                                        }
+                                    </script>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.encodeHtml(html)</td>
+                            <td>String</td>
+                            <td>
+                                编码html
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Smart.walkTree(tree, fn, childrenKey)</td>
+                            <td></td>
+                            <td>
+                                遍历树
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-danger">* Smart.deferredQueue(fns)</td>
+                            <td>Deferred</td>
+                            <td>
+                                deferred队列依次调用，当其中一个调用失败，就失败，在需要依次处理多个异步的时候，非常有用。
+<pre>
+var deferreds = [
+        function(){
+            return S.get(...);
+        },
+        function(){
+            return S.get(...);
+        },
+        ....
+        function(){
+            return S.get(...);
+        }
+    ];
+Smart.deferredQueue(deferreds).done(fn).fail(fn);
+</pre>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

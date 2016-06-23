@@ -65,7 +65,7 @@
                     listener.onProgress(parseInt(percentComplete), e.total, e.loaded);
                 }
             }, false);
-            var deferred = this.post(url, formData, null, null, {
+            var deferred = this.post(url, formData, null, {
                 xhr: function(){
                     return CURRENT_XHR;
                 }

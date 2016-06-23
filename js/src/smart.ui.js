@@ -42,9 +42,9 @@
         loadTemplate: function (url) {
             return $.get(url, function (html) {
                 html = $("<div />").append(html);
-                $("*[s-role]", html).each(function () {
+                $("*[s-ui-role]", html).each(function () {
                     var node = $(this);
-                    UI_TEMPLATE[node.attr("s-role")] = node;
+                    UI_TEMPLATE[node.attr("s-ui-role")] = node;
                 });
             });
         },

@@ -1,0 +1,96 @@
+<meta title="AJAX API"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">S[get|post|put|remove|update](url, [data], [cfg], [ajaxSetting])</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-orange">
+                <div class="panel-heading">参数说明</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>默认值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>url</td>
+                            <td>String</td>
+                            <td>请求的url</td>
+                            <td>
+                                <div class="alert alert-warning">
+                                    可以通过配置url的前缀来指定ajax的返回值格式，支持<code>xml, html, script, json, text</code>，
+                                    配置如： <code>S.get('text:some/url')</code>即指定返回值为text类型。如果不指定前缀，默认为json类型。
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>data</td>
+                            <td>请求的参数</td>
+                            <td>null</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>cfg</td>
+                            <td>Object</td>
+                            <td>
+<pre>
+{
+    startTip: "正在操作，请稍候……",
+    successTip: "操作成功",
+    errorTip: "操作失败",
+    silent: false,
+    getErrorMsg: function (xhr, url) {
+        if (xhr.status == "404") {
+            return url + " " + xhr.statusText;
+        }
+        return xhr.responseText;
+    }
+}
+</pre>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li><code>startTip</code>：ajax动作条的开始提示信息</li>
+                                    <li><code>successTip</code>：ajax动作条的成功提示信息</li>
+                                    <li><code>errorTip</code>：ajax动作条的错误提示信息</li>
+                                    <li><code>silent</code>：如果为<code>true</code>，将不会触发ajax动作条的信息提示。</li>
+                                    <li><code>getErrorMsg</code>：返回xhr错误的状态提示信息。</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel  panel-success">
+                <div class="panel-heading">触发的事件</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tr>
+                            <td>smart-ajaxStart</td>
+                            <td>ajax开始请求时触发的事件</td>
+                        </tr>
+                        <tr>
+                            <td>smart-ajaxSuccess</td>
+                            <td>ajax请求成功时触发的事件</td>
+                        </tr>
+                        <tr>
+                            <td>smart-ajaxError</td>
+                            <td>ajax请求错误时触发的事件</td>
+                        </tr>
+                        <tr>
+                            <td>smart-ajaxComplete</td>
+                            <td>ajax请求完成时触发的事件，不管ajax请求成功还是失败，都会触发。</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -10,7 +10,7 @@
     </div>
     <div class="row">
         <div class="col-lg-6">
-            <div class="panel panel-built panel-orange">
+            <div class="panel  panel-orange">
                 <div class="panel-heading">使用当前脚本域变量构建下拉列表</div>
                 <div class="alert alert-warning">
                     下拉列表通过iSmartJs控件的<code>s-build</code>属性来进行构建，<code>s-build</code>属性同<code>s-data</code>属性一样，可以接受脚本域中的变量和
@@ -38,9 +38,35 @@
     ]
 &lt;/script&gt;
 </pre>
+                    <h4>使用key:value的数据格式构建下拉菜单</h4>
+                    <form class="form-inline">
+                        <select s="select" s-build="S.get('json/select-options2.json')" class="form-control">
+                            <option value="">选择歌手</option>
+                        </select>
+                    </form>
+                    <h4>代码</h4>
+<pre>
+&lt;form class="form-inline"&gt;
+    &lt;select s="select" s-build="S.get('json/select-options2.json')" class="form-control"&gt;
+        &lt;option value=""&gt;选择歌手&lt;/option&gt;
+    &lt;/select&gt;
+&lt;/form&gt;
+</pre>
+                    <h4><code>json/select-options2.json</code>返回如下</h4>
+<pre>
+{
+  "1": "齐秦",
+  "2" : "周杰伦",
+  "3" : "刘若英",
+  "4" : "孙燕姿",
+  "5" : "梁静茹",
+  "6" : "刘惜君",
+  "7" : "金海心",
+}
+</pre>
                 </div>
             </div>
-            <div class="panel panel-built panel-orange">
+            <div class="panel  panel-orange">
                 <div class="panel-heading">使用远程url构建下拉列表</div>
                 <div class="panel-body">
                     <form class="form-inline">
@@ -67,7 +93,7 @@
 </pre>
                 </div>
             </div>
-            <div class="panel panel-built panel-orange">
+            <div class="panel  panel-orange">
                 <div class="panel-heading">自定义title和value的显示</div>
                 <div class="alert alert-warning">
                     通过配置select控件的<code>title</code>和<code>value</code>参数可以自定义option的value和文字显示，这两个参数可以配置为字符串和方法，如果为字符串的时候，则根据字符串做为key取出数组项相应的值作为选项的value和title的值进行显示，如果是
@@ -109,7 +135,7 @@
 </pre>
                 </div>
             </div>
-            <div class="panel panel-built panel-orange">
+            <div class="panel  panel-orange">
                 <div class="panel-heading">级联操作与数据绑定</div>
                 <div class="alert alert-warning">
                     级联操作通过<code>S.cascade($S0, $S1, $S2,...)</code>方法进行实现。
@@ -207,14 +233,14 @@
                     <p class="lead">级联操作不仅仅适合下拉列表，而且适用于任何Smart控件，在这里只是把下拉列表作为一个典型来讲述，上述示例中的最后一个下拉列表使用的是带搜索功能的下拉列表，这里只为示例，你可以换成普通的下拉列表。</p>
                     <div class="alert alert-warning">
                         级联操作的元素在数据绑定的时候，不能用datac控件进行绑定，而是要直接使用<code>s-data='..'</code>属性进行数据绑定，如果在表单数据绑定中，避免不了要使用
-                        <code>datac</code>控件进行绑定，那么就需要在级联操作的控件元素上声明<code>s-datac-ig='true'</code>来忽略<code>datac</code>控件的数据绑定，而使用
+                        <code>datac</code>控件对表单域进行数据绑定，那么就需要在级联操作的控件表单元素上声明<code>s-datac-ig='true'</code>来忽略<code>datac</code>控件的数据绑定，而使用
                         <code>s-data</code>属性配置来绑定数据。
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-lg-6">
-            <div class="panel panel-built panel-orange">
+            <div class="panel  panel-orange">
                 <div class="panel-heading">带搜索功能的下拉列表</div>
                 <div class="alert alert-warning">
                     带搜索功能的下拉列表是通过html来构建的，搜索功能仅仅是对当前下拉选项中数据的过滤，而不是去远程服务器过滤。
@@ -297,7 +323,7 @@
                     </div>
                 </div>
             </div>
-            <div class="panel panel-built">
+            <div class="panel ">
                 <div class="panel-heading">配置参数</div>
                 <div class="panel-body">
                     <table class="table table-bordered table-striped bs-param-table">

@@ -16,18 +16,17 @@
     padding: @panel-heading-padding;
     color: @color-default;
     border: none;
+    .border(1px, solid, @panel-border-color);
+    &.panel-heading-blank{
+      background: none;
+      border: none;
+      padding: @panel-heading-blank-padding;
+    }
   }
   .panel-footer{
     .border(0px 1px 1px, solid, @panel-border-color);
     border-radius: @panel-border-radius;
     background: @panel-footer-bg;
-  }
-  &.panel-built{
-    .panel-heading{
-      padding: @panel-built-heading-padding;
-      background: @panel-built-heading-bg;
-      .border(1px, solid, @panel-border-color);
-    }
   }
 }
 

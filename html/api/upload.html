@@ -1,0 +1,183 @@
+<meta title="文件上传" icon="fa fa-upload"/>
+<div class="container-fluid space-v">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="m-b-xs f-md">文件上传</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel  panel-orange">
+                <div class="panel-heading">对文件域进行上传</div>
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <input type="file" name="file" class="form-control" id="file" s-change="uploadFile(this.node)">
+
+                        <div id="uploadTip" class="space-v"></div>
+                    </form>
+                    <h4>代码</h4>
+<pre>
+&lt;form class="form-inline"&gt;
+    &lt;input type="file" name="file" class="form-control" id="file" s-change="uploadFile(this.node)"&gt;
+    &lt;p id="uploadTip"&gt;&lt;/p&gt;
+&lt;/form&gt;
+&lt;script type="text/javascript"&gt;
+    function uploadFile(node) {
+        S.upload('json/upload.php', node).done(function(rs){
+            $uploadTip.node.html("文件上传成功，服务器返回：" + JSON.stringify(rs)).addClass("alert alert-warning");
+        });
+    }
+&lt;/script&gt;
+</pre>
+                </div>
+            </div>
+            <div class="panel  panel-orange">
+                <div class="panel-heading">上传表单</div>
+                <div class="panel-body">
+                    <form class="form-inline" id="form" enctype="multipart/form-data">
+                        <input type="file" name="file" class="form-control" />
+                        <input type="button" value="上传" class="btn btn-primary btn-sm" s-click="uploadFile2($form.node)"/>
+                        <div id="uploadTip2" class="space-v"></div>
+                    </form>
+                    <h4>代码</h4>
+<pre>
+&lt;form class="form-inline" id="form" enctype="multipart/form-data"&gt;
+    &lt;input type="file" name="file" class="form-control" /&gt;
+    &lt;div id="uploadTip2" class="space-v"&gt;&lt;/div&gt;
+    &lt;input type="button" value="上传" class="btn btn-primary btn-sm" s-change="uploadFile($form.node)"/&gt;
+&lt;/form&gt;
+&lt;script type="text/javascript"&gt;
+    function uploadFile(node) {
+        S.upload('json/upload.php', node).done(function(rs){
+            $uploadTip.node.html("文件上传成功，服务器返回：" + JSON.stringify(rs)).addClass("alert alert-warning");
+        });
+    }
+&lt;/script&gt;
+</pre>
+                </div>
+            </div>
+            <div class="panel  panel-orange">
+                <div class="panel-heading">自定义监听器</div>
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <input type="file" name="file" class="form-control" s-change="uploadFile1(this.node)">
+                            <span class="label label-warning" id="percentNode" style="display: none"></span>
+
+                            <div id="uploadTip1" class="space-v"></div>
+                        </div>
+                    </form>
+                    <h4>代码</h4>
+<pre>
+&lt;form class="form-inline"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;input type="file" name="file" class="form-control" s-change="uploadFile1(this.node)"&gt;
+        &lt;span class="label label-warning" id="percentNode" style="display: none"&gt;&lt;/span&gt;
+        &lt;div id="uploadTip1" class="space-v"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/form&gt;
+&lt;script type="text/javascript"&gt;
+    var percentNode = $percentNode.node;
+    function uploadFile1(node) {
+        var listener = {
+            onBegin: function(){
+                percentNode.text("0%").show();
+            },
+            onProgress: function(percent, total, loaded){
+                //上传中
+                percentNode.text(percent + '%');
+                if(percent == 100){
+                    percentNode.addClass('alert-success');
+                }
+            },
+            onDone: function(){
+                //上传完成
+                S.toast('文件上传完成', 'success');
+            }
+        };
+        S.upload('json/upload.php', node, listener).done(function(rs){
+            $uploadTip1.node.html("文件上传成功，服务器返回：" + JSON.stringify(rs)).addClass("alert alert-warning");
+        });
+    }
+&lt;/script&gt;
+</pre>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel  panel-orange">
+                <div class="panel-heading">S.upload(url, node, [uploadListener])</div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped bs-param-table">
+                        <tbody>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>默认值</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>url</td>
+                            <td>String</td>
+                            <td></td>
+                            <td>上传的url</td>
+                        </tr>
+                        <tr>
+                            <td>node</td>
+                            <td>jQuery</td>
+                            <td></td>
+                            <td>
+                                文件域的jQuery对象或者form表单的jQuery对象。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>uploadListener</td>
+                            <td>function</td>
+                            <td></td>
+                            <td>
+                                文件上传的监听器，该监听器有默认实现。
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function uploadFile(node) {
+        S.upload('json/upload.php', node).done(function (rs) {
+            $uploadTip.node.html("文件上传成功，服务器返回：" + JSON.stringify(rs)).addClass("alert alert-warning");
+        });
+    }
+    function uploadFile2(node) {
+        S.upload('json/upload.php', node).done(function (rs) {
+            $uploadTip2.node.html("文件上传成功，服务器返回：" + JSON.stringify(rs)).addClass("alert alert-warning");
+        });
+    }
+</script>
+<script type="text/javascript">
+    var percentNode = $percentNode.node;
+    function uploadFile1(node) {
+        var listener = {
+            onBegin: function () {
+                percentNode.text("0%").show();
+            },
+            onProgress: function (percent, total, loaded) {
+                //上传中
+                percentNode.text(percent + '%');
+                if (percent == 100) {
+                    percentNode.addClass('alert-success');
+                }
+            },
+            onDone: function () {
+                //上传完成
+                S.toast('文件上传完成', 'success');
+            }
+        };
+        S.upload('json/upload.php', node, listener).done(function (rs) {
+            $uploadTip1.node.html("文件上传成功，服务器返回：" + JSON.stringify(rs)).addClass("alert alert-warning");
+        });
+    }
+</script>

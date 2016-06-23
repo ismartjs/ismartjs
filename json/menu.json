@@ -1,7 +1,7 @@
 [
   {
-    "id": "SMART_WIDGET",
-    "title": "Smart控件",
+    "id": "ISMARTJS",
+    "title": "iSmartJs",
     "icon": "fa fa-cog",
     "children": [
       {
@@ -59,6 +59,32 @@
         "title": "日期控件",
         "icon": "fa fa-calendar",
         "url": "html/widget/calendar.html"
+      },
+      {
+        "id": "WIDGET_SELECT",
+        "title": "下拉列表",
+        "url": "html/widget/select.html"
+      },
+      {
+        "id": "WIDGET_CONTEXTMENU",
+        "title": "右键菜单",
+        "url": "html/widget/contextmenu.html"
+      },
+      {
+        "id": "API_UPLOAD",
+        "title": "上传文件",
+        "icon": "fa fa-upload",
+        "url": "html/api/upload.html"
+      },
+      {
+        "id": "API_CORE",
+        "title": "核心API",
+        "url": "html/api/api.core.html"
+      },
+      {
+        "id": "API_AJAX",
+        "title": "AJAX API",
+        "url": "html/api/ajax.html"
       }
     ]
   },
