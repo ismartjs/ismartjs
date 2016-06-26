@@ -486,10 +486,14 @@
             });
         },
         parent: function () {
+            if (this._PARENT) {
+                return this._PARENT;
+            }
             var p = this.node.parent().closest("[" + CONST.SMART_ATTR_KEY + "]");
             if (p.size() == 0)
                 p = Smart.of($(window));
-            return Smart.of(p);
+            this._PARENT = Smart.of(p);
+            return this._PARENT;
         },
         closest: function (wId) {
             function check(smart) {
@@ -575,6 +579,9 @@
                 }
             });
             return smart;
+        },
+        val: function () {
+            return this.node.val();
         }
     });
 
@@ -608,7 +615,7 @@
     Smart.extend(Smart.prototype, {
         _getContext: function () {
             if (!this.CONTEXT) {
-                this.CONTEXT = this.parent()._getContext();
+                return this.parent()._getContext();
             }
             return this.CONTEXT;
         },
@@ -1048,8 +1055,7 @@
              * */
             dataGetter: function () {
                 return this.__SMART__DATA__;
-            }
-            ,
+            },
             dataSetter: function (data) {
                 var dataType = $.type(data);
                 if (dataType == "boolean" || dataType == "number" || dataType == "string" || data == undefined) {

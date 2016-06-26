@@ -33,7 +33,7 @@
                 this.env.mode = "html";
                 this.env.listContainer = $(SELECT_LIST_CLASS, this.S.node);
                 this.env.targetNode = $(".s-select-input", this.S.node);
-                var filterInput = $("input[type='text'].s-select-filter", this.S.node);
+                var filterInput = $("input[type='text'].s-select-filter", this.S.node).attr('autocomplete', 'off');
                 this.env.selectMirror = $(SELECT_MIRROR_CLASS, this.S.node);
                 this.env.mirrorSpan = $("span", this.env.selectMirror);
                 this.env.selectPanel = $(SELECT_PANEL_CLASS, this.S.node);
@@ -107,6 +107,10 @@
                 var originalOptions = this.S.node.children();
                 this.cache.originalOptions = originalOptions;
             }
+        },
+        onClean: function(){
+            //this.env.targetNode.val("");
+            //this.env.selectMirror
         }
     }, {
         buildSetter: function (datas) {
@@ -123,9 +127,6 @@
             this.widget.select.env.listContainer.append(this.widget.select.cache.originalOptions);
             for (var i in datas) {
                 this.widget.select.env.listContainer.append(this._createOption(datas[i]));
-            }
-            if(this.widget.select.env.mode == "html"){
-                this.data(this.widget.select.env.listContainer.children(":eq(0)").attr("value"));
             }
         },
         _getOptionData: function(data){
@@ -162,16 +163,26 @@
         },
         dataSetter: function(data){
             if(this.widget.select.env.mode == "html"){
+                if(data === undefined){
+                    data = this.widget.select.env.listContainer.children(":eq(0)").attr("value");
+                }
                 var optionNode = $("*[value='"+data+"']", this.widget.select.env.listContainer);
                 if(optionNode.size() == 0){
-                    data = "";
-                    optionNode = $("*[value='"+data+"']", this.widget.select.env.listContainer);
+                    optionNode = this.widget.select.env.listContainer.children(":eq(0)");
+                    data = optionNode.attr("value");
                 }
-                this.widget.select.env.targetNode.val(data).change();
+                this.widget.select.env.targetNode.val(data);
                 this.widget.select.env.mirrorSpan.html(optionNode.html());
                 return;
             }
             return this.inherited([data]);
+        },
+        val: function(){
+            if(this.widget.select.env.mode == "html"){
+                return this.widget.select.env.targetNode.val();
+            } else {
+                return this.node.val();
+            }
         }
     });
 })(jQuery);

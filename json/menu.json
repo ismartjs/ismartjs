@@ -137,6 +137,11 @@
     "title": "页面",
     "children": [
       {
+        "id": "LOGIN_PANEL",
+        "title": "登录页",
+        "url": "html/views/login.html"
+      },
+      {
         "id": "联系人",
         "title": "联系人",
         "icon": "fa fa-puzzle-piece",

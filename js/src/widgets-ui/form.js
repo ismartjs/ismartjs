@@ -62,7 +62,7 @@
                         result.done(function (rs) {
                             deferred.resolve(rs);
                         }).fail(function () {
-                            deferred.reject.call(deferred, $.makeArray(arguments));
+                            deferred.reject.apply(deferred, $.makeArray(arguments));
                         });
                     } else {
                         deferred.resolve(result);
@@ -83,7 +83,7 @@
                 that[that.widget.form.options.method](that.widget.form.options.action, data).done(function (rs) {
                     deferred.resolve(rs);
                 }).fail(function () {
-                    deferred.reject.call(deferred, $.makeArray(arguments));
+                    deferred.reject.apply(deferred, $.makeArray(arguments));
                 });
             };
 

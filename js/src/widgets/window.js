@@ -299,6 +299,7 @@
             this.widget.window.cache[ON_BEFORE_CLOSE_FN_KEY] = [];
             this._offEvent();
             this.node.empty();
+            delete this.CONTEXT;
         },
         _offEvent: function () {
             var that = this;

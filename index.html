@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>ISmart Js 4.0</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link href="css/font-awesome-4.6.3/css/font-awesome.min.css" type="text/css" rel="stylesheet" />
     <link href="css/pe-icon-7-stroke/css/pe-icon-7-stroke.css" type="text/css" rel="stylesheet" />
     <link href="css/pe-icon-7-stroke/css/helper.css" type="text/css" rel="stylesheet" />
@@ -34,6 +34,7 @@
     <link href="less/view.forum.css" type="text/css" rel="stylesheet" />
     <link href="less/widget.tpl.css" type="text/css" rel="stylesheet" />
     <link href="less/datetimepicker.css" type="text/css" rel="stylesheet" />
+    <link href="less/login.css" type="text/css" rel="stylesheet" />
     <script type="text/javascript" src="js/3rd/jquery-1.12.2.min.js"></script>
     <script type="text/javascript" src="js/3rd/jquery-ui-1.10.4.custom.min.js"></script>
     <script type="text/javascript" src="js/3rd/bootstrap.js"></script>
@@ -55,6 +56,7 @@
     <script type="text/javascript" src="js/src/widgets/window.js"></script>
     <script type="text/javascript" src="js/src/widgets/tpl.js"></script>
     <script type="text/javascript" src="js/src/widgets/datac.js"></script>
+    <script type="text/javascript" src="js/src/widgets/databind.js"></script>
     <script type="text/javascript" src="js/src/widgets/nameDataAdapter.js"></script>
     <script type="text/javascript" src="js/src/widgets/loop.js"></script>
     <script type="text/javascript" src="js/src/widgets/check.js"></script>
@@ -67,6 +69,7 @@
     <script type="text/javascript" src="js/src/plugins/cascade.js"></script>
     <script type="text/javascript" src="js/src/widgets-ui/contextmenu.js"></script>
     <script type="text/javascript" src="js/src/widgets-ui/pagination.js"></script>
+    <script type="text/javascript" src="js/src/widgets-ui/pager.js"></script>
     <script type="text/javascript" src="js/src/widgets-ui/form.js"></script>
     <script type="text/javascript" src="js/src/widgets-ui/select.js"></script>
     <script type="text/javascript" src="js/src/widgets-ui/valid.js"></script>
@@ -77,31 +80,37 @@
 
     <script type="text/javascript">
         $(function () {
+            var layoutArgs = {config: {
+                /**
+                 * 菜单的url
+                 * */
+                menuUrl: "json/menu.json",
+                asideTopUrl: "html/asideTop.html",
+                headerUrl: "html/header.html",
+                tabWindowAnimation: "animated fadeInUp-sm"
+            }};
             Smart.UI.booting($("#root"), {
                 /**
                  * 用于定义交互的模板，如弹出框，通知，警告框，确认框等等
                  * */
-                uiTemplateUrl: "ui-template.html",
-                /**
-                 * 主布局文件的url
-                 * */
-                layoutUrl: "layout.html",
-                layoutConfig: {
-                    /**
-                     * 菜单的url
-                     * */
-                    menuUrl: "json/menu.json",
-                    asideTopUrl: "html/asideTop.html",
-                    headerUrl: "html/header.html",
-                    tabWindowAnimation: "animated fadeInUp-sm"
+                uiTemplateUrl: "ui-template.html"
+            }).done(function($root){
+                if(window.location.href.indexOf("?login") == -1 && window.logined !== true){
+                    $root.load("layout.html", layoutArgs);
+                } else {
+                    $root.load("login.html");
+                    $root.node.on("login:success", function (e, status) {
+                        if (status) {
+                            window.logined = status;
+                            $root.load("layout.html", layoutArgs);
+                        }
+                    });
                 }
-            });
+            })
         });
     </script>
 </head>
 <body>
-    <div id="root" s="window">
-
-    </div>
+    <div id="root" s="window"></div>
 </body>
 </html>

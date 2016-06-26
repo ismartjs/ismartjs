@@ -1,5 +1,7 @@
 <meta args="config" />
-<div class="layout-header" s="window" s-window="{href: config.headerUrl}"></div>
+<div class="layout-header" s="window" s-window="{href: config.headerUrl}">
+</div>
+<div class="layout-backdrop"></div>
 <div class="layout-aside">
     <div class="layout-aside-wrapper">
         <div s="window" s-window="{href: config.asideTopUrl}"></div>
@@ -146,22 +148,18 @@
             } else {
                 node.addClass("active").siblings(".nav-parent.active").removeClass("active");
             }
+            e.stopPropagation();
         } else {
             openMenuById(node.attr("menuId"));
+            hideAside();
         }
         return;
-        var ul = node.find("> ul");
-        if(ul.size() > 0){
-            $menuPanel.node.find("li.active").removeClass("active");
-            node.addClass("active");
-        } else {
-            openMenuById(node.attr("menuId"));
-        }
     });
 
     $menuPanel.node.delegate(" .nav-second-level > li", "click", function (e) {
         var node = $(this);
         openMenuById(node.attr("menuId"));
+        hideAside();
         e.stopPropagation();
     });
 
@@ -175,6 +173,7 @@
         }
         if(node.hasClass("nav-item")){
             node.parent().parent().addClass("active").siblings(".active").removeClass("active");
+            $menuPanel.node.find("li.nav-item.active").removeClass("active");
         } else {
             $("li.active", $menuPanel.node).removeClass("active");
         }
@@ -208,6 +207,7 @@
             }
             openUrl(e.deferred, url, Smart.SLICE.call(arguments, 2));
         }
+        hideAside();
         e.stopPropagation();
     });
 
@@ -717,4 +717,21 @@
         showAjaxActiveTip(errorTip, "error");
         hideAjaxActiveTip();
     });
+
+    S.node.delegate(".layout-toggle-btn", "click", function(e){
+        if($(window).width() >= 768){
+            $("body").toggleClass("layout-hide-aside");
+        } else {
+            $("body").toggleClass("layout-show-aside");
+        }
+    });
+    S.node.delegate(".layout-backdrop", "click", function(e){
+        hideAside();
+    })
+
+    function hideAside(){
+        if($("body").hasClass("layout-show-aside")){
+            $("body").removeClass("layout-show-aside");
+        }
+    }
 </script>

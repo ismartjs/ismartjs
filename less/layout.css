@@ -18,6 +18,9 @@ state
 */
 .layout-aside {
   width: 180px;
+  -webkit-transition: all 0.3s ease 0s;
+  -o-transition: all 0.3s ease 0s;
+  transition: all 0.3s ease 0s;
   position: fixed;
   top: 0;
   bottom: 0;
@@ -124,27 +127,52 @@ state
   display: block;
 }
 .layout-header {
-  background: #F3F3F3;
+  background: #fdfdfd;
   height: 56px;
   border-bottom: 1px solid #e5e5e5;
+  position: absolute;
+  top: 0;
+  left: 180px;
+  right: 0;
+  z-index: 3;
+}
+.layout-header .layout-toggle-btn i {
+  -webkit-transition: all 0.6s ease 0s;
+  -o-transition: all 0.6s ease 0s;
+  transition: all 0.6s ease 0s;
+}
+.layout-header .navbar-nav {
+  margin: 0px;
+  margin-left: -1px;
+}
+.layout-header .navbar-nav > li,
+.layout-header .navbar-nav > li > a {
+  height: 55px;
+  float: left;
+  color: #9d9fa2;
+}
+.layout-header .navbar-nav > li:hover,
+.layout-header .navbar-nav > li > a:hover {
+  background: #ededed;
+}
+.layout-header .navbar-nav > li > a {
+  padding: 15px 20px;
+  font-size: 25px;
+}
+.layout-header .navbar-nav > li > a {
+  border-right: 1px solid #f1f1f1 !important;
+}
+.layout-header .navbar-nav > li:first-child > a {
+  border-left: 1px solid #f1f1f1 !important;
 }
 .layout-header .navbar-right {
   float: right;
   padding-right: 10px;
   margin-right: 0;
 }
-.layout-header .navbar-right .navbar-nav > li,
-.layout-header .navbar-right .navbar-nav > li > a {
-  height: 56px;
-  float: left;
-  color: #9d9fa2;
-}
-.layout-header .navbar-right .navbar-nav > li > a {
-  padding: 15px 20px;
-  font-size: 25px;
-}
 .layout-header .dropdown .dropdown-menu {
   padding: 0;
+  z-index: 3;
 }
 .layout-header .dropdown .dropdown-menu li {
   border-bottom: 1px solid #e5e5e5;
@@ -153,7 +181,7 @@ state
   border: none;
 }
 .layout-header .dropdown .dropdown-menu li a {
-  padding: 15px 25px;
+  padding: 15px 20px;
 }
 .layout-workbench {
   position: absolute;
@@ -162,6 +190,7 @@ state
   bottom: 0;
   left: 180px;
   background: #F1F3F6;
+  z-index: 2;
 }
 .layout-workbench .window-tabs {
   position: relative;
@@ -257,6 +286,18 @@ state
   -webkit-overflow-scrolling: touch;
   overflow-scrolling: touch;
 }
+.layout-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 1;
+  -webkit-transition: all 0.2s ease 0s;
+  -o-transition: all 0.2s ease 0s;
+  transition: all 0.2s ease 0s;
+}
 /**
     ajax 活跃提示
 */
@@ -270,3 +311,86 @@ state
   min-width: 200px;
   border-radius: 0;
 }
+.layout-hide-aside .layout-aside {
+  -webkit-transform: translate(-180px, 0);
+  -ms-transform: translate(-180px, 0);
+  -o-transform: translate(-180px, 0);
+  transform: translate(-180px, 0);
+}
+.layout-hide-aside .layout-workbench {
+  left: 0;
+}
+.layout-hide-aside .layout-header {
+  left: 0;
+}
+.layout-hide-aside .layout-toggle-btn i {
+  -webkit-transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  -o-transform: rotate(270deg);
+  transform: rotate(270deg);
+}
+.layout-show-aside .layout-aside {
+  -webkit-transform: translate(0, 0);
+  -ms-transform: translate(0, 0);
+  -o-transform: translate(0, 0);
+  transform: translate(0, 0);
+  box-shadow: 0px 0px 20px rgba(77, 77, 77, 0.32);
+}
+.layout-show-aside .layout-header {
+  left: 180px;
+}
+.layout-show-aside .layout-toggle-btn i {
+  -webkit-transform: rotate(0);
+  -ms-transform: rotate(0);
+  -o-transform: rotate(0);
+  transform: rotate(0);
+}
+.layout-show-aside .layout-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 4;
+}
+@media (max-width: 768px) {
+  .layout-aside {
+    -webkit-transform: translate(-180px, 0);
+    -ms-transform: translate(-180px, 0);
+    -o-transform: translate(-180px, 0);
+    transform: translate(-180px, 0);
+  }
+  .layout-workbench {
+    left: 0;
+  }
+  .layout-header {
+    left: 0;
+  }
+  .layout-toggle-btn i {
+    -webkit-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    transform: rotate(270deg);
+  }
+  .layout-aside {
+    -webkit-transform: translate(-180px, 0);
+    -ms-transform: translate(-180px, 0);
+    -o-transform: translate(-180px, 0);
+    transform: translate(-180px, 0);
+  }
+  .layout-workbench {
+    left: 0;
+  }
+  .layout-header {
+    left: 0;
+  }
+  .layout-toggle-btn i {
+    -webkit-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    transform: rotate(270deg);
+  }
+  .layout-header .navbar-nav .open .dropdown-menu {
+    position: absolute;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+  }
+}
+/* 中等屏幕（桌面显示器，大于等于 992px） */
+/* 大屏幕（大桌面显示器，大于等于 1200px） */

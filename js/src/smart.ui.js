@@ -13,25 +13,22 @@
             this.config = config;
             var deferreds = [];
             var that = this;
-            if (config.css) {
-                $.each(config.css, function () {
-                    $("head").append('<link href="' + this + '" type="text/css" rel="stylesheet" />')
-                })
-            }
             if (config.uiTemplateUrl) {
                 deferreds.push(function () {
                     return that.loadTemplate(config.uiTemplateUrl);
                 })
             }
+            var $root = Smart.of(root);
             deferreds.push(function(){
-                var $root = Smart.of(root);
-                $root.render().done(function () {
-                    $root.load(config.layoutUrl, {
-                        config: config.layoutConfig
-                    });
-                })
+                return $root.render();
+            });
+            var deferred = $.Deferred();
+            Smart.deferredQueue(deferreds).done(function(){
+                deferred.resolve($root);
+            }).fail(function(){
+                deferred.reject($root);
             })
-            return Smart.deferredQueue(deferreds);
+            return deferred;
         },
         zIndex: function () {
             return zIndex++;

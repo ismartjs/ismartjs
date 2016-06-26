@@ -114,7 +114,14 @@
                     if ($(this).attr(VALID_NODE_BLUR_IG_ATTR) == "true") {
                         return;
                     }
-                    that.S.validateNode($(this));
+                    /**
+                     * 有些控件的赋值与blur事件同时进行，但是blur事件会优先触发，所以需要延迟100ms，
+                     * 以使得赋值动作优先进行。
+                     * */
+                    var node = $(this);
+                    setTimeout(function(){
+                        that.S.validateNode(node);
+                    }, 100);
                 });
             }
             if (this.options.validators) {
@@ -187,11 +194,13 @@
             if (show) {
                 show = this.context(show);//shown是一个context闭包参数。
             }
+            var $node = Smart.of(node);
             var validateItem = {
                 id: id,
                 label: label ? label : "",
                 node: node,
-                value: node.val()
+                value: $node.val(),
+                $node: $node
             };
             var validateItemMap = this.widget.valid.cache.validateItemMap;
             if (id != undefined) {
@@ -373,7 +382,7 @@
                     count++;
                 }
                 methodCount[method] = count;//method计数
-                msg = $.extend($.extend({}, validator.msg), nodeMsg[method + "#" + count] || nodeMsg[method] || {});
+                var msg = $.extend($.extend({}, validator.msg), nodeMsg[method + "#" + count] || nodeMsg[method] || {});
                 function processSuccess(msgStr) {
                     msgLevel = LEVELS.success;
                     processMsg(validation, msgStr || msg['1']);

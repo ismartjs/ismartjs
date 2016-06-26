@@ -15,6 +15,7 @@ state
 */
 .label {
   font-weight: normal;
+  padding: 0.1em .6em 0.2em;
 }
 .label-violet {
   background-color: #9b59b6;

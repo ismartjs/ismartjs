@@ -155,7 +155,7 @@
                                 name="city"
                                 s-data="cascadeData"
                                 s-build-switch="'off-on'"
-                                s-build="S.get('json/select-cascade.php?id={$province.node.val() || -1}')"
+                                s-build="S.get('json/select-cascade.php?id={$province.val() || -1}')"
                                 class="form-control">
                             <option value="">选择城市</option>
                         </select>
@@ -165,8 +165,8 @@
                              s-data-filter="'district'"
                              s-data="cascadeData"
                              s-build-switch="'off-on'"
-                             s-build="S.get('json/select-cascade.php?id={$city.node.val() || -1}')" >
-                            <input type="hidden" s-select-role="input">
+                             s-build="S.get('json/select-cascade.php?id={$city.val() || -1}')" >
+                            <input type="hidden" class="s-select-input">
                             <div class="s-select-mirror">
                                 <span></span>
                                 <i class="fa fa-caret-down"></i>
@@ -208,7 +208,7 @@
         s-data="cascadeData"
         s-build-switch="'off-on'"
         s-build="S.get('json/select-cascade.php?id={$city.node.val() || -1}')" &gt;
-       &lt;input type="hidden" s-select-role="input"&gt;
+       &lt;input type="hidden" class="s-select-input"&gt;
        &lt;div class="s-select-mirror"&gt;
            &lt;span&gt;&lt;/span&gt;
            &lt;i class="fa fa-caret-down"&gt;&lt;/i&gt;

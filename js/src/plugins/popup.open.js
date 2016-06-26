@@ -90,7 +90,6 @@
             //这里主要处理内容的高度
             dialogMain.css({"position":"absolute", "width": "auto"});
             bodyNode.css("padding", 0).css("position","relative");
-            node.css({"overflow-y":"auto", padding: "0"});
             dialog.appendTo("body");
             dialog.show();
             dialogMain.width(dialogMain.innerWidth()).css("position","relative");

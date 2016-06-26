@@ -1,0 +1,87 @@
+<meta title="翻页控件" />
+<div class="panel panel-success ">
+    <div class="panel-heading ">
+        翻页
+    </div>
+    <div class="alert alert-warning no-margin">
+        翻页控件只有两个按钮，一个为往前翻页的按钮用<code>class="s-pager-prev"</code>来定义，一个是往后翻页的按钮用<code>class="s-pager-next"</code>来定义。
+    </div>
+    <div class="panel-body ">
+        <nav>
+            <ul id="pager" s="pager" s-pager="{action: pageSelect}" s-data="pagerData" class="pager">
+                <li class="s-pager-prev"><a  href="javascript:;">上一页</a></li>
+                <li class="s-pager-next"><a  href="javascript:;">下一页</a></li>
+            </ul>
+        </nav>
+        <h4>代码：</h4>
+<pre>
+&lt;nav&gt;
+    &lt;ul id="pager" s="pager" s-pager="{action: pageSelect}" s-data="pagerData" class="pager" &gt;
+        &lt;li&gt;&lt;a class="s-pager-prev" href="javascript:;"&gt;上一页&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a class="s-pager-next" href="javascript:;"&gt;下一页&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;
+&lt;script type="text/javascript"&gt;
+    var pagerData = {
+        "total": 323,
+        "pageSize": 10,
+        "page": 1
+    };
+    function pageSelect(page, $pager){
+        pagerData.page = page;
+        $pager.data(pagerData);
+    }
+&lt;/script&gt;
+</pre>
+        <h4>参数配置</h4>
+        <table class="table table-bordered table-striped bs-param-table">
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>默认值</th>
+                <th>说明</th>
+            </tr>
+            <tr>
+                <td>action</td>
+                <td>Function</td>
+                <td></td>
+                <td>翻页项点击时的方法，该方法的<code>this</code>引用指向翻页的页数，如当点击第2页的时候，该方法的this对象值就是2</td>
+            </tr>
+            <tr>
+                <td>disabledClass</td>
+                <td>String</td>
+                <td><code>disabled</code></td>
+                <td>按钮禁用状态的class</td>
+            </tr>
+            <tr>
+                <td>pageKey</td>
+                <td>String</td>
+                <td><code>page</code></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>pageSizeKey</td>
+                <td>String</td>
+                <td><code>pageSize</code></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>totalKey</td>
+                <td>String</td>
+                <td><code>total</code></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <script type="text/javascript">
+        var pagerData = {
+            "total": 323,
+            "pageSize": 10,
+            "page": 1
+        };
+        function pageSelect(page, $pager){
+            pagerData.page = page;
+            $pager.data(pagerData);
+        }
+    </script>
+</div>

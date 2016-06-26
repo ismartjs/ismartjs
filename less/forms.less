@@ -7,9 +7,8 @@
 .s-checkbox {
   cursor: pointer;
   position: relative;
-  padding-left: 20px;
-  padding-right: 5px;
-  height: 15px;
+  height: @checkbox-indicator-width;
+  line-height: @checkbox-indicator-width;
   margin-bottom: 0;
   input {
     display: none;
@@ -32,9 +31,9 @@
     }
   }
   .s-checkbox-indicator {
-    position: absolute;
-    top: 2px;
-    left: 0;
+    .square(@checkbox-indicator-width);
+    display: inline-block;
+    vertical-align: bottom;
     &:after {
       content: " ";
       display: block;
@@ -106,9 +105,8 @@
 .s-radio {
   cursor: pointer;
   position: relative;
-  padding-left: 20px;
-  padding-right: 5px;
-  height: 15px;
+  line-height: @checkbox-indicator-width;
+  height: @checkbox-indicator-width;
   margin-bottom: 0;
   input {
     display: none;
@@ -131,9 +129,9 @@
     }
   }
   .s-radio-indicator {
-    position: absolute;
-    top: 2px;
-    left: 0;
+    .square(@checkbox-indicator-width);
+    display: inline-block;
+    vertical-align: bottom;
     &:after {
       content: " ";
       display: block;
