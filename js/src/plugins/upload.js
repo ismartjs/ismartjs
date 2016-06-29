@@ -2,8 +2,8 @@
  * Created by Administrator on 2014/7/2.
  */
 (function(){
-
-    var uploadListener = {
+    var uploadListener = function(){};
+    uploadListener.prototype = {
 
         setTarget: function(node){
             this.node = node;
@@ -50,7 +50,7 @@
             } else {
                 formData = Smart.formData(fileNode)
             }
-            listener = listener || uploadListener;
+            listener = listener || new uploadListener();
             if($.isFunction(listener)){
                 listener = {
                     onProgress: listener

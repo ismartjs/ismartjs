@@ -50,56 +50,72 @@ state
 }
 .panel-primary .panel-heading + .panel-collapse > .panel-body,
 .panel-primary > .panel-body {
-  border-top: 2px solid #556A7E;
+  border-width: 2px 1px 1px;
+  border-style: solid;
+  border-color: #556A7E #e5e5e5 #e5e5e5;
 }
 .panel-success .panel-heading {
   background: #fff;
 }
 .panel-success .panel-heading + .panel-collapse > .panel-body,
 .panel-success > .panel-body {
-  border-top: 2px solid #62cb31;
+  border-width: 2px 1px 1px;
+  border-style: solid;
+  border-color: #62cb31 #e5e5e5 #e5e5e5;
 }
 .panel-danger .panel-heading {
   background: #fff;
 }
 .panel-danger .panel-heading + .panel-collapse > .panel-body,
 .panel-danger > .panel-body {
-  border-top: 2px solid #e74c3c;
+  border-width: 2px 1px 1px;
+  border-style: solid;
+  border-color: #e74c3c #e5e5e5 #e5e5e5;
 }
 .panel-warning .panel-heading {
   background: #fff;
 }
 .panel-warning .panel-heading + .panel-collapse > .panel-body,
 .panel-warning > .panel-body {
-  border-top: 2px solid #ffb606;
+  border-width: 2px 1px 1px;
+  border-style: solid;
+  border-color: #ffb606 #e5e5e5 #e5e5e5;
 }
 .panel-info .panel-heading {
   background: #fff;
 }
 .panel-info .panel-heading + .panel-collapse > .panel-body,
 .panel-info > .panel-body {
-  border-top: 2px solid #3498DB;
+  border-width: 2px 1px 1px;
+  border-style: solid;
+  border-color: #3498DB #e5e5e5 #e5e5e5;
 }
 .panel-orange .panel-heading {
   background: #fff;
 }
 .panel-orange .panel-heading + .panel-collapse > .panel-body,
 .panel-orange > .panel-body {
-  border-top: 2px solid #e67e22;
+  border-width: 2px 1px 1px;
+  border-style: solid;
+  border-color: #e67e22 #e5e5e5 #e5e5e5;
 }
 .panel-violet .panel-heading {
   background: #fff;
 }
 .panel-violet .panel-heading + .panel-collapse > .panel-body,
 .panel-violet > .panel-body {
-  border-top: 2px solid #9b59b6;
+  border-width: 2px 1px 1px;
+  border-style: solid;
+  border-color: #9b59b6 #e5e5e5 #e5e5e5;
 }
 .panel-default .panel-heading {
   background: #fff;
 }
 .panel-default .panel-heading + .panel-collapse > .panel-body,
 .panel-default > .panel-body {
-  border-top: 1px solid #e5e5e5;
+  border-width: 1px 1px 1px;
+  border-style: solid;
+  border-color: #e5e5e5 #e5e5e5 #e5e5e5;
 }
 .panel-heading + .list-group .list-group-item:first-child {
   border-top-width: 1px;

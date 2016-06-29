@@ -966,7 +966,21 @@
                 }
                 return renderSmart(Smart.of(this.node));
             },
-
+            ready: function(fn){
+                var deferred = $.Deferred();
+                if(this._state != 'ready'){
+                    this.on("s-ready", function(){
+                        /**
+                         * 如果是控件还没有渲染完成，则直接resolve，并不需要等待。
+                         * */
+                        fn();
+                    });
+                    deferred.resolve();
+                } else {
+                    Smart.deferredChain(deferred, Smart.deferDelegate(fn()));
+                }
+                return deferred;
+            },
             renderChildren: function () {
                 var children = this.children();
                 if (children.size() == 0) {
@@ -1122,7 +1136,7 @@
                 }
                 var that = this;
                 return Smart.deferDelegate(this.dataSetter.apply(this, value)).done(function () {
-                    that.trigger("s-data");
+                    that.trigger("s-data", value);
                 });
             },
             build: function () {
@@ -1150,7 +1164,7 @@
                 }
                 var that = this;
                 return Smart.deferDelegate(this.buildSetter.apply(this, value)).done(function () {
-                    that.trigger("s-build");
+                    that.trigger("s-build", value);
                 });
             },
             buildGetter: function () {
@@ -1160,6 +1174,7 @@
 
             },
             _executeBuild: function () {
+                this._state = "build"
                 var buildAttrStr = this.node.attr("s-build");
                 if (buildAttrStr == undefined) {
                     return;
@@ -1207,6 +1222,7 @@
                 this.node.attr("s-data-switch", type);
             },
             _executeData: function () {
+                this._state = "data";
                 var dataSwitch = this.node.attr("s-data-switch");
                 if (dataSwitch != undefined) {
                     dataSwitch = this.context(dataSwitch);
@@ -1251,24 +1267,23 @@
                     })
                 }
                 return deferred;
-            }
-            ,
+            },
             _executeReady: function () {
                 $.each(this.widgets, function (i, widget) {
                     widget.onReady();
                 });
                 this.trigger("s-ready");
-            }
-            ,
+                this._state = 'ready';
+            },
             destroy: function () {
                 $.each(this.widgets, function (i, widget) {
                     widget.onDestroy();
                 });
                 this.widgets = {};
                 this.node.remove();
-            }
-            ,
+            },
             refresh: function () {
+                this._state = "refresh";
                 var that = this;
                 this.clean();//先清理。
 
@@ -1296,8 +1311,7 @@
                 });
 
                 return Smart.deferredQueue(deferreds);
-            }
-            ,
+            },
             clean: function () {
                 $.each(this.widgets, function (i, widget) {
                     widget.onClean();

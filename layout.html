@@ -497,6 +497,7 @@
                 that.destroy();
                 tabWindow.node.remove();
                 MainTab.activeTop();
+                that.data.deferred && that.data.deferred.resolve.apply(that.data.deferred, Smart.SLICE.call(arguments, 1))
             }).on("s-loading", function () {
                 $("i", that.node).hide();
                 $("loadi", that.node).remove();

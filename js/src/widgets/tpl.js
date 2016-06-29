@@ -44,8 +44,8 @@
                 fn_map[tplText] = fn;
             }
             this.cache[TABLE_FN_KEY] = fn;
-            if(this.S.node.hasClass('s-tpl-hide')){
-                this.S.node.removeClass("s-tpl-hide");
+            if(this.S.node.hasClass('s-tpl-text')){
+                this.S.node.removeClass("s-tpl-text");
             }
         }
     },{

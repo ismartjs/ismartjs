@@ -18,8 +18,10 @@
                     if(ig == "true" || ig == ""){
                         return;
                     }
-                    var fn = that.node.attr(fnAttr) || "data";
-                    return that[fn].apply(that, args);
+                    return that.ready(function(){
+                        var fn = that.node.attr(fnAttr) || "data";
+                        return that[fn].apply(that, args);
+                    })
                 })
             }
             this.children().each(dataDo);

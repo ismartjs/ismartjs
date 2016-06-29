@@ -175,7 +175,7 @@
                 }
             });
         })
-        Smart.deferredQueue(deferreds);
+        return Smart.deferredQueue(deferreds);
     };
 
     var EVENT_MAP = {
@@ -352,11 +352,12 @@
                 }).fail(function () {
                     Smart.error(href + "的依赖处理失败");
                 }).always(function () {
-                    process.apply(that, [result].concat(args));
-                    that.trigger("s-loaded");
-                    //当页面存在锚点的时候，页面滚动的时候，监听锚点的位置，并触发事件。
-                    that._listenAnchorPos();
-                    deferred.resolve();
+                    process.apply(that, [result].concat(args)).done(function(){
+                        that.trigger("s-loaded");
+                        //当页面存在锚点的时候，页面滚动的时候，监听锚点的位置，并触发事件。
+                        that._listenAnchorPos();
+                        deferred.resolve();
+                    });
                 });
 
             }).fail(function () {
@@ -380,7 +381,7 @@
                 var scrollTop = this.node.scrollTop();
                 this.node.animate({
                     scrollTop: scrollTop + pos.top + "px"
-                }, 400, "easeOutQuint", function () {
+                }, 400, function () {
                     deferred.resolve();
                 });
             } else {

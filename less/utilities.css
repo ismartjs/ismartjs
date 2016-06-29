@@ -71,31 +71,31 @@ state
   background: #fff !important;
 }
 .border-primary {
-  border-color: #556A7E;
+  border-color: #556A7E !important;
 }
 .border-default {
-  border-color: #e5e5e5;
+  border-color: #e5e5e5 !important;
 }
 .border-info {
-  border-color: #3498DB;
+  border-color: #3498DB !important;
 }
 .border-success {
-  border-color: #62cb31;
+  border-color: #62cb31 !important;
 }
 .border-danger {
-  border-color: #e74c3c;
+  border-color: #e74c3c !important;
 }
 .border-warning {
-  border-color: #ffb606;
+  border-color: #ffb606 !important;
 }
 .border-violet {
-  border-color: #9b59b6;
+  border-color: #9b59b6 !important;
 }
 .border-blue {
-  border-color: #3498db;
+  border-color: #3498db !important;
 }
 .border-orange {
-  border-color: #e67e22;
+  border-color: #e67e22 !important;
 }
 .border-right {
   border-right: 1px solid #e5e5e5;

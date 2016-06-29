@@ -38,7 +38,9 @@
 .panel-style(@panel-heading-bg, @panel-style-body-border-width, @panel-primary-body-border-color){
   .panel-heading   { .panel-heading-styles(@panel-heading-bg); }
   .panel-heading+.panel-collapse>.panel-body, > .panel-body{
-    border-top: @panel-style-body-border-width solid @panel-primary-body-border-color;
+    border-width: @panel-style-body-border-width 1px 1px;
+    border-style: solid;
+    border-color: @panel-primary-body-border-color @panel-border-color @panel-border-color;
   }
 }
 

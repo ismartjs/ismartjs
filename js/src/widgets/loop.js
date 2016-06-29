@@ -47,8 +47,8 @@
             this.widget.loop.cache.loadingRow && this.widget.loop.cache.loadingRow.is(':visible') && this.widget.loop.cache.loadingRow.remove();
         },
         addRow: function (data, mode, indentNum, igCheckAssistRow) {
-            var row = this._getRow().show();
-            if (igCheckAssistRow) {
+            var row = this._getRow();
+            if (!igCheckAssistRow) {
                 this.hideAssistRows();
             }
             if (indentNum) {

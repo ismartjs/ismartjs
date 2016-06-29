@@ -94,8 +94,8 @@
                                 that.env.listContainer.children(":hidden").show();
                                 return;
                             }
-                            $("*:contains('" + val + "'):hidden", that.env.listContainer).show();
-                            $("*:not(:contains('" + val + "'))", that.env.listContainer).hide();
+                            that.env.listContainer.children(":contains('" + val + "'):hidden").show();
+                            that.env.listContainer.children("*:not(:contains('" + val + "'))").hide();
                         }, 300);
                         e.stopPropagation();
                     });
@@ -130,6 +130,12 @@
             }
         },
         _getOptionData: function(data){
+            if($.type(data) == 'string'){
+                data = {
+                    name: data,
+                    id: data
+                };
+            }
             var value,title;
             if($.isFunction(this.widget.select.options.value)){
                 value = this.widget.select.options.value(data);
