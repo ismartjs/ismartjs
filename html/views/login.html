@@ -1,4 +1,4 @@
-<meta title="登录窗口"/>
+<meta title="登录窗口" icon="fa fa-tv"/>
 <div class="container-fluid space-v">
     <div class="panel">
         <div class="panel-body">
@@ -13,7 +13,7 @@
                     在iSmartJs中，当ajax调用返回403的时候会调用登录窗口进行登陆，默认的登录窗口路径是<code>loginPanel.html</code>，当然你可以在启动的时候配置该路径。
                 </div>
                 <div class="panel-body">
-                    <input type="button" class="btn btn-sm btn-primary" value="登录" s-click="S.popupOpen('loginPanel.html')" />
+                    <input type="button" class="btn btn-sm btn-primary" value="登录" s-click="login()" />
                 </div>
             </div>
         </div>
@@ -27,3 +27,10 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    function login(){
+        S.popupOpen('loginPanel.html').done(function(rs){
+            S.toast("登录成功");
+        })
+    }
+</script>

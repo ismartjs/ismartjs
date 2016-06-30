@@ -139,6 +139,7 @@
       {
         "id": "LOGIN_PANEL",
         "title": "登录页",
+        "icon": "fa fa-tv",
         "url": "html/views/login.html"
       },
       {
