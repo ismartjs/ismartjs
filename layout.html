@@ -40,9 +40,12 @@
     </div>
 </div>
 <div class="layout-workbench">
-    <ul class="window-tabs" id="mainTabContainer">
+    <div class="window-tabs-wrapper">
+        <a class="layout-menu-switch" title="隐藏显示菜单栏" href="javascript:;"><i class="fa fa-bars"></i></a>
+        <ul class="window-tabs" id="mainTabContainer">
 
-    </ul>
+        </ul>
+    </div>
     <div class="main-window" id="mainWindow">
         <div class="window-container" id="windowContainer">
 
@@ -719,7 +722,7 @@
         hideAjaxActiveTip();
     });
 
-    S.node.delegate(".layout-toggle-btn", "click", function(e){
+    S.node.delegate(".layout-menu-switch", "click", function(e){
         if($(window).width() >= 768){
             $("body").toggleClass("layout-hide-aside");
         } else {

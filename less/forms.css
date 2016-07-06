@@ -234,3 +234,6 @@ state
   filter: alpha(opacity=0);
   height: 100%;
 }
+input[type='number'] {
+  padding-right: 5px;
+}

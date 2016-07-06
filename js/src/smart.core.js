@@ -23,7 +23,9 @@
         },
         SMART_NODE_CACHE_KEY: "__SMART__",
         SMART_ATTR_KEY: "s",//smart控件声明的属性
-        DEFAULT_STOPPED_EVENT: ["s-ready", "s-prepared", "s-rendered", "s-loaded", 's-loading', 's-data', 's-build']
+        DEFAULT_STOPPED_EVENT: ["s-ready", "s-prepared", "s-rendered", "s-loaded", 's-loading', 's-data', 's-build'],
+        CACHE_ATTR: "__CACHE__",
+        CACHE_DEFERREDS_ATTR: "_CACHE_DEFERREDS__"
     };
 
 
@@ -32,6 +34,8 @@
         this.node.data(CONST.SMART_NODE_CACHE_KEY, this);
         this.widgets = [];
         this.widget = {};
+        this[CONST.CACHE_ATTR] = {};
+        this[CONST.CACHE_DEFERREDS_ATTR] = {};
         if (this.isWindow()) {
             this.CONTEXT = CONST.DEFAULT_CONTEXT;
         }
@@ -652,6 +656,52 @@
         }
     });
 
+    //cache扩展
+    Smart.extend(Smart.prototype, {
+        cache: (function () {
+            return function (key, val) {
+                if (key in this[CONST.CACHE_ATTR]) {
+                    return this[CONST.CACHE_ATTR][key];
+                }
+                if (key in this[CONST.CACHE_DEFERREDS_ATTR]) {
+                    var deferred = $.Deferred();
+                    this[CONST.CACHE_DEFERREDS_ATTR][key].push(deferred);
+                    return deferred;
+                }
+                if ($.isFunction(val)) {
+                    val = val();
+                }
+                if (Smart.isDeferred(val)) {
+                    var deferred = $.Deferred();
+                    this[CONST.CACHE_DEFERREDS_ATTR][key] = [deferred];
+                    var that = this;
+                    val.done(function () {
+                        var args = arguments;
+                        that[CONST.CACHE_ATTR][key] = args[0];
+                        $.each(that[CONST.CACHE_DEFERREDS_ATTR][key], function () {
+                            this.resolve.apply(this, Smart.SLICE.call(args));
+                        })
+                    }).fail(function () {
+                        var args = arguments;
+                        $.each(that[CONST.CACHE_DEFERREDS_ATTR][key], function () {
+                            this.reject.apply(this, Smart.SLICE.call(args));
+                        })
+                    }).always(function(){
+                        delete that[CONST.CACHE_DEFERREDS_ATTR][key];
+                    })
+                    return deferred;
+                } else {
+                    this[CONST.CACHE_ATTR][key] = val;
+                    return val;
+                }
+            }
+        })(),
+        clearCache: function () {
+            this[CONST.CACHE_ATTR] = {};
+            this[CONST.CACHE_DEFERREDS_ATTR] = {};
+        }
+    });
+
     //ui扩展
     Smart.extend(Smart.prototype, {
         alert: function (msg) {
@@ -966,10 +1016,10 @@
                 }
                 return renderSmart(Smart.of(this.node));
             },
-            ready: function(fn){
+            ready: function (fn) {
                 var deferred = $.Deferred();
-                if(this._state != 'ready'){
-                    this.on("s-ready", function(){
+                if (this._state != 'ready') {
+                    this.on("s-ready", function () {
                         /**
                          * 如果是控件还没有渲染完成，则直接resolve，并不需要等待。
                          * */
@@ -1313,6 +1363,8 @@
                 return Smart.deferredQueue(deferreds);
             },
             clean: function () {
+                //清空缓存
+                this.clearCache();
                 $.each(this.widgets, function (i, widget) {
                     widget.onClean();
                 });

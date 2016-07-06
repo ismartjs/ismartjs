@@ -120,6 +120,13 @@
             }, 10);
             return deferred;
         },
+        getRows: function(){
+            var rows = [];
+            getRoleNode("row", this.node).each(function(){
+                rows.push(Smart.of($(this)));
+            })
+            return rows;
+        },
         dataSetter: function (data) {
             if (data == null) {
                 data = [];

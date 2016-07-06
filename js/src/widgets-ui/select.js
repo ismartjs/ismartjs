@@ -6,12 +6,15 @@
     var SELECT_LIST_ITEM_CLASS = ".s-select-list-item";
     var SELECT_MIRROR_CLASS = ".s-select-mirror";
     var SELECT_PANEL_CLASS = ".s-select-panel";
-    function showSelectPanel(selectPanel){
+
+    function showSelectPanel(selectPanel) {
         selectPanel.show();
     }
-    function hideSelectPanel(selectPanel){
+
+    function hideSelectPanel(selectPanel) {
         selectPanel.hide();
     }
+
     Smart.widgetExtend({
         id: "select",
         defaultOptions: {
@@ -27,7 +30,7 @@
              * 如果判断控件的node不是select元素，而且拥有s-select的class，则说明使用html来渲染下拉列表，而不是使用原生的下来列表
              * */
             if (!this.S.node.is("select") && this.S.node.hasClass("s-select")) {
-                this.S.node.click(function(e){
+                this.S.node.click(function (e) {
                     e.stopPropagation();
                 });
                 this.env.mode = "html";
@@ -50,19 +53,19 @@
                  * 绑定事件
                  * */
                 var that = this;
-                if(this.env.selectMirror.size() == 0){
+                if (this.env.selectMirror.size() == 0) {
                     this.env.selectMirror = $("<div />").addClass(SELECT_MIRROR_CLASS.substring(1)).prependTo(this.S.node);
                 }
                 this.env.selectPanelShow = false;
-                this.env.selectMirror.click(function(){
-                    if(!that.env.selectPanelShow){
+                this.env.selectMirror.click(function () {
+                    if (!that.env.selectPanelShow) {
                         $("body").click();
-                        if(that.env.targetNode.prop("disabled") || that.env.targetNode.prop("readonly")){
+                        if (that.env.targetNode.prop("disabled") || that.env.targetNode.prop("readonly")) {
                             return;
                         }
                         showSelectPanel(that.env.selectPanel);
                         filterInput.focus();
-                        $("body").one("click", function(){
+                        $("body").one("click", function () {
                             hideSelectPanel(that.env.selectPanel);
                             that.env.selectPanelShow = false;
                         });
@@ -84,13 +87,13 @@
                     var that = this;
                     var filterTimeout;
                     filterInput.keyup(function (e) {
-                        if(filterTimeout){
+                        if (filterTimeout) {
                             window.clearTimeout(filterTimeout);
                         }
                         var val = this.value;
-                        filterTimeout = setTimeout(function(){
+                        filterTimeout = setTimeout(function () {
                             filterTimeout = 0;
-                            if(val == ""){
+                            if (val == "") {
                                 that.env.listContainer.children(":hidden").show();
                                 return;
                             }
@@ -108,7 +111,7 @@
                 this.cache.originalOptions = originalOptions;
             }
         },
-        onClean: function(){
+        onClean: function () {
             //this.env.targetNode.val("");
             //this.env.selectMirror
         }
@@ -129,20 +132,20 @@
                 this.widget.select.env.listContainer.append(this._createOption(datas[i]));
             }
         },
-        _getOptionData: function(data){
-            if($.type(data) == 'string'){
+        _getOptionData: function (data) {
+            if ($.type(data) == 'string') {
                 data = {
                     name: data,
                     id: data
                 };
             }
-            var value,title;
-            if($.isFunction(this.widget.select.options.value)){
+            var value, title;
+            if ($.isFunction(this.widget.select.options.value)) {
                 value = this.widget.select.options.value(data);
             } else {
                 value = data[this.widget.select.options.value];
             }
-            if($.isFunction(this.widget.select.options.title)){
+            if ($.isFunction(this.widget.select.options.title)) {
                 title = this.widget.select.options.title(data);
             } else {
                 var tmp = this.widget.select.options.title.split(",");
@@ -161,19 +164,20 @@
             } else {
                 option = $('<option value="' + optionData.value + '">' + optionData.title + '</option>');
             }
+            this.widget.select.cache.dataMap[optionData.value] = data;
             return option;
         },
         getSelectData: function () {
             var val = this.node.val();
             return this.widget.select.cache.dataMap[val];
         },
-        dataSetter: function(data){
-            if(this.widget.select.env.mode == "html"){
-                if(data === undefined){
+        dataSetter: function (data) {
+            if (this.widget.select.env.mode == "html") {
+                if (data === undefined) {
                     data = this.widget.select.env.listContainer.children(":eq(0)").attr("value");
                 }
-                var optionNode = $("*[value='"+data+"']", this.widget.select.env.listContainer);
-                if(optionNode.size() == 0){
+                var optionNode = $("*[value='" + data + "']", this.widget.select.env.listContainer);
+                if (optionNode.size() == 0) {
                     optionNode = this.widget.select.env.listContainer.children(":eq(0)");
                     data = optionNode.attr("value");
                 }
@@ -183,8 +187,8 @@
             }
             return this.inherited([data]);
         },
-        val: function(){
-            if(this.widget.select.env.mode == "html"){
+        val: function () {
+            if (this.widget.select.env.mode == "html") {
                 return this.widget.select.env.targetNode.val();
             } else {
                 return this.node.val();

@@ -187,7 +187,8 @@
         "s-mouseover": 'mouseover',
         "s-mousemove": "mousemove",
         "s-mouseout": "mouseout",
-        "s-mouseleave": "mouseleave"
+        "s-mouseleave": "mouseleave",
+        "s-enter": "keyup:13"
     };
 
     function undelegateEvent(smart) {
@@ -196,7 +197,16 @@
 
     function delegateEvent(smart) {
         $.each(EVENT_MAP, function (key, val) {
+            var evts = val.split(":");
+            val = evts[0];
+            var keyCode = null;
+            if (evts.length > 1) {
+                keyCode = evts[1];
+            }
             smart.node.delegate("*[" + key + "]", val, function (e) {
+                if (keyCode && e.keyCode != keyCode) {
+                    return;
+                }
                 var node = $(e.currentTarget);
                 var delegateTarget = node.data("_window_delegateTarget_");
                 if (!delegateTarget) {
@@ -210,7 +220,7 @@
                 var action = node.data(evtKey);
                 if (!action) {
                     var evtScript = node.attr(key);
-                    action = smart.action(evtScript);
+                    action = smart.action(evtScript, "e");
                     node.data(evtKey, action);
                 }
                 var result = action.call(Smart.of(node), e);
@@ -352,7 +362,7 @@
                 }).fail(function () {
                     Smart.error(href + "的依赖处理失败");
                 }).always(function () {
-                    process.apply(that, [result].concat(args)).done(function(){
+                    process.apply(that, [result].concat(args)).done(function () {
                         that.trigger("s-loaded");
                         //当页面存在锚点的时候，页面滚动的时候，监听锚点的位置，并触发事件。
                         that._listenAnchorPos();
@@ -533,10 +543,10 @@
             }
             return this.inherited([events, selector, fn]);
         },
-        action: function (script) {
+        action: function (script, args) {
             var script_body = [];
             script_body.push("(function(){");
-            script_body.push("      return function(){");
+            script_body.push("      return function(" + (args || "") + "){");
             script_body.push("          " + script);
             script_body.push("      }")
             script_body.push("})()");
