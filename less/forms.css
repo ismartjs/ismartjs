@@ -156,6 +156,7 @@ state
   cursor: default;
   vertical-align: middle;
   padding: 0;
+  overflow: hidden;
 }
 .s-select .s-select-input[disabled] + .s-select-mirror {
   background: #f3f3f3;
@@ -192,7 +193,6 @@ state
   padding-top: 5px;
   background: #fff;
   z-index: 3;
-  display: none;
 }
 .s-select .s-select-panel .s-select-filter {
   border: none;

@@ -7,12 +7,14 @@
     var SELECT_MIRROR_CLASS = ".s-select-mirror";
     var SELECT_PANEL_CLASS = ".s-select-panel";
 
-    function showSelectPanel(selectPanel) {
-        selectPanel.show();
+    function showSelectPanel(selectNode, selectPanel) {
+        //selectPanel.show();
+        selectNode.css("overflow", "visible");
     }
 
-    function hideSelectPanel(selectPanel) {
-        selectPanel.hide();
+    function hideSelectPanel(selectNode, selectPanel) {
+        //selectPanel.hide();
+        selectNode.css("overflow", "hidden");
     }
 
     Smart.widgetExtend({
@@ -63,15 +65,15 @@
                         if (that.env.targetNode.prop("disabled") || that.env.targetNode.prop("readonly")) {
                             return;
                         }
-                        showSelectPanel(that.env.selectPanel);
+                        showSelectPanel(that.S.node, that.env.selectPanel);
                         filterInput.focus();
                         $("body").one("click", function () {
-                            hideSelectPanel(that.env.selectPanel);
+                            hideSelectPanel(that.S.node, that.env.selectPanel);
                             that.env.selectPanelShow = false;
                         });
                         that.env.selectPanelShow = true;
                     } else {
-                        hideSelectPanel(that.env.selectPanel);
+                        hideSelectPanel(that.S.node, that.env.selectPanel);
                         that.env.selectPanelShow = false;
                     }
                 });
@@ -80,7 +82,7 @@
                     var node = $(e.currentTarget);
                     that.env.targetNode.val(node.attr("value")).change();
                     that.env.mirrorSpan.html(node.html());
-                    hideSelectPanel(that.env.selectPanel);
+                    hideSelectPanel(that.S.node, that.env.selectPanel);
                     that.env.selectPanelShow = false;
                 });
                 if (filterInput.size() > 0) {
