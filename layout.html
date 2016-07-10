@@ -476,18 +476,21 @@
                         that.setMeta(meta);
                     }
                 });
+                tabWindow.smart.on("s-window-loaded", function(){
+                    var smart = tabWindow.smart;
+                    smart.node.css("visibility", 'visible');
+                    if((config.tabWindowAnimate !== false) && (smart.meta.animation || config.tabWindowAnimation)){
+                        smart.node.addClass(smart.meta.animation || config.tabWindowAnimation);
+                        setTimeout(function(){
+                            smart.node.removeClass(smart.meta.animation || config.tabWindowAnimation);
+                        }, 1000);
+                    }
+                })
             }
             tabWindow.make().done(function (smart) {
                 //如果该mainTab拥有子tab，则不设置meta
                 if (Smart.isEmpty(that.data.children)) {
                     that.setMeta(smart.meta);
-                }
-                smart.node.css("visibility", 'visible');
-                if((config.tabWindowAnimate !== false) && (smart.meta.animation || config.tabWindowAnimation)){
-                    smart.node.addClass(smart.meta.animation || config.tabWindowAnimation);
-                    setTimeout(function(){
-                        smart.node.removeClass(smart.meta.animation || config.tabWindowAnimation);
-                    }, 1000);
                 }
             }).fail(function () {
                 that._addCloseHandle();

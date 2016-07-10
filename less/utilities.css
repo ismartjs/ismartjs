@@ -73,29 +73,65 @@ state
 .border-primary {
   border-color: #556A7E !important;
 }
+.border-primary > th,
+.border-primary > td {
+  border-color: #556A7E !important;
+}
 .border-default {
-  border-color: #e5e5e5 !important;
+  border-color: #556A7E !important;
+}
+.border-default > th,
+.border-default > td {
+  border-color: #556A7E !important;
 }
 .border-info {
-  border-color: #3498DB !important;
+  border-color: #556A7E !important;
+}
+.border-info > th,
+.border-info > td {
+  border-color: #556A7E !important;
 }
 .border-success {
-  border-color: #62cb31 !important;
+  border-color: #556A7E !important;
+}
+.border-success > th,
+.border-success > td {
+  border-color: #556A7E !important;
 }
 .border-danger {
-  border-color: #e74c3c !important;
+  border-color: #556A7E !important;
+}
+.border-danger > th,
+.border-danger > td {
+  border-color: #556A7E !important;
 }
 .border-warning {
-  border-color: #ffb606 !important;
+  border-color: #556A7E !important;
+}
+.border-warning > th,
+.border-warning > td {
+  border-color: #556A7E !important;
 }
 .border-violet {
-  border-color: #9b59b6 !important;
+  border-color: #556A7E !important;
+}
+.border-violet > th,
+.border-violet > td {
+  border-color: #556A7E !important;
 }
 .border-blue {
-  border-color: #3498db !important;
+  border-color: #556A7E !important;
+}
+.border-blue > th,
+.border-blue > td {
+  border-color: #556A7E !important;
 }
 .border-orange {
-  border-color: #e67e22 !important;
+  border-color: #556A7E !important;
+}
+.border-orange > th,
+.border-orange > td {
+  border-color: #556A7E !important;
 }
 .border-right {
   border-right: 1px solid #e5e5e5;

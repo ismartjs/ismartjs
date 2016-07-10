@@ -108,6 +108,7 @@
         });
         this.meta = {};
         this.node.empty().append(this._WNODE);
+        this.trigger("s-window-loaded");
         undelegateEvent(this);
         var deferreds = [];
         if (meta.ctrl) {
@@ -122,7 +123,7 @@
             scripts.push("			return function(key){");
             scripts.push("				try{");
             scripts.push("					return eval(key);");
-            scripts.push("				}catch(e){Smart.error(e);}");
+            scripts.push("				}catch(e){ \nSmart.error(e);\n}");
             scripts.push("			};");
             scripts.push("		};");
             scripts.push("})();//@ sourceURL=" + href + ".js");
@@ -188,7 +189,9 @@
         "s-mousemove": "mousemove",
         "s-mouseout": "mouseout",
         "s-mouseleave": "mouseleave",
-        "s-enter": "keyup:13"
+        "s-enter": "keyup:13",
+        "s-keyup": "keyup",
+        "s-keypress": "keypress"
     };
 
     function undelegateEvent(smart) {
@@ -204,6 +207,10 @@
                 keyCode = evts[1];
             }
             smart.node.delegate("*[" + key + "]", val, function (e) {
+                if(e.keyCode == 229){
+                    //如果是中文输入法输入，则返回
+                    return;
+                }
                 if (keyCode && e.keyCode != keyCode) {
                     return;
                 }

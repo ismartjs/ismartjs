@@ -32,7 +32,7 @@
     }, {
         submit: function () {
             var deferred = $.Deferred();
-            if (!('action' in this.widget.form.options)) {
+            if (!this.widget.form.options.action) {
                 return deferred.resolve();
             }
             var that = this;
