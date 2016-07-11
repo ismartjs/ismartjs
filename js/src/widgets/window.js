@@ -191,7 +191,11 @@
         "s-mouseleave": "mouseleave",
         "s-enter": "keyup:13",
         "s-keyup": "keyup",
-        "s-keypress": "keypress"
+        "s-keypress": "keypress",
+        "s-key-left": "keyup:37",
+        "s-key-up": "keyup:38",
+        "s-key-right": "keyup:39",
+        "s-key-down": "keyup:40"
     };
 
     function undelegateEvent(smart) {
