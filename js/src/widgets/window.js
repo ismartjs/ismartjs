@@ -166,7 +166,9 @@
                 //绑定浏览器事件，click等
             delegateEvent(that);
             //处理自动焦点的元素
-            that.node.find("*[s-window-role='focus']:first").focus();
+            setTimeout(function(){
+                that.node.find("*[s-window-role='focus']:first").focus();
+            }, 100);
 
             that.on("s-ready", function () {
                 //处理锚点滚动
