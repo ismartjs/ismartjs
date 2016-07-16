@@ -798,11 +798,13 @@
                             var event = $.Event('smart-ajaxError', {
                                 retryRequest: doRequest
                             });
-                            _this.trigger(event, [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url), xhr]);
-                            if (event.isPropagationStopped()) {
+                            var args = Smart.SLICE.call(arguments);
+                            args.unshift(event);
+                            deferred.reject.apply(deferred, args);
+                            if (!event.isPropagationStopped()) {
+                                _this.trigger(event, [cfg.errorTip, ajaxCfg.getErrorMsg(xhr, url), xhr]);
                                 return;
                             }
-                            deferred.reject.apply(deferred, Smart.SLICE.call(arguments));
                         } else {
                             deferred.reject.apply(deferred, Smart.SLICE.call(arguments));
                         }

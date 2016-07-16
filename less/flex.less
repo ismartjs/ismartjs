@@ -1,0 +1,26 @@
+.flex() {
+  display: -webkit-flex;
+  display: flex;
+}
+
+.s-flex {
+  .flex();
+}
+
+.s-flex-column {
+  .flex();
+  -webkit-flex-direction: column;
+}
+
+.s-flex-row{
+  .flex();
+  -webkit-flex-direction: row;
+}
+
+.s-flex-fixed {
+  flex-shrink: 0;
+}
+
+.s-flex-flexible {
+  flex-shrink: 1;
+}

@@ -194,6 +194,7 @@
         "s-enter": "keyup:13",
         "s-keyup": "keyup",
         "s-keypress": "keypress",
+        "s-keydown": "keydown",
         "s-key-left": "keyup:37",
         "s-key-up": "keyup:38",
         "s-key-right": "keyup:39",

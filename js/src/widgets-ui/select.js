@@ -128,8 +128,24 @@
                 });
             }
             this.widget.select.cache.dataMap = {};
+            for (var i in datas) {
+                var _data = this._getOptionData(datas[i]);
+                this.widget.select.cache.dataMap[_data.value] = _data;
+            }
+            this.widget.select.cache.buildData = datas;
             this.widget.select.env.listContainer.empty();
             this.widget.select.env.listContainer.append(this.widget.select.cache.originalOptions);
+            if(this.widget.select.env.mode == "html"){
+                var that = this;
+                this.node.one("click", function () {
+                    that._createOptions();
+                })
+            } else {
+                this._createOptions();
+            }
+        },
+        _createOptions: function () {
+            var datas = this.widget.select.cache.buildData;
             for (var i in datas) {
                 this.widget.select.env.listContainer.append(this._createOption(datas[i]));
             }
@@ -166,28 +182,34 @@
             } else {
                 option = $('<option value="' + optionData.value + '">' + optionData.title + '</option>');
             }
-            this.widget.select.cache.dataMap[optionData.value] = data;
             return option;
         },
         getSelectData: function () {
             var val = this.node.val();
             return this.widget.select.cache.dataMap[val];
         },
-        dataSetter: function (data) {
+        dataSetter: function (value) {
             if (this.widget.select.env.mode == "html") {
-                if (data === undefined) {
-                    data = this.widget.select.env.listContainer.children(":eq(0)").attr("value");
+                var optionData = this.widget.select.cache.dataMap[value];
+                if (!optionData) {
+                    var firstNode = this.widget.select.env.listContainer.children(":eq(0)");
+                    if (firstNode.size() > 0) {
+                        optionData = {
+                            value: firstNode.attr("value"),
+                            title: firstNode.html()
+                        }
+                    }
                 }
-                var optionNode = $("*[value='" + data + "']", this.widget.select.env.listContainer);
-                if (optionNode.size() == 0) {
-                    optionNode = this.widget.select.env.listContainer.children(":eq(0)");
-                    data = optionNode.attr("value");
-                }
-                this.widget.select.env.targetNode.val(data);
-                this.widget.select.env.mirrorSpan.html(optionNode.html());
+                //var optionNode = $("*[value='" + data + "']", this.widget.select.env.listContainer);
+                //if (optionNode.size() == 0) {
+                //    optionNode = this.widget.select.env.listContainer.children(":eq(0)");
+                //    data = optionNode.attr("value");
+                //}
+                this.widget.select.env.targetNode.val(optionData.value);
+                this.widget.select.env.mirrorSpan.html(optionData.title);
                 return;
             }
-            return this.inherited([data]);
+            return this.inherited([value]);
         },
         val: function () {
             if (this.widget.select.env.mode == "html") {

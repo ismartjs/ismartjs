@@ -78,60 +78,60 @@ state
   border-color: #556A7E !important;
 }
 .border-default {
-  border-color: #556A7E !important;
+  border-color: #e5e5e5 !important;
 }
 .border-default > th,
 .border-default > td {
-  border-color: #556A7E !important;
+  border-color: #e5e5e5 !important;
 }
 .border-info {
-  border-color: #556A7E !important;
+  border-color: #3498DB !important;
 }
 .border-info > th,
 .border-info > td {
-  border-color: #556A7E !important;
+  border-color: #3498DB !important;
 }
 .border-success {
-  border-color: #556A7E !important;
+  border-color: #62cb31 !important;
 }
 .border-success > th,
 .border-success > td {
-  border-color: #556A7E !important;
+  border-color: #62cb31 !important;
 }
 .border-danger {
-  border-color: #556A7E !important;
+  border-color: #e74c3c !important;
 }
 .border-danger > th,
 .border-danger > td {
-  border-color: #556A7E !important;
+  border-color: #e74c3c !important;
 }
 .border-warning {
-  border-color: #556A7E !important;
+  border-color: #ffb606 !important;
 }
 .border-warning > th,
 .border-warning > td {
-  border-color: #556A7E !important;
+  border-color: #ffb606 !important;
 }
 .border-violet {
-  border-color: #556A7E !important;
+  border-color: #9b59b6 !important;
 }
 .border-violet > th,
 .border-violet > td {
-  border-color: #556A7E !important;
+  border-color: #9b59b6 !important;
 }
 .border-blue {
-  border-color: #556A7E !important;
+  border-color: #3498db !important;
 }
 .border-blue > th,
 .border-blue > td {
-  border-color: #556A7E !important;
+  border-color: #3498db !important;
 }
 .border-orange {
-  border-color: #556A7E !important;
+  border-color: #e67e22 !important;
 }
 .border-orange > th,
 .border-orange > td {
-  border-color: #556A7E !important;
+  border-color: #e67e22 !important;
 }
 .border-right {
   border-right: 1px solid #e5e5e5;
