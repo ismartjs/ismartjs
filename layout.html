@@ -1,4 +1,4 @@
-<meta args="config" />
+<meta args="config"/>
 <div class="layout-header" s="window" s-window="{href: config.headerUrl}">
 </div>
 <div class="layout-backdrop"></div>
@@ -9,7 +9,7 @@
             <script type="text/template">
                 {% $.each(this.menus, function(i, menu){ %}
                 <li class="{%=(menu.children && menu.children.length) ? 'nav-parent ': ''%} {%=menu.open ? 'menu-open':''%}"
-                        menuUrl="{%=menu.url%}" menuId="{%=menu.id%}" >
+                    menuUrl="{%=menu.url%}" menuId="{%=menu.id%}">
                     <a href="javascript:;">
                         {%if(menu.icon){%}
                         <i class="{%=menu.icon%}"></i>
@@ -85,13 +85,13 @@
         asideTopUrl: "asideTop.html",
         loginPanel: "loginPanel.html",
         tabActiveRefresh: true,
-        init: function(){
+        init: function () {
             var that = this;
-            $(window).on("popstate", function(e){
+            $(window).on("popstate", function (e) {
                 var state = history.state;
-                if(state !== undefined){
+                if (state !== undefined) {
                     var tab = MainTab.findSingleTabByUrl(state.moduleUrl);
-                    if(tab){
+                    if (tab) {
                         tab.active(false);
                     } else {
                         that.open($.Deferred(), state.moduleUrl, state.moduleArgs, false);
@@ -127,7 +127,7 @@
         },
         historyListener: {
             onPush: function (tab) {
-                history.pushState({moduleUrl:tab.data.url, moduleArgs: tab.data.args}, null , "#" + tab.data.url);
+                history.pushState({moduleUrl: tab.data.url, moduleArgs: tab.data.args}, null, "#" + tab.data.url);
             },
             onGet: function () {
                 var href = window.location.href;
@@ -145,8 +145,8 @@
     //侧边栏子菜单打开合并
     $menuPanel.node.delegate(" > li", "click", function (e) {
         var node = $(this);
-        if(node.is(".nav-parent")){
-            if(node.hasClass("active")){
+        if (node.is(".nav-parent")) {
+            if (node.hasClass("active")) {
                 node.removeClass("active");
             } else {
                 node.addClass("active").siblings(".nav-parent.active").removeClass("active");
@@ -171,10 +171,10 @@
         activeSidebarMenu(node);
     }
     function activeSidebarMenu(node) {
-        if(node == null){
+        if (node == null) {
             return;
         }
-        if(node.hasClass("nav-item")){
+        if (node.hasClass("nav-item")) {
             node.parent().parent().addClass("active").siblings(".active").removeClass("active");
             $menuPanel.node.find("li.nav-item.active").removeClass("active");
         } else {
@@ -189,7 +189,7 @@
         if (tabNode.size() > 0) {
             var tab = tabNode.data("tab");
             tab.active();
-            if(config.tabActiveRefresh){
+            if (config.tabActiveRefresh && tab.tabWindows[0].makeState == 'SUCCESS') {
                 tab.tabWindows[0].smart.refresh();
             }
             return;
@@ -216,13 +216,13 @@
 
     var openUrl = S.open = function (deferred, url, args, pushStateFlag) {
         //在已经打开的选项卡中，根据url获取选项卡，判断其上面是否有single=true的属性，如果有，则直接把该选项卡打开，而不是打开新的页面
-        if(pushStateFlag === undefined){
+        if (pushStateFlag === undefined) {
             pushStateFlag = true;
         }
         var tab = MainTab.findSingleTabByUrl(url);
         if (tab) {
             tab.active(pushStateFlag);
-            if(config.tabActiveRefresh){
+            if (config.tabActiveRefresh) {
                 tab.tabWindows[0].smart.refresh();
             }
             return;
@@ -426,7 +426,7 @@
             if (MainTab.currentTab == this) {
                 return;
             }
-            if(pushStateFlag === undefined){
+            if (pushStateFlag === undefined) {
                 pushStateFlag = true;
             }
             var menuUrl = this.data.url;
@@ -445,7 +445,7 @@
             this.showTabWindow(pushStateFlag);
             return this;
         },
-        isTop: function(){
+        isTop: function () {
             return this.node.hasClass("active");
         },
         fallow: function () {
@@ -457,7 +457,7 @@
             MainTab.TabStack.remove(this);
         },
         showTabWindow: function (pushStateFlag) {
-            if (!this.currentTabWindow.made) {
+            if (this.currentTabWindow.makeState == 'PREPARE') {
                 this.makeTabWindow(this.currentTabWindow);
             }
             this.currentTabWindow.show(pushStateFlag);
@@ -476,18 +476,18 @@
                         that.setMeta(meta);
                     }
                 });
-                tabWindow.smart.on("s-window-loaded", function(){
+                tabWindow.smart.on("s-window-loaded", function () {
                     var smart = tabWindow.smart;
                     smart.node.css("visibility", 'visible');
-                    if((config.tabWindowAnimate !== false) && (smart.meta.animation || config.tabWindowAnimation)){
+                    if ((config.tabWindowAnimate !== false) && (smart.meta.animation || config.tabWindowAnimation)) {
                         smart.node.addClass(smart.meta.animation || config.tabWindowAnimation);
-                        setTimeout(function(){
+                        setTimeout(function () {
                             smart.node.removeClass(smart.meta.animation || config.tabWindowAnimation);
                         }, 1000);
                     }
                 })
             }
-            tabWindow.make().done(function (smart) {
+            return tabWindow.make().done(function (smart) {
                 //如果该mainTab拥有子tab，则不设置meta
                 if (Smart.isEmpty(that.data.children)) {
                     that.setMeta(smart.meta);
@@ -620,13 +620,13 @@
 
     function showTabWindowById(id) {
         var tabWindow = TabWindow.mapping[id];
-        !tabWindow.made && tabWindow.make();
+        tabWindow.makeState == 'PREPARE' && tabWindow.make();
         tabWindow.show();
     }
 
     function TabWindow(data, mainTab) {
         this.data = data
-        this.made = false;
+        this.makeState = "PREPARE";
         this.mainTab = mainTab;
         this.id = TabWindow.getToken();
         TabWindow.mapping[this.id] = this;
@@ -649,7 +649,7 @@
             TabWindow.currentTabWindow = this;
             this.mainTab.currentTabWindow = this;
             this.node.show();
-            if (this.data.url && pushStateFlag){
+            if (this.data.url && pushStateFlag) {
                 config.historyListener.onPush(this.mainTab);
             }
         },
@@ -657,14 +657,19 @@
             this.node.hide();
         },
         make: function () {
-            this.made = true;
+            this.makeState = "MAKING";
             this.smart.render();
             TabWindow.container.append(this.node);
             if (!this.data.url) return $.Deferred().resolve(this.smart);
-            return this.smart.load.apply(this.smart, [this.data.url].concat(this.data.args));
+            var that = this;
+            return this.smart.load.apply(this.smart, [this.data.url].concat(this.data.args)).done(function () {
+                that.makeState = "SUCCESS";
+            }).fail(function () {
+                that.makeState = "FAIL";
+            });
         },
         close: function () {
-            if (!this.made) {
+            if (this.makeState != "SUCCESS") {
                 this.smart.trigger("close");//因为MainTab的关闭是监听的该smart的close事件，如果没有made，则在这里直接trigger一个close事件
                 return $.Deferred().resolve();
             }
@@ -679,7 +684,7 @@
             var that = this;
             this.smart.node.addClass(this.smart.meta.animation || config.tabWindowAnimation);
             this.smart.refresh().done(function () {
-                setTimeout(function(){
+                setTimeout(function () {
                     that.smart.node.removeClass(that.smart.meta.animation || config.tabWindowAnimation);
                 }, 1000);
             });
@@ -721,23 +726,23 @@
         config.handleAjaxError ? config.handleAjaxError.apply(S, Array.prototype.slice.call(arguments))
                 : (S.alert($.trim(msg), "error"));
         showAjaxActiveTip(errorTip, "error");
-    }).on("smart-ajaxComplete", function(){
+    }).on("smart-ajaxComplete", function () {
         hideAjaxActiveTip();
     });
 
-    S.node.delegate(".layout-menu-switch", "click", function(e){
-        if($(window).width() >= 768){
+    S.node.delegate(".layout-menu-switch", "click", function (e) {
+        if ($(window).width() >= 768) {
             $("body").toggleClass("layout-hide-aside");
         } else {
             $("body").toggleClass("layout-show-aside");
         }
     });
-    S.node.delegate(".layout-backdrop", "click", function(e){
+    S.node.delegate(".layout-backdrop", "click", function (e) {
         hideAside();
     })
 
-    function hideAside(){
-        if($("body").hasClass("layout-show-aside")){
+    function hideAside() {
+        if ($("body").hasClass("layout-show-aside")) {
             $("body").removeClass("layout-show-aside");
         }
     }
