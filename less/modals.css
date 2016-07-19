@@ -16,6 +16,10 @@ state
 .modal-bg {
   background: rgba(0, 0, 0, 0.4);
 }
+.modal {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 .modal .modal-dialog {
   max-width: 98%;
 }

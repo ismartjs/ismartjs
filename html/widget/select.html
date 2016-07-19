@@ -222,7 +222,9 @@
    &lt;/div&gt;
 &lt;/form&gt;
 &lt;script type="text/javascript"&gt;
-    S.cascade($province, $city, $district);
+    S.on("s-ready", function(){
+        S.cascade($province, $city, $district);
+    })
     var cascadeData = {
         province: 'sx',
         city: 'yc',
@@ -366,7 +368,9 @@
         return "[" + data.id + "]";
     }
 
-    S.cascade($province, $city, $district);
+    S.on("s-ready", function(){
+        S.cascade($province, $city, $district);
+    })
     var cascadeData = {
         province: 'sx',
         city: 'yc',
