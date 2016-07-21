@@ -6,10 +6,20 @@ module.exports = function (grunt) {
             options: {
                 separator: ';'
             },
-            'smart-all': {
-                src: ["js/smart.template.js", "js/smart.core.js", "js/widgets/*.js",
-                    "js/smart.ui.js", "js/widgets-ui/*.js", "js/plugins/*.js", "js/utils/*.js"],
-                dest: 'dest/js/ismart.all.js'
+            'ismartjs': {
+                src: [
+                    "js/src/smart.core.js",
+                    "js/src/smart.template.js",
+                    "js/src/smart.ui.js",
+                    "js/src/plugins/*.js",
+                    "js/src/widgets/*.js",
+                    "js/src/widgets-ui/*.js"
+                ],
+                dest: 'dist/js/ismartjs.all.js'
+            },
+            'ismartjs-bootstrap': {
+                src: ["js/bootstrap-plugins/**/*.js"],
+                dest: 'dist/js/bootstrap-plugins.js'
             }
         },
         uglify: {
@@ -24,46 +34,39 @@ module.exports = function (grunt) {
                     return path.replace('.js', ".map")
                 }
             },
-            "ismart": {
+            "ismartjs": {
                 files: {
-                    "dest/js/ismart.all.min.js": "dest/js/ismart.all.js"
+                    "dist/js/ismartjs.all.min.js": "dist/js/ismartjs.all.js"
+                }
+            },
+            "ismartjs-bootstrap": {
+                files: {
+                    "dist/js/bootstrap-plugins.min.js": "dist/js/bootstrap-plugins.js"
                 }
             }
         },
-        clean: ["dest"],
+        cssmin: {
+            compress: {
+                files: {
+                    'dist/css/ismart.min.css': [
+                        "less/**/*.css"
+                    ]
+                }
+            }
+        },
+        clean: ["dist/*"],
         copy: {
-            base: {
+            css: {
                 files: [
-                    {expand: true, src: "json/menu-example.json", dest: "dest/json/menu.json"},
-                    {expand: true, src: "ui-template.html", dest: "dest/"},
-                    {
-                        expand: true,
-                        src: [
-                            "js/bootstrap.min.js",
-                            "js/jquery-2.1.1.min.js",
-                            "js/jquery.cookie.js",
-                            "js/jquery-dateFormat.min.js",
-                            "js/jquery-ui-1.10.4.custom.min.js",
-                            "js/jquery.mousewheel.min.js",
-                            "js/bootstrap-datetimepicker.min.js",
-                            "js/bootstrap-datetimepicker.zh-CN.js"
-                        ],
-                        dest: "dest/"
-                    }
+                    {expand: true, src: "css/**/*", dest: "dist/"}
                 ]
             },
-            admin_layout: {
+            "3rdjs": {
                 files: [
                     {
                         expand: true,
-                        src: ["layouts/admin/*.html", "layouts/admin/css/*", "layouts/admin/images/*"],
-                        dest: 'dest',
-                        filter: function (file) {
-                            if (file.endsWith('index.html')) {
-                                return false;
-                            }
-                            return true;
-                        }
+                        src: "js/3rd/**/*",
+                        dest: "dist"
                     }
                 ]
             }
@@ -78,5 +81,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
 
     // 注册任务
-    grunt.registerTask('default', ['clean', 'concat', 'copy', 'uglify']);
+    grunt.registerTask('default', ['clean', 'concat', 'copy', 'uglify', 'cssmin']);
 };
