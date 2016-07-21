@@ -1,0 +1,18 @@
+.s-ui-flex {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+}
+.s-ui-flex .s-ui-flex-fixed {
+  flex-shrink: 0;
+}
+.s-ui-flex .s-ui-flex-auto {
+  overflow: auto;
+  flex-shrink: 1;
+}

@@ -1,0 +1,23 @@
+/**
+  radius
+*/
+/**
+  button
+*/
+/**
+toast
+*/
+/**
+  panel
+*/
+/**
+state
+*/
+.login-page {
+  background: #f1f3f6;
+}
+.login-page .login-container {
+  max-width: 420px;
+  margin: auto;
+  padding-top: 6%;
+}

@@ -1,0 +1,4 @@
+.table-middle td,
+.table-middle th {
+  vertical-align: middle !important;
+}
