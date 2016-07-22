@@ -31,7 +31,8 @@ module.exports = function (grunt) {
                 },
                 sourceMapRoot: "../../",
                 sourceMappingURL: function (path) {
-                    return path.replace('.js', ".map")
+                    var paths = path.split("/");
+                    return paths[paths.length - 1].replace('.js', ".map")
                 }
             },
             "ismartjs": {

@@ -93,6 +93,9 @@
                         clearTo();
                     }, 1);
                     node.on("shown.bs.tooltip", destroyTooltip);
+                    if (level.key == 'error') {
+                        node.focus();
+                    }
                 }
             },
             'resetShow': function (node) {
@@ -119,7 +122,7 @@
                      * 以使得赋值动作优先进行。
                      * */
                     var node = $(this);
-                    setTimeout(function(){
+                    setTimeout(function () {
                         that.S.validateNode(node);
                     }, 100);
                 });
@@ -183,7 +186,7 @@
             this.widget.valid.cache.validedNodes.push(node);
             var nodeMsgAttrStr = node.attr(VALID_NODE_MSG);
             var defMsg = {};
-            if(nodeMsgAttrStr){
+            if (nodeMsgAttrStr) {
                 defMsg = this.context('(' + nodeMsgAttrStr + ')');
             }
             var errorExp = node.attr(VALID_NODE_ERROR_ATTR);
@@ -383,6 +386,7 @@
                 }
                 methodCount[method] = count;//method计数
                 var msg = $.extend($.extend({}, validator.msg), nodeMsg[method + "#" + count] || nodeMsg[method] || {});
+
                 function processSuccess(msgStr) {
                     msgLevel = LEVELS.success;
                     processMsg(validation, msgStr || msg['1']);

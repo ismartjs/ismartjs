@@ -29,7 +29,7 @@
                     return;
                 }
                 var row = $(e.currentTarget);
-                if($(CHECK_ITEM_HANDLER_SELECTOR, row).size() > 0){
+                if(!row.is(".s-check-h") && $(CHECK_ITEM_HANDLER_SELECTOR, row).size() > 0){
                     return;
                 }
                 that.S._toggleCheck($(this), e);
@@ -155,9 +155,10 @@
         },
         _toggleCheck: function (node, e) {
             //如果选择项下面拥有选择句柄，而且选择事件不是选择句柄发出的，则跳过。
-            if (e && $(CHECK_ITEM_HANDLER_SELECTOR, node).size() > 0) {
-                if (!$(e.target).is(CHECK_ITEM_HANDLER_SELECTOR)) {
-                    return;
+            if (!node.is(".s-check-h") && e && $(CHECK_ITEM_HANDLER_SELECTOR, node).size() > 0) {
+                var target = $(e.target);
+                if (!target.is(CHECK_ITEM_HANDLER_SELECTOR)) {
+                    //return;
                 }
             }
             var checkedClass = this.widget.check.options['checkedStyle'];

@@ -2296,7 +2296,7 @@
                     return;
                 }
                 var row = $(e.currentTarget);
-                if($(CHECK_ITEM_HANDLER_SELECTOR, row).size() > 0){
+                if(!row.is(".s-check-h") && $(CHECK_ITEM_HANDLER_SELECTOR, row).size() > 0){
                     return;
                 }
                 that.S._toggleCheck($(this), e);
@@ -2422,9 +2422,10 @@
         },
         _toggleCheck: function (node, e) {
             //如果选择项下面拥有选择句柄，而且选择事件不是选择句柄发出的，则跳过。
-            if (e && $(CHECK_ITEM_HANDLER_SELECTOR, node).size() > 0) {
-                if (!$(e.target).is(CHECK_ITEM_HANDLER_SELECTOR)) {
-                    return;
+            if (!node.is(".s-check-h") && e && $(CHECK_ITEM_HANDLER_SELECTOR, node).size() > 0) {
+                var target = $(e.target);
+                if (!target.is(CHECK_ITEM_HANDLER_SELECTOR)) {
+                    //return;
                 }
             }
             var checkedClass = this.widget.check.options['checkedStyle'];
@@ -4392,6 +4393,9 @@
                         clearTo();
                     }, 1);
                     node.on("shown.bs.tooltip", destroyTooltip);
+                    if (level.key == 'error') {
+                        node.focus();
+                    }
                 }
             },
             'resetShow': function (node) {
@@ -4418,7 +4422,7 @@
                      * 以使得赋值动作优先进行。
                      * */
                     var node = $(this);
-                    setTimeout(function(){
+                    setTimeout(function () {
                         that.S.validateNode(node);
                     }, 100);
                 });
@@ -4482,7 +4486,7 @@
             this.widget.valid.cache.validedNodes.push(node);
             var nodeMsgAttrStr = node.attr(VALID_NODE_MSG);
             var defMsg = {};
-            if(nodeMsgAttrStr){
+            if (nodeMsgAttrStr) {
                 defMsg = this.context('(' + nodeMsgAttrStr + ')');
             }
             var errorExp = node.attr(VALID_NODE_ERROR_ATTR);
@@ -4682,6 +4686,7 @@
                 }
                 methodCount[method] = count;//method计数
                 var msg = $.extend($.extend({}, validator.msg), nodeMsg[method + "#" + count] || nodeMsg[method] || {});
+
                 function processSuccess(msgStr) {
                     msgLevel = LEVELS.success;
                     processMsg(validation, msgStr || msg['1']);
