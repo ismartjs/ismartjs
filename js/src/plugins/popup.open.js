@@ -116,15 +116,14 @@
         }
 
         nodeSmart.getButtonById = getButtonById;
-        nodeSmart.load.apply(nodeSmart, $.makeArray(arguments)).fail(function (xhr) {
+        nodeSmart.load.apply(nodeSmart, $.makeArray(arguments)).fail(function (e, xhr) {
             var msg;
             if (xhr.status == 0) {
                 msg = "网络异常，请重试";
-            } else {
-                msg = "页面打开错误，请重试";
+                Smart.UI.backdrop(false);
+                nodeSmart.toast(msg, "danger");
+                e.stopPropagation();
             }
-            nodeSmart.toast(msg, "danger");
-            Smart.UI.backdrop(false);
         });
 
         return $.extend(deferred, {

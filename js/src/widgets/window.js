@@ -304,7 +304,7 @@
                 this.S._load.apply(this.S, [this.location.href].concat(this.location.args || [])).done(function () {
                     deferred.resolve();
                 }).fail(function () {
-                    deferred.reject();
+                    deferred.reject.apply(deferred, $.makeArray(arguments));
                 });
                 return deferred.promise();
             } else {
@@ -386,7 +386,6 @@
 
             }).fail(function () {
                 deferred.reject.apply(deferred, $.makeArray(arguments));
-                ;
             });
             return deferred;
         },

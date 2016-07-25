@@ -42,6 +42,7 @@
             'successClass': "has-success",
             'errorClass': "has-error",
             'warningClass': "has-warning",
+            'errorFocus': false,
             notice: null,
             'show': function (node, msg, level) {
                 level = level || LEVELS.error;
@@ -93,7 +94,7 @@
                         clearTo();
                     }, 1);
                     node.on("shown.bs.tooltip", destroyTooltip);
-                    if (level.key == 'error') {
+                    if (level.key == 'error' && this.widget.valid.options.errorFocus) {
                         node.focus();
                     }
                 }

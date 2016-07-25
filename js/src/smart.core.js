@@ -246,7 +246,7 @@
                 rs.done(function (_rs) {
                     deferred.resolve(fn.call(ref, _rs));
                 }).fail(function () {
-                    deferred.reject();
+                    deferred.reject.apply(deferred, $.makeArray(arguments));
                 });
                 return deferred;
             } else {
@@ -286,6 +286,10 @@
                     if (val.hasOwnProperty('$ref')) {
                         if (val['$ref'] == '..') {
                             obj[key] = parent;
+                            return;
+                        }
+                        if (val['$ref'] == '@') {
+                            obj[key] = obj;
                             return;
                         }
                         obj[key] = eval("$" + val['$ref']);
@@ -365,7 +369,7 @@
                     results.push(rs);
                     callFn(i + 1);
                 }).fail(function () {
-                    deferred.reject();
+                    deferred.reject.apply(deferred, $.makeArray(arguments));
                 });
             }
 
@@ -686,7 +690,7 @@
                         $.each(that[CONST.CACHE_DEFERREDS_ATTR][key], function () {
                             this.reject.apply(this, Smart.SLICE.call(args));
                         })
-                    }).always(function(){
+                    }).always(function () {
                         delete that[CONST.CACHE_DEFERREDS_ATTR][key];
                     })
                     return deferred;
@@ -1306,10 +1310,10 @@
                         Smart.deferDelegate(that.data(data)).done(function () {
                             deferred.resolve();
                         }).fail(function () {
-                            deferred.reject();
+                            deferred.reject().apply(deferred, $.makeArray(arguments));
                         })
                     }).fail(function () {
-                        deferred.reject();
+                        deferred.reject.apply(deferred, $.makeArray(arguments));
                     })
                 } else {
                     Smart.deferDelegate(this.data(dataValue)).done(function () {

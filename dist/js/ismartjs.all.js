@@ -246,7 +246,7 @@
                 rs.done(function (_rs) {
                     deferred.resolve(fn.call(ref, _rs));
                 }).fail(function () {
-                    deferred.reject();
+                    deferred.reject.apply(deferred, $.makeArray(arguments));
                 });
                 return deferred;
             } else {
@@ -286,6 +286,10 @@
                     if (val.hasOwnProperty('$ref')) {
                         if (val['$ref'] == '..') {
                             obj[key] = parent;
+                            return;
+                        }
+                        if (val['$ref'] == '@') {
+                            obj[key] = obj;
                             return;
                         }
                         obj[key] = eval("$" + val['$ref']);
@@ -365,7 +369,7 @@
                     results.push(rs);
                     callFn(i + 1);
                 }).fail(function () {
-                    deferred.reject();
+                    deferred.reject.apply(deferred, $.makeArray(arguments));
                 });
             }
 
@@ -686,7 +690,7 @@
                         $.each(that[CONST.CACHE_DEFERREDS_ATTR][key], function () {
                             this.reject.apply(this, Smart.SLICE.call(args));
                         })
-                    }).always(function(){
+                    }).always(function () {
                         delete that[CONST.CACHE_DEFERREDS_ATTR][key];
                     })
                     return deferred;
@@ -1306,10 +1310,10 @@
                         Smart.deferDelegate(that.data(data)).done(function () {
                             deferred.resolve();
                         }).fail(function () {
-                            deferred.reject();
+                            deferred.reject().apply(deferred, $.makeArray(arguments));
                         })
                     }).fail(function () {
-                        deferred.reject();
+                        deferred.reject.apply(deferred, $.makeArray(arguments));
                     })
                 } else {
                     Smart.deferDelegate(this.data(dataValue)).done(function () {
@@ -2031,15 +2035,14 @@
         }
 
         nodeSmart.getButtonById = getButtonById;
-        nodeSmart.load.apply(nodeSmart, $.makeArray(arguments)).fail(function (xhr) {
+        nodeSmart.load.apply(nodeSmart, $.makeArray(arguments)).fail(function (e, xhr) {
             var msg;
             if (xhr.status == 0) {
                 msg = "网络异常，请重试";
-            } else {
-                msg = "页面打开错误，请重试";
+                Smart.UI.backdrop(false);
+                nodeSmart.toast(msg, "danger");
+                e.stopPropagation();
             }
-            nodeSmart.toast(msg, "danger");
-            Smart.UI.backdrop(false);
         });
 
         return $.extend(deferred, {
@@ -3156,7 +3159,7 @@
                 this.S._load.apply(this.S, [this.location.href].concat(this.location.args || [])).done(function () {
                     deferred.resolve();
                 }).fail(function () {
-                    deferred.reject();
+                    deferred.reject.apply(deferred, $.makeArray(arguments));
                 });
                 return deferred.promise();
             } else {
@@ -3238,7 +3241,6 @@
 
             }).fail(function () {
                 deferred.reject.apply(deferred, $.makeArray(arguments));
-                ;
             });
             return deferred;
         },
@@ -4342,6 +4344,7 @@
             'successClass': "has-success",
             'errorClass': "has-error",
             'warningClass': "has-warning",
+            'errorFocus': false,
             notice: null,
             'show': function (node, msg, level) {
                 level = level || LEVELS.error;
@@ -4393,7 +4396,7 @@
                         clearTo();
                     }, 1);
                     node.on("shown.bs.tooltip", destroyTooltip);
-                    if (level.key == 'error') {
+                    if (level.key == 'error' && this.widget.valid.options.errorFocus) {
                         node.focus();
                     }
                 }
