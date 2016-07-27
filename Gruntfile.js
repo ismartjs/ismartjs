@@ -22,6 +22,17 @@ module.exports = function (grunt) {
                 dest: 'dist/js/bootstrap-plugins.js'
             }
         },
+        less: {
+            development: {
+                files: [{
+                    expand: true,
+                    cwd: 'less',
+                    src: ['*.less'],
+                    dest: "less",
+                    ext: '.css'
+                }]
+            }
+        },
         uglify: {
             options: {
                 banner: '/*! <%= pkg.name %> version:<%=pkg.version%> <%= grunt.template.today("yyyy-mm-dd") %> ' +
@@ -80,7 +91,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.loadNpmTasks('grunt-contrib-less');
 
     // 注册任务
-    grunt.registerTask('default', ['clean', 'concat', 'copy', 'uglify', 'cssmin']);
+    grunt.registerTask('default', ['clean', 'less', 'concat', 'copy', 'uglify', 'cssmin']);
 };

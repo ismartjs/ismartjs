@@ -51,7 +51,7 @@ state
   overflow: hidden;
   width: 14px;
   height: 14px;
-  border: 1px solid #ddd;
+  border: 1px solid #899db0;
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -145,7 +145,7 @@ state
   width: 14px;
   height: 14px;
   border-radius: 100%;
-  border: 1px solid #ddd;
+  border: 1px solid #899db0;
   background-repeat: no-repeat;
   background-position: center;
 }
