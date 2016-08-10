@@ -166,7 +166,7 @@
                 //绑定浏览器事件，click等
             delegateEvent(that);
             //处理自动焦点的元素
-            setTimeout(function(){
+            setTimeout(function () {
                 that.node.find("*[s-window-role='focus']:first").focus();
             }, 100);
 
@@ -214,7 +214,7 @@
                 keyCode = evts[1];
             }
             smart.node.delegate("*[" + key + "]", val, function (e) {
-                if(e.keyCode == 229){
+                if (e.keyCode == 229) {
                     //如果是中文输入法输入，则返回
                     return;
                 }
@@ -391,7 +391,7 @@
         },
         setMeta: function (key, value) {
             this.meta[key] = value;
-            this.trigger("meta", key, value);
+            this.trigger("meta", [key, value]);
         },
         scrollTo: function (selector) {
             var anchorNode = selector;

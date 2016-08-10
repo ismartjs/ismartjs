@@ -76,6 +76,10 @@
             });
             dialog.modal('hide');
             e.deferred = eDeferred.promise();
+        }).on("meta", function (e, key, value) {
+            if (key == "title") {
+                titleNode.html(value);
+            }
         }).on("s-loaded", function () {
             titleNode.html(nodeSmart.meta.title || DIALOG_DEFAULT_TITLE);
             var focusBtn;

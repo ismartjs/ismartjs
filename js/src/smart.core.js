@@ -1131,8 +1131,8 @@
                 if (dataType == "boolean" || dataType == "number" || dataType == "string" || data == undefined) {
                     //如果没有子元素
                     if (this.node.is("select")) {
-                        data = data == undefined ? '' : data;
-                        if ($("option[value='" + data + "']", this.node).size() > 0) {
+                        data = data == undefined ? '' : data + "";
+                        if ($("option[value='" + data.replace(/\\/gi, "\\\\") + "']", this.node).size() > 0) {
                             this.node.val(data + "");
                         }
                         return;

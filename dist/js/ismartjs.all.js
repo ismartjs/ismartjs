@@ -1132,7 +1132,7 @@
                     //如果没有子元素
                     if (this.node.is("select")) {
                         data = data == undefined ? '' : data;
-                        if ($("option[value='" + data + "']", this.node).size() > 0) {
+                        if ($("option[value='" + data.replace(/\\/gi, "\\\\") + "']", this.node).size() > 0) {
                             this.node.val(data + "");
                         }
                         return;
@@ -1995,6 +1995,10 @@
             });
             dialog.modal('hide');
             e.deferred = eDeferred.promise();
+        }).on("meta", function (e, key, value) {
+            if (key == "title") {
+                titleNode.html(value);
+            }
         }).on("s-loaded", function () {
             titleNode.html(nodeSmart.meta.title || DIALOG_DEFAULT_TITLE);
             var focusBtn;
@@ -3021,7 +3025,7 @@
                 //绑定浏览器事件，click等
             delegateEvent(that);
             //处理自动焦点的元素
-            setTimeout(function(){
+            setTimeout(function () {
                 that.node.find("*[s-window-role='focus']:first").focus();
             }, 100);
 
@@ -3069,7 +3073,7 @@
                 keyCode = evts[1];
             }
             smart.node.delegate("*[" + key + "]", val, function (e) {
-                if(e.keyCode == 229){
+                if (e.keyCode == 229) {
                     //如果是中文输入法输入，则返回
                     return;
                 }
@@ -3246,7 +3250,7 @@
         },
         setMeta: function (key, value) {
             this.meta[key] = value;
-            this.trigger("meta", key, value);
+            this.trigger("meta", [key, value]);
         },
         scrollTo: function (selector) {
             var anchorNode = selector;
