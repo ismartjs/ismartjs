@@ -8,7 +8,15 @@
         });
     })
 
-}(jQuery);+function ($) {
+}(jQuery);$(document).delegate("input[data-input-highlight],select[data-input-highlight]", "change", function(){
+    var node = $(this);
+    var val = node.val();
+    if(val == ""){
+        node.removeClass(node.attr('data-input-highlight'));
+    } else {
+        node.addClass(node.attr('data-input-highlight'));
+    }
+});+function ($) {
 
     "use strict";
     $(document).delegate("input,textarea", "focus", function () {
@@ -384,12 +392,3 @@
   })
 
 }(window.jQuery);
-;$(document).delegate("select[data-highlight]", "change", function(){
-    var select = $(this);
-    var val = select.val();
-    if(val == ""){
-        select.removeClass(select.attr('data-highlight'));
-    } else {
-        select.addClass(select.attr('data-highlight'));
-    }
-})
