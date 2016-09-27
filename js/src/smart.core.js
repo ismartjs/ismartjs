@@ -1147,6 +1147,12 @@
                             this.node.prop("checked", true);
                         }
                         return;
+                    } else if (this.node.is("input[type='checkbox']")) {
+                        data = data == undefined ? '' : data;
+                        if (data + "" == this.node.val()) {
+                            this.node.prop("checked", true);
+                        }
+                        return;
                     }
                     this.node.html(data);
                     return;

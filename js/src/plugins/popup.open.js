@@ -84,6 +84,7 @@
             titleNode.html(nodeSmart.meta.title || DIALOG_DEFAULT_TITLE);
             var focusBtn;
             if (nodeSmart.meta.btns) {
+                footerNode.empty();
                 $.each(nodeSmart.meta.btns, function (i, btn) {
                     var btnNode = createBtn(btn);
                     if (btn.focus) {

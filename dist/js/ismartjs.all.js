@@ -1147,6 +1147,12 @@
                             this.node.prop("checked", true);
                         }
                         return;
+                    } else if (this.node.is("input[type='checkbox']")) {
+                        data = data == undefined ? '' : data;
+                        if (data + "" == this.node.val()) {
+                            this.node.prop("checked", true);
+                        }
+                        return;
                     }
                     this.node.html(data);
                     return;
@@ -2003,6 +2009,7 @@
             titleNode.html(nodeSmart.meta.title || DIALOG_DEFAULT_TITLE);
             var focusBtn;
             if (nodeSmart.meta.btns) {
+                footerNode.empty();
                 $.each(nodeSmart.meta.btns, function (i, btn) {
                     var btnNode = createBtn(btn);
                     if (btn.focus) {
@@ -4047,7 +4054,7 @@
         onPrepare: function () {
             this.cache = {};
             this.env = {};
-            this.cache.dataMap = {};
+            this.cache.optionMap = {};
             /**
              * 如果判断控件的node不是select元素，而且拥有s-select的class，则说明使用html来渲染下拉列表，而不是使用原生的下来列表
              * */
@@ -4147,15 +4154,17 @@
                     datas.push({title: value, id: key})
                 });
             }
+            this.widget.select.cache.optionMap = {};
             this.widget.select.cache.dataMap = {};
             for (var i in datas) {
                 var _data = this._getOptionData(datas[i]);
-                this.widget.select.cache.dataMap[_data.value] = _data;
+                this.widget.select.cache.optionMap[_data.value] = _data;
+                this.widget.select.cache.dataMap[_data.value] = datas[i];
             }
             this.widget.select.cache.buildData = datas;
             this.widget.select.env.listContainer.empty();
             this.widget.select.env.listContainer.append(this.widget.select.cache.originalOptions);
-            if(this.widget.select.env.mode == "html"){
+            if (this.widget.select.env.mode == "html") {
                 var that = this;
                 this.node.one("click", function () {
                     that._createOptions();
@@ -4210,13 +4219,20 @@
         },
         dataSetter: function (value) {
             if (this.widget.select.env.mode == "html") {
-                var optionData = this.widget.select.cache.dataMap[value];
+                var optionData = this.widget.select.cache.optionMap[value];
                 if (!optionData) {
                     var firstNode = this.widget.select.env.listContainer.children(":eq(0)");
                     if (firstNode.size() > 0) {
                         optionData = {
                             value: firstNode.attr("value"),
                             title: firstNode.html()
+                        }
+                    } else if (this.widget.select.cache.buildData) {
+                        optionData = this._getOptionData(this.widget.select.cache.buildData[0]);
+                    } else {
+                        optionData = {
+                            value: "",
+                            title: "请选择"
                         }
                     }
                 }

@@ -149,6 +149,9 @@ state
   background-repeat: no-repeat;
   background-position: center;
 }
+select.s-select-highlight {
+  background-color: #fcf8e3;
+}
 .s-select {
   position: relative;
   display: inline-block;
