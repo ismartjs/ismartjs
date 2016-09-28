@@ -28,6 +28,10 @@
                 if (that.options.turn != "on") {
                     return;
                 }
+                var clickTarget = $(e.target);
+                if(clickTarget.is(".s-check-ig")){
+                    return;
+                }
                 var row = $(e.currentTarget);
                 if(!row.is(".s-check-h") && $(CHECK_ITEM_HANDLER_SELECTOR, row).size() > 0){
                     return;

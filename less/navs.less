@@ -1,0 +1,33 @@
+@import "var.less";
+@import "mixins.less";
+
+.nav-tabs {
+
+  > li {
+    float: left;
+    // Make the list-items overlay the bottom border
+    // Actual tabs (as links)
+    > a {
+      background-color: #fbfaf8;
+      border: 1px solid #ddd;
+      cursor: default;
+    }
+
+    // Active state, and its :hover to override normal :hover
+    &.active {
+      margin-bottom: -1px;
+    }
+  }
+  &.nav-justified {
+    > li {
+      > a{
+        margin-right: -1px;
+      }
+      &:last-child{
+        > a{
+          margin-right: 0px;
+        }
+      }
+    }
+  }
+}

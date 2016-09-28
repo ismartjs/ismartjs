@@ -38,7 +38,7 @@
                 scripts.push("      return function(){");
                 scripts.push(compiledText);
                 scripts.push("      }");
-                scripts.push("})();//@ sourceURL=" + (token++) + "_template.js");
+                scripts.push("})();//# sourceURL=" + (token++) + "_template.js");
                 var script = scripts.join("\n");
                 fn = this.S.context(script);
                 fn_map[tplText] = fn;

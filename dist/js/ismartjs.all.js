@@ -2309,6 +2309,10 @@
                 if (that.options.turn != "on") {
                     return;
                 }
+                var clickTarget = $(e.target);
+                if(clickTarget.is(".s-check-ig")){
+                    return;
+                }
                 var row = $(e.currentTarget);
                 if(!row.is(".s-check-h") && $(CHECK_ITEM_HANDLER_SELECTOR, row).size() > 0){
                     return;
@@ -2838,7 +2842,7 @@
                 scripts.push("      return function(){");
                 scripts.push(compiledText);
                 scripts.push("      }");
-                scripts.push("})();//@ sourceURL=" + (token++) + "_template.js");
+                scripts.push("})();//# sourceURL=" + (token++) + "_template.js");
                 var script = scripts.join("\n");
                 fn = this.S.context(script);
                 fn_map[tplText] = fn;
@@ -2950,7 +2954,7 @@
             compiledFnBody.push(argsScripts.join("\n"));
             compiledFnBody.push($.template.compile(html));
             compiledFnBody.push("   }");
-            compiledFnBody.push("})();//@ sourceURL=" + href + "_template.js");
+            compiledFnBody.push("})();//# sourceURL=" + href + "_template.js");
             var fn = eval(compiledFnBody.join("\n"));
             html = fn.call(this, loadArgs);
             html = html.replace(/\n{2,}/gm, "\n");
@@ -2992,7 +2996,7 @@
             scripts.push("				}catch(e){ \nSmart.error(e);\n}");
             scripts.push("			};");
             scripts.push("		};");
-            scripts.push("})();//@ sourceURL=" + href + ".js");
+            scripts.push("})();//# sourceURL=" + href + ".js");
             var scriptFn = that.context(scripts.join("\n"));
             //处理url后面的queryString，也把后面的queryString作为loadArgs
             var scriptArgs = {};

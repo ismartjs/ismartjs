@@ -84,7 +84,7 @@
             compiledFnBody.push(argsScripts.join("\n"));
             compiledFnBody.push($.template.compile(html));
             compiledFnBody.push("   }");
-            compiledFnBody.push("})();//@ sourceURL=" + href + "_template.js");
+            compiledFnBody.push("})();//# sourceURL=" + href + "_template.js");
             var fn = eval(compiledFnBody.join("\n"));
             html = fn.call(this, loadArgs);
             html = html.replace(/\n{2,}/gm, "\n");
@@ -126,7 +126,7 @@
             scripts.push("				}catch(e){ \nSmart.error(e);\n}");
             scripts.push("			};");
             scripts.push("		};");
-            scripts.push("})();//@ sourceURL=" + href + ".js");
+            scripts.push("})();//# sourceURL=" + href + ".js");
             var scriptFn = that.context(scripts.join("\n"));
             //处理url后面的queryString，也把后面的queryString作为loadArgs
             var scriptArgs = {};
