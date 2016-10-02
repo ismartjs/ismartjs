@@ -1,3 +1,4 @@
-.s-tpl-text {
+.s-tpl-text,
+*[s="tpl"] {
   display: none;
 }
