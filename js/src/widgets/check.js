@@ -169,10 +169,10 @@
             if (node.hasClass(checkedClass)) {
                 this._uncheck(node);
             } else {
-                this._check(node);
+                this.check(node);
             }
         },
-        _check: function (node) {
+        check: function (node) {
             if (node.hasClass(this.widget.check.options['checkedStyle'])) {
                 return;
             }

@@ -5,7 +5,8 @@
     var VALID_NODE_ERROR_ATTR = Smart.optionAttrName("valid", "error");
     var VALID_NODE_LABEL_ATTR = Smart.optionAttrName("valid", "label");
     var VALID_NODE_WARNING_ATTR = Smart.optionAttrName("valid", "warning");
-    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not(:disabled),*[" + VALID_NODE_WARNING_ATTR + "]:not(:disabled)";
+    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not(:disabled),*[" + VALID_NODE_ERROR_ATTR + "]:not(*[s-valid-error-ig='true']),*["
+        + VALID_NODE_WARNING_ATTR + "]:not(:disabled),*[" + VALID_NODE_WARNING_ATTR + "]:not(*[s-valid-warning-ig='true'])";
     var VALID_NODE_ID_ATTR = Smart.optionAttrName("valid", 'id');
     var VALID_NODE_MSG = Smart.optionAttrName("valid", 'msg');
     var VALID_NODE_SHOW_ATTR = Smart.optionAttrName("valid", 'show');

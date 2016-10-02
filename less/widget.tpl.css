@@ -1,4 +1,7 @@
 .s-tpl-text,
 *[s="tpl"] {
-  display: none;
+  visibility: hidden;
+}
+.s-tpl-shown {
+  visibility: visible;
 }
