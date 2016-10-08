@@ -5,8 +5,7 @@
     var VALID_NODE_ERROR_ATTR = Smart.optionAttrName("valid", "error");
     var VALID_NODE_LABEL_ATTR = Smart.optionAttrName("valid", "label");
     var VALID_NODE_WARNING_ATTR = Smart.optionAttrName("valid", "warning");
-    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not(:disabled),*[" + VALID_NODE_ERROR_ATTR + "]:not(*[s-valid-error-ig='true']),*["
-        + VALID_NODE_WARNING_ATTR + "]:not(:disabled),*[" + VALID_NODE_WARNING_ATTR + "]:not(*[s-valid-warning-ig='true'])";
+    var VALID_NODE_SELECTOR = "*[" + VALID_NODE_ERROR_ATTR + "]:not(:disabled),*[" + VALID_NODE_WARNING_ATTR + "]:not(:disabled)";
     var VALID_NODE_ID_ATTR = Smart.optionAttrName("valid", 'id');
     var VALID_NODE_MSG = Smart.optionAttrName("valid", 'msg');
     var VALID_NODE_SHOW_ATTR = Smart.optionAttrName("valid", 'show');
@@ -184,6 +183,9 @@
             (resetShow || this.widget.valid.options.resetShow).call(this, node);
         },
         validateNode: function (node, notice) {
+            if (node.attr("s-valid-error-ig") === "true") {
+                return;
+            }
             var id = node.attr(VALID_NODE_ID_ATTR);
             this.widget.valid.cache.validedNodes.push(node);
             var nodeMsgAttrStr = node.attr(VALID_NODE_MSG);

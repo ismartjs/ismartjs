@@ -20,6 +20,12 @@
         var text = (btn.icon ? "<i class='" + btn.icon + "'></i> " : "") + btn.name;
         button.html(text);
         btn.style && button.addClass(btn.style || "btn-default");
+        if(btn.disabled){
+            btn.prop("disabled", true);
+        }
+        if(btn.hidden){
+            btn.hide();
+        }
         button.click(function () {
             button.prop("disabled", true);
             var rs = btn.click.call(this);
