@@ -102,7 +102,7 @@
             });
         },
         handleAjaxError: function (e, errorTip, errorMsg, xhr) {
-            if (xhr.status == 403) {
+            if (xhr.status == 401) {
                 e.stopPropagation();
                 if (e.retryRequest) {
                     loginRetryCallbacks.push(e.retryRequest);
