@@ -312,6 +312,8 @@ state
 }
 .layout-header .navbar-nav > li > a {
   padding: 10px 15px;
+}
+.layout-header .navbar-nav > li > a i {
   font-size: 25px;
 }
 .layout-workbench {
@@ -329,6 +331,8 @@ state
   }
   .layout-header .navbar-nav > li > a {
     padding: 5px 15px;
+  }
+  .layout-header .navbar-nav > li > a i {
     font-size: 20px;
   }
   .layout-workbench {
