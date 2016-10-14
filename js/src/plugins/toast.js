@@ -57,7 +57,7 @@
 
     Smart.fn.extend({
         notice: function (msg, level, config) {
-            Smart.warn("S.toast已经过时，请使用S.toast替代");
+            Smart.warn("S.notice已经过时，请使用S.toast替代");
             this.toast(msg, level, config);
         },
         toast: function (msg, level, holdTime) {

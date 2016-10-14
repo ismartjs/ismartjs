@@ -61,10 +61,20 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">确认密码</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" s-valid-id="value1" s-valid-error="require(),le('value2')" s-valid-label="aaa"
+                                       class="form-control" placeholder="aaa"/>
+                                <input type="text" s-valid-id="value2" s-valid-error="require(),ge('value1')" s-valid-label="bbb"
+                                       class="form-control" placeholder="vvv"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
                                 <label class="s-checkbox">
-                                    <input type="checkbox"> 记住我
-                                    <span class="s-checkbox-indicator"></span>
+                                    <input type="checkbox">
+                                    <span class="s-checkbox-indicator"></span> 记住我
                                 </label>
                             </div>
                         </div>
@@ -421,14 +431,17 @@
                             <td>String</td>
                             <td>
                                 该验证规则会去远程请求url去验证，常用场景为：用户账号远程验证等。示例如：<code>&lt;input type="text" name="account"
-                                s-valid-error="require(),remote('/account/check')" /&gt;</code>
+                                s-valid-error="require(),remote('/account/check?account={val}')" /&gt;</code>
 
                                 <p>远程验证接口返回值可以是 <code>0|1</code>，当返回<code>0</code>时验证失败，当返回<code>1</code>时验证成功，也可以是json对象，
                                     格式为<code>{code:0|1,
                                         msg:msg}</code>，当<code>code</code>为<code>0</code>时验证失败，<code>msg</code>则作为错误提示显示出来，当为<code>1</code>时，验证成功。
                                 </p>
+                                <div class="text-success">
+                                    url中<code>{val}</code>是占位符，请求url的时候<code>{val}</code>将会被替换成当前域的值，如<code>/account/check?account={val}</code>会被替换为
+                                    <code>/account/check?account=ismartjs</code>
+                                </div>
                             </td>
-                            <iframe id="tmp_downloadhelper_iframe" style="display: none;"></iframe>
                         </tr>
                         <tr>
                             <td>email()</td>

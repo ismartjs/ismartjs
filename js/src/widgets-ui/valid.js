@@ -136,7 +136,6 @@
                 }
                 this.cache.validatorMap = map;
             }
-            this.cache.validateItemMap = {};
             this.cache.validedNodes = [];
         },
         onReset: function () {
@@ -182,11 +181,29 @@
             }
             (resetShow || this.widget.valid.options.resetShow).call(this, node);
         },
+        _getValidateItemById: function (id) {
+            var node = this.node.find("*[s-valid-id='" + id + "']");
+            return this._getValidateItem(node);
+        },
+        _getValidateItem: function (node) {
+            var label = node.attr(VALID_NODE_LABEL_ATTR);
+            var id = node.attr(VALID_NODE_ID_ATTR);
+            var $node = Smart.of(node);
+            return {
+                id: id,
+                label: label ? label : "",
+                node: node,
+                value: $node.val(),
+                $node: $node
+            };
+        },
         validateNode: function (node, notice) {
             if (node.attr("s-valid-error-ig") === "true") {
                 return;
             }
-            var id = node.attr(VALID_NODE_ID_ATTR);
+            var validateItem = this._getValidateItem(node);
+            var id = validateItem.id;
+            var label = validateItem.label;
             this.widget.valid.cache.validedNodes.push(node);
             var nodeMsgAttrStr = node.attr(VALID_NODE_MSG);
             var defMsg = {};
@@ -194,24 +211,12 @@
                 defMsg = this.context('(' + nodeMsgAttrStr + ')');
             }
             var errorExp = node.attr(VALID_NODE_ERROR_ATTR);
-            var label = node.attr(VALID_NODE_LABEL_ATTR);
+
             var deferreds = [];
             var that = this;
             var show = node.attr(VALID_NODE_SHOW_ATTR);
             if (show) {
                 show = this.context(show);//shown是一个context闭包参数。
-            }
-            var $node = Smart.of(node);
-            var validateItem = {
-                id: id,
-                label: label ? label : "",
-                node: node,
-                value: $node.val(),
-                $node: $node
-            };
-            var validateItemMap = this.widget.valid.cache.validateItemMap;
-            if (id != undefined) {
-                validateItemMap[id] = validateItem;
             }
 
             var msg = "";
@@ -221,7 +226,7 @@
                 deferreds.push(function () {
                     var deferred = $.Deferred();
                     var errorDefMsg = defMsg['error'] || {};
-                    executeExp(that, node, errorExp, errorDefMsg, validateItem, validateItemMap)
+                    executeExp(that, node, errorExp, errorDefMsg, validateItem)
                         .done(function (result, _level) {
                             msg = result;
                             level = _level || LEVELS.success;
@@ -244,7 +249,7 @@
                 deferreds.push(function () {
                     var deferred = $.Deferred();
                     var warningMsg = defMsg['warning'] || {};
-                    executeExp(that, node, warningExp, warningMsg, validateItem, validateItemMap, LEVELS.warning).always(function (result, level) {
+                    executeExp(that, node, warningExp, warningMsg, validateItem, LEVELS.warning).always(function (result, level) {
                         msg = result;
                         deferred.resolve();
                     }).done(function (result, _level) {
@@ -273,14 +278,13 @@
      * valid
      * */
 
-    function Validation(smart, node, value, item, itemMap) {
+    function Validation(smart, node, value, item) {
         this.varMap = {};
         this.item = item;
         this.node = node;
         this.value = value;
         this.smart = smart;
         this._interrupt = false;
-        this._validateItemMap = itemMap;
     }
 
     Validation.prototype = {
@@ -288,7 +292,7 @@
             this.varMap[key] = val;
         },
         getItemById: function (id) {
-            return this._validateItemMap[id];
+            return this.smart._getValidateItemById(id);
         },
         processMsg: function (msg) {
             var placeholderRegex = /(\{.+?\})/g;
@@ -308,7 +312,7 @@
 
     //require:true,len(6,12),eq(ctx:S.N('#aaaaa').val())
 
-    function executeExp(smart, node, exp, nodeMsg, item, validateItemMap, level) {
+    function executeExp(smart, node, exp, nodeMsg, item, level) {
         var validSegs = getValidSegs(exp);
         var deferred = $.Deferred();
         var validMsg = "";
@@ -353,7 +357,7 @@
             var vs = validSegs[i];
             var s = /^(\w+)\((.*)\)$/g.exec(vs);
             var method = s[1];
-            var validation = new Validation(smart, node, item.value, item, validateItemMap);
+            var validation = new Validation(smart, node, item.value, item);
             validation.putVar('label', item.label);
             var argStr = ".valid.call(validation";
             if (s.length == 3 && $.trim(s[2]) != "") {
@@ -684,12 +688,15 @@
         },
         {
             id: "ge",
-            valid: function (id) {
+            valid: function (id, converter) {
                 var item = this.getItemById(id);
                 if (item == undefined) {
                     return -1;
                 }
-                if (this.value >= item.value) {
+                converter = converter || parseFloat
+                this.value = converter.call(null, this.value)
+                item.value = converter.call(null, item.value)
+                if (this.value < item.value) {
                     this.putVar("t_label", item.label);
                     return 0;
                 }
@@ -697,18 +704,21 @@
             },
             msg: {
                 '1': "{label}输入正确",
-                '0': "{label}必须大于等于{t_label}",
+                '0': "{label}不能小于{t_label}",
                 '-1': "未找到比较的对象"
             }
         },
         {
             id: "gt",
-            valid: function (id) {
+            valid: function (id, converter) {
                 var item = this.getItemById(id);
                 if (item == undefined) {
                     return -1;
                 }
-                if (this.value > item.value) {
+                converter = converter || parseFloat
+                this.value = converter.call(null, this.value)
+                item.value = converter.call(null, item.value)
+                if (this.value <= item.value) {
                     this.putVar("t_label", item.label);
                     return 0;
                 }
@@ -722,12 +732,15 @@
         },
         {
             id: "le",
-            valid: function (id) {
+            valid: function (id, converter) {
                 var item = this.getItemById(id);
                 if (item == undefined) {
                     return -1;
                 }
-                if (this.value <= item.value) {
+                converter = converter || parseFloat
+                this.value = converter.call(null, this.value)
+                item.value = converter.call(null, item.value)
+                if (this.value > item.value) {
                     this.putVar("t_label", item.label);
                     return 0;
                 }
@@ -735,18 +748,21 @@
             },
             msg: {
                 '1': "{label}输入正确",
-                '0': "{label}必须小于等于{t_label}",
+                '0': "{label}不能大于{t_label}",
                 '-1': "未找到比较的对象"
             }
         },
         {
             id: "lt",
-            valid: function (id) {
+            valid: function (id, converter) {
                 var item = this.getItemById(id);
                 if (item == undefined) {
                     return -1;
                 }
-                if (this.value < item.value) {
+                converter = converter || parseFloat
+                this.value = converter.call(null, this.value)
+                item.value = converter.call(null, item.value)
+                if (this.value >= item.value) {
                     this.putVar("t_label", item.label);
                     return 0;
                 }
