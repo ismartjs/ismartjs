@@ -683,6 +683,82 @@
             }
         },
         {
+            id: "ge",
+            valid: function (id) {
+                var item = this.getItemById(id);
+                if (item == undefined) {
+                    return -1;
+                }
+                if (this.value >= item.value) {
+                    this.putVar("t_label", item.label);
+                    return 0;
+                }
+                return 1;
+            },
+            msg: {
+                '1': "{label}输入正确",
+                '0': "{label}必须大于等于{t_label}",
+                '-1': "未找到比较的对象"
+            }
+        },
+        {
+            id: "gt",
+            valid: function (id) {
+                var item = this.getItemById(id);
+                if (item == undefined) {
+                    return -1;
+                }
+                if (this.value > item.value) {
+                    this.putVar("t_label", item.label);
+                    return 0;
+                }
+                return 1;
+            },
+            msg: {
+                '1': "{label}输入正确",
+                '0': "{label}必须大于{t_label}",
+                '-1': "未找到比较的对象"
+            }
+        },
+        {
+            id: "le",
+            valid: function (id) {
+                var item = this.getItemById(id);
+                if (item == undefined) {
+                    return -1;
+                }
+                if (this.value <= item.value) {
+                    this.putVar("t_label", item.label);
+                    return 0;
+                }
+                return 1;
+            },
+            msg: {
+                '1': "{label}输入正确",
+                '0': "{label}必须小于等于{t_label}",
+                '-1': "未找到比较的对象"
+            }
+        },
+        {
+            id: "lt",
+            valid: function (id) {
+                var item = this.getItemById(id);
+                if (item == undefined) {
+                    return -1;
+                }
+                if (this.value < item.value) {
+                    this.putVar("t_label", item.label);
+                    return 0;
+                }
+                return 1;
+            },
+            msg: {
+                '1': "{label}输入正确",
+                '0': "{label}必须小于{t_label}",
+                '-1': "未找到比较的对象"
+            }
+        },
+        {
             id: "number",
             valid: function () {
                 if (!isNaN(this.value))
