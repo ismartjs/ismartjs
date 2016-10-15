@@ -138,3 +138,10 @@ state
   background: rgba(230, 126, 34, 0.9);
   color: #fff;
 }
+@media (max-width: 768px) {
+  .s-toast-container {
+    width: 80%;
+    bottom: 10px;
+    left: 10%;
+  }
+}
