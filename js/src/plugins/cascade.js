@@ -10,7 +10,7 @@
                         $S.on("change s-data", function (e) {
                             $next.refresh().done(function () {
                                 //$next.node.change();
-                                $next.data($next.data());
+                                $next.val($next.data());
                             })
                         })
                     })($S, $next)
