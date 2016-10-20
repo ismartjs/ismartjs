@@ -130,12 +130,7 @@
                 history.pushState({moduleUrl: tab.data.url, moduleArgs: tab.data.args}, null, "#" + tab.data.url);
             },
             onGet: function () {
-                var href = window.location.href;
-                var hash;
-                if (href.indexOf("#") != -1) {
-                    hash = href.substring(href.indexOf("#") + 1);
-                }
-                return hash;
+                return window.location.hash;
             }
         }
     }, config || {});
