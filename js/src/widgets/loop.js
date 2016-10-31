@@ -77,24 +77,48 @@
                     return $row.data(data);
                 })
             });
-            deferreds.push(function(){
+            var deferred = $.Deferred();
+            Smart.deferredQueue(deferreds).done(function(){
                 that.trigger("row-add", [row, data, mode, indentNum]);
+                deferred.resolve(row);
+            }).fail(function(){
+                deferred.reject();
             })
-            return Smart.deferredQueue(deferreds);
+            return deferred;
         },
         addRows: function (datas, mode, indentNum) {
             this.hideAssistRows();
             indentNum = indentNum == undefined ? 0 : indentNum;
+            var deferreds = [];
+            var rows = [];
+            var that = this;
             for (var i = 0; i < datas.length; i++) {
-                this.addRow(datas[i], mode, indentNum, true);
-                //如果是tree的方式
-                if (this.widget.loop.options.type == "tree") {
-                    var children = datas[i][this.widget.loop.options['childrenKey']];
-                    if (children && children.length) {
-                        this.addRows(children, mode, indentNum + 1);
+                (function(i){
+                    deferreds.push(function(){
+                        return that.addRow(datas[i], mode, indentNum, true).done(function(row){
+                            rows.push(row);
+                        });
+                    })
+                    //如果是tree的方式
+                    if (that.widget.loop.options.type == "tree") {
+                        var children = datas[i][that.widget.loop.options['childrenKey']];
+                        if (children && children.length) {
+                            deferreds.push(function(){
+                                return that.addRows(children, mode, indentNum + 1).done(function(row){
+                                    rows.push(row);
+                                });
+                            })
+                        }
                     }
-                }
+                })(i);
             }
+            var deferred = $.Deferred();
+            Smart.deferredQueue(deferreds).done(function(){
+                deferred.resolve(rows);
+            }).fail(function(){
+                deferred.reject();
+            })
+            return deferred;
         },
         _getRow: function () {
             var row = this.widget.loop.cache.loopRow.clone();
@@ -113,12 +137,7 @@
                 return;
             }
             var that = this;
-            var deferred = $.Deferred();
-            setTimeout(function () {
-                that.addRows(datas);
-                deferred.resolve();
-            }, 10);
-            return deferred;
+            return that.addRows(datas);
         },
         getRows: function(){
             var rows = [];
