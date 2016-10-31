@@ -758,9 +758,9 @@
                 if (method == 'remove') {
                     method = 'delete';
                 }
-                var urlSegs = url.split(":");
-                var type;//默认json请求
-                if (urlSegs.length > 1) {
+                var type;
+                if(/^(xml|html|script|json|text):.+/gi.test(url)){
+                    var urlSegs = url.split(":");
                     type = urlSegs[0];
                     url = url.substring(type.length + 1);
                 } else {
