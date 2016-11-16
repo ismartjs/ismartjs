@@ -88,11 +88,22 @@ state
   -o-transition: all 0.3s ease-out 0s;
   transition: all 0.3s ease-out 0s;
 }
+.layout-aside .nav li i.caret-icon {
+  margin-top: 2px;
+  float: right;
+  margin-right: 5px;
+  -webkit-transition: all 0.3s ease-out 0s;
+  -o-transition: all 0.3s ease-out 0s;
+  transition: all 0.3s ease-out 0s;
+}
 .layout-aside .nav li .nav-second-level {
   -webkit-transition: all 0.3s ease-out 0s;
   -o-transition: all 0.3s ease-out 0s;
   transition: all 0.3s ease-out 0s;
   display: none;
+}
+.layout-aside .nav li .nav-second-level li {
+  position: relative;
 }
 .layout-aside .nav li .nav-second-level li a {
   padding: 9px 10px 9px 35px;
@@ -110,6 +121,14 @@ state
 }
 .layout-aside .nav li .nav-second-level li.active a {
   background: #F7F9FA;
+}
+.layout-aside .nav li .nav-second-level li .nav-children-panel {
+  display: none;
+  position: absolute;
+  right: -1px;
+}
+.layout-aside .nav li .nav-second-level li:hover > .nav-children-panel {
+  display: block;
 }
 .layout-aside .nav li.active {
   border-left: 3px solid #556A7E;

@@ -25,7 +25,7 @@
         }
         > a {
           padding: @layout-header-nav-padding;
-          i{
+          i {
             font-size: @layout-header-font-size;
           }
         }
@@ -102,10 +102,17 @@
         float: right;
         .transition(all .3s ease-out 0s);
       }
+      i.caret-icon {
+        margin-top: 2px;
+        float: right;
+        margin-right: 5px;
+        .transition(all .3s ease-out 0s);
+      }
       .nav-second-level {
         .transition(all .3s ease-out 0s);
         display: none;
         li {
+          position: relative;
           a {
             padding: 9px 10px 9px 35px;
             text-transform: none;
@@ -121,6 +128,16 @@
             border-left: 3px solid @orange-color;
             a {
               background: @layout-aside-bg-color;
+            }
+          }
+          .nav-children-panel {
+            display: none;
+            position: absolute;
+            right: -1px;
+          }
+          &:hover{
+            > .nav-children-panel{
+              display: block;
             }
           }
         }
@@ -219,7 +236,7 @@
       text-align: center;
       display: inline-block;
     }
-    .window-tabs{
+    .window-tabs {
       position: absolute;
       top: 0;
       right: 0;
