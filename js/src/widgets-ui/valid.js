@@ -57,51 +57,58 @@
                 if (msgNode.size() > 0) {
                     $(MSG_ROLE_SELECTOR, item).html(msg || node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
                 } else {
+                    var tooltipNode;
+                    if(item.size() > 0){
+                        tooltipNode = item;
+                    } else {
+                        tooltipNode = node;
+                    }
                     if (level.style == "successClass") {
-                        node.tooltip('destroy');
+                        tooltipNode.tooltip('destroy');
                         return;
                     }
                     function clearTo() {
-                        var tooltipHideTimeout = node.data("tooltip_hide_timeout");
+                        var tooltipHideTimeout = tooltipNode.data("tooltip_hide_timeout");
                         if (tooltipHideTimeout) {
                             clearTimeout(tooltipHideTimeout);
-                            node.removeData("tooltip_hide_timeout");
+                            tooltipNode.removeData("tooltip_hide_timeout");
                         }
                     }
 
                     function destroyTooltip() {
                         var hideTimeout = setTimeout(function () {
-                            node.tooltip('destroy');
-                            node.removeData("tooltip_hide_timeout");
+                            tooltipNode.tooltip('destroy');
+                            tooltipNode.removeData("tooltip_hide_timeout");
                         }, 3000);
-                        node.data("tooltip_hide_timeout", hideTimeout);
+                        tooltipNode.data("tooltip_hide_timeout", hideTimeout);
                     }
 
-                    if (node.data("tooltip_hide_timeout")) {
+                    if (tooltipNode.data("tooltip_hide_timeout")) {
                         clearTo();
                         destroyTooltip();
                         return;
                     }
-                    node.tooltip({
-                        container: node.parent(),
+                    tooltipNode.tooltip({
+                        container: tooltipNode.parent(),
                         title: msg,
                         trigger: "manual",
                         delay: {"show": 200, "hide": 300}
                     });
                     //this.toast(msg);
                     setTimeout(function () {
-                        node.tooltip('show');
+                        tooltipNode.tooltip('show');
                         clearTo();
                     }, 1);
-                    node.on("shown.bs.tooltip", destroyTooltip);
+                    tooltipNode.on("shown.bs.tooltip", destroyTooltip);
                     if (level.key == 'error' && this.widget.valid.options.errorFocus) {
-                        node.focus();
+                        tooltipNode.focus();
                     }
                 }
             },
             'resetShow': function (node) {
                 var item = node.closest(ITEM_ROLE_SELECTOR);
                 node.tooltip('destroy');
+                item.tooltip('destroy');
                 $(MSG_ROLE_SELECTOR, item).html(node.data(NODE_ORIGINAL_VALID_MSG_KEY) || "");
                 item.removeClass(this.widget.valid.options['successClass'] + " " + this.widget.valid.options['errorClass'] + " " + this.widget.valid.options['warningClass']);
             }

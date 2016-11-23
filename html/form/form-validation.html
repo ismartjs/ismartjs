@@ -21,8 +21,15 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">用户名</label>
 
-                            <div class="col-sm-10">
-                                <input type="text" s-valid-error="require(),len(6,12)" s-valid-label="用户名"
+                            <div class="col-sm-10" s-valid-role="item">
+                                <input type="hidden" s-valid-error="require(),len(6,12)" s-valid-label="用户名"
+                                       s-valid-msg="{
+                                           error: {
+                                                require: {
+                                                    0: '请输入用户名'
+                                                }
+                                           }
+                                       }"
                                        class="form-control" placeholder="用户名"/>
                             </div>
                         </div>
