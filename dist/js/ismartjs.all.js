@@ -4093,7 +4093,9 @@
     }, {
         onPrepare: function () {
             this.cache = {};
-            this.env = {};
+            this.env = {
+                optionBuildFlag: false
+            };
             this.cache.optionMap = {};
             /**
              * 如果判断控件的node不是select元素，而且拥有s-select的class，则说明使用html来渲染下拉列表，而不是使用原生的下来列表
@@ -4133,6 +4135,9 @@
                             return;
                         }
                         showSelectPanel(that.S.node, that.env.selectPanel);
+                        if(!that.env.optionBuildFlag){
+                            that.S._createOptions();
+                        }
                         filterInput.focus();
                         $("body").one("click", function () {
                             hideSelectPanel(that.S.node, that.env.selectPanel);
@@ -4186,6 +4191,7 @@
         }
     }, {
         buildSetter: function (datas) {
+            this.widget.select.env.optionBuildFlag = false;
             datas = datas || [];
             if (!$.isArray(datas)) {
                 var _datas = datas;
@@ -4205,10 +4211,6 @@
             this.widget.select.env.listContainer.empty();
             this.widget.select.env.listContainer.append(this.widget.select.cache.originalOptions);
             if (this.widget.select.env.mode == "html") {
-                var that = this;
-                this.node.one("click", function () {
-                    that._createOptions();
-                })
             } else {
                 this._createOptions();
             }
@@ -4218,6 +4220,7 @@
             for (var i in datas) {
                 this.widget.select.env.listContainer.append(this._createOption(datas[i]));
             }
+            this.widget.select.env.optionBuildFlag = true;
         },
         _getOptionData: function (data) {
             if ($.type(data) == 'string') {

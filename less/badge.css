@@ -1,0 +1,39 @@
+/**
+  radius
+*/
+/**
+  button
+*/
+/**
+toast
+*/
+/**
+  panel
+*/
+/**
+state
+*/
+.badge.badge-orange {
+  background: #e67e22;
+  color: #fff;
+}
+.badge.badge-success {
+  background: #62cb31;
+  color: #fff;
+}
+.badge.badge-danger {
+  background: #e74c3c;
+  color: #fff;
+}
+.badge.badge-warning {
+  background: #ffb606;
+  color: #fff;
+}
+.badge.badge-primary {
+  background: #556A7E;
+  color: #fff;
+}
+.badge.badge-info {
+  background: #3498DB;
+  color: #fff;
+}

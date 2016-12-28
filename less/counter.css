@@ -1,0 +1,7 @@
+.s-counter-wrapper {
+  counter-reset: section;
+}
+.s-counter-wrapper .s-counter-item:after {
+  counter-increment: section;
+  content: counter(section, decimal);
+}

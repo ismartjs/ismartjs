@@ -1,0 +1,32 @@
+/**
+  radius
+*/
+/**
+  button
+*/
+/**
+toast
+*/
+/**
+  panel
+*/
+/**
+state
+*/
+.nav-tabs > li {
+  float: left;
+}
+.nav-tabs > li > a {
+  background-color: #fbfaf8;
+  border: 1px solid #ddd;
+  cursor: default;
+}
+.nav-tabs > li.active {
+  margin-bottom: -1px;
+}
+.nav-tabs.nav-justified > li > a {
+  margin-right: -1px;
+}
+.nav-tabs.nav-justified > li:last-child > a {
+  margin-right: 0px;
+}
