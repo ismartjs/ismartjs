@@ -1182,8 +1182,9 @@
                     if (!$.isFunction(dataFilter)) {
                         var data = args[0];
                         var fn_flag = (dataFilter.indexOf(".") != -1 || /^.+\(.*\).*$/.test(dataFilter)) ? true : false;
+                        var array_flag = $.isArray(data);
                         try {
-                            value = [data == undefined ? null : fn_flag ? eval("data." + dataFilter) : data[dataFilter]];
+                            value = [data == undefined ? null : (fn_flag || array_flag) ? eval("data" + dataFilter) : data[dataFilter]];
                         } catch (e) {
 
                         }
