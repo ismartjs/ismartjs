@@ -1184,7 +1184,8 @@
                         var fn_flag = (dataFilter.indexOf(".") != -1 || /^.+\(.*\).*$/.test(dataFilter)) ? true : false;
                         var array_flag = $.isArray(data);
                         try {
-                            value = [data == undefined ? null : (fn_flag || array_flag) ? eval("data" + dataFilter) : data[dataFilter]];
+                            //如果datafilter 为  item.name 或者 .item.name 的时候，就用 eval
+                            value = [data == undefined ? null : (fn_flag || array_flag) ? eval("data" + (dataFilter[0] == '.' ? "" : ".") + dataFilter) : data[dataFilter]];
                         } catch (e) {
 
                         }

@@ -1182,8 +1182,9 @@
                     if (!$.isFunction(dataFilter)) {
                         var data = args[0];
                         var fn_flag = (dataFilter.indexOf(".") != -1 || /^.+\(.*\).*$/.test(dataFilter)) ? true : false;
+                        var array_flag = $.isArray(data);
                         try {
-                            value = [data == undefined ? null : fn_flag ? eval("data." + dataFilter) : data[dataFilter]];
+                            value = [data == undefined ? null : (fn_flag || array_flag) ? eval("data" + (dataFilter[0] == '.' ? "" : ".") + dataFilter) : data[dataFilter]];
                         } catch (e) {
 
                         }
@@ -3142,17 +3143,19 @@
                 }
                 var result = action.call(Smart.of(node), e);
                 if (result == null){
-                    node.removeAttr(ACTION_KEY, true);
+                    node.removeAttr(ACTION_KEY);
                     return;
                 }
                 if (Smart.isDeferred(result)) {//说明这个是deferred对象
                     Smart.disableNode(node);
                     node.addClass("s-loading");
                     result.always(function () {
-                        node.removeAttr(ACTION_KEY, true);
+                        node.removeAttr(ACTION_KEY);
                         node.removeClass("s-loading");
                         Smart.disableNode(node, false);
                     });
+                } else {
+                    node.removeAttr(ACTION_KEY);
                 }
                 return result;
             });
