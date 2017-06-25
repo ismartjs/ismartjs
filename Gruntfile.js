@@ -81,6 +81,15 @@ module.exports = function (grunt) {
                         dest: "dist"
                     }
                 ]
+            },
+            html: {
+							files: [
+								{
+									expand: true,
+									src: ["*.html", 'layout/**/*'],
+									dest: "dist"
+								}
+							]
             }
         }
     });

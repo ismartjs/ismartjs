@@ -1,0 +1,750 @@
+<meta args="config"/>
+<div class="layout-skin-default">
+	<div class="layout-header" s="window" s-window="{href: config.headerUrl}">
+	</div>
+	<div class="layout-backdrop"></div>
+	<div class="layout-aside">
+		<div class="layout-aside-wrapper">
+			<div s="window" s-window="{href: config.asideTopUrl}"></div>
+			<ul class="nav s-tpl-hide" id="menuPanel" s="tpl">
+				<script type="text/template">
+					{% $.each(this.menus, function(i, menu){ %}
+					<li class="{%=(menu.children && menu.children.length) ? 'nav-parent ': ''%} {%=menu.open ? 'menu-open':''%}"
+						menuUrl="{%=menu.url%}" menuId="{%=menu.id%}">
+						<a href="javascript:;">
+							{%if(menu.icon){%}
+							<i class="{%=menu.icon%}"></i>
+							{%}%}
+							<span class="nav-label">{%=menu.title%}</span>
+							{%if(menu.children && menu.children.length){%}
+							<i class="fa fa-angle-down angle-icon"></i>
+							{%}%}
+						</a>
+						{%if(menu.children && menu.children.length){%}
+						<ul class="nav nav-second-level">
+							{% $.each(this.children || {}, function(i, c){ %}
+							<li class="nav-item " menuUrl="{%=c.url%}" menuId="{%=c.id%}">
+								<a href="javascript:;">
+									{%if(c.icon){%}
+									<i class="{%=c.icon%}"></i>
+									{%}%}
+									{%=c.title%}
+								</a>
+							</li>
+							{% }) %}
+						</ul>
+						{%}%}
+					</li>
+					{% }) %}
+				</script>
+			</ul>
+		</div>
+	</div>
+	<div class="layout-workbench">
+		<div class="window-tabs-wrapper">
+			<a class="layout-menu-switch" title="隐藏显示菜单栏" href="javascript:;"><i class="fa fa-bars"></i></a>
+			<ul class="window-tabs" id="mainTabContainer">
+
+			</ul>
+		</div>
+		<div class="main-window" id="mainWindow">
+			<div class="window-container" id="windowContainer">
+
+			</div>
+		</div>
+	</div>
+	<!--ajax操作提示-->
+	<div class="alert alert-warning layout-ajax-active-tip " role="alert" id="ajaxActiveTip"></div>
+
+	<ul id="mainTabContextmenu" s="contextmenu" s-contextmenu="{filter: MainTabContextmenu.filter}"
+		class="s-contextmenu">
+		<li menuId="close" s-click="MainTabContextmenu.closeTarget()">
+			<span>关闭</span>
+		</li>
+		<li class="s-contextmenu-line"></li>
+		<li menuId="clostOther" s-click="MainTabContextmenu.closeOthers()">
+			<span>关闭其他</span>
+		</li>
+		<li menuId="closeAll" s-click="MainTabContextmenu.closeAll()">
+			<span>关闭所有</span>
+		</li>
+		<li class="s-contextmenu-line"></li>
+		<li menuId="refresh" s-click="MainTabContextmenu.refreshTarget()">
+			<span>刷新</span>
+		</li>
+	</ul>
+</div>
+<script type="text/javascript">
+
+	//默认参数配置
+	var loginProcessStatus = 0;
+	var loginRetryCallbacks = [];
+	config = $.extend({
+		menuUrl: null, //需要您来定义
+		defaultTabIcon: "fa fa-file",
+		defaultMenuIcon: "",
+		headerUrl: "asideTop.html",
+		asideTopUrl: "asideTop.html",
+		loginPanel: "loginPanel.html",
+		tabActiveRefresh: true,
+		showAjaxActionTip: false,
+		init: function () {
+			var that = this;
+			$(window).on("popstate", function (e) {
+				var state = history.state;
+				if (state !== undefined) {
+					var tab = MainTab.findSingleTabByUrl(state.moduleUrl);
+					if (tab) {
+						tab.active(false);
+					} else {
+						that.open($.Deferred(), state.moduleUrl, state.moduleArgs, false);
+					}
+				} else {
+
+				}
+			});
+		},
+		handleAjaxError: function (e, errorTip, errorMsg, xhr) {
+			if (xhr.status == 401) {
+				e.stopPropagation();
+				if (e.retryRequest) {
+					loginRetryCallbacks.push(e.retryRequest);
+				}
+				if (loginProcessStatus == 1) {
+					return;
+				}
+				//登陆超时
+				loginProcessStatus = 1;
+				S.popupOpen(config.loginPanel).done(function (status) {
+					loginProcessStatus = 0;
+					if (status) {
+						$.each(loginRetryCallbacks, function (i, callback) {
+							callback();
+						})
+						loginRetryCallbacks = [];
+					}
+				})
+				return;
+			}
+			S.toast($.trim(errorMsg), "danger");
+		},
+		historyListener: {
+			onPush: function (tab) {
+				history.pushState({moduleUrl: tab.data.url, moduleArgs: tab.data.args}, null, "#" + tab.data.url);
+			},
+			onGet: function () {
+				return window.location.hash ? window.location.hash.substring(1) : "";
+			}
+		}
+	}, config || {});
+
+	config.init.call(S);
+
+	//侧边栏子菜单打开合并
+	$menuPanel.node.delegate(" > li", "click", function (e) {
+		var node = $(this);
+		if (node.is(".nav-parent")) {
+			if (node.hasClass("active")) {
+				node.removeClass("active");
+			} else {
+				node.addClass("active").siblings(".nav-parent.active").removeClass("active");
+			}
+			e.stopPropagation();
+		} else {
+			openMenuById(node.attr("menuId"));
+			hideAside();
+		}
+		return;
+	});
+
+	$menuPanel.node.delegate(" .nav-second-level > li", "click", function (e) {
+		var node = $(this);
+		openMenuById(node.attr("menuId"));
+		hideAside();
+		e.stopPropagation();
+	});
+
+	function activeSidebarMenuByUrl(url) {
+		var node = $("li[menuurl='" + url + "']", $menuPanel.node);
+		activeSidebarMenu(node);
+	}
+	function activeSidebarMenu(node) {
+		if (node == null) {
+			return;
+		}
+		if (node.hasClass("nav-item")) {
+			node.parent().parent().addClass("active").siblings(".active").removeClass("active");
+			$menuPanel.node.find("li.nav-item.active").removeClass("active");
+		} else {
+			$("li.active", $menuPanel.node).removeClass("active");
+		}
+		node && node.size() && node.addClass("active").siblings(".active").removeClass("active");
+	}
+
+	function openMenuById(id) {
+		var menu = MenuPanel.getMenuById(id);
+		var tabNode = $("li[menuurl='" + menu.url + "']", S.N("#mainTabContainer"));
+		if (tabNode.size() > 0) {
+			var tab = tabNode.data("tab");
+			tab.active();
+			if (config.tabActiveRefresh && tab.tabWindows[0].makeState == 'SUCCESS') {
+				tab.tabWindows[0].smart.refresh();
+			}
+			return;
+		}
+		new MainTab(menu).add().active();
+	}
+
+	S.N("#mainTabContainer").sortable({axis: "x"});
+
+	$("body").on("open", function (e, url) {
+		if (/^menu:.+$/gi.test(url)) {
+			openMenuById(url.substring(5));
+		} else {
+			if (url.indexOf("url:") == 0) url = url.substring(4);
+			var nowUrl = e.smart.widget.window.location.href;
+			if (!Smart.isEmpty(nowUrl)) {
+				url = Smart.realPath(url, nowUrl);
+			}
+			openUrl(e.deferred, url, Smart.SLICE.call(arguments, 2));
+		}
+		hideAside();
+		e.stopPropagation();
+	});
+
+	var openUrl = S.open = function (deferred, url, args, pushStateFlag) {
+		//在已经打开的选项卡中，根据url获取选项卡，判断其上面是否有single=true的属性，如果有，则直接把该选项卡打开，而不是打开新的页面
+		if (pushStateFlag === undefined) {
+			pushStateFlag = true;
+		}
+		var tab = MainTab.findSingleTabByUrl(url);
+		if (tab) {
+			tab.active(pushStateFlag);
+			if (config.tabActiveRefresh) {
+				tab.tabWindows[0].smart.refresh();
+			}
+			return;
+		}
+		//根据当前控件的url处理 打开的url的真实路径。
+		var data = {
+			title: "加载中",
+			type: "url",
+			url: url,
+			deferred: deferred,
+			args: args
+		};
+		new MainTab(data).add().active(pushStateFlag);
+	};
+
+	//菜单面板
+	var MenuPanel = {
+		smart: $menuPanel,
+		menuMapping: {},
+		loadMenu: function () {
+			var menuUrl = config.menuUrl;
+			if (Smart.isEmpty(menuUrl)) {
+				S.alert("请先定义menuUrl");
+				return;
+			}
+			var that = this;
+			S.get(menuUrl).done(function (menus) {
+				that.menus = menus;
+				var urlMapping = {};
+				var needOpenMenus = [];
+				$.each(menus, function (i, menu) {
+					urlMapping[menu.url] = menu;
+					menu.icon = menu.icon || config.defaultMenuIcon;
+					that.menuMapping[menu.id] = menu;
+					if (menu.open) {
+						needOpenMenus.push(menu);
+					}
+					if (menu.children) {
+						$.each(menu.children, function (i, cm) {
+							that.menuMapping[cm.id] = cm;
+							if (cm.open) {
+								needOpenMenus.push(cm);
+							}
+						});
+					}
+				});
+				that.smart.data({menus: menus});
+				var openMainTab;
+				//如果根据hash要打开的页面的url和默认需要打开的有相同的，则不需要创建新的，直接将已经打开的置为active。
+				var openedUrlMap = {};
+				var hash = config.historyListener.onGet();
+				$.each(needOpenMenus, function (i, m) {
+					var _openMainTab;
+					if (m.url) {
+						_openMainTab = openedUrlMap[m.url] = new MainTab(m).add();
+					}
+					if (i == 0) {
+						openMainTab = _openMainTab;
+					}
+				});
+				if (hash) {
+					if (hash in openedUrlMap) {
+						openedUrlMap[hash].active();
+					} else if (hash in urlMapping) {
+						var menu = urlMapping[hash];
+						new MainTab(menu).add().active();
+					} else {
+						openUrl(null, hash, null);
+					}
+				} else {
+					openMainTab && openMainTab.active();
+				}
+			});
+			return this;
+		},
+		getMenuById: function (id) {
+			return this.menuMapping[id];
+		}
+	};
+
+	S.on("s-ready", function () {
+		MenuPanel.loadMenu();
+	});
+
+	//主选项
+	function MainTab(data) {
+		this.data = data;
+		this.tabWindows = [];
+		var tabWindow = new TabWindow(this.data, this);
+		this.bindTabWindowEvent(tabWindow);
+		this.tabWindows.push(tabWindow);
+		this.currentTabWindow = this.currentTabWindow || this.tabWindows[0];
+	}
+
+	MainTab.findSingleTabByUrl = function (url) {
+		var tabNode = $("li[menuurl='" + url + "']", MainTab.container);
+		if (tabNode.size() != 1) {
+			return null;
+		}
+		return tabNode.data("tab").single ? tabNode.data("tab") : null;
+	}
+
+	MainTab.container = S.N("#mainTabContainer");
+	MainTab.currentTab = null;
+	MainTab.TabStack = {
+		stack: [],
+		pushTop: function (mainTab) {
+			if (this.stack.length) {
+				if (this.stack[this.stack.length - 1] == mainTab) {
+					return;
+				}
+			}
+			this.stack = Smart.removeArrayElement(mainTab, this.stack);
+			this.stack.push(mainTab);
+		},
+		getTop: function () {
+			if (this.stack.length) {
+				return this.stack[this.stack.length - 1];
+			}
+			return null;
+		},
+		remove: function (mainTab) {
+			this.stack = Smart.removeArrayElement(mainTab, this.stack);
+		}
+	};
+	MainTab.activeTop = function () {
+		var topTab = MainTab.TabStack.getTop();
+		topTab && !topTab.isTop() && topTab.active();
+	};
+
+	MainTab.closeMainTabs = function (mainTabs) {
+		var deferred = $.Deferred();
+
+		function closeMainTab(i) {
+			if (i >= mainTabs.length) {
+				return deferred.resolve();
+			}
+			mainTabs[i].close().done(function () {
+				closeMainTab(i + 1);
+			})
+		}
+
+		closeMainTab(0);
+		return deferred;
+	};
+
+	MainTab.prototype = {
+		add: function () {
+			var data = this.data;
+			this.node = $('<li menuurl="' + data.url + '"><a href="javascript:;"></a></li>');
+			var a = $("a", this.node);
+			this.titleNode = $("<span> " + data.title + "</span>");
+			this.iconNode = $("<i class='" + (data.icon ? data.icon : config.defaultTabIcon) + "'></i> ");
+			a.append(this.iconNode);
+			a.append(this.titleNode);
+			this.node.attr("title", data.title);
+			this.node.data("tab", this);
+			this.bindEvent();
+			MainTabContextmenu.bindTarget(this.node, this);
+			MainTab.container.append(this.node);
+			MainTab.TabStack.pushTop(this);
+			return this;
+		},
+		_addCloseHandle: function () {
+			var closeSpan = $("<div>×</div>");
+			this.node.addClass("closeable").append(closeSpan);
+			var that = this;
+			this.closeHandle = closeSpan.click(function (e) {
+				that.close();
+				e.stopPropagation();
+			});
+		},
+		_removeCloseHandle: function () {
+			this.closeHandle.unbind().remove();
+		},
+		bindEvent: function () {
+			this.node.click($.proxy(this.active, this));
+			return this;
+		},
+		close: function () {
+			var that = this;
+			var deferred = $.Deferred();
+
+			function closeTabWindow(i) {
+				if (i >= that.tabWindows.length) {
+					return deferred.resolve();
+				}
+				var tabWindow = that.tabWindows[i];
+				tabWindow.close().done(function () {
+					closeTabWindow(i + 1);
+				});
+			}
+
+			closeTabWindow(0);
+			return deferred;
+		},
+		refresh: function () {
+			this.currentTabWindow.refresh();
+		},
+		active: function (pushStateFlag) {
+			if (MainTab.currentTab == this) {
+				return;
+			}
+			if (pushStateFlag === undefined) {
+				pushStateFlag = true;
+			}
+			var menuUrl = this.data.url;
+			var sidebarMenuNode = $("li[menuurl='" + menuUrl + "']", $menuPanel.node);
+			if (sidebarMenuNode.size() > 0) {
+				activeSidebarMenu(sidebarMenuNode);
+			} else {
+				activeSidebarMenu();
+			}
+			if (MainTab.currentTab) {
+				MainTab.currentTab.fallow();
+			}
+			MainTab.currentTab = this;
+			this.node.addClass("active");
+			MainTab.TabStack.pushTop(this);
+			this.showTabWindow(pushStateFlag);
+			return this;
+		},
+		isTop: function () {
+			return this.node.hasClass("active");
+		},
+		fallow: function () {
+			this.node.removeClass("active");
+			return this;
+		},
+		destroy: function () {
+			this.node.remove();
+			MainTab.TabStack.remove(this);
+		},
+		showTabWindow: function (pushStateFlag) {
+			if (this.currentTabWindow.makeState == 'PREPARE') {
+				this.makeTabWindow(this.currentTabWindow);
+			}
+			this.currentTabWindow.show(pushStateFlag);
+			return this;
+		},
+		makeTabWindow: function (tabWindow) {
+
+			var that = this;
+			if (Smart.isEmpty(this.data.children)) {
+				tabWindow.smart.on("meta", function (e, key, value) {
+					if ($.type(key) == 'object') {
+						that.setMeta(key);
+					} else {
+						var meta = {};
+						meta[key] = value;
+						that.setMeta(meta);
+					}
+				});
+				tabWindow.smart.on("s-window-loaded", function () {
+					var smart = tabWindow.smart;
+					smart.node.css("visibility", 'visible');
+					if ((config.tabWindowAnimate !== false) && (smart.meta.animation || config.tabWindowAnimation)) {
+						smart.node.addClass(smart.meta.animation || config.tabWindowAnimation);
+						setTimeout(function () {
+							smart.node.removeClass(smart.meta.animation || config.tabWindowAnimation);
+						}, 1000);
+					}
+				})
+			}
+			return tabWindow.make().done(function (smart) {
+				//如果该mainTab拥有子tab，则不设置meta
+				if (Smart.isEmpty(that.data.children)) {
+					that.setMeta(smart.meta);
+				}
+			}).fail(function () {
+				that._addCloseHandle();
+			});
+		},
+		bindTabWindowEvent: function (tabWindow) {
+			var that = this;
+			var loadIcon = $('<loadi class="pe-7s-refresh-2 s-spin"></loadi>');
+			tabWindow.smart.on("close", function () {
+				that.destroy();
+				tabWindow.node.remove();
+				MainTab.activeTop();
+				that.data.deferred && that.data.deferred.resolve.apply(that.data.deferred, Smart.SLICE.call(arguments, 1))
+			}).on("s-loading", function () {
+				$("i", that.node).hide();
+				$("loadi", that.node).remove();
+				$("a", that.node).prepend(loadIcon);
+			}).on("s-ready", function () {
+				loadIcon.remove();
+				$("i", that.node).show();
+			});
+		},
+		setMeta: function (meta) {
+			var that = this;
+			if (meta.single === "" || meta.single === true || meta.single == "true" || meta.single == undefined) {
+				meta.single = true;
+			} else {
+				meta.single = false;
+			}
+			$.each(meta || {}, function (key, value) {
+				switch (key) {
+					case "title":
+						that.titleNode.html(" " + value);
+						that.node.attr("title", value);
+						break;
+					case "icon" :
+						that.iconNode.attr("class", "").addClass(value);
+						break;
+					case "description":
+						that.node.attr("title", value);
+						break;
+					case "single":
+						that.node.attr("single", value);
+						that.single = value;
+						break;
+				}
+			});
+			if (meta.closeable === "true" || meta.closeable == undefined
+				|| meta.closeable == "" || meta.closeable === true) {
+				this._addCloseHandle();
+			} else {
+				this.node.attr("closeable", "false");
+			}
+		}
+	};
+
+	var MainTabContextmenu = {
+		smart: S.S("#mainTabContextmenu"),
+		bindTarget: function (node, mainTab) {
+			node.data("mainTab", mainTab);
+			this.smart.bindTarget(node);
+		},
+		filter: function (menuId) {
+			if (menuId == "close") {
+				var target = Smart.UI.contextmenu.target;
+				return !(target.node.attr("closeable") == 'false');
+			}
+		},
+		closeTarget: function () {
+			var target = Smart.UI.contextmenu.target;
+			var mainTab = target.node.data("mainTab");
+			mainTab.close();
+			MainTab.activeTop();
+		},
+		closeOthers: function () {
+			var target = Smart.UI.contextmenu.target;
+			var others = target.node.siblings();
+			this.closeNodes(others);
+		},
+		closeAll: function () {
+			var tabs = MainTab.container.children();
+			this.closeNodes(tabs);
+		},
+		closeNodes: function (nodes) {
+			var mainTabs = [];
+			$.each(nodes, function () {
+				if ($(this).attr("closeable") == 'false')
+					return;
+				var mainTab = $(this).data("mainTab");
+				mainTabs.push(mainTab);
+			});
+			MainTab.closeMainTabs(mainTabs).done(function () {
+				MainTab.activeTop();
+			});
+		},
+		refreshTarget: function () {
+			var target = Smart.UI.contextmenu.target;
+			var mainTab = target.node.data("mainTab");
+			mainTab.refresh();
+		}
+	};
+
+	var MainContextmenu = {
+		smart: S.S("#mainContextmenu"),
+		bindTarget: function (node, mainTab) {
+			node.data("mainTab", mainTab);
+			this.smart.bindTarget(node);
+		},
+		showCopyright: function () {
+			S.alert("iSmart JS 版权所有，QQ群：51729123");
+		},
+		showSourceHtml: function () {
+			var node = Smart.UI.contextmenu.node;
+			var windowSmart = Smart.of(node).closest('window');
+			if (windowSmart == null) return;
+			var menu = {
+				url: 'source-view.html',
+				args: [{url: windowSmart.widget.window.location.href}]
+			};
+			new MainTab(menu).add().active();
+		}
+	};
+
+	this.on("s-ready", function () {
+		//MainContextmenu.bindTarget($("body"));
+	});
+
+	function showTabWindowById(id) {
+		var tabWindow = TabWindow.mapping[id];
+		tabWindow.makeState == 'PREPARE' && tabWindow.make();
+		tabWindow.show();
+	}
+
+	function TabWindow(data, mainTab) {
+		this.data = data
+		this.makeState = "PREPARE";
+		this.mainTab = mainTab;
+		this.id = TabWindow.getToken();
+		TabWindow.mapping[this.id] = this;
+		var smartNode = $("<div s='window' />").css("visibility", 'hidden');
+		this.node = $("<div />").append(smartNode);
+		this.smart = Smart.of(smartNode);
+	}
+	TabWindow.container = S.N("#windowContainer");
+	TabWindow.currentTabWindow = null;
+	TabWindow.token = 0;
+	TabWindow.getToken = function () {
+		return "_tab_window_" + (TabWindow.token++ );
+	};
+	TabWindow.mapping = {};
+	TabWindow.prototype = {
+		show: function (pushStateFlag) {
+			if (TabWindow.currentTabWindow) {
+				TabWindow.currentTabWindow.hide();
+			}
+			TabWindow.currentTabWindow = this;
+			this.mainTab.currentTabWindow = this;
+			this.node.show();
+			if (this.data.url && pushStateFlag) {
+				config.historyListener.onPush(this.mainTab);
+			}
+		},
+		hide: function () {
+			this.node.hide();
+		},
+		make: function () {
+			this.makeState = "MAKING";
+			this.smart.render();
+			TabWindow.container.append(this.node);
+			if (!this.data.url) return $.Deferred().resolve(this.smart);
+			var that = this;
+			return this.smart.load.apply(this.smart, [this.data.url].concat(this.data.args)).done(function () {
+				that.makeState = "SUCCESS";
+			}).fail(function () {
+				that.makeState = "FAIL";
+			});
+		},
+		close: function () {
+			if (this.makeState != "SUCCESS") {
+				this.smart.trigger("close");//因为MainTab的关闭是监听的该smart的close事件，如果没有made，则在这里直接trigger一个close事件
+				return $.Deferred().resolve();
+			}
+			var that = this;
+			return this.smart.close().done(function () {
+				delete TabWindow.mapping[that.id];
+				delete that.mainTab.currentTabWindow;
+				delete that.mainTab;
+			});
+		},
+		refresh: function () {
+			var that = this;
+			this.smart.node.addClass(this.smart.meta.animation || config.tabWindowAnimation);
+			this.smart.refresh().done(function () {
+				setTimeout(function () {
+					that.smart.node.removeClass(that.smart.meta.animation || config.tabWindowAnimation);
+				}, 1000);
+			});
+		}
+	};
+
+	//处理ajax tip
+	var ajaxActiveTip = S.N("#ajaxActiveTip");
+	var closeTimeout;
+	function showAjaxActiveTip(msg, level) {
+		if (!config.showAjaxActionTip) {
+			return;
+		}
+		var removeClass;
+		var addClass;
+		if (level == "warning") {
+			removeClass = "alert-success alert-danger";
+			addClass = "alert-warning";
+		} else if (level == "success") {
+			removeClass = "alert-warning alert-danger";
+			addClass = "alert-success";
+		} else {
+			removeClass = "alert-warning alert-success";
+			addClass = "alert-danger";
+		}
+		ajaxActiveTip.removeClass(removeClass).addClass(addClass).css('z-index', Smart.UI.zIndex()).show().html(msg);
+	}
+	function hideAjaxActiveTip() {
+		if (closeTimeout) {
+			clearTimeout(closeTimeout);
+		}
+		closeTimeout = setTimeout(function () {
+			ajaxActiveTip.fadeOut(200);
+			closeTimeout = 0;
+		}, 1500);
+	}
+	$("body").on("smart-ajaxStart", function (e, tip) {
+		showAjaxActiveTip(tip, "warning");
+	}).on("smart-ajaxSuccess", function (e, tip) {
+		showAjaxActiveTip(tip, "success");
+	}).on("smart-ajaxError", function (e, errorTip, msg) {
+		config.handleAjaxError ? config.handleAjaxError.apply(S, Array.prototype.slice.call(arguments))
+			: (S.alert($.trim(msg), "error"));
+		showAjaxActiveTip(errorTip, "error");
+	}).on("smart-ajaxComplete", function () {
+		hideAjaxActiveTip();
+	});
+
+	S.node.delegate(".layout-menu-switch", "click", function (e) {
+		if ($(window).width() >= 768) {
+			$("body").toggleClass("layout-hide-aside");
+		} else {
+			$("body").toggleClass("layout-show-aside");
+		}
+	});
+	S.node.delegate(".layout-backdrop", "click", function (e) {
+		hideAside();
+	})
+
+	function hideAside() {
+		if ($("body").hasClass("layout-show-aside")) {
+			$("body").removeClass("layout-show-aside");
+		}
+	}
+</script>

@@ -1,0 +1,68 @@
+<meta title="快速入门" />
+<div class="p" style="background: #fff">
+	<div class="alert alert-warning">
+		<h3>iSmartJs是什么？</h3>
+		<p class="lead">
+			iSmartJs是一个全栈式的，用于开发管理系统的javascript RIA框架，iSmartJs已经为开发者提供好了布局界面、UI交互、ajax操作提示、UI组件、页面样例等，开发者可以直接进入业务模块开发，
+			省去UI界面的开发工作量，（PS：UI界面的开发对于绝大多数开发者来说是非常头疼的事情，幸运的是，iSmartJs为开发者解决了该问题）。
+		</p>
+		<p class="lead">
+			iSmartJs相对来说低曲线的学习成本，也可以让初次接触javascript开发的新手来说，也能够快速上手进入业务功能的开发。
+		</p>
+	</div>
+
+	<h3>iSmartJs都提供了什么？</h3>
+	<hr />
+	<ol>
+		<li>
+			<h3>UI布局</h3>
+			<div class="">
+				iSmartJs当前提供了2套布局可供选择，<a href="?layout=default" external>经典布局</a>、<a external href="?layout=spring">Spring布局</a>，
+				使用iSmartJs提供的布局文件，开发者可以直接进入到开发，而不需要去写管理系统界面的布局html。
+			</div>
+		</li>
+		<li>
+			<h3>通过json定义管理菜单</h3>
+			<p class="">
+				iSmartJs通过加载菜单的json文件，就可以自动加载显示菜单，而不需要开发者通过生成html去显示菜单，并且iSmartJs支持三级菜单，子菜单的显示与隐藏完全由iSmartJs来控制，并不需要开发者去写控制代码控制多级菜单的显示。
+			</p>
+		</li>
+		<li>
+			<h3>丰富的交互UI</h3>
+			<div class="">
+				iSmartJs已经为您提供了丰富的交互UI，如警告框(alert)、确认框(confirm)、信息通知(toast)、模态框(modal)、面板、排版、按钮、图标、加载按钮等，这些交互UI看起来更精致，并且iSmartJs提供的多种样式可供选择，如danger、success、primary、info等样式，并且开发者也可以非常便捷的自定义样式。
+				<br />
+				<br />
+				<a href="form/form-elements.html">点击访问UI元素、实际操作一番</a>
+			</div>
+		</li>
+		<li>
+			<h3>配置形式的表单验证</h3>
+			<div class="">
+				使用iSmartJs进行表单验证并不需要写过多的代码进行验证，开发者只需要配置相应的验证规则，iSmartJs会自动完成输入验证以及验证提示，这一切都与iSmartJs框架结合起来，使用更为方便。
+				iSmartJs提供了丰富的多达10多种内置验证规则，支持远程服务器验证（只需要配置远程验证url即可，不需要开发者自编程写远程验证）。开发者也可以很方便的扩展验证规则和修改验证结果的显示方式。
+			</div>
+		</li>
+		<li>
+			<h3>组件化页面（核心功能） </h3>
+			<div class="">
+				组件化页面由<code>meta</code>、<code>html</code>、<code>script</code>三种类型的标签组成，<code>meta</code>标签定义页面的元数据（如title，width，icon等），
+				<code>html</code>定义了页面的显示UI，<code>script</code>用于控制组件化页面。组件化的页面模块可以通过工作区打开，也可以通过模态框打开，并且提供了组件化页面关闭回掉的机制，
+				可以更容易实现诸如 类目选择器、图片选择器等等功能性复用性的组件化页面。
+				<br >
+				<br >
+				<p><a href="widget/window.html">点击访问window控件获取更为详细的组件化页面开发教程</a></p>
+				一个典型的组件化页面代码如下：
+				<pre s
+					 s-data="Smart.dataTransfer(S.get('text:html/widget/window/demo2.html'), Smart.encodeHtml)"></pre>
+			</div>
+		</li>
+		<li>
+			<h3>浏览器的前进与后退</h3>
+			<div class="">
+				iSmartJs布局文件都实现了监听浏览器的前进与后退的功能，点击浏览器的回退按钮能够实现界面的无刷新操作。
+			</div>
+		</li>
+	</ol>
+	<hr />
+</div>

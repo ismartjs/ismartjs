@@ -1,12 +1,5 @@
 [
   {
-    "id": "GUIDE",
-    "title": "快速入门",
-    "icon": "fa fa-desktop",
-    "url": "html/guide.html",
-    "open": true
-  },
-  {
     "id": "ISMARTJS",
     "title": "iSmartJs",
     "icon": "fa fa-cog",
@@ -96,6 +89,17 @@
     ]
   },
   {
+    "id": "dashboard",
+    "title": "仪表盘",
+    "url": "html/dashboard.html",
+    "icon": "fa fa-dashboard",
+    "open": "true",
+    "label": {
+      "text": "NEW",
+      "style": "label-danger"
+    }
+  },
+  {
     "id": "ANALYTICS",
     "title": "统计分析",
     "url": "html/views/analytics.html",
@@ -132,17 +136,6 @@
     "icon": "fa fa-tv",
     "title": "页面",
     "children": [
-      {
-        "id": "dashboard",
-        "title": "仪表盘",
-        "url": "html/dashboard.html",
-        "icon": "fa fa-dashboard",
-        "open": "true",
-        "label": {
-          "text": "NEW",
-          "style": "label-danger"
-        }
-      },
       {
         "id": "LOGIN_PANEL",
         "title": "登录页",
@@ -304,6 +297,18 @@
     ]
   },
   {
+    "id": "TABLE",
+    "title": "表格",
+    "icon": "fa fa-table",
+    "url": "html/ui/tables.html"
+  },
+  {
+    "id": "UI_WIDGETS",
+    "title": "UI组件",
+    "icon": "fa fa-desktop",
+    "url": "html/ui/widgets.html"
+  },
+  {
     "id": "FORM",
     "icon": "fa fa-file-text-o",
     "title": "表单",
@@ -327,18 +332,6 @@
         "url": "html/form/editors.html"
       }
     ]
-  },
-  {
-    "id": "TABLE",
-    "title": "表格",
-    "icon": "fa fa-table",
-    "url": "html/ui/tables.html"
-  },
-  {
-    "id": "UI_WIDGETS",
-    "title": "UI组件",
-    "icon": "fa fa-desktop",
-    "url": "html/ui/widgets.html"
   },
   {
     "id": "GRID_SYSTEM",

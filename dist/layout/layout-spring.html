@@ -1,0 +1,470 @@
+<meta args="config"/>
+<div class="layout-hide-left-aside" id="layout">
+	<div class="layout-header">
+		<div class="layout-header-left" s="window" s-window="{href: config.headerLeftUrl}"></div>
+		<ul class="navbar-nav navbar-menu" id="topMenu" s="tpl">
+			{% $.each(this.menus, function(i, menu){%}
+			<li menuUrl="{%=menu.url%}" menuId="{%=menu.id%}">
+				<a href="javascript:;">
+					<i class="nav-menu-icon {%=menu.icon%}"></i> {%=menu.title%}
+				</a>
+			</li>
+			{%})%}
+		</ul>
+		<div class="layout-header-right" s="window" s-window="{href: config.headerRightUrl}"></div>
+	</div>
+	<!-- 工作区全屏按钮 -->
+	<div class="layout-backdrop"></div>
+	<div class="layout-left-aside" id="layoutLeftAside">
+		<a class="layout-fullscreen-switch" title="隐藏显示菜单栏" href="javascript:;"><i class="fa fa-bars"></i></a>
+		<div class="layout-left-aside-wrapper">
+			<ul class="nav s-tpl-hide nav-first-level" id="level2MenuPanel" s="tpl">
+				<script type="text/template">
+					{% $.each(this, function(i, menu){ %}
+					<li class="{%=(menu.children && menu.children.length) ? 'nav-parent ': 'nav-item'%}"
+						menuUrl="{%=menu.url%}" menuId="{%=menu.id%}">
+						<a href="javascript:;" title="{%=menu.title%}">
+							<i class="nav-menu-icon {%=menu.icon || config.defaultMenuIcon%}"></i>
+							<span class="nav-label">{%=menu.title%}</span>
+							{%if(menu.children && menu.children.length){%}
+							<i class="fa fa-angle-down angle-icon"></i>
+							{%}%}
+						</a>
+						{%if(menu.children && menu.children.length){%}
+						<ul class="nav nav-second-level">
+							{% $.each(this.children || {}, function(i, c){ %}
+							<li class="nav-item" menuUrl="{%=c.url%}" menuId="{%=c.id%}">
+								<a href="javascript:;" title="{%=c.title%}">
+									<i class="nav-menu-icon {%=menu.icon || config.defaultMenuIcon %}"></i>
+									<span class="nav-label">{%=c.title%}</span>
+								</a>
+							</li>
+							{% }) %}
+						</ul>
+						{%}%}
+					</li>
+					{% }) %}
+				</script>
+			</ul>
+		</div>
+	</div>
+	<div class="layout-workbench" id="workbench">
+
+	</div>
+	<!--ajax操作提示-->
+	<div class="alert alert-warning layout-ajax-active-tip " role="alert" id="ajaxActiveTip"></div>
+
+</div>
+<script type="text/javascript">
+
+	//默认参数配置
+	var loginProcessStatus = 0;
+	var loginRetryCallbacks = [];
+	$("body").addClass("layout-skin-spring");
+	config = $.extend({
+		menuUrl: null, //需要您来定义
+		defaultTabIcon: "fa fa-file",
+		defaultMenuIcon: "fa fa-file",
+		headerUrl: "asideTop.html",
+		headerLeftUrl: 'headerLeft.html',
+		headerLeftUrl: 'headerRight.html',
+		loginPanel: "loginPanel.html",
+		tabActiveRefresh: true,
+		showAjaxActionTip: false,
+		init: function () {
+			var that = this;
+			$(window).on("popstate", function (e) {
+				var state = history.state;
+				if (state) {
+					openUrlAboutMenu(state.moduleUrl, state.moduleArgs);
+				} else {
+
+				}
+			});
+		},
+		handleAjaxError: function (e, errorTip, errorMsg, xhr) {
+			if (xhr.status == 401) {
+				e.stopPropagation();
+				if (e.retryRequest) {
+					loginRetryCallbacks.push(e.retryRequest);
+				}
+				if (loginProcessStatus == 1) {
+					return;
+				}
+				//登陆超时
+				loginProcessStatus = 1;
+				S.popupOpen(config.loginPanel).done(function (status) {
+					loginProcessStatus = 0;
+					if (status) {
+						$.each(loginRetryCallbacks, function (i, callback) {
+							callback();
+						})
+						loginRetryCallbacks = [];
+					}
+				})
+				return;
+			}
+			S.toast($.trim(errorMsg), "danger");
+		},
+		historyListener: {
+			onPush: function (url, args) {
+				history.pushState({moduleUrl: url, moduleArgs: args || {}}, null, "#" + url);
+			},
+			onGet: function () {
+				return window.location.hash ? window.location.hash.substring(1) : "";
+			}
+		}
+	}, config || {});
+
+	config.init.call(S);
+
+	$topMenu.node.delegate(" > li", "click", function (e) {
+		var node = $(this);
+		var menuId = node.attr("menuId");
+		var menu = MenuPanel.getMenuById(menuId);
+		var children = menu.children;
+		if (menu.url && menu.url.length) {
+			openMenu(menu).progress(function (state) {
+				if (state == 'loading-window') {
+					buildLevel2MenuPanel(children);
+					node.addClass("active").siblings(".active").removeClass("active");
+				}
+			});
+		} else {
+			var tmpMenu = menu.children[0];
+			if (!tmpMenu.url || !tmpMenu.url.length) {
+				tmpMenu = menu.children[0].children[0];
+			}
+			openMenu(tmpMenu).progress(function (state) {
+				if (state == 'loading-window') {
+					buildLevel2MenuPanel(children);
+					node.addClass("active").siblings(".active").removeClass("active");
+					activeSidebarMenuByUrl(tmpMenu.url);
+				}
+			});
+		}
+	});
+
+	/**
+	 * 创建二级菜单面板，如果二级菜单为空，那么隐藏二级菜单面板
+	 * */
+	function buildLevel2MenuPanel(menus) {
+		if (!menus || !menus.length) {
+			showLeftAside(false);
+		} else {
+			showLeftAside();
+		}
+		return $level2MenuPanel.data(menus || []);
+	}
+
+	//侧边栏子菜单打开合并
+	$level2MenuPanel.node.delegate(" > li", "click", function (e) {
+		var node = $(this);
+		if (node.is(".nav-parent")) {
+			if (node.hasClass("active")) {
+				node.removeClass("active");
+			} else {
+				node.addClass("active").siblings(".nav-parent.active").removeClass("active");
+			}
+			e.stopPropagation();
+		} else {
+			openMenuById(node.attr("menuId")).progress(function (state) {
+				if (state == 'loading-window') {
+					activeSidebarMenuByNode(node);
+				}
+			});
+		}
+		return;
+	});
+
+	$level2MenuPanel.node.delegate(" .nav-second-level > li", "click", function (e) {
+		var node = $(this);
+		openMenuById(node.attr("menuId")).progress(function (state) {
+			if (state == 'loading-window') {
+				activeSidebarMenuByNode(node);
+			}
+		})
+		e.stopPropagation();
+	});
+
+	function activeSidebarMenuByUrl(url) {
+		var node = $("li[menuurl='" + url + "']", $level2MenuPanel.node);
+		activeSidebarMenuByNode(node);
+	}
+
+	function activeSidebarMenuByNode(node) {
+		if (node.hasClass("active")) {
+			return;
+		}
+		$level2MenuPanel.node.find("li.nav-item.active,li.nav-parent.active").removeClass("active");
+		node.addClass("active");
+		//如果该node是子菜单，那么需要父菜单也需要加active
+		var parent = node.parent();
+		if (parent.is(".nav-second-level")) {
+			parent.parent().addClass("active");
+		}
+	}
+
+	function openMenuById(id) {
+		var menu = MenuPanel.getMenuById(id);
+		return openMenu(menu);
+	}
+
+	function openMenu(menu, args) {
+		return loadWindow(menu.url, args);
+	}
+
+	/**
+	 * 根据menu打开url，并且设置menu的交互状态
+	 * */
+	function openMenuWithUiState(menu, args) {
+		var topMenu = menu;
+		while (true) {
+			if (topMenu.__parent__) {
+				topMenu = topMenu.__parent__;
+			} else {
+				break;
+			}
+		}
+		$topMenu.node.find("li[menuId='" + topMenu.id + "']").addClass("active").siblings(".active").removeClass("active");
+		if (topMenu === menu) {
+			buildLevel2MenuPanel(menu.children);
+		} else {
+			buildLevel2MenuPanel(topMenu.children).done(function () {
+				activeSidebarMenuByUrl(menu.url);
+			})
+		}
+		return openMenu(menu, args);
+	}
+
+	S.N("#mainTabContainer").sortable({axis: "x"});
+
+	$layout.node.on("open", function (e, url) {
+		if (/^menu:.+$/gi.test(url)) {
+			openMenuById(url.substring(5));
+		} else {
+			if (url.indexOf("url:") == 0) url = url.substring(4);
+			var nowUrl = e.smart.widget.window.location.href;
+			if (!Smart.isEmpty(nowUrl)) {
+				url = Smart.realPath(url, nowUrl);
+			}
+			Smart.deferredChain(e.deferred || $.Deferred(), openUrlAboutMenu(url, Smart.SLICE.call(arguments, 2)))
+		}
+		e.stopPropagation();
+	});
+
+	var openUrl = S.open = function (deferred, url, args) {
+		return Smart.deferredChain(deferred || $.Deferred(), MainWindow.replace(url, args));
+	};
+
+	function loadWindow(url, args) {
+		return MainWindow.replace(url, args);
+	}
+
+	//菜单面板
+	var MenuPanel = {
+		smart: $topMenu,
+		menuMapping: {},
+		menuUrlMapping: {},
+		indexMenu: null,
+		walkMenu: function (menus, parent) {
+			for (var i in menus) {
+				var menu = menus[i];
+				if (parent) {
+					menu.__parent__ = parent;
+				}
+				//第一个状态为open的menu将作为首页打开
+				if (menu.open && !this.indexMenu) {
+					this.indexMenu = menu;
+				}
+				this.menuMapping[menu.id] = menu;
+				if (menu.url && menu.url.length) {
+					this.menuUrlMapping[menu.url] = menu;
+				}
+				if (menu.children) {
+					this.walkMenu(menu.children, menu);
+				}
+			}
+		},
+		loadMenu: function () {
+			var menuUrl = config.menuUrl;
+			if (Smart.isEmpty(menuUrl)) {
+				S.alert("请先定义menuUrl");
+				return;
+			}
+			var that = this;
+			S.get(menuUrl).done(function (menus) {
+				that.menus = menus;
+				that.walkMenu(menus);
+				that.smart.data({menus: menus});
+				var hash = config.historyListener.onGet();
+				if (hash) {
+					/**
+					 * 根据hash加载二级菜单以及高亮显示一级菜单和二级菜单
+					 * */
+					openUrlAboutMenu(hash);
+				} else {
+					openMenuWithUiState(that.indexMenu || that.menus[0]);
+				}
+			});
+			return this;
+		},
+		getMenuById: function (id) {
+			return this.menuMapping[id];
+		}
+	};
+
+	function openUrlAboutMenu(url, args) {
+		var menu = MenuPanel.menuUrlMapping[url];
+		if (menu) {
+			return openMenuWithUiState(menu, args);
+		} else {
+			$topMenu.node.find("li[menuId].active").removeClass("active");
+			$level2MenuPanel.node.find("li[menuId].active").removeClass("active");
+			showLeftAside(false);
+			return openUrl(null, url, args);
+		}
+	}
+
+	function MainWindow(url, args) {
+		this.url = url;
+		this.args = args;
+		var smartNode = $("<div s='window' />");
+		this.node = $("<div />").append(smartNode);
+		this.smart = Smart.of(smartNode);
+	}
+	MainWindow.container = $workbench.node;
+	MainWindow.replace = function (url, args) {
+		var deferred = $.Deferred();
+		var mainWindow = new MainWindow(url, args);
+		if (MainWindow.currentMainWindow) {
+			MainWindow.currentMainWindow.close().done(function () {
+				deferred.notify("loading-window");
+				Smart.deferredChain(deferred, mainWindow.make());
+			}).fail(function () {
+				deferred.reject();
+			})
+			return deferred;
+		} else {
+			deferred.notify("loading-window");
+			Smart.deferredChain(deferred, mainWindow.make());
+		}
+		return deferred;
+	}
+	MainWindow.prototype = {
+		make: function () {
+			this.makeState = "MAKING";
+			this.smart.render();
+			MainWindow.container.append(this.node);
+			if (!this.url) return $.Deferred().resolve(this.smart);
+			var that = this;
+			return this.smart.load.apply(this.smart, [this.url].concat(this.args)).done(function () {
+				that.makeState = "SUCCESS";
+				//如果当前页面的hash和url一样，这不push state
+				if (location.hash.replace("#", "") != that.url) {
+					config.historyListener.onPush(that.url, that.args);
+				}
+			}).fail(function () {
+				that.makeState = "FAIL";
+			}).always(function () {
+				MainWindow.currentMainWindow = that;
+			});
+		},
+		close: function () {
+			if (this.makeState != "SUCCESS") {
+				this.smart.trigger("close");//因为MainTab的关闭是监听的该smart的close事件，如果没有made，则在这里直接trigger一个close事件
+				return $.Deferred().resolve();
+			}
+			var that = this;
+			return this.smart.close().done(function () {
+				that.node.remove();
+			});
+		},
+		refresh: function () {
+			var that = this;
+			this.smart.node.addClass(this.smart.meta.animation || config.tabWindowAnimation);
+			this.smart.refresh().done(function () {
+				setTimeout(function () {
+					that.smart.node.removeClass(that.smart.meta.animation || config.tabWindowAnimation);
+				}, 1000);
+			});
+		}
+	};
+
+	S.on("s-ready", function () {
+		MenuPanel.loadMenu();
+	});
+
+	//处理ajax tip
+	var ajaxActiveTip = S.N("#ajaxActiveTip");
+	var closeTimeout;
+	function showAjaxActiveTip(msg, level) {
+		if (!config.showAjaxActionTip) {
+			return;
+		}
+		var removeClass;
+		var addClass;
+		if (level == "warning") {
+			removeClass = "alert-success alert-danger";
+			addClass = "alert-warning";
+		} else if (level == "success") {
+			removeClass = "alert-warning alert-danger";
+			addClass = "alert-success";
+		} else {
+			removeClass = "alert-warning alert-success";
+			addClass = "alert-danger";
+		}
+		ajaxActiveTip.removeClass(removeClass).addClass(addClass).css('z-index', Smart.UI.zIndex()).show().html(msg);
+	}
+	function hideAjaxActiveTip() {
+		if (closeTimeout) {
+			clearTimeout(closeTimeout);
+		}
+		closeTimeout = setTimeout(function () {
+			ajaxActiveTip.fadeOut(200);
+			closeTimeout = 0;
+		}, 1500);
+	}
+	$("body").on("smart-ajaxStart", function (e, tip) {
+		showAjaxActiveTip(tip, "warning");
+	}).on("smart-ajaxSuccess", function (e, tip) {
+		showAjaxActiveTip(tip, "success");
+	}).on("smart-ajaxError", function (e, errorTip, msg) {
+		config.handleAjaxError ? config.handleAjaxError.apply(S, Array.prototype.slice.call(arguments))
+			: (S.alert($.trim(msg), "error"));
+		showAjaxActiveTip(errorTip, "error");
+	}).on("smart-ajaxComplete", function () {
+		hideAjaxActiveTip();
+	});
+
+	S.node.delegate(".layout-fullscreen-switch", "click", function (e) {
+		if ($(window).width() >= 768) {
+//			$layout.node.toggleClass("layout-hide-aside");
+		} else {
+//			$layout.node.toggleClass("layout-show-left-aside");
+		}
+		if ($layout.node.hasClass("layout-fullscreen")) {
+			$level2MenuPanel.node.find("a[title]").tooltip("destroy");
+			$layout.node.removeClass("layout-fullscreen");
+		} else {
+			$level2MenuPanel.node.find("a[title]").tooltip({
+				trigger: "hover", placement: 'right', container: 'body'
+			});
+			$layout.node.addClass("layout-fullscreen");
+		}
+	});
+	S.node.delegate(".layout-backdrop", "click", function (e) {
+//		showLeftAside(false);
+	})
+
+	function showLeftAside(flag) {
+		if (flag === undefined) {
+			flag = true;
+		}
+		if (!flag) {
+			$layout.node.addClass("layout-hide-left-aside");
+		} else {
+			$layout.node.removeClass("layout-hide-left-aside");
+		}
+	}
+</script>

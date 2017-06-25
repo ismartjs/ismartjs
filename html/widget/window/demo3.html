@@ -32,12 +32,6 @@
         }
     ]
     S.onBeforeClose(function(){
-        var deferred = $.Deferred();
-        S.confirm("确认关闭页面吗？").done(function(){
-            deferred.resolve();
-        }).fail(function(){
-            deferred.reject();
-        })
-        return deferred;
+        return S.confirm("确认关闭页面吗？");
     })
 </script>

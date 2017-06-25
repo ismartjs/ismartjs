@@ -1,0 +1,51 @@
+<meta title="登录页面" />
+<div class="login-container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+                <h3>iSmartJs登录</h3>
+                <small>一个优美的、简洁的、快速的Javascript RIA开发框架</small>
+            </div>
+            <div class="panel panel-orange">
+                <div class="panel-body">
+                    <form style="padding: 20px;" s="form" s-form="{action: login}">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                <input type="text" class="form-control" placeholder="请输入用户名" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-key"></i></div>
+                                <input type="password" class="form-control" placeholder="请输入密码" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="s-checkbox">
+                                <input type="checkbox"> 一个月内免登录
+                                <span class="s-checkbox-indicator"></span>
+                            </label>
+                            <a href="#" class="pull-right">忘记密码？</a>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-block btn-primary" value="登 录" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            iSmartJs - &copy; 175309744@qq.com
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("body").addClass("login-page");
+    function login(){
+        $("body").removeClass("login-page");
+        S.trigger("login:success", true);
+    }
+</script>

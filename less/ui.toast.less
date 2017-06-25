@@ -6,11 +6,13 @@
   width: 500px;
   bottom: 20px;
   right: 40px;
+  pointer-events: none;
   .s-toast {
     border-radius: 0;
     box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     font-size: 16px;
     margin-bottom: 20px;
+    pointer-events: auto;
     position: relative;
     .transition(all .3s ease-out 0s);
     .translate(0, -30px);
@@ -51,7 +53,7 @@
       text-rendering: auto;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      &.s-toast-sign-default{
+      &.s-toast-sign-default {
         font: normal normal normal 14px/1 FontAwesome;
         font-size: 24px;
       }
