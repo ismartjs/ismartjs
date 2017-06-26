@@ -467,4 +467,8 @@
 			$layout.node.removeClass("layout-hide-left-aside");
 		}
 	}
+	//适配屏幕菜单显示
+	if (window.innerWidth <= 1366) {
+		$layout.node.addClass("layout-fullscreen");
+	}
 </script>

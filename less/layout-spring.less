@@ -3,6 +3,7 @@
 
 @layout-left-aside-width: 180px;
 @layout-left-aside-bg-color: #3b3d40;
+@layout-fullscreen-left-aside-width: 40px;
 
 @layout-header-bg: #333;
 @layout-header-nav-interaction-bg: lighten(@layout-header-bg, 5%);
@@ -21,8 +22,6 @@
 @layout-header-sm-nav-padding: 5px 15px;
 @layout-header-sm-line-height: 30px;
 @layout-header-sm-font-size: 12px;
-
-@window-tab-height: 35px;
 
 .build-layout-screen-style(@layout-header-height, @layout-header-line-height, @layout-header-nav-padding, @layout-header-font-size) {
   .layout-header {
@@ -75,7 +74,7 @@
     bottom: 0;
     left: 0;
     z-index: 5;
-    border-right: 1px solid @border-default-color;
+    border-right: 1px solid #3b3d40;
     overflow: hidden;
     background: @layout-left-aside-bg-color;
 
@@ -85,7 +84,6 @@
 
     //菜单开关
     .layout-fullscreen-switch {
-      .square(@window-tab-height);
       display: block;
       width: 100%;
       text-align: center;
@@ -272,114 +270,11 @@
     right: 0;
     bottom: 0;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
     left: @layout-left-aside-width;
     background: #F1F3F6;
     z-index: 2;
-    .window-tabs-wrapper {
-      position: relative;
-      background: #fafafa;
-      border-bottom: 2px solid @brand-primary;
-      padding: 0;
-      height: @window-tab-height + 2px;
-      .window-tabs {
-        position: absolute;
-        top: 0;
-        right: 0;
-        height: @window-tab-height;
-        left: @window-tab-height;
-        border-left: 1px solid #eeeeee;
-        display: flex;
-        overflow: hidden;
-        padding: 0;
-        li {
-          float: left;
-          position: relative;
-          border-right: 1px solid #eeeeee;
-          list-style: none;
-          &:first-child {
-            border-left: 1px solid #eeeeee;
-            margin-left: -1px;
-          }
-          &.ui-sortable-placeholder {
-            width: 140px;
-          }
-          a {
-            color: #777;
-            height: @window-tab-height;
-            line-height: @window-tab-height;
-            padding: 0 8px;
-            display: block;
-            background: #FAFAFA;
-            -width: 130px;
-            width: 100%;
-            text-decoration: none;
-            span {
-              word-break: break-all;
-              word-wrap: break-word;
-            }
-            &:hover {
-              background: #f2f2f2;
-            }
-          }
-          &.active {
-            a {
-              background: @brand-primary;
-              color: #fff;
-              opacity: 1;
-            }
-            > div {
-              color: #fff;
-            }
-          }
-          &.closeable {
-            a {
-              padding-right: 30px;
-              padding-left: 8px;
-            }
-            > div {
-              height: 25px;
-              width: 24px;
-              cursor: pointer;
-              position: absolute;
-              right: 0px;
-              opacity: .6;
-              font-size: 19px;
-              top: 4px;
-              line-height: 24px;
-              text-align: center;
-              transition: transform 0.3s;
-              -o-transition: -o-transform 0.3s;
-              -ms-transition: -ms-transform 0.3s;
-              -moz-transition: -moz-transform 0.3s;
-              -webkit-transition: -webkit-transform 0.3s;
-              &:hover {
-                opacity: .9;
-              }
-            }
-          }
-        }
-      }
-    }
-    .main-window {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      top: @window-tab-height + 2px;
-      .window-container {
-        > div {
-          position: absolute;
-          top: 0;
-          right: 0;
-          left: 0;
-          bottom: 0;
-          overflow: auto;
-          -webkit-overflow-scrolling: touch;
-          overflow-scrolling: touch;
-        }
-      }
-    }
-
   }
 
   .layout-backdrop {
@@ -419,11 +314,10 @@
     工作区全屏
   */
   .layout-fullscreen {
-    @leftAsideWidth: 40px;
     .layout-left-aside {
-      width: @leftAsideWidth;
+      width: @layout-fullscreen-left-aside-width;
       .layout-left-aside-wrapper {
-        width: @leftAsideWidth + 17px;
+        width: @layout-fullscreen-left-aside-width + 17px;
       }
       /**
           菜单样式
@@ -431,12 +325,12 @@
       .nav.nav-first-level {
         > li {
           a {
-            width: @leftAsideWidth;
+            width: @layout-fullscreen-left-aside-width;
             text-align: center;
             display: block;
             padding: 0;
-            height: @leftAsideWidth;
-            line-height: @leftAsideWidth;
+            height: @layout-fullscreen-left-aside-width;
+            line-height: @layout-fullscreen-left-aside-width;
             i.nav-menu-icon {
               margin: 0;
             }
@@ -454,7 +348,7 @@
       }
     }
     .layout-workbench {
-      left: @leftAsideWidth;
+      left: @layout-fullscreen-left-aside-width;
     }
     .layout-fullscreen-switch {
       i {
@@ -491,16 +385,56 @@
   }
 
   @media (max-width: @screen-sm-min) {
-    .layout-hide-left-aside();
-    .layout-header {
-      .navbar-nav {
-        .open .dropdown-menu {
-          position: absolute;
-          background: #fff;
-          border: 1px solid rgba(0, 0, 0, 0.15);
+    @layout-header-nav-height: 41px;
+    .layout-hide-left-aside {
+      .layout-header {
+        .navbar-menu {
+          left: 0;
         }
       }
     }
+
+    .layout-header {
+      position: relative;
+      .navbar-menu {
+        position: absolute;
+        top: @layout-header-height;
+        left: @layout-fullscreen-left-aside-width;
+        right: 0;
+        height: @layout-header-nav-height;
+        display: -webkit-box;
+        overflow: auto;
+        background: #333;
+        border-top: 1px solid #616161;
+        -webkit-overflow-scrolling: touch;
+        overflow-scrolling: touch;
+        box-shadow: 0px 5px 5px #adadad;
+      }
+      .navbar-toggle {
+        font-size: 18px;
+      }
+
+      .navbar-collapse {
+        position: absolute;
+        right: 0px;
+        top: @layout-header-height - 1px;
+        background: @layout-header-bg;
+        padding: 0px;
+        > li {
+          width: 100%;
+          > a {
+            width: 100%;
+            display: block;
+          }
+        }
+        box-shadow: 0px 3px 5px #1f1f1f;
+      }
+    }
+
+    .layout-workbench {
+      top: @layout-header-height + @layout-header-nav-height;
+    }
+
   }
 
   /* 中等屏幕（桌面显示器，大于等于 992px） */
