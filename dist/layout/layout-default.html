@@ -1,5 +1,5 @@
 <meta args="config"/>
-<div class="layout-skin-default">
+<div>
 	<div class="layout-header" s="window" s-window="{href: config.headerUrl}">
 	</div>
 	<div class="layout-backdrop"></div>
@@ -75,7 +75,7 @@
 	</ul>
 </div>
 <script type="text/javascript">
-
+	$('body').addClass("layout-skin-default");
 	//默认参数配置
 	var loginProcessStatus = 0;
 	var loginRetryCallbacks = [];
