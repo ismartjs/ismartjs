@@ -72,6 +72,29 @@
 		});
 		Smart.UI.backdrop();
 		var zIndex = Smart.UI.zIndex();
+
+		function setWidth() {
+			//这里主要处理内容的高度
+			dialogMain.css({"position": "absolute", "width": "auto"});
+			bodyNode.css("padding", 0).css("position", "relative");
+			dialog.appendTo("body");
+			dialog.show();
+			var metaWidth = parseInt(((nodeSmart.meta.width || window.innerWidth) + "").replace(/\D/gi, ''));
+			if (metaWidth <= window.innerWidth * 0.98) {
+				//如果定义的宽度小于window的宽度80%,则直接是用定义的宽度
+				node.width(nodeSmart.meta.width);
+				dialogMain.width(dialogMain.innerWidth());
+			} else {
+				node.width('100%');
+				dialogMain.css({
+					marginLeft: 'auto',
+					marginRight: 'auto'
+				}).width("98%");
+				bodyNode.css('marginLeft', 0);
+			}
+			dialogMain.css("position", "relative");
+		}
+
 		nodeSmart.on("close", function (e) {
 			var eDeferred = e.deferred;
 			var args = Smart.SLICE.call(arguments, 1);
@@ -81,6 +104,7 @@
 				deferred.resolve.apply(deferred, args);
 			});
 			dialog.modal('hide');
+			$(window).unbind("resize", setWidth);
 			e.deferred = eDeferred.promise();
 		}).on("meta", function (e, key, value) {
 			if (key == "title") {
@@ -102,21 +126,13 @@
 				//如果底部没有按钮，则进行隐藏
 				footerNode.hide();
 			}
-
 			nodeSmart.meta.height && node.height(nodeSmart.meta.height);
-			nodeSmart.meta.width && node.width(nodeSmart.meta.width);
-			node.width((nodeSmart.meta.width && parseInt((nodeSmart.meta.width + "").replace(/\D/gi, '')) <= (window.innerWidth * 0.8)) ? nodeSmart.meta.width : '80%');
-			//这里主要处理内容的高度
-			dialogMain.css({"position": "absolute", "width": "auto"});
-			bodyNode.css("padding", 0).css("position", "relative");
 			dialog.appendTo("body");
-			dialog.show();
-			dialogMain.css("position", "relative");
-			// dialogMain.width(dialogMain.innerWidth()).css("position", "relative");
-			footerNode.css("marginTop", "0");
+			setWidth();
 			dialog.on('shown.bs.modal', function (e) {
 				focusBtn && focusBtn.focus();
-			})
+			});
+			$(window).on('resize', setWidth);
 			showDialog(dialog, zIndex);
 		}).on("dialog.btn.disable", function (e, id) {
 			getButtonById(id).prop("disabled", true);
