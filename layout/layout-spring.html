@@ -67,7 +67,7 @@
 		defaultMenuIcon: "fa fa-file",
 		headerUrl: "asideTop.html",
 		headerLeftUrl: 'headerLeft.html',
-		headerLeftUrl: 'headerRight.html',
+		heaqderRightUrl: 'headerRight.html',
 		loginPanel: "loginPanel.html",
 		tabActiveRefresh: true,
 		showAjaxActionTip: false,
@@ -372,7 +372,7 @@
 		},
 		close: function () {
 			if (this.makeState != "SUCCESS") {
-				this.smart.trigger("close");//因为MainTab的关闭是监听的该smart的close事件，如果没有made，则在这里直接trigger一个close事件
+				this.node.remove();
 				return $.Deferred().resolve();
 			}
 			var that = this;
