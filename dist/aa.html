@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>东邻商家后台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="assets/css/font-awesome-4.6.3/css/font-awesome.min.css" type="text/css" rel="stylesheet" />
+    <link href="assets/css/pe-icon-7-stroke/css/pe-icon-7-stroke.css" type="text/css" rel="stylesheet" />
+    <link href="assets/css/pe-icon-7-stroke/css/helper.css" type="text/css" rel="stylesheet" />
+    <link href="https://www.batcloud.info/dist/css/animate.css" type="text/css" rel="stylesheet" />
+    <link href="https://www.batcloud.info/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <link href="https://www.batcloud.info/dist/css/ismart.min.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="https://www.batcloud.info/dist/js/3rd/jquery-1.12.2.min.js"></script>
+    <script type="text/javascript" src="https://www.batcloud.info/dist/js/3rd/jquery-ui-1.10.4.custom.min.js"></script>
+    <script type="text/javascript" src="https://www.batcloud.info/dist/js/3rd/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.batcloud.info/dist/js/3rd/jquery.cookie.js"></script>
+    <script type="text/javascript" src="https://www.batcloud.info/dist/js/3rd/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="https://www.batcloud.info/dist/js/3rd/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="https://www.batcloud.info/dist/js/bootstrap-plugins.min.js"></script>
+    <script type="text/javascript" src="https://www.batcloud.info/dist/js/3rd/jquery-dateFormat.min.js"></script>
+    <script type="text/javascript" src="https://www.batcloud.info/dist/js/ismartjs.all.min.js"></script>
+    <script type="text/javascript" src="https://www.batcloud.info/dist/js/3rd/echarts.min.js"></script>
+    <script type="text/javascript" src="assets/js/CLodopFuncs.js"></script>
+    <script type="text/javascript" src="assets/js/jquery.jqprint-0.3.js"></script>
+    <script type="text/javascript" src="assets/js/utils.js"></script>
+
+    <script type="text/javascript">
+        $.jqprint.settings({
+            cssFiles: [
+                "assets/css/print.css"
+            ]
+        });
+        $(function () {
+            var layoutArgs = {config: {
+                /**
+                 * 菜单的url
+                 * */
+                menuUrl: "/menu",
+                asideTopUrl: "asideTop.html",
+                headerUrl: "header.html"
+            }};
+            Smart.UI.booting($("#root"), {
+                /**
+                 * 用于定义交互的模板，如弹出框，通知，警告框，确认框等等
+                 * */
+                uiTemplateUrl: "ui-template.html"
+            }).done(function($root){
+                $root.get("/login/check").done(function(rs){
+                    if(rs){
+                        window.APP_CONTEXT = rs;
+                        $root.load("layout.html", layoutArgs);
+                    } else {
+                        $root.load("login.html");
+                        $root.node.on("login:success", function (e, status) {
+                            if (status) {
+                                window.logined = status;
+                                $root.load("layout.html", layoutArgs);
+                            }
+                        });
+                    }
+                })
+
+            })
+        });
+    </script>
+</head>
+<body class="layout-skin-default">
+<div id="root" s="window"></div>
+</body>
