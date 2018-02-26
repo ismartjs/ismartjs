@@ -376,19 +376,19 @@ state
   border-radius: 0;
   display: none;
 }
-.layout-skin-default .layout-hide-aside .layout-aside {
+.layout-skin-default.layout-hide-aside .layout-aside {
   -webkit-transform: translate(-180px, 0);
   -ms-transform: translate(-180px, 0);
   -o-transform: translate(-180px, 0);
   transform: translate(-180px, 0);
 }
-.layout-skin-default .layout-hide-aside .layout-workbench {
+.layout-skin-default.layout-hide-aside .layout-workbench {
   left: 0;
 }
-.layout-skin-default .layout-hide-aside .layout-header {
+.layout-skin-default.layout-hide-aside .layout-header {
   left: 0;
 }
-.layout-skin-default .layout-hide-aside .layout-menu-switch i {
+.layout-skin-default.layout-hide-aside .layout-menu-switch i {
   -webkit-transform: rotate(270deg);
   -ms-transform: rotate(270deg);
   -o-transform: rotate(270deg);

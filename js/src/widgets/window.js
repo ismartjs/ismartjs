@@ -56,26 +56,41 @@
 		var scriptTexts = result.scriptTexts;
 //        var applyArgs = Smart.SLICE.call(arguments, 2);
 		var scripts = [];
+        scripts.push("var S = this;");
+        scripts.push("var " + Smart.VALUE_CONTEXT + " = {};");
 		//处理模板
 		var meta = result.meta;
 		var argsScripts = [];
 		scripts.push("(function(){");
 		scripts.push("    return function(){");
-		if (meta.args) { //如果有参数定义，那么参数的值是
+        scripts.push("			var __DEFERRED__ = $.Deferred();");
+		if (meta.args) {
+			//判断meta.args有没有model属性，model属性是从远程读取数据
+            scripts.push("var _arguments = arguments;\n");
+			//如果有参数定义，那么参数的值是
 			//传递进来的加载参数对象是第二个参数。
+			var modelArg;
 			$.each(meta.args, function (i, arg) {
 				var argSeg = arg.split(":");
-				var argStr = "var " + argSeg[0] + " = arguments[0]['" + argSeg[0] + "'];\n";
+				var argStr = "var " + argSeg[0] + " = _arguments[0]['" + argSeg[0] + "'];\n";
 				if (argSeg.length == 2) {
+					if(argSeg[1] == '_model_') {
+                        modelArg = argSeg[0];
+                        return;
+					}
 					var tmpStr = argSeg[0] + " = " + argSeg[0] + " !==undefined ? " + argSeg[0] + " : " + argSeg[1] + ";";
 					argStr += tmpStr + "\n";
 				}
 				argsScripts.push(argStr);
 				scripts.push(argStr);
 			});
+            if(meta.model) {
+                scripts.push(meta.model + ".done(function() {")
+				if(modelArg) {
+                	scripts.push("var " + modelArg + " = arguments[0];")
+				}
+            }
 		}
-		scripts.push("var S = this;");
-		scripts.push("var " + Smart.VALUE_CONTEXT + " = {};");
 
 		if (meta.template == "true") {//如果需要模板化处理才进行模板化处理。不做统一全部处理
 			var compiledFnBody = [];
@@ -120,11 +135,17 @@
 		}
 		deferreds.push(function () {
 			scripts.push(scriptTexts.join("\n"));
-			scripts.push("			return function(key){");
-			scripts.push("				try{");
-			scripts.push("					return eval(key);");
-			scripts.push("				}catch(e){ \nSmart.error(e);\n}");
-			scripts.push("			};");
+            scripts.push("			__DEFERRED__.resolve(");
+            scripts.push("				function($__key){");
+            scripts.push("					try{");
+            scripts.push("						return eval($__key);");
+            scripts.push("					}catch(e){ \nSmart.error(e);\n}");
+            scripts.push("				}");
+            scripts.push("			);")
+            if(meta.args && meta.model) {
+                scripts.push("})");
+            }
+            scripts.push("			return __DEFERRED__;");
 			scripts.push("		};");
 			scripts.push("})();//# sourceURL=" + href + ".js");
 			var scriptFn = that.context(scripts.join("\n"));
@@ -145,38 +166,40 @@
 				});
 			}
 			$.extend(scriptArgs, loadArgs || {});
-			var context = scriptFn.call(that, scriptArgs);
-			that.CONTEXT = context;
-			$.each(meta, function (key, val) {
-				if (key == 'args') {
-					return;
-				}
-				meta[key] = val.replace(META_VALUE_RE, function ($0, $1) {
-					return that.context($1);
-				});
-			});
-			$.each(meta, function (key, val) {
-				if (!(key in that.meta)) {
-					that.meta[key] = val;
-				}
-			});
-			/**
-			 *处理{$method(args)}用于
-			 * */
-			//绑定浏览器事件，click等
-			delegateEvent(that);
-			//处理自动焦点的元素
-			setTimeout(function () {
-				that.node.find("*[s-window-role='focus']:first").focus();
-			}, 100);
+			var contextDeferred = scriptFn.call(that, scriptArgs);
+			return contextDeferred.done(function(context) {
+                that.CONTEXT = context;
+                $.each(meta, function (key, val) {
+                    if (key == 'args') {
+                        return;
+                    }
+                    meta[key] = val.replace(META_VALUE_RE, function ($0, $1) {
+                        return that.context($1);
+                    });
+                });
+                $.each(meta, function (key, val) {
+                    if (!(key in that.meta)) {
+                        that.meta[key] = val;
+                    }
+                });
+                /**
+                 *处理{$method(args)}用于
+                 * */
+                //绑定浏览器事件，click等
+                delegateEvent(that);
+                //处理自动焦点的元素
+                setTimeout(function () {
+                    that.node.find("*[s-window-role='focus']:first").focus();
+                }, 100);
 
-			that.on("s-ready", function () {
-				//处理锚点滚动
-				if (href.indexOf("#") != -1) {
-					var anchor = href.substring(href.indexOf("#"));
-					that.scrollTo(anchor);
-				}
-			});
+                that.on("s-ready", function () {
+                    //处理锚点滚动
+                    if (href.indexOf("#") != -1) {
+                        var anchor = href.substring(href.indexOf("#"));
+                        that.scrollTo(anchor);
+                    }
+                });
+			})
 		})
 		return Smart.deferredQueue(deferreds);
 	};
