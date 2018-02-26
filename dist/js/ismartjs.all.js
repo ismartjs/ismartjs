@@ -3049,7 +3049,7 @@
 			return that.trueId($1);
 		});
 
-		this._WNODE = $("<div class='s-window' />").html(html);
+		this._WNODE = $("<div />").html(html);
 		//替换掉id,为id加上当前窗口的窗口id TODO 正则表达式无法匹配，采用jQuery的方法替换
 		this._WNODE.find("*[id]").add(this._WNODE.filter("*[id]")).each(function () {
 			var id = $(this).attr("id");
@@ -3060,7 +3060,7 @@
 			scripts.push("  var $" + id + " = S.S('#" + id + "');");
 		});
 		this.meta = {};
-		this.node.empty().append(this._WNODE);
+		this.node.addClass(".s-window").empty().append(this._WNODE.children());
 		this.trigger("s-window-loaded");
 		undelegateEvent(this);
 		var deferreds = [];
@@ -3073,9 +3073,9 @@
 		}
 		deferreds.push(function () {
 			scripts.push(scriptTexts.join("\n"));
-			scripts.push("			return function(key){");
+			scripts.push("			return function(__$key){");
 			scripts.push("				try{");
-			scripts.push("					return eval(key);");
+			scripts.push("					return eval(__$key);");
 			scripts.push("				}catch(e){ \nSmart.error(e);\n}");
 			scripts.push("			};");
 			scripts.push("		};");
