@@ -122,7 +122,7 @@
 			scripts.push("  var $" + id + " = S.S('#" + id + "');");
 		});
 		this.meta = {};
-		this.node.empty().append(this._WNODE);
+		this.node.empty().append(this._WNODE.children());
 		this.trigger("s-window-loaded");
 		undelegateEvent(this);
 		var deferreds = [];
@@ -581,7 +581,7 @@
 				selector = _selector.join(",");
 			}
 
-			return this._WNODE.filter(selector).add(this._WNODE.find(selector));
+			return this.node.filter(selector).add(this.node.find(selector));
 		},
 		trueId: function (id) {
 			return this._WINDOW_ID + "_" + id;

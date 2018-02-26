@@ -2513,16 +2513,16 @@
             if (node.hasClass(checkedClass)) {
                 this._uncheck(node);
             } else {
-                this.check(node);
+                this.check(node, e);
             }
         },
-        check: function (node) {
+        check: function (node, e) {
             if (node.hasClass(this.widget.check.options['checkedStyle'])) {
                 return;
             }
             //如果是单选，则需要把其他的item取消选中
             var that = this;
-            if (this.widget.check.options.multiple == "false" || !this.widget.check.options.multiple) {
+            if (!e.shiftKey && (this.widget.check.options.multiple == "false" || !this.widget.check.options.multiple)) {
                 $(CHECK_ITEM_SELECTOR, this.node).not(node).each(function () {
                     that._uncheck($(this));
                 });
@@ -3075,7 +3075,7 @@
 			scripts.push("  var $" + id + " = S.S('#" + id + "');");
 		});
 		this.meta = {};
-		this.node.empty().append(this._WNODE);
+		this.node.empty().append(this._WNODE.children());
 		this.trigger("s-window-loaded");
 		undelegateEvent(this);
 		var deferreds = [];
@@ -3534,7 +3534,7 @@
 				selector = _selector.join(",");
 			}
 
-			return this._WNODE.filter(selector).add(this._WNODE.find(selector));
+			return this.node.filter(selector).add(this.node.find(selector));
 		},
 		trueId: function (id) {
 			return this._WINDOW_ID + "_" + id;
