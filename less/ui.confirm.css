@@ -51,3 +51,6 @@ state
 .s-confirm.s-confirm-danger .s-confirm-sign.s-confirm-sign-default:before {
   content: "\f057";
 }
+.s-confirm .s-confirm-input {
+  display: none;
+}

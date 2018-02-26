@@ -134,11 +134,43 @@ S.confirm("您确定要提交数据吗？", level).done(function(){
                 </div>
             </div>
         </div>
+
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading panel-heading-blank">输入确认</div>
+                <div class="panel-body">
+                    <div class="text-info">
+                        定义<code>option.confirmInput</code>参数可以设定输入确认，用于高危操作确认
+                        <input type="button" class="btn btn-info btn-sm" value="试一试" s-click="inputConfirm()" />
+                    </div>
+                    <br />
+<pre>
+    S.confirm("您确认要删除吗？请在下面输入框输入<span class='text-danger'>DELETE</span>进行确认", 'danger', {
+        confirmInput: 'DELETE'
+    }).done(function(){
+        S.alert("您点击了确认按钮");
+    }).fail(function(){
+        S.alert("您点击了关闭按钮");
+    })
+</pre>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <script type="text/javascript">
     function confirm(level){
         S.confirm("您确定要提交数据吗？", level).done(function(){
+            S.alert("您点击了确认按钮");
+        }).fail(function(){
+            S.alert("您点击了关闭按钮");
+        })
+    }
+
+    function inputConfirm() {
+        S.confirm("您确认要删除吗？请在下面输入框输入<span class='text-danger'>DELETE</span>进行确认", 'danger', {
+            confirmInput: 'DELETE'
+        }).done(function(){
             S.alert("您点击了确认按钮");
         }).fail(function(){
             S.alert("您点击了关闭按钮");

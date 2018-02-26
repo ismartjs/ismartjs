@@ -1849,10 +1849,29 @@
             $("*[s-confirm-role='message']", dialog).html(msg);
             $("*[s-confirm-role='sign']", dialog).addClass(sign);
             var sureBtn = $("*[s-confirm-role='sureBtn']", dialog).html(option.sureBtnName);
+            var confirmInput = $("*[s-confirm-role='confirm-input']", dialog);
+            if (option.confirmInput) {
+                confirmInput.fadeIn().attr("placeholder", "请输入" + option.confirmInput + "进行确认！");
+                sureBtn.prop("disabled", true);
+                confirmInput.keyup(function () {
+                    var val = confirmInput.val();
+                    if (val === option.confirmInput) {
+                        sureBtn.prop("disabled", false);
+                    } else {
+                        sureBtn.prop("disabled", true);
+                    }
+                })
+            }
             var cancelBtn = $("*[s-confirm-role='cancelBtn']", dialog).html(option.cancelBtnName);
             Smart.UI.backdrop();
             var selectVal = 0;
             sureBtn.click(function () {
+                if (option.confirmInput) {
+                    var input = confirmInput.val();
+                    if (input != option.confirmInput) {
+                        return;
+                    }
+                }
                 selectVal = 1;
                 dialog.modal('hide');
             });
