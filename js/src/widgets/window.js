@@ -96,6 +96,7 @@
 			var compiledFnBody = [];
 			compiledFnBody.push("(function(){");
 			compiledFnBody.push("   return function(){\n");
+            compiledFnBody.push("	var _arguments = arguments;");
 			compiledFnBody.push(argsScripts.join("\n"));
 			compiledFnBody.push($.template.compile(html));
 			compiledFnBody.push("   }");
