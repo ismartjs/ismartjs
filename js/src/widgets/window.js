@@ -61,7 +61,7 @@
 		//处理模板
 		var meta = result.meta;
 		var argsScripts = [];
-		scripts.push("(function(){");
+		scripts.push("(function($){");
 		scripts.push("    return function(){");
         scripts.push("			var __DEFERRED__ = $.Deferred();");
 		if (meta.args) {
@@ -100,7 +100,7 @@
 			compiledFnBody.push(argsScripts.join("\n"));
 			compiledFnBody.push($.template.compile(html));
 			compiledFnBody.push("   }");
-			compiledFnBody.push("})();//# sourceURL=" + href + "_template.js");
+			compiledFnBody.push("})(jQuery);//# sourceURL=" + href + "_template.js");
 			var fn = eval(compiledFnBody.join("\n"));
 			html = fn.call(this, loadArgs);
 			html = html.replace(/\n{2,}/gm, "\n");
@@ -148,7 +148,7 @@
             }
             scripts.push("			return __DEFERRED__;");
 			scripts.push("		};");
-			scripts.push("})();//# sourceURL=" + href + ".js");
+			scripts.push("})(jQuery);//# sourceURL=" + href + ".js");
 			var scriptFn = that.context(scripts.join("\n"));
 			//处理url后面的queryString，也把后面的queryString作为loadArgs
 			var scriptArgs = {};
