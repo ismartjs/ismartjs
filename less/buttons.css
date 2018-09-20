@@ -183,3 +183,6 @@ fieldset[disabled] .btn-violet.focus {
   width: 20px;
   height: 20px;
 }
+.btn-corner {
+  border-radius: 50%;
+}
