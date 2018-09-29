@@ -211,19 +211,28 @@
             }
             return val;
         },
-        randomString: function (format) {
-            if(typeof format == 'number') {
-                var list = []
-                for(var i = 0; i < format; i ++) {
-                    list.push('x')
+        randomString: (function () {
+            var LIST = []
+            for (var i = 0; i < 26; i++) {
+                if (i < 9) {
+                    LIST.push(String.fromCharCode(i + 0x31))
                 }
-                format = list.join('')
+                LIST.push(String.fromCharCode(i + 0x41))
+                LIST.push(String.fromCharCode(i + 0x61))
             }
-            return format.replace(/[xy]/g, function (c) {
-                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
-                return v.toString(16);
-            })
-        },
+            return function (format) {
+                if (typeof format == 'number') {
+                    var list = []
+                    for (var i = 0; i < format; i++) {
+                        list.push('x')
+                    }
+                    format = list.join('')
+                }
+                return format.replace(/[x]/g, function () {
+                    return LIST[parseInt(Math.random() * LIST.length)];
+                })
+            }
+        })(),
         isDeferred: function (obj) {
             return obj && "done" in obj && $.isFunction(obj.done);
         },
