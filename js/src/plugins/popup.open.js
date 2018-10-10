@@ -132,7 +132,7 @@
 			dialog.on('shown.bs.modal', function (e) {
 				focusBtn && focusBtn.focus();
 			});
-			$(window).on('resize', setWidth);
+			// $(window).on('resize', setWidth);
 			showDialog(dialog, zIndex);
 		}).on("dialog.btn.disable", function (e, id) {
 			getButtonById(id).prop("disabled", true);
