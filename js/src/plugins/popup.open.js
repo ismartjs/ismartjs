@@ -126,9 +126,8 @@
 			}
 			nodeSmart.meta.height && node.height(nodeSmart.meta.height);
 			dialog.appendTo("body");
-			setWidth();
-            dialog.appendTo("body");
             dialog.show();
+			setWidth();
 			dialog.on('shown.bs.modal', function (e) {
 				focusBtn && focusBtn.focus();
 			});
