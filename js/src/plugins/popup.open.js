@@ -77,8 +77,6 @@
 			//这里主要处理内容的高度
 			dialogMain.css({"position": "absolute", "width": "auto"});
 			bodyNode.css("padding", 0).css("position", "relative");
-			// dialog.appendTo("body");
-			// dialog.show();
 			var metaWidth = parseInt(((nodeSmart.meta.width || window.innerWidth) + "").replace(/\D/gi, ''));
 			if (metaWidth <= window.innerWidth * 0.98) {
 				//如果定义的宽度小于window的宽度80%,则直接是用定义的宽度
@@ -129,6 +127,8 @@
 			nodeSmart.meta.height && node.height(nodeSmart.meta.height);
 			dialog.appendTo("body");
 			setWidth();
+            dialog.appendTo("body");
+            dialog.show();
 			dialog.on('shown.bs.modal', function (e) {
 				focusBtn && focusBtn.focus();
 			});
