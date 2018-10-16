@@ -242,9 +242,9 @@
                             level = _level || LEVELS.error;
                             result = result || defMsg[level.key + "Msg"] || "";
                             (show || that.widget.valid.options.show).call(that, node, result, level);
-                            if (notice) {
-                                notice(node, result, level.key);
-                            }
+                            // if (notice) {
+                            //     notice(node, result, level.key);
+                            // }
                             deferred.reject();
                         });
                     return deferred;
