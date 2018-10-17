@@ -236,7 +236,7 @@
         formatBankAccount: function(account) {
             return account.replace(/\s/g, '').replace(/\d{4}/gi, function($1, $2) {
                 return $1 + ' '
-            })
+            }).trim()
         },
         isDeferred: function (obj) {
             return obj && "done" in obj && $.isFunction(obj.done);
