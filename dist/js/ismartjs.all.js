@@ -233,6 +233,11 @@
                 })
             }
         })(),
+        formatBankAccount: function(account) {
+            return account.replace(/\d{4}/gi, function($1, $2) {
+                return $1 + ' '
+            })
+        },
         isDeferred: function (obj) {
             return obj && "done" in obj && $.isFunction(obj.done);
         },
