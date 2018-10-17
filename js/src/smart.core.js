@@ -234,7 +234,7 @@
             }
         })(),
         formatBankAccount: function(account) {
-            return account.replace(/\d{4}/gi, function($1, $2) {
+            return account.replace(/\s/g, '').replace(/\d{4}/gi, function($1, $2) {
                 return $1 + ' '
             })
         },
