@@ -1,0 +1,1 @@
+RewriteCond %{HTTP_REFERER} laxiaoke.com [NC]
