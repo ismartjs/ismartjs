@@ -1,0 +1,35 @@
+<meta title="Loading" icon="fa fa-spinner"/>
+<div class="container-fluid space-v">
+	<div class="panel">
+		<div class="panel-body">
+			<div class="m-b-xs f-md">Loading</div>
+			<small>加载提示，用来提示操作等待</small>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="panel panel-default">
+				<div class="panel-heading panel-heading-blank">调用方法</div>
+				<div class="panel-body">
+<pre>
+var deferred = S.loading()
+//关闭
+deferred.resolve()
+</pre>
+
+				</div>
+				<div class="panel-footer">
+					<input type="button" class="btn btn-primary" s-click="showLoading()" value="演示(3s后关闭)"/>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	function showLoading() {
+		var deferred = S.loading()
+		setTimeout(function() {
+			deferred.resolve()
+		}, 3000)
+	}
+</script>

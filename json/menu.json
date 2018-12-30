@@ -260,6 +260,12 @@
         "url": "html/ui/alert.html"
       },
       {
+        "id": "LOADING",
+        "title": "Loading",
+        "icon": "fa fa-spinner",
+        "url": "html/ui/loading.html"
+      },
+      {
         "id": "CONFIRM",
         "title": "确认框",
         "icon": "fa fa-check-square-o",
